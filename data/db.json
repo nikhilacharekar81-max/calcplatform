@@ -1,0 +1,901 @@
+{
+  "categories": [
+    {
+      "id": "cat_1790504986048_uai46",
+      "name": "Maths",
+      "slug": "maths",
+      "description": "",
+      "seoTitle": "Maths",
+      "seoDescription": "",
+      "seoKeywords": "",
+      "icon": "Folder",
+      "order": 1,
+      "isActive": true,
+      "createdAt": "2026-09-27T10:29:46.048Z",
+      "updatedAt": "2026-09-27T10:29:46.048Z"
+    }
+  ],
+  "subcategories": [
+    {
+      "id": "sub_1790505115006_ra7ky",
+      "categoryId": "cat_1790504986048_uai46",
+      "name": "Basic Maths",
+      "slug": "basic-maths",
+      "description": "",
+      "seoTitle": "Basic Maths",
+      "seoDescription": "",
+      "seoKeywords": "",
+      "order": 1,
+      "isActive": true,
+      "createdAt": "2026-09-27T10:31:55.006Z",
+      "updatedAt": "2026-09-27T10:31:55.006Z"
+    }
+  ],
+  "calculators": [
+    {
+      "id": "calc_1790505129990_otjvg",
+      "name": "Percentage Calculator",
+      "slug": "percentage-calculator",
+      "shortDescription": "",
+      "categoryId": "cat_1790504986048_uai46",
+      "subcategoryId": "sub_1790505115006_ra7ky",
+      "engineType": "custom_formula",
+      "fields": [
+        {
+          "id": "amount",
+          "label": "Principal Amount",
+          "type": "number",
+          "defaultValue": 500000,
+          "placeholder": "500000",
+          "prefix": "₹",
+          "suffix": "",
+          "min": 1000,
+          "max": 100000000,
+          "step": 1000,
+          "helpText": "Enter total base amount"
+        },
+        {
+          "id": "rate",
+          "label": "Annual Interest Rate (%)",
+          "type": "slider",
+          "defaultValue": 8.5,
+          "prefix": "",
+          "suffix": "%",
+          "min": 1,
+          "max": 30,
+          "step": 0.1,
+          "helpText": "Annual percentage rate"
+        },
+        {
+          "id": "tenureYears",
+          "label": "Tenure (Years)",
+          "type": "number",
+          "defaultValue": 5,
+          "prefix": "",
+          "suffix": "Yrs",
+          "min": 1,
+          "max": 40,
+          "step": 1,
+          "helpText": "Loan or investment duration in years"
+        }
+      ],
+      "outputs": [
+        {
+          "id": "monthlyPayment",
+          "label": "Monthly Payment (EMI)",
+          "formula": "(amount * (rate / 1200) * pow(1 + (rate / 1200), tenureYears * 12)) / (pow(1 + (rate / 1200), tenureYears * 12) - 1)",
+          "format": "currency_inr",
+          "highlight": true,
+          "description": "Estimated monthly installment"
+        },
+        {
+          "id": "totalPayment",
+          "label": "Total Payment",
+          "formula": "monthlyPayment * tenureYears * 12",
+          "format": "currency_inr",
+          "highlight": false,
+          "description": "Total principal + interest repayment"
+        },
+        {
+          "id": "totalInterest",
+          "label": "Total Interest Payable",
+          "formula": "totalPayment - amount",
+          "format": "currency_inr",
+          "highlight": false,
+          "description": "Aggregate interest cost"
+        }
+      ],
+      "presets": [],
+      "modules": [
+        {
+          "id": "mod_calculator-inputs",
+          "moduleId": "calculator-inputs",
+          "name": "Interactive Inputs & Controls",
+          "isEnabled": true,
+          "order": 1,
+          "settings": {
+            "title": "Parameters & Inputs",
+            "layout": "two-column",
+            "showResetButton": true
+          }
+        },
+        {
+          "id": "mod_result-cards",
+          "moduleId": "result-cards",
+          "name": "Results & KPI Summary",
+          "isEnabled": true,
+          "order": 2,
+          "settings": {
+            "title": "Calculated Results",
+            "highlightCardStyle": "emerald",
+            "showShareActions": true
+          }
+        },
+        {
+          "id": "mod_chart-visualizer",
+          "moduleId": "chart-visualizer",
+          "name": "Visual Chart & Graph Engine",
+          "isEnabled": true,
+          "order": 3,
+          "settings": {
+            "chartType": "donut",
+            "chartTitle": "Visual Breakdown",
+            "showLegend": true
+          }
+        },
+        {
+          "id": "mod_breakdown-visualizer",
+          "moduleId": "breakdown-visualizer",
+          "name": "Distribution & Itemized Breakdown",
+          "isEnabled": true,
+          "order": 4,
+          "settings": {
+            "title": "Distribution Breakdown",
+            "showPercentages": true
+          }
+        },
+        {
+          "id": "mod_amortization-table",
+          "moduleId": "amortization-table",
+          "name": "Amortization & Schedule Table",
+          "isEnabled": true,
+          "order": 5,
+          "settings": {
+            "title": "Payment & Growth Schedule",
+            "defaultView": "yearly",
+            "pageSize": 10
+          }
+        },
+        {
+          "id": "mod_scenario-comparison",
+          "moduleId": "scenario-comparison",
+          "name": "Scenario & Alternative Comparator",
+          "isEnabled": true,
+          "order": 6,
+          "settings": {
+            "title": "Scenario Comparison & Sensitivity"
+          }
+        },
+        {
+          "id": "mod_timeline-milestones",
+          "moduleId": "timeline-milestones",
+          "name": "Milestone & Growth Timeline",
+          "isEnabled": true,
+          "order": 7,
+          "settings": {
+            "title": "Key Milestones & Timeline"
+          }
+        },
+        {
+          "id": "mod_formula-methodology",
+          "moduleId": "formula-methodology",
+          "name": "Formula, Math & Logic Steps",
+          "isEnabled": true,
+          "order": 8,
+          "settings": {
+            "title": "Formula & Mathematical Logic",
+            "showStepByStep": true
+          }
+        },
+        {
+          "id": "mod_how-to-guide",
+          "moduleId": "how-to-guide",
+          "name": "How-to Guide & Instructions",
+          "isEnabled": true,
+          "order": 9,
+          "settings": {
+            "title": "How to Use This Calculator"
+          }
+        },
+        {
+          "id": "mod_worked-examples",
+          "moduleId": "worked-examples",
+          "name": "Worked Examples & Real Scenarios",
+          "isEnabled": true,
+          "order": 10,
+          "settings": {
+            "title": "Worked Examples & Scenarios"
+          }
+        },
+        {
+          "id": "mod_faq-accordion",
+          "moduleId": "faq-accordion",
+          "name": "FAQ Accordion & Schema Q&A",
+          "isEnabled": true,
+          "order": 11,
+          "settings": {
+            "title": "Frequently Asked Questions",
+            "allowMultipleOpen": false
+          }
+        },
+        {
+          "id": "mod_assumptions-info",
+          "moduleId": "assumptions-info",
+          "name": "Assumptions, Rules & Disclosures",
+          "isEnabled": true,
+          "order": 12,
+          "settings": {
+            "title": "Key Assumptions & Statutory Notes"
+          }
+        }
+      ],
+      "contentSections": [
+        {
+          "id": "sec_overview",
+          "title": "Overview & Computational Methodology",
+          "sectionType": "overview",
+          "htmlContent": "How are you",
+          "isEnabled": true,
+          "order": 1
+        },
+        {
+          "id": "sec_how_to",
+          "title": "Step-by-Step Instructions",
+          "sectionType": "how-to",
+          "htmlContent": "<ol class=\"list-decimal pl-5 space-y-1.5 my-3\">\n  <li>Enter the total amount.</li>\n  <li>Adjust the annual rate and tenure.</li>\n  <li>Review the computed monthly EMI, total interest, and visual amortization schedule below.</li>\n</ol>",
+          "isEnabled": true,
+          "order": 2
+        }
+      ],
+      "faqs": [
+        {
+          "id": "faq_1",
+          "question": "How is the calculation evaluated?",
+          "answer": "<p>The calculation uses standard reducing-balance math computed directly on your browser for instant, real-time results.</p>",
+          "isEnabled": true,
+          "order": 1
+        },
+        {
+          "id": "faq_2",
+          "question": "Can I change parameters anytime?",
+          "answer": "<p>Yes, all values update automatically in real-time as you type or drag the sliders.</p>",
+          "isEnabled": true,
+          "order": 2
+        }
+      ],
+      "examples": [],
+      "chartConfig": {
+        "enabled": true,
+        "chartType": "donut",
+        "title": "Principal vs Interest Breakdown",
+        "segments": [
+          {
+            "label": "Principal Amount",
+            "outputId": "amount",
+            "color": "#1dbf73"
+          },
+          {
+            "label": "Total Interest",
+            "outputId": "totalInterest",
+            "color": "#ff7640"
+          }
+        ]
+      },
+      "content": {
+        "formulaExplanation": "",
+        "usageInstructions": "",
+        "faqs": []
+      },
+      "seoTitle": "Percentage Calculator - Free Online Calculator",
+      "seoDescription": "",
+      "seoKeywords": "",
+      "noIndex": false,
+      "order": 1,
+      "isActive": true,
+      "isFeatured": false,
+      "isPopular": false,
+      "viewsCount": 71,
+      "createdAt": "2026-09-27T10:32:09.990Z",
+      "updatedAt": "2026-09-27T13:46:05.460Z"
+    },
+    {
+      "id": "calc_1790513018381_g16us",
+      "name": "Addition Calculator",
+      "slug": "addition-calculator",
+      "shortDescription": "Quickly add two or more numbers together with step-by-step breakdown.",
+      "categoryId": "cat_1790504986048_uai46",
+      "subcategoryId": "sub_1790505115006_ra7ky",
+      "engineType": "custom_formula",
+      "fields": [
+        {
+          "id": "num1",
+          "label": "First Number",
+          "type": "number",
+          "defaultValue": 50,
+          "placeholder": "Enter first number"
+        },
+        {
+          "id": "num2",
+          "label": "Second Number",
+          "type": "number",
+          "defaultValue": 25,
+          "placeholder": "Enter second number"
+        }
+      ],
+      "outputs": [
+        {
+          "id": "sum",
+          "label": "Total Sum",
+          "formula": "num1 + num2",
+          "format": "number",
+          "highlight": true
+        }
+      ],
+      "presets": [
+        {
+          "id": "preset_1",
+          "name": "Simple Addition",
+          "values": {
+            "num1": 100,
+            "num2": 250
+          }
+        },
+        {
+          "id": "preset_2",
+          "name": "Large Sum",
+          "values": {
+            "num1": 5000,
+            "num2": 12500
+          }
+        }
+      ],
+      "modules": [
+        {
+          "id": "mod_calculator-inputs",
+          "moduleId": "calculator-inputs",
+          "name": "Interactive Inputs & Controls",
+          "isEnabled": true,
+          "order": 1,
+          "settings": {
+            "title": "Parameters & Inputs",
+            "layout": "two-column",
+            "showResetButton": true
+          }
+        },
+        {
+          "id": "mod_result-cards",
+          "moduleId": "result-cards",
+          "name": "Results & KPI Summary",
+          "isEnabled": true,
+          "order": 2,
+          "settings": {
+            "title": "Calculated Results",
+            "highlightCardStyle": "emerald",
+            "showShareActions": true
+          }
+        },
+        {
+          "id": "mod_chart-visualizer",
+          "moduleId": "chart-visualizer",
+          "name": "Visual Chart & Graph Engine",
+          "isEnabled": true,
+          "order": 3,
+          "settings": {
+            "chartType": "donut",
+            "chartTitle": "Visual Breakdown",
+            "showLegend": true
+          }
+        },
+        {
+          "id": "mod_breakdown-visualizer",
+          "moduleId": "breakdown-visualizer",
+          "name": "Distribution & Itemized Breakdown",
+          "isEnabled": true,
+          "order": 4,
+          "settings": {
+            "title": "Distribution Breakdown",
+            "showPercentages": true
+          }
+        },
+        {
+          "id": "mod_amortization-table",
+          "moduleId": "amortization-table",
+          "name": "Amortization & Schedule Table",
+          "isEnabled": true,
+          "order": 5,
+          "settings": {
+            "title": "Payment & Growth Schedule",
+            "defaultView": "yearly",
+            "pageSize": 10
+          }
+        },
+        {
+          "id": "mod_scenario-comparison",
+          "moduleId": "scenario-comparison",
+          "name": "Scenario & Alternative Comparator",
+          "isEnabled": true,
+          "order": 6,
+          "settings": {
+            "title": "Scenario Comparison & Sensitivity"
+          }
+        },
+        {
+          "id": "mod_timeline-milestones",
+          "moduleId": "timeline-milestones",
+          "name": "Milestone & Growth Timeline",
+          "isEnabled": true,
+          "order": 7,
+          "settings": {
+            "title": "Key Milestones & Timeline"
+          }
+        },
+        {
+          "id": "mod_formula-methodology",
+          "moduleId": "formula-methodology",
+          "name": "Formula, Math & Logic Steps",
+          "isEnabled": true,
+          "order": 8,
+          "settings": {
+            "title": "Formula & Mathematical Logic",
+            "showStepByStep": true
+          }
+        },
+        {
+          "id": "mod_how-to-guide",
+          "moduleId": "how-to-guide",
+          "name": "How-to Guide & Instructions",
+          "isEnabled": true,
+          "order": 9,
+          "settings": {
+            "title": "How to Use This Calculator"
+          }
+        },
+        {
+          "id": "mod_worked-examples",
+          "moduleId": "worked-examples",
+          "name": "Worked Examples & Real Scenarios",
+          "isEnabled": true,
+          "order": 10,
+          "settings": {
+            "title": "Worked Examples & Scenarios"
+          }
+        },
+        {
+          "id": "mod_faq-accordion",
+          "moduleId": "faq-accordion",
+          "name": "FAQ Accordion & Schema Q&A",
+          "isEnabled": true,
+          "order": 11,
+          "settings": {
+            "title": "Frequently Asked Questions",
+            "allowMultipleOpen": false
+          }
+        },
+        {
+          "id": "mod_assumptions-info",
+          "moduleId": "assumptions-info",
+          "name": "Assumptions, Rules & Disclosures",
+          "isEnabled": true,
+          "order": 12,
+          "settings": {
+            "title": "Key Assumptions & Statutory Notes"
+          }
+        }
+      ],
+      "contentSections": [
+        {
+          "id": "sec_1",
+          "title": "What is Addition?",
+          "htmlContent": "<p>Addition is one of the four basic arithmetic operations. It combines two or more numbers into a single total sum.</p>",
+          "isEnabled": true,
+          "order": 1,
+          "sectionType": "overview"
+        }
+      ],
+      "faqs": [
+        {
+          "id": "faq_1",
+          "question": "How does addition work?",
+          "answer": "Addition combines quantities. For example, 50 + 25 equals 75.",
+          "isEnabled": true,
+          "order": 1
+        }
+      ],
+      "examples": [],
+      "chartConfig": {
+        "enabled": false,
+        "chartType": "donut",
+        "title": "Sum Breakdown",
+        "segments": []
+      },
+      "content": {
+        "formulaExplanation": "Total = Number 1 + Number 2",
+        "usageInstructions": "Enter your numbers in the fields above to compute the sum instantly.",
+        "faqs": []
+      },
+      "seoTitle": "Addition Calculator - Free Online Math Tool",
+      "seoDescription": "Perform quick and accurate addition calculations with instant results.",
+      "order": 2,
+      "isActive": true,
+      "createdAt": "2026-09-27T12:43:38.381Z",
+      "updatedAt": "2026-09-27T13:40:58.672Z",
+      "viewsCount": 6
+    },
+    {
+      "id": "calc_income_tax_2026",
+      "name": "Income Tax Calculator",
+      "slug": "income-tax-calculator",
+      "shortDescription": "Calculate federal income tax liabilities, progressive tax brackets, effective rate, and net take-home pay.",
+      "categoryId": "cat_1790504986048_uai46",
+      "subcategoryId": "sub_1790505115006_ra7ky",
+      "engineType": "custom_formula",
+      "fields": [
+        {
+          "id": "jurisdiction",
+          "label": "Tax Jurisdiction",
+          "type": "select",
+          "defaultValue": "US",
+          "options": [
+            {
+              "label": "US Federal (2025/2026)",
+              "value": "US"
+            },
+            {
+              "label": "India (FY 2025-26)",
+              "value": "IN"
+            }
+          ]
+        },
+        {
+          "id": "grossIncome",
+          "label": "Gross Annual Income",
+          "type": "number",
+          "defaultValue": 85000,
+          "min": 0,
+          "max": 10000000,
+          "step": 1000,
+          "prefix": "$",
+          "helpText": "Total annual gross salary or business revenue before deductions."
+        },
+        {
+          "id": "filingStatus",
+          "label": "Filing Status (US)",
+          "type": "select",
+          "defaultValue": "single",
+          "options": [
+            {
+              "label": "Single",
+              "value": "single"
+            },
+            {
+              "label": "Married Filing Jointly",
+              "value": "married"
+            },
+            {
+              "label": "Head of Household",
+              "value": "head"
+            }
+          ]
+        },
+        {
+          "id": "indiaRegime",
+          "label": "Tax Regime (India)",
+          "type": "select",
+          "defaultValue": "new",
+          "options": [
+            {
+              "label": "New Regime (Default)",
+              "value": "new"
+            },
+            {
+              "label": "Old Regime",
+              "value": "old"
+            }
+          ]
+        },
+        {
+          "id": "useStandardDeduction",
+          "label": "Use Standard Deduction?",
+          "type": "checkbox",
+          "defaultValue": true
+        },
+        {
+          "id": "additionalDeductions",
+          "label": "Retirement & Itemized Deductions",
+          "type": "number",
+          "defaultValue": 0,
+          "min": 0,
+          "step": 500,
+          "prefix": "$",
+          "helpText": "401(k), IRA, 80C/80D or itemized deductions."
+        }
+      ],
+      "outputs": [
+        {
+          "id": "totalDeduction",
+          "label": "Total Deductions & Exemptions",
+          "formula": "(useStandardDeduction ? (jurisdiction == \"IN\" ? (indiaRegime == \"new\" ? 75000 : 50000) : (filingStatus == \"married\" ? 30000 : (filingStatus == \"head\" ? 22500 : 15000))) : 0) + additionalDeductions",
+          "format": "currency",
+          "prefix": "$"
+        },
+        {
+          "id": "taxableIncome",
+          "label": "Net Taxable Income",
+          "formula": "max(0, grossIncome - totalDeduction)",
+          "format": "currency",
+          "prefix": "$"
+        },
+        {
+          "id": "totalTax",
+          "label": "Total Tax Liability",
+          "formula": "jurisdiction == \"IN\" ? tax_in(taxableIncome, indiaRegime) : tax_us(taxableIncome, filingStatus)",
+          "format": "currency",
+          "prefix": "$"
+        },
+        {
+          "id": "effectiveRate",
+          "label": "Effective Tax Rate",
+          "formula": "grossIncome > 0 ? (totalTax / grossIncome) * 100 : 0",
+          "format": "percent",
+          "suffix": "%"
+        },
+        {
+          "id": "marginalRate",
+          "label": "Marginal Tax Bracket",
+          "formula": "jurisdiction == \"IN\" ? tax_in_marginal(taxableIncome, indiaRegime) : tax_us_marginal(taxableIncome, filingStatus)",
+          "format": "percent",
+          "suffix": "%"
+        },
+        {
+          "id": "takeHomePay",
+          "label": "Annual Net Take-Home Salary",
+          "formula": "max(0, grossIncome - totalTax)",
+          "format": "currency",
+          "prefix": "$"
+        },
+        {
+          "id": "monthlyTakeHome",
+          "label": "Monthly Net Take-Home Pay",
+          "formula": "takeHomePay / 12",
+          "format": "currency",
+          "prefix": "$"
+        },
+        {
+          "id": "biWeeklyTakeHome",
+          "label": "Bi-Weekly Net Pay (26x)",
+          "formula": "takeHomePay / 26",
+          "format": "currency",
+          "prefix": "$"
+        }
+      ],
+      "modules": [
+        {
+          "id": "mod_calculator-inputs",
+          "moduleId": "calculator-inputs",
+          "name": "Interactive Inputs & Controls",
+          "isEnabled": true,
+          "order": 1,
+          "settings": {
+            "title": "Tax Parameters",
+            "layout": "grid_2_col",
+            "showResetButton": true
+          }
+        },
+        {
+          "id": "mod_result-cards",
+          "moduleId": "result-cards",
+          "name": "Results & KPI Summary",
+          "isEnabled": true,
+          "order": 2,
+          "settings": {
+            "title": "Tax Calculation Summary",
+            "highlightCardStyle": "hero_primary",
+            "showShareActions": true
+          }
+        },
+        {
+          "id": "mod_chart-visualizer",
+          "moduleId": "chart-visualizer",
+          "name": "Visual Chart & Graph Engine",
+          "isEnabled": true,
+          "order": 3,
+          "settings": {
+            "chartType": "donut",
+            "chartTitle": "Income vs Tax Allocation",
+            "showLegend": true
+          }
+        },
+        {
+          "id": "mod_breakdown-visualizer",
+          "moduleId": "breakdown-visualizer",
+          "name": "Distribution & Itemized Breakdown",
+          "isEnabled": true,
+          "order": 4,
+          "settings": {
+            "title": "Paycheck Distribution Breakdown",
+            "showPercentages": true
+          }
+        },
+        {
+          "id": "mod_scenario-comparison",
+          "moduleId": "scenario-comparison",
+          "name": "Scenario & Alternative Comparator",
+          "isEnabled": true,
+          "order": 5,
+          "settings": {
+            "title": "Income & Filing Scenario Modeling"
+          }
+        },
+        {
+          "id": "mod_timeline-milestones",
+          "moduleId": "timeline-milestones",
+          "name": "Milestone & Growth Timeline",
+          "isEnabled": true,
+          "order": 6,
+          "settings": {
+            "title": "Tax & Salary Milestones"
+          }
+        },
+        {
+          "id": "mod_formula-methodology",
+          "moduleId": "formula-methodology",
+          "name": "Formula, Math & Logic Steps",
+          "isEnabled": true,
+          "order": 7,
+          "settings": {
+            "title": "Tax Bracket Calculation Methodology",
+            "showStepByStep": true,
+            "customExplanation": "Taxable income is passed through progressive marginal brackets. Lower slices of income are taxed at lower percentage rates before reaching higher marginal brackets."
+          }
+        },
+        {
+          "id": "mod_how-to-guide",
+          "moduleId": "how-to-guide",
+          "name": "How-to Guide & Instructions",
+          "isEnabled": true,
+          "order": 8,
+          "settings": {
+            "title": "How to Use the Income Tax Calculator"
+          }
+        },
+        {
+          "id": "mod_worked-examples",
+          "moduleId": "worked-examples",
+          "name": "Worked Examples & Real Scenarios",
+          "isEnabled": true,
+          "order": 9,
+          "settings": {
+            "title": "Worked Income Tax Examples"
+          }
+        },
+        {
+          "id": "mod_faq-accordion",
+          "moduleId": "faq-accordion",
+          "name": "FAQ Accordion & Schema Q&A",
+          "isEnabled": true,
+          "order": 10,
+          "settings": {
+            "title": "Income Tax Frequently Asked Questions",
+            "allowMultipleOpen": true
+          }
+        },
+        {
+          "id": "mod_assumptions-info",
+          "moduleId": "assumptions-info",
+          "name": "Assumptions, Rules & Disclosures",
+          "isEnabled": true,
+          "order": 11,
+          "settings": {
+            "title": "Statutory Tax Rules & Disclosures"
+          }
+        }
+      ],
+      "contentSections": [
+        {
+          "id": "sec_how_to_use",
+          "sectionType": "how-to",
+          "title": "How to Calculate Your Income Tax Liability",
+          "content": "<p>Follow these steps to estimate your progressive income tax:</p><ol><li><strong>Select your Jurisdiction:</strong> Choose US Federal or India tax framework.</li><li><strong>Enter Annual Gross Income:</strong> Input your total annual gross salary or revenue before deductions.</li><li><strong>Set Filing Status:</strong> Select single, married joint, or head of household status.</li><li><strong>Apply Deductions:</strong> Enable standard deduction or enter custom retirement contributions (401k, IRA, 80C).</li><li><strong>View Breakdown:</strong> Review your progressive tax bracket breakdown and net monthly take-home salary.</li></ol>",
+          "order": 1,
+          "isEnabled": true
+        },
+        {
+          "id": "sec_assumptions",
+          "sectionType": "assumptions",
+          "title": "Tax Calculation Assumptions & Statutory Rules",
+          "content": "<p>This calculator incorporates standard statutory tax brackets:</p><ul><li>US Federal tax rates include 10%, 12%, 22%, 24%, 32%, 35%, and 37% progressive marginal rates.</li><li>India New Tax Regime includes standard deduction of ₹75,000 and Section 87A rebate for taxable income up to ₹12 Lakhs.</li><li>Estimates reflect federal individual income tax obligations and do not include state or municipal local income taxes.</li></ul>",
+          "order": 2,
+          "isEnabled": true
+        }
+      ],
+      "faqs": [
+        {
+          "id": "faq_1",
+          "question": "What is the difference between Marginal and Effective Tax Rate?",
+          "answer": "Your marginal tax rate is the highest bracket percentage applied to your last dollar of income. Your effective tax rate is the actual overall percentage of your gross income paid in taxes (Total Tax ÷ Gross Income).",
+          "order": 1,
+          "isEnabled": true
+        },
+        {
+          "id": "faq_2",
+          "question": "How does a standard deduction reduce taxable income?",
+          "answer": "A standard deduction is a fixed dollar amount reduce from your gross income before applying tax rate brackets, ensuring lower income brackets remain untaxed.",
+          "order": 2,
+          "isEnabled": true
+        }
+      ],
+      "examples": [
+        {
+          "id": "ex_1",
+          "title": "US Single Tax Filer (5,000 Gross Income)",
+          "scenario": "Individual earning 5,000 annually with 5,000 single standard deduction.",
+          "inputs": [
+            {
+              "label": "Gross Annual Income",
+              "value": "5,000"
+            },
+            {
+              "label": "Filing Status",
+              "value": "Single"
+            },
+            {
+              "label": "Standard Deduction",
+              "value": "5,000"
+            }
+          ],
+          "steps": [
+            {
+              "title": "Taxable Income Calculation",
+              "calculation": "5,000 - 5,000",
+              "result": "0,000"
+            },
+            {
+              "title": "Federal Progressive Tax",
+              "calculation": "10% on first 1,925 + 12% to 8,475 + 22% on remainder",
+              "result": ",314"
+            }
+          ],
+          "finalResultLabel": "Net Annual Take-Home Pay",
+          "finalResultValue": "5,686 (,307 / month)",
+          "order": 1,
+          "isEnabled": true
+        }
+      ],
+      "chartConfig": {
+        "type": "donut",
+        "title": "Gross Income Allocation",
+        "showLegend": true
+      },
+      "seoTitle": "Income Tax Calculator — Federal Progressive Tax & Take-Home Pay",
+      "seoDescription": "Interactive Income Tax Calculator for US Federal and India progressive tax rates. Calculate tax liability, marginal brackets, and net take-home pay.",
+      "seoKeywords": "income tax calculator, federal tax estimator, progressive tax brackets, net take home pay",
+      "isActive": true,
+      "isFeatured": true,
+      "isPopular": true,
+      "createdAt": "2026-09-27T14:56:02.991Z",
+      "updatedAt": "2026-09-27T14:56:02.991Z",
+      "viewsCount": 1
+    }
+  ],
+  "settings": {
+    "siteTitle": "CalcPlatform - Global Calculator Platform",
+    "siteDescription": "Production-ready global calculator directory and engine with clean, high-precision calculation tools.",
+    "siteKeywords": "calculators, online tools, finance, math, health, conversion, physics, science, engineering",
+    "brandName": "CalcPlatform",
+    "adminUsername": "admin",
+    "adminPasswordHash": "admin123",
+    "footerNotice": "© CalcPlatform. All calculations are provided for informational and educational purposes.",
+    "canonicalBaseUrl": "https://calcplatform.org",
+    "contactEmail": "admin@calcplatform.org"
+  }
+}

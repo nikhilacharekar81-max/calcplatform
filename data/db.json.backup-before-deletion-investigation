@@ -1,0 +1,460 @@
+{
+  "categories": [
+    {
+      "id": "cat_1790504986048_uai46",
+      "name": "Maths",
+      "slug": "maths",
+      "description": "",
+      "seoTitle": "Maths",
+      "seoDescription": "",
+      "seoKeywords": "",
+      "icon": "Folder",
+      "order": 1,
+      "isActive": true,
+      "createdAt": "2026-09-27T10:29:46.048Z",
+      "updatedAt": "2026-09-27T10:29:46.048Z"
+    }
+  ],
+  "subcategories": [
+    {
+      "id": "sub_1790505115006_ra7ky",
+      "categoryId": "cat_1790504986048_uai46",
+      "name": "Basic Maths",
+      "slug": "basic-maths",
+      "description": "",
+      "seoTitle": "Basic Maths",
+      "seoDescription": "",
+      "seoKeywords": "",
+      "order": 1,
+      "isActive": true,
+      "createdAt": "2026-09-27T10:31:55.006Z",
+      "updatedAt": "2026-09-27T10:31:55.006Z"
+    }
+  ],
+  "calculators": [
+    {
+      "id": "calc_1790505129990_otjvg",
+      "name": "Percentage Calculator",
+      "slug": "percentage-calculator",
+      "shortDescription": "",
+      "categoryId": "cat_1790504986048_uai46",
+      "subcategoryId": "sub_1790505115006_ra7ky",
+      "engineType": "custom_formula",
+      "fields": [
+        {
+          "id": "amount",
+          "label": "Principal Amount",
+          "type": "number",
+          "defaultValue": 500000,
+          "placeholder": "500000",
+          "prefix": "₹",
+          "suffix": "",
+          "min": 1000,
+          "max": 100000000,
+          "step": 1000,
+          "helpText": "Enter total base amount"
+        },
+        {
+          "id": "rate",
+          "label": "Annual Interest Rate (%)",
+          "type": "slider",
+          "defaultValue": 8.5,
+          "prefix": "",
+          "suffix": "%",
+          "min": 1,
+          "max": 30,
+          "step": 0.1,
+          "helpText": "Annual percentage rate"
+        },
+        {
+          "id": "tenureYears",
+          "label": "Tenure (Years)",
+          "type": "number",
+          "defaultValue": 5,
+          "prefix": "",
+          "suffix": "Yrs",
+          "min": 1,
+          "max": 40,
+          "step": 1,
+          "helpText": "Loan or investment duration in years"
+        }
+      ],
+      "outputs": [
+        {
+          "id": "monthlyPayment",
+          "label": "Monthly Payment (EMI)",
+          "formula": "(amount * (rate / 1200) * pow(1 + (rate / 1200), tenureYears * 12)) / (pow(1 + (rate / 1200), tenureYears * 12) - 1)",
+          "format": "currency_inr",
+          "highlight": true,
+          "description": "Estimated monthly installment"
+        },
+        {
+          "id": "totalPayment",
+          "label": "Total Payment",
+          "formula": "monthlyPayment * tenureYears * 12",
+          "format": "currency_inr",
+          "highlight": false,
+          "description": "Total principal + interest repayment"
+        },
+        {
+          "id": "totalInterest",
+          "label": "Total Interest Payable",
+          "formula": "totalPayment - amount",
+          "format": "currency_inr",
+          "highlight": false,
+          "description": "Aggregate interest cost"
+        }
+      ],
+      "presets": [],
+      "modules": [
+        {
+          "id": "mod_calculator-inputs",
+          "moduleId": "calculator-inputs",
+          "name": "Interactive Inputs & Controls",
+          "isEnabled": false,
+          "order": 1,
+          "settings": {
+            "title": "Parameters & Inputs",
+            "layout": "two-column",
+            "showResetButton": true
+          }
+        },
+        {
+          "id": "mod_result-cards",
+          "moduleId": "result-cards",
+          "name": "Results & KPI Summary",
+          "isEnabled": false,
+          "order": 2,
+          "settings": {
+            "title": "Calculated Results",
+            "highlightCardStyle": "emerald",
+            "showShareActions": true
+          }
+        },
+        {
+          "id": "mod_chart-visualizer",
+          "moduleId": "chart-visualizer",
+          "name": "Visual Chart & Graph Engine",
+          "isEnabled": false,
+          "order": 3,
+          "settings": {
+            "chartType": "donut",
+            "chartTitle": "Visual Breakdown",
+            "showLegend": true
+          }
+        },
+        {
+          "id": "mod_breakdown-visualizer",
+          "moduleId": "breakdown-visualizer",
+          "name": "Distribution & Itemized Breakdown",
+          "isEnabled": false,
+          "order": 4,
+          "settings": {
+            "title": "Distribution Breakdown",
+            "showPercentages": true
+          }
+        },
+        {
+          "id": "mod_amortization-table",
+          "moduleId": "amortization-table",
+          "name": "Amortization & Schedule Table",
+          "isEnabled": false,
+          "order": 5,
+          "settings": {
+            "title": "Payment & Growth Schedule",
+            "defaultView": "yearly",
+            "pageSize": 10
+          }
+        },
+        {
+          "id": "mod_scenario-comparison",
+          "moduleId": "scenario-comparison",
+          "name": "Scenario & Alternative Comparator",
+          "isEnabled": false,
+          "order": 6,
+          "settings": {
+            "title": "Scenario Comparison & Sensitivity"
+          }
+        },
+        {
+          "id": "mod_timeline-milestones",
+          "moduleId": "timeline-milestones",
+          "name": "Milestone & Growth Timeline",
+          "isEnabled": false,
+          "order": 7,
+          "settings": {
+            "title": "Key Milestones & Timeline"
+          }
+        },
+        {
+          "id": "mod_formula-methodology",
+          "moduleId": "formula-methodology",
+          "name": "Formula, Math & Logic Steps",
+          "isEnabled": false,
+          "order": 8,
+          "settings": {
+            "title": "Formula & Mathematical Logic",
+            "showStepByStep": true
+          }
+        },
+        {
+          "id": "mod_how-to-guide",
+          "moduleId": "how-to-guide",
+          "name": "How-to Guide & Instructions",
+          "isEnabled": false,
+          "order": 9,
+          "settings": {
+            "title": "How to Use This Calculator"
+          }
+        },
+        {
+          "id": "mod_worked-examples",
+          "moduleId": "worked-examples",
+          "name": "Worked Examples & Real Scenarios",
+          "isEnabled": false,
+          "order": 10,
+          "settings": {
+            "title": "Worked Examples & Scenarios"
+          }
+        },
+        {
+          "id": "mod_faq-accordion",
+          "moduleId": "faq-accordion",
+          "name": "FAQ Accordion & Schema Q&A",
+          "isEnabled": false,
+          "order": 11,
+          "settings": {
+            "title": "Frequently Asked Questions",
+            "allowMultipleOpen": false
+          }
+        },
+        {
+          "id": "mod_assumptions-info",
+          "moduleId": "assumptions-info",
+          "name": "Assumptions, Rules & Disclosures",
+          "isEnabled": false,
+          "order": 12,
+          "settings": {
+            "title": "Key Assumptions & Statutory Notes"
+          }
+        }
+      ],
+      "contentSections": [
+        {
+          "id": "sec_overview",
+          "title": "Overview & Computational Methodology",
+          "sectionType": "overview",
+          "htmlContent": "How are you",
+          "isEnabled": true,
+          "order": 1
+        },
+        {
+          "id": "sec_how_to",
+          "title": "Step-by-Step Instructions",
+          "sectionType": "how-to",
+          "htmlContent": "<ol class=\"list-decimal pl-5 space-y-1.5 my-3\">\n  <li>Enter the total amount.</li>\n  <li>Adjust the annual rate and tenure.</li>\n  <li>Review the computed monthly EMI, total interest, and visual amortization schedule below.</li>\n</ol>",
+          "isEnabled": true,
+          "order": 2
+        }
+      ],
+      "faqs": [
+        {
+          "id": "faq_1",
+          "question": "How is the calculation evaluated?",
+          "answer": "<p>The calculation uses standard reducing-balance math computed directly on your browser for instant, real-time results.</p>",
+          "isEnabled": true,
+          "order": 1
+        },
+        {
+          "id": "faq_2",
+          "question": "Can I change parameters anytime?",
+          "answer": "<p>Yes, all values update automatically in real-time as you type or drag the sliders.</p>",
+          "isEnabled": true,
+          "order": 2
+        }
+      ],
+      "examples": [],
+      "chartConfig": {
+        "enabled": true,
+        "chartType": "donut",
+        "title": "Principal vs Interest Breakdown",
+        "segments": [
+          {
+            "label": "Principal Amount",
+            "outputId": "amount",
+            "color": "#1dbf73"
+          },
+          {
+            "label": "Total Interest",
+            "outputId": "totalInterest",
+            "color": "#ff7640"
+          }
+        ]
+      },
+      "content": {
+        "formulaExplanation": "",
+        "usageInstructions": "",
+        "faqs": []
+      },
+      "seoTitle": "Percentage Calculator - Free Online Calculator",
+      "seoDescription": "",
+      "seoKeywords": "",
+      "noIndex": false,
+      "order": 1,
+      "isActive": true,
+      "isFeatured": false,
+      "isPopular": false,
+      "viewsCount": 57,
+      "createdAt": "2026-09-27T10:32:09.990Z",
+      "updatedAt": "2026-09-27T13:00:11.349Z"
+    },
+    {
+      "id": "calc_1790513018381_g16us",
+      "name": "Addition Calculator",
+      "slug": "addition-calculator",
+      "shortDescription": "Quickly add two or more numbers together with step-by-step breakdown.",
+      "categoryId": "cat_1790504986048_uai46",
+      "subcategoryId": "sub_1790505115006_ra7ky",
+      "engineType": "custom_formula",
+      "fields": [
+        {
+          "id": "num1",
+          "label": "First Number",
+          "type": "number",
+          "defaultValue": 50,
+          "placeholder": "Enter first number"
+        },
+        {
+          "id": "num2",
+          "label": "Second Number",
+          "type": "number",
+          "defaultValue": 25,
+          "placeholder": "Enter second number"
+        }
+      ],
+      "outputs": [
+        {
+          "id": "sum",
+          "label": "Total Sum",
+          "formula": "num1 + num2",
+          "format": "number",
+          "highlight": true
+        }
+      ],
+      "presets": [
+        {
+          "id": "preset_1",
+          "name": "Simple Addition",
+          "values": {
+            "num1": 100,
+            "num2": 250
+          }
+        },
+        {
+          "id": "preset_2",
+          "name": "Large Sum",
+          "values": {
+            "num1": 5000,
+            "num2": 12500
+          }
+        }
+      ],
+      "modules": [
+        {
+          "id": "mod_calculator-inputs",
+          "moduleId": "calculator-inputs",
+          "name": "Interactive Inputs & Controls",
+          "isEnabled": true,
+          "order": 1,
+          "settings": {
+            "title": "Addition Inputs",
+            "layout": "two-column",
+            "showResetButton": true
+          }
+        },
+        {
+          "id": "mod_result-cards",
+          "moduleId": "result-cards",
+          "name": "Results & KPI Summary",
+          "isEnabled": true,
+          "order": 2,
+          "settings": {
+            "title": "Calculated Sum",
+            "highlightCardStyle": "emerald",
+            "showShareActions": true
+          }
+        },
+        {
+          "id": "mod_formula-methodology",
+          "moduleId": "formula-methodology",
+          "name": "Formula, Math & Logic Steps",
+          "isEnabled": true,
+          "order": 3,
+          "settings": {
+            "title": "Addition Formula",
+            "showStepByStep": true
+          }
+        },
+        {
+          "id": "mod_how-to-guide",
+          "moduleId": "how-to-guide",
+          "name": "How-to Guide & Instructions",
+          "isEnabled": true,
+          "order": 4,
+          "settings": {
+            "title": "How to Add Numbers"
+          }
+        }
+      ],
+      "contentSections": [
+        {
+          "id": "sec_1",
+          "title": "What is Addition?",
+          "htmlContent": "<p>Addition is one of the four basic arithmetic operations. It combines two or more numbers into a single total sum.</p>",
+          "isEnabled": true,
+          "order": 1,
+          "sectionType": "overview"
+        }
+      ],
+      "faqs": [
+        {
+          "id": "faq_1",
+          "question": "How does addition work?",
+          "answer": "Addition combines quantities. For example, 50 + 25 equals 75.",
+          "isEnabled": true,
+          "order": 1
+        }
+      ],
+      "examples": [],
+      "chartConfig": {
+        "enabled": false,
+        "chartType": "donut",
+        "title": "Sum Breakdown",
+        "segments": []
+      },
+      "content": {
+        "formulaExplanation": "Total = Number 1 + Number 2",
+        "usageInstructions": "Enter your numbers in the fields above to compute the sum instantly.",
+        "faqs": []
+      },
+      "seoTitle": "Addition Calculator - Free Online Math Tool",
+      "seoDescription": "Perform quick and accurate addition calculations with instant results.",
+      "order": 2,
+      "isActive": true,
+      "createdAt": "2026-09-27T12:43:38.381Z",
+      "updatedAt": "2026-09-27T12:47:11.503Z",
+      "viewsCount": 6
+    }
+  ],
+  "settings": {
+    "siteTitle": "CalcPlatform - Global Calculator Platform",
+    "siteDescription": "Production-ready global calculator directory and engine with clean, high-precision calculation tools.",
+    "siteKeywords": "calculators, online tools, finance, math, health, conversion, physics, science, engineering",
+    "brandName": "CalcPlatform",
+    "adminUsername": "admin",
+    "adminPasswordHash": "admin123",
+    "footerNotice": "© CalcPlatform. All calculations are provided for informational and educational purposes.",
+    "canonicalBaseUrl": "https://calcplatform.org",
+    "contactEmail": "admin@calcplatform.org"
+  }
+}

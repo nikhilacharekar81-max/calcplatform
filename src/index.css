@@ -1,0 +1,80 @@
+@import "tailwindcss";
+
+@layer base {
+  :root {
+    --fiverr-green: #1dbf73;
+    --fiverr-green-hover: #19a463;
+    --fiverr-dark-green: #013a12;
+    --fiverr-black: #222325;
+    --fiverr-text: #404145;
+    --fiverr-muted: #74767e;
+    --fiverr-border: #e4e5e7;
+    --fiverr-bg-light: #f7f7f7;
+  }
+
+  body {
+    font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    color: #404145;
+    background-color: #ffffff;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    color: #222325;
+    font-weight: 700;
+  }
+  
+  .font-mono-num {
+    font-family: 'JetBrains Mono', monospace;
+    font-variant-numeric: tabular-nums;
+  }
+}
+
+/* Fiverr button and card styles */
+.btn-fiverr-primary {
+  background-color: #1dbf73;
+  color: #ffffff;
+  font-weight: 600;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.btn-fiverr-primary:hover {
+  background-color: #19a463;
+}
+
+.btn-fiverr-outline {
+  border: 1px solid #1dbf73;
+  color: #1dbf73;
+  font-weight: 600;
+  background-color: transparent;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.btn-fiverr-outline:hover {
+  background-color: #1dbf73;
+  color: #ffffff;
+}
+
+.btn-fiverr-dark {
+  background-color: #222325;
+  color: #ffffff;
+  font-weight: 600;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.btn-fiverr-dark:hover {
+  background-color: #404145;
+}
+
+/* Custom scrollbars */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: #dadbdd;
+  border-radius: 9999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #b5b6ba;
+}
