@@ -8,6 +8,7 @@ import {
   CanonicalModuleId,
 } from './modules/ModuleRegistry';
 import { BookOpen, AlertCircle, FileText, CheckCircle2, Edit3, Sliders } from 'lucide-react';
+import { formatContentHtml } from '../../utils/formatters.ts';
 
 interface DynamicCalculatorRendererProps {
   calculator: Calculator;
@@ -254,8 +255,8 @@ export const DynamicCalculatorRenderer: React.FC<DynamicCalculatorRendererProps>
               </div>
 
               <div
-                className="text-xs sm:text-sm text-[#404145] leading-relaxed prose prose-slate max-w-none font-sans"
-                dangerouslySetInnerHTML={{ __html: section.htmlContent }}
+                className="text-xs sm:text-sm text-[#404145] leading-relaxed prose prose-slate max-w-none font-sans whitespace-pre-line space-y-3"
+                dangerouslySetInnerHTML={{ __html: formatContentHtml(section.htmlContent) }}
               />
             </article>
           ))}

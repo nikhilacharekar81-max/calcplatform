@@ -249,9 +249,6 @@ export const AdminModules: React.FC = () => {
 
   // Apply to all calculators button
   const handleApplyToAllCalculators = async () => {
-    if (!window.confirm('Apply this module arrangement, activation status, and ordering to ALL calculators across the directory?')) {
-      return;
-    }
     try {
       setIsSaving(true);
       setErrorMessage(null);

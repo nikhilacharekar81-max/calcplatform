@@ -8,30 +8,96 @@ import { CategoryPage } from './pages/CategoryPage.tsx';
 import { SubcategoryPage } from './pages/SubcategoryPage.tsx';
 import { CalculatorPage } from './pages/CalculatorPage.tsx';
 import { SearchPage } from './pages/SearchPage.tsx';
-import { AdminLoginPage } from './pages/AdminLoginPage.tsx';
-import { AdminLayout } from './components/admin/AdminLayout.tsx';
-import { AdminDashboard } from './pages/admin/AdminDashboard.tsx';
-import { AdminCategories } from './pages/admin/AdminCategories.tsx';
-import { AdminSubcategories } from './pages/admin/AdminSubcategories.tsx';
-import { AdminCalculators } from './pages/admin/AdminCalculators.tsx';
-import { AdminCalculatorEditor } from './pages/admin/AdminCalculatorEditor.tsx';
-import { AdminModules } from './pages/admin/AdminModules.tsx';
-import { AdminContentSeo } from './pages/admin/AdminContentSeo.tsx';
-import { AdminSettings } from './pages/admin/AdminSettings.tsx';
 import { EmptyState } from './components/common/EmptyState.tsx';
 import { AlertCircle } from 'lucide-react';
-import { Category, Subcategory, Calculator, SiteSettings } from './types/schema.ts';
+import { Category, Subcategory, Calculator, SiteSettings, BlogPost } from './types/schema.ts';
+import { BlogIndexPage } from './pages/BlogIndexPage.tsx';
+import { BlogPostPage } from './pages/BlogPostPage.tsx';
+
+// Code-split admin pages so public visitors never load heavy admin bundles on hard refresh
+const AdminLoginPage = React.lazy(() =>
+  import('./pages/AdminLoginPage.tsx').then((m) => ({ default: m.AdminLoginPage }))
+);
+const AdminLayout = React.lazy(() =>
+  import('./components/admin/AdminLayout.tsx').then((m) => ({ default: m.AdminLayout }))
+);
+const AdminDashboard = React.lazy(() =>
+  import('./pages/admin/AdminDashboard.tsx').then((m) => ({ default: m.AdminDashboard }))
+);
+const AdminCategories = React.lazy(() =>
+  import('./pages/admin/AdminCategories.tsx').then((m) => ({ default: m.AdminCategories }))
+);
+const AdminSubcategories = React.lazy(() =>
+  import('./pages/admin/AdminSubcategories.tsx').then((m) => ({ default: m.AdminSubcategories }))
+);
+const AdminCalculators = React.lazy(() =>
+  import('./pages/admin/AdminCalculators.tsx').then((m) => ({ default: m.AdminCalculators }))
+);
+const AdminCalculatorEditor = React.lazy(() =>
+  import('./pages/admin/AdminCalculatorEditor.tsx').then((m) => ({ default: m.AdminCalculatorEditor }))
+);
+const AdminModules = React.lazy(() =>
+  import('./pages/admin/AdminModules.tsx').then((m) => ({ default: m.AdminModules }))
+);
+const AdminContentSeo = React.lazy(() =>
+  import('./pages/admin/AdminContentSeo.tsx').then((m) => ({ default: m.AdminContentSeo }))
+);
+const AdminSettings = React.lazy(() =>
+  import('./pages/admin/AdminSettings.tsx').then((m) => ({ default: m.AdminSettings }))
+);
+const AdminEmbedStudio = React.lazy(() =>
+  import('./pages/admin/AdminEmbedStudio.tsx').then((m) => ({ default: m.AdminEmbedStudio }))
+);
+const AdminBlogManager = React.lazy(() =>
+  import('./pages/admin/AdminBlogManager.tsx').then((m) => ({ default: m.AdminBlogManager }))
+);
+const AdminBlogEditor = React.lazy(() =>
+  import('./pages/admin/AdminBlogEditor.tsx').then((m) => ({ default: m.AdminBlogEditor }))
+);
+
+const isSubpagePath = (path: string) => {
+  return path !== '/' && path !== '' && !path.startsWith('/admin') && path !== '/search' && !path.startsWith('/blog');
+};
+
+const getInitialRouteData = () => {
+  if (typeof window !== 'undefined' && (window as any).__INITIAL_ROUTE_DATA__) {
+    const data = (window as any).__INITIAL_ROUTE_DATA__;
+    const currentClean = window.location.pathname.split('?')[0].split('#')[0].replace(/^\/|\/$/g, '').toLowerCase();
+    if (data.type === 'home' && currentClean === '') return data;
+    if (data.type === 'category' && (data.category?.slug?.toLowerCase() === currentClean || currentClean.endsWith(data.category?.slug?.toLowerCase() || ''))) return data;
+    if (data.type === 'subcategory' && (`${data.category?.slug}/${data.subcategory?.slug}`.toLowerCase() === currentClean || data.subcategory?.slug?.toLowerCase() === currentClean)) return data;
+    if (data.type === 'calculator') {
+      const fullCalcPath = `${data.category?.slug}/${data.subcategory?.slug}/${data.calculator?.slug}`.toLowerCase();
+      const calcSlug = data.calculator?.slug?.toLowerCase();
+      if (
+        fullCalcPath === currentClean ||
+        calcSlug === currentClean ||
+        currentClean.endsWith(calcSlug || '') ||
+        (currentClean.includes('tax') && (calcSlug?.includes('tax') || fullCalcPath.includes('tax'))) ||
+        currentClean.includes('income-tax')
+      ) {
+        return data;
+      }
+    }
+  }
+  return null;
+};
 
 export default function App() {
   const [currentPath, setCurrentPath] = useState(window.location.pathname);
   const [isAdminAuthenticated, setIsAdminAuthenticated] = useState<boolean | null>(null);
-  const [adminTab, setAdminTab] = useState<'dashboard' | 'categories' | 'subcategories' | 'calculators' | 'modules' | 'content-seo' | 'settings' | 'calculator-editor'>('dashboard');
+  const [adminTab, setAdminTab] = useState<'dashboard' | 'categories' | 'subcategories' | 'calculators' | 'modules' | 'content-seo' | 'settings' | 'calculator-editor' | 'embed-studio' | 'blogs' | 'blog-editor'>('dashboard');
   const [activeCalculatorId, setActiveCalculatorId] = useState<string>('new');
+  const [activeBlogPost, setActiveBlogPost] = useState<BlogPost | null>(null);
   const [isSearchModalOpen, setIsSearchModalOpen] = useState(false);
-  const [siteSettings, setSiteSettings] = useState<Partial<SiteSettings>>({
-    brandName: 'CalcPlatform',
+  const [siteSettings, setSiteSettings] = useState<Partial<SiteSettings>>(() => {
+    if (typeof window !== 'undefined' && (window as any).__SITE_SETTINGS__) {
+      return (window as any).__SITE_SETTINGS__;
+    }
+    return { brandName: 'CalcPlatform' };
   });
 
+  const initialSsrData = getInitialRouteData();
   // Dynamic Route Resolver State
   const [routeData, setRouteData] = useState<{
     type: 'home' | 'category' | 'subcategory' | 'calculator';
@@ -42,11 +108,16 @@ export default function App() {
     calculator?: Calculator;
     siblingSubcategories?: Subcategory[];
     relatedCalculators?: Calculator[];
-  } | null>(null);
-  const [routeLoading, setRouteLoading] = useState(false);
+  } | null>(initialSsrData);
+
+  // Initialize routeLoading true ONLY if we don't have pre-injected SSR data
+  const [routeLoading, setRouteLoading] = useState(() => {
+    if (initialSsrData) return false;
+    return isSubpagePath(window.location.pathname);
+  });
   const [routeNotFound, setRouteNotFound] = useState(false);
 
-  // Synchronize browser history navigation
+  // Synchronize browser history navigation (Back / Forward)
   useEffect(() => {
     const handlePopState = () => {
       setCurrentPath(window.location.pathname);
@@ -70,6 +141,39 @@ export default function App() {
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, []);
 
+  // Intercept all internal anchor clicks for instantaneous SPA transitions (no page reloads)
+  useEffect(() => {
+    const handleAnchorClick = (e: MouseEvent) => {
+      if (
+        e.defaultPrevented ||
+        e.button !== 0 ||
+        e.metaKey ||
+        e.ctrlKey ||
+        e.shiftKey ||
+        e.altKey
+      ) {
+        return;
+      }
+      const anchor = (e.target as HTMLElement).closest('a');
+      if (!anchor) return;
+      const href = anchor.getAttribute('href');
+      if (
+        href &&
+        href.startsWith('/') &&
+        !href.startsWith('//') &&
+        !anchor.getAttribute('target') &&
+        !anchor.getAttribute('download') &&
+        !anchor.hasAttribute('data-native-link')
+      ) {
+        e.preventDefault();
+        navigateTo(href);
+      }
+    };
+
+    document.addEventListener('click', handleAnchorClick);
+    return () => document.removeEventListener('click', handleAnchorClick);
+  }, [currentPath]);
+
   // Check Admin Authentication
   useEffect(() => {
     if (currentPath.startsWith('/admin')) {
@@ -83,6 +187,7 @@ export default function App() {
       else if (segments[1] === 'subcategories') setAdminTab('subcategories');
       else if (segments[1] === 'modules') setAdminTab('modules');
       else if (segments[1] === 'content-seo') setAdminTab('content-seo');
+      else if (segments[1] === 'embed-studio') setAdminTab('embed-studio');
       else if (segments[1] === 'calculators') {
         if (segments[2]) {
           setAdminTab('calculator-editor');
@@ -90,6 +195,8 @@ export default function App() {
         } else {
           setAdminTab('calculators');
         }
+      } else if (segments[1] === 'blogs') {
+        setAdminTab('blogs');
       } else if (segments[1] === 'settings') setAdminTab('settings');
       else setAdminTab('dashboard');
     }
@@ -98,25 +205,47 @@ export default function App() {
   // Resolve Public Dynamic Routes
   useEffect(() => {
     if (currentPath.startsWith('/admin') || currentPath === '/search') {
+      setRouteLoading(false);
       return;
     }
 
     if (currentPath === '/' || currentPath === '') {
       setRouteData({ type: 'home' });
       setRouteNotFound(false);
+      setRouteLoading(false);
       return;
     }
 
+    const cleanKey = currentPath.split('?')[0].split('#')[0].replace(/^\/|\/$/g, '').toLowerCase();
+    const fullCalcPath = routeData?.calculator
+      ? `${routeData.category?.slug}/${routeData.subcategory?.slug}/${routeData.calculator?.slug}`.toLowerCase()
+      : '';
+    const calcSlug = routeData?.calculator?.slug?.toLowerCase() || '';
+
+    if (
+      (cleanKey === '' && routeData?.type === 'home') ||
+      (routeData?.type === 'category' && (routeData.category?.slug?.toLowerCase() === cleanKey || cleanKey.endsWith(routeData.category?.slug?.toLowerCase() || ''))) ||
+      (routeData?.type === 'subcategory' && (`${routeData.category?.slug}/${routeData.subcategory?.slug}`.toLowerCase() === cleanKey || routeData.subcategory?.slug?.toLowerCase() === cleanKey)) ||
+      (routeData?.type === 'calculator' && (fullCalcPath === cleanKey || calcSlug === cleanKey || cleanKey.endsWith(calcSlug) || (cleanKey.includes('tax') && calcSlug.includes('tax'))))
+    ) {
+      setRouteLoading(false);
+      setRouteNotFound(false);
+      return;
+    }
+
+    let isCancelled = false;
     setRouteLoading(true);
     setRouteNotFound(false);
 
     api
       .resolvePath(currentPath)
       .then((data) => {
+        if (isCancelled) return;
         setRouteData(data);
         setRouteNotFound(false);
       })
       .catch((err) => {
+        if (isCancelled) return;
         if (err.message === 'NOT_FOUND') {
           setRouteNotFound(true);
         } else {
@@ -125,8 +254,13 @@ export default function App() {
         }
       })
       .finally(() => {
+        if (isCancelled) return;
         setRouteLoading(false);
       });
+
+    return () => {
+      isCancelled = true;
+    };
   }, [currentPath]);
 
   // Navigation handlers
@@ -143,6 +277,7 @@ export default function App() {
   };
 
   const navigateTo = (url: string) => {
+    if (url === currentPath) return;
     window.history.pushState({}, '', url);
     setCurrentPath(url);
     window.scrollTo(0, 0);
@@ -162,40 +297,60 @@ export default function App() {
 
     if (!isAdminAuthenticated) {
       return (
-        <AdminLoginPage
-          onLoginSuccess={() => {
-            setIsAdminAuthenticated(true);
-            setAdminTab('dashboard');
-            navigateTo('/admin');
-          }}
-        />
+        <React.Suspense fallback={<div className="min-h-screen bg-slate-50 flex items-center justify-center text-xs text-slate-400">Loading sign in...</div>}>
+          <AdminLoginPage
+            onLoginSuccess={() => {
+              setIsAdminAuthenticated(true);
+              setAdminTab('dashboard');
+              navigateTo('/admin');
+            }}
+          />
+        </React.Suspense>
       );
     }
 
     return (
-      <AdminLayout
-        currentTab={adminTab}
-        onNavigate={handleAdminNavigate}
-        onLogout={() => {
-          setIsAdminAuthenticated(false);
-          navigateTo('/admin');
-        }}
-      >
-        {adminTab === 'dashboard' && <AdminDashboard onNavigate={handleAdminNavigate} />}
-        {adminTab === 'categories' && <AdminCategories />}
-        {adminTab === 'subcategories' && <AdminSubcategories />}
-        {adminTab === 'calculators' && <AdminCalculators onNavigate={handleAdminNavigate} />}
-        {adminTab === 'modules' && <AdminModules />}
-        {adminTab === 'content-seo' && <AdminContentSeo />}
-        {adminTab === 'calculator-editor' && (
-          <AdminCalculatorEditor
-            calculatorId={activeCalculatorId}
-            onBack={() => handleAdminNavigate('calculators')}
-            onSaved={() => handleAdminNavigate('calculators')}
-          />
-        )}
-        {adminTab === 'settings' && <AdminSettings />}
-      </AdminLayout>
+      <React.Suspense fallback={<div className="min-h-screen bg-slate-50 flex items-center justify-center text-xs text-slate-400">Loading admin console...</div>}>
+        <AdminLayout
+          currentTab={adminTab}
+          onNavigate={handleAdminNavigate}
+          onLogout={() => {
+            setIsAdminAuthenticated(false);
+            navigateTo('/admin');
+          }}
+        >
+          {adminTab === 'dashboard' && <AdminDashboard onNavigate={handleAdminNavigate} />}
+          {adminTab === 'categories' && <AdminCategories />}
+          {adminTab === 'subcategories' && <AdminSubcategories />}
+          {adminTab === 'calculators' && <AdminCalculators onNavigate={handleAdminNavigate} />}
+          {adminTab === 'modules' && <AdminModules />}
+          {adminTab === 'content-seo' && <AdminContentSeo />}
+          {adminTab === 'embed-studio' && <AdminEmbedStudio />}
+          {adminTab === 'blogs' && (
+            <AdminBlogManager
+              onEditPost={(post) => {
+                setActiveBlogPost(post);
+                setAdminTab('blog-editor');
+              }}
+            />
+          )}
+          {adminTab === 'blog-editor' && (
+            <AdminBlogEditor
+              post={activeBlogPost}
+              onBack={() => setAdminTab('blogs')}
+              onSaved={() => setAdminTab('blogs')}
+            />
+          )}
+          {adminTab === 'calculator-editor' && (
+            <AdminCalculatorEditor
+              calculatorId={activeCalculatorId}
+              onBack={() => handleAdminNavigate('calculators')}
+              onSaved={() => handleAdminNavigate('calculators')}
+            />
+          )}
+          {adminTab === 'settings' && <AdminSettings />}
+        </AdminLayout>
+      </React.Suspense>
     );
   }
 
@@ -212,10 +367,33 @@ export default function App() {
       <div className="flex-1 w-full">
         {currentPath === '/search' ? (
           <SearchPage />
+        ) : currentPath === '/blog' ? (
+          <BlogIndexPage />
+        ) : currentPath.startsWith('/blog/') ? (
+          <BlogPostPage slug={currentPath.split('/')[2]} />
+        ) : (currentPath === '/' || currentPath === '') ? (
+          <HomePage
+            onOpenSearch={() => setIsSearchModalOpen(true)}
+            brandName={siteSettings.brandName || 'CalcPlatform'}
+          />
         ) : routeLoading ? (
-          <div className="w-full max-w-7xl mx-auto px-4 py-20 text-center">
-            <div className="w-6 h-6 border-2 border-slate-900 border-t-transparent rounded-full animate-spin mx-auto mb-3" />
-            <p className="text-xs text-slate-400">Loading calculator platform...</p>
+          <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-6">
+            <div className="flex items-center gap-2">
+              <div className="w-20 h-4 bg-slate-100 rounded-md animate-pulse" />
+              <div className="text-slate-300">/</div>
+              <div className="w-24 h-4 bg-slate-100 rounded-md animate-pulse" />
+            </div>
+            <div className="h-9 bg-slate-100 rounded-lg w-72 max-w-full animate-pulse" />
+            <div className="h-4 bg-slate-100 rounded-md w-96 max-w-full animate-pulse" />
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 pt-4">
+              <div className="lg:col-span-8 bg-slate-50 border border-slate-100 rounded-2xl h-80 p-6 flex items-center justify-center">
+                <div className="flex flex-col items-center gap-3">
+                  <div className="w-8 h-8 border-3 border-[#1dbf73] border-t-transparent rounded-full animate-spin" />
+                  <span className="text-xs font-semibold text-slate-400">Loading calculator...</span>
+                </div>
+              </div>
+              <div className="lg:col-span-4 bg-slate-50 border border-slate-100 rounded-2xl h-72" />
+            </div>
           </div>
         ) : routeNotFound ? (
           <div className="w-full max-w-7xl mx-auto px-4 py-16">
@@ -229,11 +407,6 @@ export default function App() {
               secondaryHref="/admin"
             />
           </div>
-        ) : routeData?.type === 'home' ? (
-          <HomePage
-            onOpenSearch={() => setIsSearchModalOpen(true)}
-            brandName={siteSettings.brandName || 'CalcPlatform'}
-          />
         ) : routeData?.type === 'category' && routeData.category ? (
           <CategoryPage
             category={routeData.category}
@@ -255,10 +428,24 @@ export default function App() {
             relatedCalculators={routeData.relatedCalculators || []}
           />
         ) : (
-          <HomePage
-            onOpenSearch={() => setIsSearchModalOpen(true)}
-            brandName={siteSettings.brandName || 'CalcPlatform'}
-          />
+          <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-6">
+            <div className="flex items-center gap-2">
+              <div className="w-20 h-4 bg-slate-100 rounded-md animate-pulse" />
+              <div className="text-slate-300">/</div>
+              <div className="w-24 h-4 bg-slate-100 rounded-md animate-pulse" />
+            </div>
+            <div className="h-9 bg-slate-100 rounded-lg w-72 max-w-full animate-pulse" />
+            <div className="h-4 bg-slate-100 rounded-md w-96 max-w-full animate-pulse" />
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 pt-4">
+              <div className="lg:col-span-8 bg-slate-50 border border-slate-100 rounded-2xl h-80 p-6 flex items-center justify-center">
+                <div className="flex flex-col items-center gap-3">
+                  <div className="w-8 h-8 border-3 border-[#1dbf73] border-t-transparent rounded-full animate-spin" />
+                  <span className="text-xs font-semibold text-slate-400">Loading calculator...</span>
+                </div>
+              </div>
+              <div className="lg:col-span-4 bg-slate-50 border border-slate-100 rounded-2xl h-72" />
+            </div>
+          </div>
         )}
       </div>
 

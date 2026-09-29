@@ -493,6 +493,7 @@ export const MODULE_COMPONENT_MAP: Record<CanonicalModuleId, React.FC<ModuleRend
   'result-cards': function ResultCardsComponent(props) {
     return (
       <ResultCardsModule
+        calculator={props.calculator}
         outputs={props.evaluatedOutputs}
         calculatorName={props.calculator.name}
         settings={props.settings}

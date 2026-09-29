@@ -1,20 +1,22 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
+import { formatContentHtml } from '../../utils/formatters.ts';
 import {
   Bold,
   Italic,
+  Underline,
   Heading2,
   Heading3,
   List,
   ListOrdered,
   Quote,
-  Code,
   Table as TableIcon,
   AlertCircle,
-  CheckCircle,
   Eye,
   Edit3,
-  Link,
-  Sparkles,
+  Code2,
+  RemoveFormatting,
+  Trash2,
+  Scissors,
 } from 'lucide-react';
 
 interface RichTextEditorProps {
@@ -24,43 +26,327 @@ interface RichTextEditorProps {
   minHeight?: string;
 }
 
+/**
+ * Cleans pasted HTML from Word, Google Docs, Notion, or web pages,
+ * preserving headlines, bold, italics, bullet lists, numbered lists, tables, and links.
+ */
+function cleanPastedHtml(html: string): string {
+  try {
+    const parser = new DOMParser();
+    const doc = parser.parseFromString(html, 'text/html');
+
+    // Remove unsafe or irrelevant tags
+    doc.querySelectorAll('script, style, meta, link, noscript, xml').forEach((el) => el.remove());
+
+    // Normalize styles and classes while preserving semantic tags
+    doc.querySelectorAll('*').forEach((el) => {
+      const tag = el.tagName.toLowerCase();
+
+      // Remove Microsoft Word / Google Docs proprietary attributes
+      el.removeAttribute('class');
+      el.removeAttribute('style');
+
+      if (tag === 'b') {
+        const strong = doc.createElement('strong');
+        strong.innerHTML = el.innerHTML;
+        el.replaceWith(strong);
+      } else if (tag === 'i') {
+        const em = doc.createElement('em');
+        em.innerHTML = el.innerHTML;
+        el.replaceWith(em);
+      }
+    });
+
+    return doc.body.innerHTML;
+  } catch {
+    return html;
+  }
+}
+
+/**
+ * Converts markdown formatted text (headings, bold, bullet points) into clean HTML
+ */
+function parseMarkdownToHtml(text: string): string {
+  if (/<[a-z][\s\S]*>/i.test(text)) {
+    return text;
+  }
+
+  const processed = text
+    .replace(/^### (.*$)/gim, '<h4 class="text-sm font-bold text-[#222325] mt-3 mb-1.5">$1</h4>')
+    .replace(/^## (.*$)/gim, '<h3 class="text-base sm:text-lg font-bold text-[#222325] mt-4 mb-2">$1</h3>')
+    .replace(/^# (.*$)/gim, '<h2 class="text-lg sm:text-xl font-black text-[#222325] mt-4 mb-2">$1</h2>')
+    .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+    .replace(/__(.*?)__/g, '<strong>$1</strong>')
+    .replace(/\*(.*?)\*/g, '<em>$1</em>');
+
+  const lines = processed.split('\n');
+  const result: string[] = [];
+  let inUl = false;
+  let inOl = false;
+
+  for (const line of lines) {
+    const ulMatch = line.match(/^[\*\-]\s+(.*)/);
+    const olMatch = line.match(/^\d+\.\s+(.*)/);
+
+    if (ulMatch) {
+      if (inOl) {
+        result.push('</ol>');
+        inOl = false;
+      }
+      if (!inUl) {
+        result.push('<ul class="list-disc pl-5 space-y-1.5 my-3">');
+        inUl = true;
+      }
+      result.push(`  <li>${ulMatch[1]}</li>`);
+    } else if (olMatch) {
+      if (inUl) {
+        result.push('</ul>');
+        inUl = false;
+      }
+      if (!inOl) {
+        result.push('<ol class="list-decimal pl-5 space-y-1.5 my-3">');
+        inOl = true;
+      }
+      result.push(`  <li>${olMatch[1]}</li>`);
+    } else {
+      if (inUl) {
+        result.push('</ul>');
+        inUl = false;
+      }
+      if (inOl) {
+        result.push('</ol>');
+        inOl = false;
+      }
+      if (line.trim().length > 0) {
+        if (/^<h[1-6]/.test(line.trim())) {
+          result.push(line);
+        } else {
+          result.push(`<p class="mb-3 leading-relaxed">${line}</p>`);
+        }
+      }
+    }
+  }
+
+  if (inUl) result.push('</ul>');
+  if (inOl) result.push('</ol>');
+
+  return result.join('\n');
+}
+
 export const RichTextEditor: React.FC<RichTextEditorProps> = ({
   value,
   onChange,
   placeholder = 'Write detailed content here...',
-  minHeight = '180px',
+  minHeight = '220px',
 }) => {
-  const [viewMode, setViewMode] = useState<'editor' | 'preview'>('editor');
+  const [viewMode, setViewMode] = useState<'visual' | 'html' | 'preview'>('visual');
+  const editorRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const lastEmittedHtmlRef = useRef<string>(value || '');
 
-  const insertSnippet = (prefix: string, suffix: string = '', defaultContent: string = 'text') => {
-    const textarea = textareaRef.current;
-    if (!textarea) {
-      onChange((value || '') + `\n${prefix}${defaultContent}${suffix}\n`);
-      return;
+  // Synchronize value to visual editor when not focused or when mounting/switching modes
+  useEffect(() => {
+    if (editorRef.current && viewMode === 'visual') {
+      const isFocused =
+        typeof document !== 'undefined' &&
+        (document.activeElement === editorRef.current || editorRef.current.contains(document.activeElement));
+
+      if (!isFocused && editorRef.current.innerHTML !== (value || '')) {
+        editorRef.current.innerHTML = value || '';
+        lastEmittedHtmlRef.current = value || '';
+      }
+    }
+  }, [value, viewMode]);
+
+  // Handle direct input in Visual ContentEditable mode
+  const handleVisualInput = () => {
+    if (!editorRef.current) return;
+    let html = editorRef.current.innerHTML;
+
+    // Clean empty content so ghost tags don't linger
+    const textContent = editorRef.current.innerText?.trim() || '';
+    const hasMedia = editorRef.current.querySelector('img, iframe');
+    const hasFilledTable = Array.from(editorRef.current.querySelectorAll('td, th')).some(
+      (cell) => (cell.textContent?.trim() || '').length > 0
+    );
+
+    if (textContent === '' && !hasMedia && !hasFilledTable) {
+      html = '';
+      editorRef.current.innerHTML = '';
     }
 
-    const start = textarea.selectionStart;
-    const end = textarea.selectionEnd;
-    const selectedText = textarea.value.substring(start, end) || defaultContent;
-    const replacement = `${prefix}${selectedText}${suffix}`;
-    const newValue = textarea.value.substring(0, start) + replacement + textarea.value.substring(end);
-    onChange(newValue);
+    lastEmittedHtmlRef.current = html;
+    onChange(html);
+  };
 
-    setTimeout(() => {
-      textarea.focus();
-      textarea.setSelectionRange(start + prefix.length, start + prefix.length + selectedText.length);
-    }, 50);
+  // Blur cleanup: ensure deleted empty content emits '' cleanly
+  const handleBlur = () => {
+    if (!editorRef.current) return;
+    const textContent = editorRef.current.innerText?.trim() || '';
+    const hasMedia = editorRef.current.querySelector('img, iframe');
+    const hasFilledTable = Array.from(editorRef.current.querySelectorAll('td, th')).some(
+      (cell) => (cell.textContent?.trim() || '').length > 0
+    );
+
+    if (textContent === '' && !hasMedia && !hasFilledTable) {
+      editorRef.current.innerHTML = '';
+      lastEmittedHtmlRef.current = '';
+      onChange('');
+    } else {
+      const html = editorRef.current.innerHTML;
+      lastEmittedHtmlRef.current = html;
+      onChange(html);
+    }
+  };
+
+  // Smart keyboard handler for Backspace and Delete keys
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
+    if (e.key === 'Backspace' || e.key === 'Delete') {
+      const selection = window.getSelection();
+      if (!selection || !selection.rangeCount) return;
+      const range = selection.getRangeAt(0);
+
+      // Check if user selected entire content or editor is blank
+      if (editorRef.current) {
+        const fullText = editorRef.current.innerText?.trim() || '';
+        const selectedText = selection.toString()?.trim() || '';
+        if (selectedText.length > 0 && selectedText === fullText) {
+          e.preventDefault();
+          editorRef.current.innerHTML = '';
+          lastEmittedHtmlRef.current = '';
+          onChange('');
+          return;
+        }
+      }
+
+      // Check if cursor is inside an empty block container (callout, table, blockquote, heading)
+      const node = range.startContainer;
+      const element = node.nodeType === Node.ELEMENT_NODE ? (node as HTMLElement) : node.parentElement;
+      if (element && editorRef.current?.contains(element)) {
+        const block = element.closest('table, blockquote, .p-4, div[class*="rounded"], h2, h3, h4');
+        if (block && editorRef.current.contains(block)) {
+          const text = block.textContent?.trim() || '';
+          if (text === '') {
+            e.preventDefault();
+            block.remove();
+            handleVisualInput();
+            return;
+          }
+        }
+      }
+    }
+  };
+
+  // Execute formatting commands in Visual Mode
+  const executeCommand = (command: string, arg?: string) => {
+    if (viewMode !== 'visual') {
+      setViewMode('visual');
+      setTimeout(() => executeCommand(command, arg), 50);
+      return;
+    }
+    if (editorRef.current) {
+      editorRef.current.focus();
+    }
+    document.execCommand(command, false, arg);
+    handleVisualInput();
+  };
+
+  // Delete the currently focused or containing block (table, callout, blockquote, heading, list)
+  const handleDeleteCurrentBlock = () => {
+    if (viewMode !== 'visual' || !editorRef.current) return;
+    const selection = window.getSelection();
+    if (!selection || !selection.rangeCount) {
+      // If nothing selected, ask if user wants to clear
+      return;
+    }
+    const range = selection.getRangeAt(0);
+    const node = range.startContainer;
+    const element = node.nodeType === Node.ELEMENT_NODE ? (node as HTMLElement) : node.parentElement;
+    if (!element || !editorRef.current.contains(element)) return;
+
+    // Find the enclosing block element
+    const block = element.closest('table, blockquote, .p-4, div[class*="rounded"], h2, h3, h4, ul, ol');
+    if (block && editorRef.current.contains(block)) {
+      block.remove();
+      handleVisualInput();
+    } else {
+      document.execCommand('delete');
+      handleVisualInput();
+    }
+  };
+
+  // Clear all content in one click
+  const handleClearAll = () => {
+    if (editorRef.current) {
+      editorRef.current.innerHTML = '';
+    }
+    lastEmittedHtmlRef.current = '';
+    onChange('');
+  };
+
+  // Smart Paste Handler: Captures rich text formatting (bold, bullets, headings, lists)
+  const handlePaste = (e: React.ClipboardEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    const clipboardData = e.clipboardData;
+    const pastedHtml = clipboardData.getData('text/html');
+    const pastedText = clipboardData.getData('text/plain');
+
+    let contentToInsert = '';
+
+    if (pastedHtml && pastedHtml.trim().length > 0) {
+      // Clean HTML from Google Docs, Word, ChatGPT, or web pages
+      contentToInsert = cleanPastedHtml(pastedHtml);
+    } else if (pastedText && pastedText.trim().length > 0) {
+      // Check if plain text has bullet points or markdown
+      if (/^[\*\-]\s+|^\d+\.\s+|^\#{1,4}\s+|\*\*/m.test(pastedText)) {
+        contentToInsert = parseMarkdownToHtml(pastedText);
+      } else {
+        contentToInsert = formatContentHtml(pastedText);
+      }
+    }
+
+    if (contentToInsert) {
+      document.execCommand('insertHTML', false, contentToInsert);
+      handleVisualInput();
+    }
   };
 
   const insertTable = () => {
-    const tableTemplate = `\n<table class="w-full text-left text-sm border-collapse my-4 border border-[#e4e5e7]">\n  <thead class="bg-[#fafafa]">\n    <tr>\n      <th class="p-3 border border-[#e4e5e7] font-bold text-[#222325]">Parameter / Bracket</th>\n      <th class="p-3 border border-[#e4e5e7] font-bold text-[#222325]">Standard Rate</th>\n      <th class="p-3 border border-[#e4e5e7] font-bold text-[#222325]">Applicable Rules</th>\n    </tr>\n  </thead>\n  <tbody>\n    <tr>\n      <td class="p-3 border border-[#e4e5e7]">Up to ₹3,00,000</td>\n      <td class="p-3 border border-[#e4e5e7]">Nil (0%)</td>\n      <td class="p-3 border border-[#e4e5e7]">Standard basic exemption limit</td>\n    </tr>\n    <tr>\n      <td class="p-3 border border-[#e4e5e7]">₹3,00,001 to ₹7,00,000</td>\n      <td class="p-3 border border-[#e4e5e7]">5%</td>\n      <td class="p-3 border border-[#e4e5e7]">Subject to Section 87A rebate</td>\n    </tr>\n  </tbody>\n</table>\n`;
-    onChange((value || '') + tableTemplate);
+    const tableTemplate = `
+<table class="w-full text-left text-xs sm:text-sm border-collapse my-4 border border-[#e4e5e7]">
+  <thead class="bg-[#fafafa]">
+    <tr>
+      <th class="p-3 border border-[#e4e5e7] font-bold text-[#222325]">Parameter / Category</th>
+      <th class="p-3 border border-[#e4e5e7] font-bold text-[#222325]">Applicable Rate</th>
+      <th class="p-3 border border-[#e4e5e7] font-bold text-[#222325]">Rules & Notes</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td class="p-3 border border-[#e4e5e7]">Standard Baseline</td>
+      <td class="p-3 border border-[#e4e5e7] font-semibold text-emerald-600">Standard Rate</td>
+      <td class="p-3 border border-[#e4e5e7]">Primary statutory assumption</td>
+    </tr>
+    <tr>
+      <td class="p-3 border border-[#e4e5e7]">Secondary Tier</td>
+      <td class="p-3 border border-[#e4e5e7] font-semibold">Tier Rate</td>
+      <td class="p-3 border border-[#e4e5e7]">Subject to statutory thresholds</td>
+    </tr>
+  </tbody>
+</table>
+`;
+    if (viewMode === 'visual') {
+      executeCommand('insertHTML', tableTemplate);
+    } else {
+      const nextVal = (value || '') + tableTemplate;
+      lastEmittedHtmlRef.current = nextVal;
+      onChange(nextVal);
+    }
   };
 
   const insertCallout = (type: 'info' | 'warning' | 'success') => {
-    let classes = 'p-4 rounded-lg my-4 text-sm leading-relaxed ';
-    let title = 'Note:';
+    let classes = 'p-4 rounded-xl my-4 text-xs sm:text-sm leading-relaxed ';
+    let title = 'Pro Tip:';
     if (type === 'warning') {
       classes += 'bg-amber-50 border border-amber-200 text-amber-900';
       title = 'Important Warning:';
@@ -69,67 +355,98 @@ export const RichTextEditor: React.FC<RichTextEditorProps> = ({
       title = 'Key Insight:';
     } else {
       classes += 'bg-blue-50 border border-blue-200 text-blue-900';
-      title = 'Pro Tip:';
+      title = 'Note:';
     }
 
-    const template = `\n<div class="${classes}">\n  <strong>${title}</strong> Ensure all statutory limits, tax exemptions, and inflation assumptions are factored in.\n</div>\n`;
-    onChange((value || '') + template);
+    const template = `
+<div class="${classes}">
+  <strong>${title}</strong> Check your financial year and eligible Chapter VI-A deductions before filing.
+</div>
+`;
+    if (viewMode === 'visual') {
+      executeCommand('insertHTML', template);
+    } else {
+      const nextVal = (value || '') + template;
+      lastEmittedHtmlRef.current = nextVal;
+      onChange(nextVal);
+    }
   };
 
   return (
-    <div className="border border-[#e4e5e7] rounded-lg overflow-hidden bg-white shadow-2xs">
-      {/* Toolbar */}
-      <div className="flex flex-wrap items-center justify-between gap-1 p-2 bg-[#fafafa] border-b border-[#e4e5e7]">
+    <div className="border border-[#e4e5e7] rounded-xl overflow-hidden bg-white shadow-2xs flex flex-col">
+      {/* Top Formatting Toolbar */}
+      <div className="flex flex-wrap items-center justify-between gap-1.5 p-2 bg-[#fafafa] border-b border-[#e4e5e7]">
         <div className="flex flex-wrap items-center gap-1">
+          {/* Bold */}
           <button
             type="button"
-            onClick={() => insertSnippet('<strong>', '</strong>', 'Bold text')}
-            title="Bold"
-            className="p-1.5 rounded hover:bg-white text-[#404145] hover:text-[#222325] border border-transparent hover:border-[#e4e5e7] transition-all cursor-pointer"
+            onClick={() => executeCommand('bold')}
+            title="Bold (Ctrl+B)"
+            className="p-1.5 rounded hover:bg-white text-[#404145] hover:text-[#222325] border border-transparent hover:border-[#e4e5e7] transition-all cursor-pointer font-bold"
           >
             <Bold className="w-3.5 h-3.5" />
           </button>
+
+          {/* Italic */}
           <button
             type="button"
-            onClick={() => insertSnippet('<em>', '</em>', 'Italic text')}
-            title="Italic"
-            className="p-1.5 rounded hover:bg-white text-[#404145] hover:text-[#222325] border border-transparent hover:border-[#e4e5e7] transition-all cursor-pointer"
+            onClick={() => executeCommand('italic')}
+            title="Italic (Ctrl+I)"
+            className="p-1.5 rounded hover:bg-white text-[#404145] hover:text-[#222325] border border-transparent hover:border-[#e4e5e7] transition-all cursor-pointer italic"
           >
             <Italic className="w-3.5 h-3.5" />
           </button>
 
-          <div className="w-[1px] h-4 bg-[#e4e5e7] mx-1" />
-
+          {/* Underline */}
           <button
             type="button"
-            onClick={() => insertSnippet('<h3 class="text-lg font-bold text-[#222325] mt-4 mb-2">', '</h3>', 'Section Heading')}
-            title="Heading 2 (H2/H3 for SEO)"
+            onClick={() => executeCommand('underline')}
+            title="Underline (Ctrl+U)"
             className="p-1.5 rounded hover:bg-white text-[#404145] hover:text-[#222325] border border-transparent hover:border-[#e4e5e7] transition-all cursor-pointer"
           >
-            <Heading2 className="w-3.5 h-3.5" />
-          </button>
-          <button
-            type="button"
-            onClick={() => insertSnippet('<h4 class="text-sm font-bold text-[#222325] mt-3 mb-1.5">', '</h4>', 'Sub-heading')}
-            title="Heading 3 / Sub-heading"
-            className="p-1.5 rounded hover:bg-white text-[#404145] hover:text-[#222325] border border-transparent hover:border-[#e4e5e7] transition-all cursor-pointer"
-          >
-            <Heading3 className="w-3.5 h-3.5" />
+            <Underline className="w-3.5 h-3.5" />
           </button>
 
           <div className="w-[1px] h-4 bg-[#e4e5e7] mx-1" />
 
+          {/* Headline H2 */}
           <button
             type="button"
-            onClick={() => insertSnippet('<ul class="list-disc pl-5 space-y-1.5 my-3">\n  <li>', '</li>\n  <li>Second key point</li>\n</ul>', 'First key point')}
-            title="Bullet List"
+            onClick={() => executeCommand('formatBlock', '<h2>')}
+            title="Heading 2 (Bold Headline)"
+            className="px-2 py-1 rounded hover:bg-white text-[#404145] hover:text-[#222325] border border-transparent hover:border-[#e4e5e7] transition-all cursor-pointer text-xs font-black flex items-center gap-1"
+          >
+            <Heading2 className="w-3.5 h-3.5 text-[#1dbf73]" />
+            <span>H2</span>
+          </button>
+
+          {/* Headline H3 */}
+          <button
+            type="button"
+            onClick={() => executeCommand('formatBlock', '<h3>')}
+            title="Heading 3 (Sub-headline)"
+            className="px-2 py-1 rounded hover:bg-white text-[#404145] hover:text-[#222325] border border-transparent hover:border-[#e4e5e7] transition-all cursor-pointer text-xs font-bold flex items-center gap-1"
+          >
+            <Heading3 className="w-3.5 h-3.5 text-[#1dbf73]" />
+            <span>H3</span>
+          </button>
+
+          <div className="w-[1px] h-4 bg-[#e4e5e7] mx-1" />
+
+          {/* Bullet List */}
+          <button
+            type="button"
+            onClick={() => executeCommand('insertUnorderedList')}
+            title="Bullet Points List"
             className="p-1.5 rounded hover:bg-white text-[#404145] hover:text-[#222325] border border-transparent hover:border-[#e4e5e7] transition-all cursor-pointer"
           >
             <List className="w-3.5 h-3.5" />
           </button>
+
+          {/* Numbered List */}
           <button
             type="button"
-            onClick={() => insertSnippet('<ol class="list-decimal pl-5 space-y-1.5 my-3">\n  <li>', '</li>\n  <li>Step two</li>\n</ol>', 'Step one')}
+            onClick={() => executeCommand('insertOrderedList')}
             title="Numbered List"
             className="p-1.5 rounded hover:bg-white text-[#404145] hover:text-[#222325] border border-transparent hover:border-[#e4e5e7] transition-all cursor-pointer"
           >
@@ -138,101 +455,161 @@ export const RichTextEditor: React.FC<RichTextEditorProps> = ({
 
           <div className="w-[1px] h-4 bg-[#e4e5e7] mx-1" />
 
+          {/* Blockquote */}
           <button
             type="button"
-            onClick={() => insertSnippet('<blockquote class="border-l-4 border-[#1dbf73] pl-4 py-1.5 my-3 italic text-[#62646a] bg-[#fafafa] rounded-r">', '</blockquote>', 'Important quote or highlight')}
+            onClick={() => executeCommand('formatBlock', '<blockquote>')}
             title="Blockquote"
             className="p-1.5 rounded hover:bg-white text-[#404145] hover:text-[#222325] border border-transparent hover:border-[#e4e5e7] transition-all cursor-pointer"
           >
             <Quote className="w-3.5 h-3.5" />
           </button>
-          <button
-            type="button"
-            onClick={() => insertSnippet('<pre class="p-3 bg-[#f5f5f5] rounded-md font-mono text-xs text-[#222325] overflow-x-auto my-3 border border-[#e4e5e7]"><code>', '</code></pre>', 'EMI = [P x R x (1+R)^N] / [(1+R)^N - 1]')}
-            title="Formula / Code Block"
-            className="p-1.5 rounded hover:bg-white text-[#404145] hover:text-[#222325] border border-transparent hover:border-[#e4e5e7] transition-all cursor-pointer"
-          >
-            <Code className="w-3.5 h-3.5" />
-          </button>
+
+          {/* Table */}
           <button
             type="button"
             onClick={insertTable}
-            title="Insert Structured Table"
+            title="Insert Structured Comparison Table"
             className="p-1.5 rounded hover:bg-white text-[#404145] hover:text-[#222325] border border-transparent hover:border-[#e4e5e7] transition-all cursor-pointer"
           >
             <TableIcon className="w-3.5 h-3.5" />
           </button>
 
-          <div className="w-[1px] h-4 bg-[#e4e5e7] mx-1" />
-
+          {/* Callouts */}
           <button
             type="button"
             onClick={() => insertCallout('info')}
-            title="Insert Tip Callout Box"
-            className="p-1.5 rounded hover:bg-white text-blue-600 border border-transparent hover:border-[#e4e5e7] transition-all cursor-pointer text-xs font-bold flex items-center gap-1"
+            title="Insert Tip Callout"
+            className="px-2 py-1 rounded hover:bg-white text-blue-600 border border-transparent hover:border-[#e4e5e7] transition-all cursor-pointer text-[11px] font-bold"
           >
-            <AlertCircle className="w-3.5 h-3.5" />
-            <span className="hidden sm:inline text-[11px]">Tip</span>
+            + Tip
           </button>
+
           <button
             type="button"
             onClick={() => insertCallout('warning')}
-            title="Insert Warning Box"
-            className="p-1.5 rounded hover:bg-white text-amber-600 border border-transparent hover:border-[#e4e5e7] transition-all cursor-pointer text-xs font-bold flex items-center gap-1"
+            title="Insert Warning Callout"
+            className="px-2 py-1 rounded hover:bg-white text-amber-600 border border-transparent hover:border-[#e4e5e7] transition-all cursor-pointer text-[11px] font-bold flex items-center gap-1"
           >
-            <AlertCircle className="w-3.5 h-3.5" />
-            <span className="hidden sm:inline text-[11px]">Warning</span>
+            <AlertCircle className="w-3 h-3" />
+            <span>Warning</span>
+          </button>
+
+          <div className="w-[1px] h-4 bg-[#e4e5e7] mx-1" />
+
+          {/* Delete Current Block / Container */}
+          <button
+            type="button"
+            onClick={handleDeleteCurrentBlock}
+            title="Delete Current Block (Table, Callout, Heading, or Quote under cursor)"
+            className="p-1.5 rounded hover:bg-amber-50 text-[#74767e] hover:text-amber-600 border border-transparent hover:border-amber-200 transition-all cursor-pointer"
+          >
+            <Scissors className="w-3.5 h-3.5" />
+          </button>
+
+          {/* Remove formatting */}
+          <button
+            type="button"
+            onClick={() => executeCommand('removeFormat')}
+            title="Clear Selected Formatting"
+            className="p-1.5 rounded hover:bg-white text-[#74767e] hover:text-red-500 border border-transparent hover:border-[#e4e5e7] transition-all cursor-pointer"
+          >
+            <RemoveFormatting className="w-3.5 h-3.5" />
+          </button>
+
+          {/* Clear All Content */}
+          <button
+            type="button"
+            onClick={handleClearAll}
+            title="Clear All Content in this Editor"
+            className="p-1.5 rounded hover:bg-rose-50 text-[#74767e] hover:text-rose-600 border border-transparent hover:border-rose-200 transition-all cursor-pointer"
+          >
+            <Trash2 className="w-3.5 h-3.5" />
           </button>
         </div>
 
-        {/* View Switcher */}
-        <div className="flex items-center gap-1 bg-[#eeeeee] p-0.5 rounded-md">
+        {/* View Mode Switcher */}
+        <div className="flex items-center gap-1 bg-[#eeeeee] p-0.5 rounded-lg shrink-0">
           <button
             type="button"
-            onClick={() => setViewMode('editor')}
-            className={`px-2.5 py-1 rounded text-xs font-bold flex items-center gap-1 transition-all cursor-pointer ${
-              viewMode === 'editor'
-                ? 'bg-white text-[#222325] shadow-2xs'
+            onClick={() => setViewMode('visual')}
+            className={`px-2.5 py-1 rounded-md text-xs font-bold flex items-center gap-1 transition-all cursor-pointer ${
+              viewMode === 'visual'
+                ? 'bg-white text-[#1dbf73] shadow-2xs'
                 : 'text-[#74767e] hover:text-[#222325]'
             }`}
           >
             <Edit3 className="w-3 h-3" />
-            <span>Editor</span>
+            <span>Visual Editor</span>
+          </button>
+          <button
+            type="button"
+            onClick={() => setViewMode('html')}
+            className={`px-2.5 py-1 rounded-md text-xs font-bold flex items-center gap-1 transition-all cursor-pointer ${
+              viewMode === 'html'
+                ? 'bg-white text-[#222325] shadow-2xs'
+                : 'text-[#74767e] hover:text-[#222325]'
+            }`}
+          >
+            <Code2 className="w-3 h-3" />
+            <span>HTML (&lt;&gt;)</span>
           </button>
           <button
             type="button"
             onClick={() => setViewMode('preview')}
-            className={`px-2.5 py-1 rounded text-xs font-bold flex items-center gap-1 transition-all cursor-pointer ${
+            className={`px-2.5 py-1 rounded-md text-xs font-bold flex items-center gap-1 transition-all cursor-pointer ${
               viewMode === 'preview'
                 ? 'bg-white text-[#1dbf73] shadow-2xs'
                 : 'text-[#74767e] hover:text-[#222325]'
             }`}
           >
             <Eye className="w-3 h-3" />
-            <span>SEO Preview</span>
+            <span>Preview</span>
           </button>
         </div>
       </div>
 
       {/* Editor Content Area */}
-      {viewMode === 'editor' ? (
+      {viewMode === 'visual' && (
+        <div
+          ref={editorRef}
+          contentEditable
+          onInput={handleVisualInput}
+          onBlur={handleBlur}
+          onPaste={handlePaste}
+          onKeyDown={handleKeyDown}
+          style={{ minHeight }}
+          className="w-full p-4 text-xs sm:text-sm text-[#222325] leading-relaxed focus:outline-none bg-white prose max-w-none overflow-y-auto font-sans"
+          data-placeholder={placeholder}
+        />
+      )}
+
+      {viewMode === 'html' && (
         <textarea
           ref={textareaRef}
           value={value || ''}
-          onChange={(e) => onChange(e.target.value)}
-          placeholder={placeholder}
+          onChange={(e) => {
+            const nextVal = e.target.value;
+            lastEmittedHtmlRef.current = nextVal;
+            onChange(nextVal);
+          }}
+          placeholder="Edit raw HTML tags here..."
           style={{ minHeight }}
-          className="w-full p-3.5 text-xs sm:text-sm font-sans text-[#222325] leading-relaxed focus:outline-none focus:ring-1 focus:ring-[#1dbf73] bg-white resize-y block font-mono"
+          className="w-full p-4 text-xs font-mono text-emerald-400 bg-[#1e1e1e] leading-relaxed focus:outline-none focus:ring-1 focus:ring-[#1dbf73] resize-y block border-t border-[#333]"
         />
-      ) : (
+      )}
+
+      {viewMode === 'preview' && (
         <div
           style={{ minHeight }}
-          className="p-4 bg-white text-xs sm:text-sm text-[#404145] leading-relaxed overflow-y-auto prose prose-sm max-w-none border-t border-[#f0f0f0]"
+          className="p-5 bg-white text-xs sm:text-sm text-[#404145] leading-relaxed overflow-y-auto prose prose-slate max-w-none border-t border-[#f0f0f0] whitespace-pre-line space-y-3 font-sans"
         >
-          {value ? (
-            <div dangerouslySetInnerHTML={{ __html: value }} />
+          {value && value.trim().length > 0 ? (
+            <div dangerouslySetInnerHTML={{ __html: formatContentHtml(value) }} />
           ) : (
-            <span className="italic text-[#95979d]">No content entered yet. Switch back to Editor to write.</span>
+            <span className="italic text-[#95979d]">
+              No content entered yet. Switch back to Visual Editor to write or paste content.
+            </span>
           )}
         </div>
       )}

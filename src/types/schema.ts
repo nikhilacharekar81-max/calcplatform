@@ -167,10 +167,47 @@ export interface SiteSettings {
   contactEmail?: string;
 }
 
+export interface BlogPost {
+  id: string;
+  slug: string;
+  title: string;
+  excerpt: string;
+  content: string;
+  featuredImage: string;
+  category: string;
+  tags: string[];
+  author: {
+    name: string;
+    role: string;
+    avatar: string;
+    bio?: string;
+  };
+  status: 'published' | 'draft' | 'archived';
+  publishedAt: string;
+  updatedAt: string;
+  readTimeMinutes: number;
+  views: number;
+  isFeatured?: boolean;
+  seoTitle?: string;
+  seoDescription?: string;
+  seoKeywords?: string[];
+  embeddedCalculators?: string[];
+}
+
+export interface BlogCategory {
+  id: string;
+  name: string;
+  slug: string;
+  description?: string;
+  postCount?: number;
+}
+
 export interface DatabaseSchema {
   categories: Category[];
   subcategories: Subcategory[];
   calculators: Calculator[];
+  posts?: BlogPost[];
+  blogCategories?: BlogCategory[];
   settings: SiteSettings;
 }
 

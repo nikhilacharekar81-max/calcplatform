@@ -170,8 +170,19 @@ export function evaluateFormula(
       },
     };
 
-    // Populate user input variables
-    for (const [key, val] of Object.entries(variables)) {
+    const builtInNames = new Set([
+      'sqrt', 'pow', 'abs', 'round', 'floor', 'ceil', 'min', 'max',
+      'log', 'log10', 'exp', 'sin', 'cos', 'tan', 'PI', 'E',
+      'tax_us', 'tax_us_marginal', 'tax_in', 'tax_in_marginal'
+    ]);
+
+    // Populate user input variables while preserving built-in functions
+    for (const [key, val] of Object.entries(variables || {})) {
+      if (builtInNames.has(key)) continue;
+
+      // Filter out invalid JS identifier keys
+      if (!/^[a-zA-Z_$][a-zA-Z0-9_$]*$/.test(key)) continue;
+
       if (typeof val === 'number') {
         context[key] = val;
       } else if (typeof val === 'boolean') {
@@ -202,10 +213,18 @@ export function evaluateFormula(
       }
     }
 
-    const keys = Object.keys(context);
-    const values = Object.values(context);
-    const fn = new Function(...keys, `"use strict"; return (${expression});`);
-    const result = fn(...values);
+    // Filter context keys to valid JS identifiers only
+    const validKeys: string[] = [];
+    const validValues: any[] = [];
+    for (const [k, v] of Object.entries(context)) {
+      if (/^[a-zA-Z_$][a-zA-Z0-9_$]*$/.test(k)) {
+        validKeys.push(k);
+        validValues.push(v);
+      }
+    }
+
+    const fn = new Function(...validKeys, `"use strict"; return (${expression});`);
+    const result = fn(...validValues);
 
     if (typeof result === 'number') {
       if (isNaN(result) || !isFinite(result)) return 0;

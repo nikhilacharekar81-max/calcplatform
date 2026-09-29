@@ -61,6 +61,11 @@ export const Footer: React.FC<FooterProps> = ({
                 </a>
               </li>
               <li>
+                <a href="/blog" className="hover:text-[#1dbf73] transition-colors font-medium">
+                  Tax Blog & Guides
+                </a>
+              </li>
+              <li>
                 <a href="/search" className="hover:text-[#222325] hover:underline transition-colors">
                   Explore Directory
                 </a>

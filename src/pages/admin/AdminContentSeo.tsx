@@ -38,6 +38,15 @@ export const AdminContentSeo: React.FC = () => {
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
+  // Custom in-app confirmation modal (avoids iframe-blocked window.confirm)
+  const [confirmModal, setConfirmModal] = useState<{
+    isOpen: boolean;
+    title: string;
+    message: string;
+    confirmLabel?: string;
+    action: () => Promise<void> | void;
+  } | null>(null);
+
   // Active calculator state
   const [currentCalc, setCurrentCalc] = useState<Calculator | null>(null);
 
@@ -92,10 +101,36 @@ export const AdminContentSeo: React.FC = () => {
   };
 
   // Helper to get or update a module's settings (e.g. custom title)
-  const getModuleTitle = (moduleId: string, fallback: string) => {
-    if (!currentCalc || !currentCalc.modules) return fallback;
-    const mod = currentCalc.modules.find((m) => m.moduleId === moduleId);
-    return mod?.settings?.title || fallback;
+  const getModuleTitle = (moduleId: string, fallback: string = '') => {
+    if (!currentCalc) return '';
+    const mod = currentCalc.modules?.find((m) => m.moduleId === moduleId);
+    if (mod && mod.settings && typeof mod.settings.title === 'string') {
+      return mod.settings.title;
+    }
+    // Check if configured in contentSections
+    if (moduleId === 'how-to-guide') {
+      const sec = currentCalc.contentSections?.find(
+        (s) => s.sectionType === 'how-to' || s.title?.toLowerCase().includes('how to')
+      );
+      if (sec && typeof sec.title === 'string') {
+        return sec.title;
+      }
+    } else if (moduleId === 'assumptions-info') {
+      const sec = currentCalc.contentSections?.find(
+        (s) => s.sectionType === 'assumptions' || s.title?.toLowerCase().includes('assumption')
+      );
+      if (sec && typeof sec.title === 'string') {
+        return sec.title;
+      }
+    } else if (moduleId === 'formula-methodology') {
+      const sec = currentCalc.contentSections?.find(
+        (s) => s.sectionType === 'formula' || s.title?.toLowerCase().includes('formula')
+      );
+      if (sec && typeof sec.title === 'string') {
+        return sec.title;
+      }
+    }
+    return fallback;
   };
 
   const updateModuleTitle = (moduleId: string, newTitle: string) => {
@@ -111,20 +146,119 @@ export const AdminContentSeo: React.FC = () => {
       mods.push({
         id: `mod_${moduleId}`,
         moduleId,
-        name: newTitle,
+        name: newTitle || moduleId,
         isEnabled: true,
         order: mods.length + 1,
         settings: { title: newTitle },
       });
     }
-    setCurrentCalc({ ...currentCalc, modules: mods });
+
+    // Also sync the corresponding contentSections title so it never restores old title
+    let updatedSections = currentCalc.contentSections ? [...currentCalc.contentSections] : [];
+    if (moduleId === 'how-to-guide') {
+      updatedSections = updatedSections.map((s) =>
+        (s.sectionType === 'how-to' || s.title?.toLowerCase().includes('how to'))
+          ? { ...s, title: newTitle }
+          : s
+      );
+    } else if (moduleId === 'assumptions-info') {
+      updatedSections = updatedSections.map((s) =>
+        (s.sectionType === 'assumptions' || s.title?.toLowerCase().includes('assumption'))
+          ? { ...s, title: newTitle }
+          : s
+      );
+    } else if (moduleId === 'formula-methodology') {
+      updatedSections = updatedSections.map((s) =>
+        (s.sectionType === 'formula' || s.title?.toLowerCase().includes('formula'))
+          ? { ...s, title: newTitle }
+          : s
+      );
+    }
+
+    setCurrentCalc({
+      ...currentCalc,
+      modules: mods,
+      contentSections: updatedSections,
+    });
+  };
+
+  const isModuleEnabled = (moduleId: string): boolean => {
+    if (!currentCalc) return false;
+    const mod = currentCalc.modules?.find((m) => m.moduleId === moduleId);
+    if (mod) {
+      return mod.isEnabled !== false;
+    }
+    if (moduleId === 'how-to-guide') {
+      const guide = getHowToContent();
+      return Boolean(guide && guide.trim().length > 0);
+    }
+    if (moduleId === 'worked-examples') {
+      return Boolean(currentCalc.examples && currentCalc.examples.length > 0);
+    }
+    if (moduleId === 'formula-methodology') {
+      const formula = currentCalc.content?.formulaExplanation;
+      return Boolean(formula && formula.trim().length > 0);
+    }
+    if (moduleId === 'assumptions-info') {
+      const assumptions = getAssumptionsContent();
+      return Boolean(assumptions && assumptions.trim().length > 0);
+    }
+    return true;
+  };
+
+  const toggleModuleEnabled = async (moduleId: string, enabled: boolean) => {
+    if (!currentCalc) return;
+    const mods = [...(currentCalc.modules || [])];
+    const modIdx = mods.findIndex((m) => m.moduleId === moduleId);
+    if (modIdx >= 0) {
+      mods[modIdx] = { ...mods[modIdx], isEnabled: enabled };
+    } else {
+      mods.push({
+        id: `mod_${moduleId}`,
+        moduleId: moduleId as any,
+        name: moduleId,
+        isEnabled: enabled,
+        order: mods.length + 1,
+        settings: {},
+      });
+    }
+
+    const updatedSections = (currentCalc.contentSections || []).map((sec) => {
+      const isMatch =
+        (moduleId === 'how-to-guide' && (sec.sectionType === 'how-to' || sec.title?.toLowerCase().includes('how to'))) ||
+        (moduleId === 'formula-methodology' && (sec.sectionType === 'formula' || sec.title?.toLowerCase().includes('formula'))) ||
+        (moduleId === 'assumptions-info' && (sec.sectionType === 'assumptions' || sec.title?.toLowerCase().includes('assumption')));
+      if (isMatch) {
+        return { ...sec, isEnabled: enabled };
+      }
+      return sec;
+    });
+
+    const updatedCalc: Calculator = {
+      ...currentCalc,
+      modules: mods,
+      contentSections: updatedSections,
+    };
+
+    setCurrentCalc(updatedCalc);
+
+    try {
+      setIsSaving(true);
+      await api.adminUpdateCalculator(currentCalc.id, updatedCalc);
+      setSuccessMessage(`Section "${moduleId}" is now ${enabled ? 'ACTIVE' : 'DISABLED'} on the live calculator.`);
+      setTimeout(() => setSuccessMessage(null), 3000);
+    } catch (err: any) {
+      setErrorMessage(err.message || 'Failed to update section status.');
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   // Content Sections management
   const handleAddSection = () => {
     if (!currentCalc) return;
     const newSec: ContentSection = {
-      id: `sec_${Date.now()}`,
+      id: `sec_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`,
       title: 'New Educational Guide & Methodology',
       sectionType: 'overview',
       htmlContent: '<p>Write clear, educational content explaining the mathematical formula, practical use cases, and regulatory rules...</p>',
@@ -137,21 +271,85 @@ export const AdminContentSeo: React.FC = () => {
     });
   };
 
-  const handleUpdateSection = (secId: string, updates: Partial<ContentSection>) => {
-    if (!currentCalc) return;
+  const handleUpdateSection = (secIdOrIndex: string | number, updates: Partial<ContentSection>) => {
+    if (!currentCalc || !currentCalc.contentSections) return;
+    const updated = currentCalc.contentSections.map((s: ContentSection, idx: number) => {
+      if (typeof secIdOrIndex === 'number') {
+        return idx === secIdOrIndex ? { ...s, ...updates } : s;
+      }
+      return (s.id === secIdOrIndex || idx.toString() === secIdOrIndex) ? { ...s, ...updates } : s;
+    });
     setCurrentCalc({
       ...currentCalc,
-      contentSections: (currentCalc.contentSections || []).map((s: ContentSection) =>
-        s.id === secId ? { ...s, ...updates } : s
-      ),
+      contentSections: updated,
     });
   };
 
-  const handleRemoveSection = (secId: string) => {
-    if (!currentCalc) return;
-    setCurrentCalc({
-      ...currentCalc,
-      contentSections: (currentCalc.contentSections || []).filter((s: ContentSection) => s.id !== secId),
+  const handleRemoveSection = async (secIdOrIndex: string | number) => {
+    if (!currentCalc || !currentCalc.contentSections) return;
+    const sections = [...currentCalc.contentSections];
+    let targetSection: ContentSection | undefined;
+    let remaining: ContentSection[] = [];
+
+    if (typeof secIdOrIndex === 'number') {
+      targetSection = sections[secIdOrIndex];
+      remaining = sections.filter((_, idx) => idx !== secIdOrIndex);
+    } else {
+      targetSection = sections.find((s, idx) => s.id === secIdOrIndex || idx.toString() === secIdOrIndex);
+      remaining = sections.filter((s, idx) => s.id !== secIdOrIndex && idx.toString() !== secIdOrIndex);
+    }
+
+    if (!targetSection && typeof secIdOrIndex === 'string') {
+      targetSection = sections.find((s) => s.id === secIdOrIndex);
+      remaining = sections.filter((s) => s.id !== secIdOrIndex);
+    }
+
+    const title = targetSection?.title || 'this section';
+    const executeRemove = async () => {
+      // Renumber remaining sections
+      const updatedSections = remaining.map((s, idx) => ({ ...s, order: idx + 1 }));
+
+      const isHowTo =
+        targetSection?.sectionType === 'how-to' ||
+        targetSection?.title?.toLowerCase().includes('how to');
+      const isFormula =
+        targetSection?.sectionType === 'formula' ||
+        targetSection?.title?.toLowerCase().includes('formula');
+
+      const updatedContent = {
+        ...(currentCalc.content || { formulaExplanation: '', usageInstructions: '', faqs: [] }),
+      };
+      if (isHowTo) updatedContent.usageInstructions = '';
+      if (isFormula) updatedContent.formulaExplanation = '';
+
+      const updatedCalc: Calculator = {
+        ...currentCalc,
+        contentSections: updatedSections,
+        content: updatedContent,
+      };
+
+      setCurrentCalc(updatedCalc);
+      setConfirmModal(null);
+
+      // Save deletion immediately to API backend to prevent it from reappearing
+      try {
+        setIsSaving(true);
+        await api.adminUpdateCalculator(currentCalc.id, updatedCalc);
+        setSuccessMessage(`Section "${title}" was permanently deleted and saved.`);
+        setTimeout(() => setSuccessMessage(null), 3500);
+      } catch (err: any) {
+        setErrorMessage(err.message || 'Failed to save deletion to server.');
+      } finally {
+        setIsSaving(false);
+      }
+    };
+
+    setConfirmModal({
+      isOpen: true,
+      title: `Delete "${title}"?`,
+      message: 'Are you sure you want to permanently delete this content section from the calculator?',
+      confirmLabel: 'Delete Section',
+      action: executeRemove,
     });
   };
 
@@ -173,33 +371,49 @@ export const AdminContentSeo: React.FC = () => {
   const getHowToContent = () => {
     if (!currentCalc) return '';
     const section = currentCalc.contentSections?.find(
-      (s) => s.sectionType === 'how-to' || s.title.toLowerCase().includes('how to')
+      (s) => s.sectionType === 'how-to' || s.title?.toLowerCase().includes('how to')
     );
-    return section?.htmlContent || currentCalc.content?.usageInstructions || '';
+    if (section) {
+      return section.htmlContent || '';
+    }
+    // Only fall back to legacy if contentSections was never configured
+    if (!currentCalc.contentSections || currentCalc.contentSections.length === 0) {
+      return currentCalc.content?.usageInstructions || '';
+    }
+    return '';
   };
 
   const updateHowToContent = (html: string) => {
     if (!currentCalc) return;
-    const sections = currentCalc.contentSections ? [...currentCalc.contentSections] : [];
-    const howToIndex = sections.findIndex(
-      (s) => s.sectionType === 'how-to' || s.title.toLowerCase().includes('how to')
-    );
+    const cleanHtml = html && html.trim().length > 0 ? html : '';
+    let sections = currentCalc.contentSections ? [...currentCalc.contentSections] : [];
 
-    if (howToIndex >= 0) {
-      sections[howToIndex] = {
-        ...sections[howToIndex],
-        htmlContent: html,
-        isEnabled: true,
-      };
+    if (!cleanHtml) {
+      // If user wiped the content in rich text editor, delete from contentSections
+      sections = sections.filter(
+        (s) => s.sectionType !== 'how-to' && !s.title?.toLowerCase().includes('how to')
+      ).map((s, idx) => ({ ...s, order: idx + 1 }));
     } else {
-      sections.push({
-        id: `sec_how_to_${Date.now()}`,
-        title: 'Step-by-Step Instructions',
-        sectionType: 'how-to',
-        htmlContent: html,
-        isEnabled: true,
-        order: sections.length + 1,
-      });
+      const howToIndex = sections.findIndex(
+        (s) => s.sectionType === 'how-to' || s.title?.toLowerCase().includes('how to')
+      );
+
+      if (howToIndex >= 0) {
+        sections[howToIndex] = {
+          ...sections[howToIndex],
+          htmlContent: cleanHtml,
+          isEnabled: true,
+        };
+      } else {
+        sections.push({
+          id: `sec_how_to_${Date.now()}`,
+          title: 'Step-by-Step Instructions',
+          sectionType: 'how-to',
+          htmlContent: cleanHtml,
+          isEnabled: true,
+          order: sections.length + 1,
+        });
+      }
     }
 
     setCurrentCalc({
@@ -207,8 +421,53 @@ export const AdminContentSeo: React.FC = () => {
       contentSections: sections,
       content: {
         ...(currentCalc.content || { formulaExplanation: '', usageInstructions: '', faqs: [] }),
-        usageInstructions: html,
+        usageInstructions: cleanHtml,
       },
+    });
+  };
+
+  const executeDeleteHowToGuide = async () => {
+    if (!currentCalc) return;
+    const remainingSections = (currentCalc.contentSections || [])
+      .filter((s) => s.sectionType !== 'how-to' && !s.title?.toLowerCase().includes('how to'))
+      .map((s, idx) => ({ ...s, order: idx + 1 }));
+
+    const updatedModules = (currentCalc.modules || []).map((m) =>
+      m.moduleId === 'how-to-guide' ? { ...m, isEnabled: false } : m
+    );
+
+    const updatedCalc: Calculator = {
+      ...currentCalc,
+      modules: updatedModules,
+      contentSections: remainingSections,
+      content: {
+        ...(currentCalc.content || { formulaExplanation: '', usageInstructions: '', faqs: [] }),
+        usageInstructions: '',
+      },
+    };
+
+    setCurrentCalc(updatedCalc);
+    setConfirmModal(null);
+
+    try {
+      setIsSaving(true);
+      await api.adminUpdateCalculator(currentCalc.id, updatedCalc);
+      setSuccessMessage('How-to Guide was completely deleted, disabled, and saved.');
+      setTimeout(() => setSuccessMessage(null), 3500);
+    } catch (err: any) {
+      setErrorMessage(err.message || 'Failed to save deletion.');
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  const handleDeleteHowToGuide = () => {
+    setConfirmModal({
+      isOpen: true,
+      title: 'Delete How-To Guide Section?',
+      message: 'This will erase the step-by-step instructions, remove the section from content, and disable the module on the live calculator page.',
+      confirmLabel: 'Yes, Delete Section',
+      action: executeDeleteHowToGuide,
     });
   };
 
@@ -252,9 +511,39 @@ export const AdminContentSeo: React.FC = () => {
 
   const handleRemoveExample = (exId: string) => {
     if (!currentCalc) return;
-    setCurrentCalc({
-      ...currentCalc,
-      examples: (currentCalc.examples || []).filter((ex) => ex.id !== exId),
+    const target = (currentCalc.examples || []).find((e) => e.id === exId);
+    const title = target?.title || 'this worked example';
+
+    const executeRemove = async () => {
+      const updatedExamples = (currentCalc.examples || [])
+        .filter((ex) => ex.id !== exId)
+        .map((ex, idx) => ({ ...ex, order: idx + 1 }));
+
+      const updatedCalc: Calculator = {
+        ...currentCalc,
+        examples: updatedExamples,
+      };
+      setCurrentCalc(updatedCalc);
+      setConfirmModal(null);
+
+      try {
+        setIsSaving(true);
+        await api.adminUpdateCalculator(currentCalc.id, updatedCalc);
+        setSuccessMessage('Worked example was deleted and saved.');
+        setTimeout(() => setSuccessMessage(null), 3500);
+      } catch (err: any) {
+        setErrorMessage(err.message || 'Failed to save deletion.');
+      } finally {
+        setIsSaving(false);
+      }
+    };
+
+    setConfirmModal({
+      isOpen: true,
+      title: `Delete Example "${title}"?`,
+      message: 'Are you sure you want to delete this worked example scenario?',
+      confirmLabel: 'Delete Example',
+      action: executeRemove,
     });
   };
 
@@ -272,42 +561,224 @@ export const AdminContentSeo: React.FC = () => {
     setCurrentCalc({ ...currentCalc, examples: updated });
   };
 
+  const handleDeleteAllExamples = () => {
+    if (!currentCalc) return;
+
+    const executeDelete = async () => {
+      const updatedModules = (currentCalc.modules || []).map((m) =>
+        m.moduleId === 'worked-examples' ? { ...m, isEnabled: false } : m
+      );
+
+      const updatedCalc: Calculator = {
+        ...currentCalc,
+        examples: [],
+        modules: updatedModules,
+      };
+      setCurrentCalc(updatedCalc);
+      setConfirmModal(null);
+
+      try {
+        setIsSaving(true);
+        await api.adminUpdateCalculator(currentCalc.id, updatedCalc);
+        setSuccessMessage('All worked examples were deleted and the section was disabled.');
+        setTimeout(() => setSuccessMessage(null), 3500);
+      } catch (err: any) {
+        setErrorMessage(err.message || 'Failed to delete examples.');
+      } finally {
+        setIsSaving(false);
+      }
+    };
+
+    setConfirmModal({
+      isOpen: true,
+      title: 'Delete All Worked Examples?',
+      message: 'This will erase all custom worked examples and disable the Worked Examples section on the live calculator page.',
+      confirmLabel: 'Yes, Delete All Examples',
+      action: executeDelete,
+    });
+  };
+
+  // Formula & Methodology handlers
+  const getFormulaContent = () => {
+    if (!currentCalc) return '';
+    const section = currentCalc.contentSections?.find(
+      (s) => s.sectionType === 'formula' || s.title?.toLowerCase().includes('formula')
+    );
+    if (section) return section.htmlContent || '';
+    return currentCalc.content?.formulaExplanation || '';
+  };
+
+  const updateFormulaContent = (html: string) => {
+    if (!currentCalc) return;
+    const cleanHtml = html && html.trim().length > 0 ? html : '';
+    let sections = currentCalc.contentSections ? [...currentCalc.contentSections] : [];
+
+    if (!cleanHtml) {
+      sections = sections.filter(
+        (s) => s.sectionType !== 'formula' && !s.title?.toLowerCase().includes('formula')
+      ).map((s, idx) => ({ ...s, order: idx + 1 }));
+    } else {
+      const formulaIndex = sections.findIndex(
+        (s) => s.sectionType === 'formula' || s.title?.toLowerCase().includes('formula')
+      );
+      if (formulaIndex >= 0) {
+        sections[formulaIndex] = {
+          ...sections[formulaIndex],
+          htmlContent: cleanHtml,
+          isEnabled: true,
+        };
+      } else {
+        sections.push({
+          id: `sec_formula_${Date.now()}`,
+          title: 'Formula & Mathematical Logic',
+          sectionType: 'formula',
+          htmlContent: cleanHtml,
+          isEnabled: true,
+          order: sections.length + 1,
+        });
+      }
+    }
+
+    setCurrentCalc({
+      ...currentCalc,
+      contentSections: sections,
+      content: {
+        ...(currentCalc.content || { formulaExplanation: '', usageInstructions: '', faqs: [] }),
+        formulaExplanation: cleanHtml,
+      },
+    });
+  };
+
+  const handleDeleteFormulaGuide = () => {
+    if (!currentCalc) return;
+
+    const executeDelete = async () => {
+      const remainingSections = (currentCalc.contentSections || [])
+        .filter((s) => s.sectionType !== 'formula' && !s.title?.toLowerCase().includes('formula'))
+        .map((s, idx) => ({ ...s, order: idx + 1 }));
+
+      const updatedModules = (currentCalc.modules || []).map((m) =>
+        m.moduleId === 'formula-methodology' ? { ...m, isEnabled: false } : m
+      );
+
+      const updatedCalc: Calculator = {
+        ...currentCalc,
+        modules: updatedModules,
+        contentSections: remainingSections,
+        content: {
+          ...(currentCalc.content || { formulaExplanation: '', usageInstructions: '', faqs: [] }),
+          formulaExplanation: '',
+        },
+      };
+      setCurrentCalc(updatedCalc);
+      setConfirmModal(null);
+
+      try {
+        setIsSaving(true);
+        await api.adminUpdateCalculator(currentCalc.id, updatedCalc);
+        setSuccessMessage('Formula section was completely deleted, disabled, and saved.');
+        setTimeout(() => setSuccessMessage(null), 3500);
+      } catch (err: any) {
+        setErrorMessage(err.message || 'Failed to delete formula section.');
+      } finally {
+        setIsSaving(false);
+      }
+    };
+
+    setConfirmModal({
+      isOpen: true,
+      title: 'Delete Formula & Methodology Section?',
+      message: 'This will erase the narrative explanation, clear mathematical methodology, and disable the section on the live page.',
+      confirmLabel: 'Yes, Delete Formula Section',
+      action: executeDelete,
+    });
+  };
+
   // Key Assumptions handlers
   const getAssumptionsContent = () => {
     if (!currentCalc) return '';
     const section = currentCalc.contentSections?.find(
-      (s) => s.sectionType === 'assumptions' || s.title.toLowerCase().includes('assumption')
+      (s) => s.sectionType === 'assumptions' || s.title?.toLowerCase().includes('assumption')
     );
     return section?.htmlContent || '';
   };
 
   const updateAssumptionsContent = (html: string) => {
     if (!currentCalc) return;
-    const sections = currentCalc.contentSections ? [...currentCalc.contentSections] : [];
-    const assumpIndex = sections.findIndex(
-      (s) => s.sectionType === 'assumptions' || s.title.toLowerCase().includes('assumption')
-    );
+    const cleanHtml = html && html.trim().length > 0 ? html : '';
+    let sections = currentCalc.contentSections ? [...currentCalc.contentSections] : [];
 
-    if (assumpIndex >= 0) {
-      sections[assumpIndex] = {
-        ...sections[assumpIndex],
-        htmlContent: html,
-        isEnabled: true,
-      };
+    if (!cleanHtml) {
+      sections = sections.filter(
+        (s) => s.sectionType !== 'assumptions' && !s.title?.toLowerCase().includes('assumption')
+      ).map((s, idx) => ({ ...s, order: idx + 1 }));
     } else {
-      sections.push({
-        id: `sec_assumptions_${Date.now()}`,
-        title: 'Key Assumptions & Statutory Notes',
-        sectionType: 'assumptions',
-        htmlContent: html,
-        isEnabled: true,
-        order: sections.length + 1,
-      });
+      const assumpIndex = sections.findIndex(
+        (s) => s.sectionType === 'assumptions' || s.title?.toLowerCase().includes('assumption')
+      );
+
+      if (assumpIndex >= 0) {
+        sections[assumpIndex] = {
+          ...sections[assumpIndex],
+          htmlContent: cleanHtml,
+          isEnabled: true,
+        };
+      } else {
+        sections.push({
+          id: `sec_assumptions_${Date.now()}`,
+          title: 'Key Assumptions & Statutory Notes',
+          sectionType: 'assumptions',
+          htmlContent: cleanHtml,
+          isEnabled: true,
+          order: sections.length + 1,
+        });
+      }
     }
 
     setCurrentCalc({
       ...currentCalc,
       contentSections: sections,
+    });
+  };
+
+  const handleDeleteAssumptionsGuide = () => {
+    if (!currentCalc) return;
+
+    const executeDelete = async () => {
+      const remainingSections = (currentCalc.contentSections || [])
+        .filter((s) => s.sectionType !== 'assumptions' && !s.title?.toLowerCase().includes('assumption'))
+        .map((s, idx) => ({ ...s, order: idx + 1 }));
+
+      const updatedModules = (currentCalc.modules || []).map((m) =>
+        m.moduleId === 'assumptions-info' ? { ...m, isEnabled: false } : m
+      );
+
+      const updatedCalc: Calculator = {
+        ...currentCalc,
+        modules: updatedModules,
+        contentSections: remainingSections,
+      };
+      setCurrentCalc(updatedCalc);
+      setConfirmModal(null);
+
+      try {
+        setIsSaving(true);
+        await api.adminUpdateCalculator(currentCalc.id, updatedCalc);
+        setSuccessMessage('Assumptions section was completely deleted, disabled, and saved.');
+        setTimeout(() => setSuccessMessage(null), 3500);
+      } catch (err: any) {
+        setErrorMessage(err.message || 'Failed to save deletion.');
+      } finally {
+        setIsSaving(false);
+      }
+    };
+
+    setConfirmModal({
+      isOpen: true,
+      title: 'Delete Key Assumptions Section?',
+      message: 'This will erase assumptions, notes, and statutory disclosures, and disable the section on the live page.',
+      confirmLabel: 'Yes, Delete Assumptions',
+      action: executeDelete,
     });
   };
 
@@ -353,9 +824,39 @@ export const AdminContentSeo: React.FC = () => {
 
   const handleRemoveFaq = (faqId: string) => {
     if (!currentCalc) return;
-    setCurrentCalc({
-      ...currentCalc,
-      faqs: (currentCalc.faqs || []).filter((f: CalculatorFAQ) => f.id !== faqId),
+    const target = (currentCalc.faqs || []).find((f) => f.id === faqId);
+    const question = target?.question || 'this FAQ item';
+
+    const executeRemove = async () => {
+      const updatedFaqs = (currentCalc.faqs || [])
+        .filter((f: CalculatorFAQ) => f.id !== faqId)
+        .map((f, idx) => ({ ...f, order: idx + 1 }));
+
+      const updatedCalc: Calculator = {
+        ...currentCalc,
+        faqs: updatedFaqs,
+      };
+      setCurrentCalc(updatedCalc);
+      setConfirmModal(null);
+
+      try {
+        setIsSaving(true);
+        await api.adminUpdateCalculator(currentCalc.id, updatedCalc);
+        setSuccessMessage('FAQ item was deleted and saved.');
+        setTimeout(() => setSuccessMessage(null), 3500);
+      } catch (err: any) {
+        setErrorMessage(err.message || 'Failed to save deletion.');
+      } finally {
+        setIsSaving(false);
+      }
+    };
+
+    setConfirmModal({
+      isOpen: true,
+      title: `Delete FAQ "${question}"?`,
+      message: 'Are you sure you want to permanently delete this FAQ item from the calculator?',
+      confirmLabel: 'Delete FAQ',
+      action: executeRemove,
     });
   };
 
@@ -503,6 +1004,7 @@ export const AdminContentSeo: React.FC = () => {
                 >
                   <BookOpen className="w-4 h-4" />
                   <span>1. How to Use Guide</span>
+                  <span className={`w-2 h-2 rounded-full ${isModuleEnabled('how-to-guide') ? 'bg-emerald-500' : 'bg-amber-400'}`} title={isModuleEnabled('how-to-guide') ? 'Active on Public Page' : 'Disabled / Hidden'}></span>
                 </button>
 
                 <button
@@ -519,6 +1021,7 @@ export const AdminContentSeo: React.FC = () => {
                   <span className="px-1.5 py-0.5 text-[10px] font-extrabold rounded-full bg-[#fafafa] text-[#74767e] border border-[#e4e5e7]">
                     {currentCalc.examples?.length || 0}
                   </span>
+                  <span className={`w-2 h-2 rounded-full ${isModuleEnabled('worked-examples') ? 'bg-emerald-500' : 'bg-amber-400'}`} title={isModuleEnabled('worked-examples') ? 'Active on Public Page' : 'Disabled / Hidden'}></span>
                 </button>
 
                 <button
@@ -532,6 +1035,7 @@ export const AdminContentSeo: React.FC = () => {
                 >
                   <Code2 className="w-4 h-4" />
                   <span>3. Formula & Logic</span>
+                  <span className={`w-2 h-2 rounded-full ${isModuleEnabled('formula-methodology') ? 'bg-emerald-500' : 'bg-amber-400'}`} title={isModuleEnabled('formula-methodology') ? 'Active on Public Page' : 'Disabled / Hidden'}></span>
                 </button>
 
                 <button
@@ -545,6 +1049,7 @@ export const AdminContentSeo: React.FC = () => {
                 >
                   <Info className="w-4 h-4" />
                   <span>4. Key Assumptions</span>
+                  <span className={`w-2 h-2 rounded-full ${isModuleEnabled('assumptions-info') ? 'bg-emerald-500' : 'bg-amber-400'}`} title={isModuleEnabled('assumptions-info') ? 'Active on Public Page' : 'Disabled / Hidden'}></span>
                 </button>
 
                 <button
@@ -607,27 +1112,105 @@ export const AdminContentSeo: React.FC = () => {
                       </p>
                     </div>
 
-                    <button
-                      type="button"
-                      onClick={insertHowToTemplate}
-                      className="px-3.5 py-1.5 bg-[#f4fdf8] hover:bg-[#e8faef] text-[#1dbf73] border border-[#d8f5e5] rounded-lg text-xs font-bold transition-all cursor-pointer shadow-2xs shrink-0"
-                    >
-                      Insert 3-Step Guided Template
-                    </button>
+                    <div className="flex items-center gap-2">
+                      <button
+                        type="button"
+                        onClick={insertHowToTemplate}
+                        className="px-3.5 py-1.5 bg-[#f4fdf8] hover:bg-[#e8faef] text-[#1dbf73] border border-[#d8f5e5] rounded-lg text-xs font-bold transition-all cursor-pointer shadow-2xs shrink-0"
+                      >
+                        Insert 3-Step Guided Template
+                      </button>
+                      <button
+                        type="button"
+                        onClick={handleDeleteHowToGuide}
+                        className="px-3 py-1.5 bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 rounded-lg text-xs font-bold transition-all cursor-pointer shadow-2xs shrink-0 flex items-center gap-1.5"
+                        title="Delete this entire section from calculator"
+                      >
+                        <Trash2 className="w-3.5 h-3.5" />
+                        <span>Delete Guide Section</span>
+                      </button>
+                    </div>
                   </div>
+
+                  {/* Section Live Status & Master Toggle Bar */}
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-3.5 bg-[#f9fafb] border border-[#e4e5e7] rounded-xl">
+                    <div className="flex items-center gap-2.5">
+                      <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-bold ${
+                        isModuleEnabled('how-to-guide')
+                          ? 'bg-emerald-50 text-emerald-700 border border-emerald-200'
+                          : 'bg-amber-50 text-amber-700 border border-amber-200'
+                      }`}>
+                        <span className={`w-2 h-2 rounded-full ${isModuleEnabled('how-to-guide') ? 'bg-emerald-500' : 'bg-amber-500'}`}></span>
+                        <span>{isModuleEnabled('how-to-guide') ? 'Active on Public Page' : 'Disabled on Public Page'}</span>
+                      </span>
+                      <span className="text-xs text-[#74767e]">
+                        {isModuleEnabled('how-to-guide')
+                          ? 'This section is currently visible to visitors.'
+                          : 'This section is hidden on the public calculator page.'}
+                      </span>
+                    </div>
+
+                    <div className="flex items-center gap-2">
+                      <button
+                        type="button"
+                        onClick={() => toggleModuleEnabled('how-to-guide', !isModuleEnabled('how-to-guide'))}
+                        className={`px-3.5 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer border ${
+                          isModuleEnabled('how-to-guide')
+                            ? 'bg-white hover:bg-slate-50 text-slate-700 border-[#e4e5e7]'
+                            : 'bg-[#1dbf73] hover:bg-[#19a463] text-white border-[#1dbf73]'
+                        }`}
+                      >
+                        {isModuleEnabled('how-to-guide') ? 'Disable Section' : 'Enable Section'}
+                      </button>
+                    </div>
+                  </div>
+
+                  {!isModuleEnabled('how-to-guide') && (
+                    <div className="p-3.5 bg-amber-50/70 border border-amber-200 rounded-xl flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                      <div className="flex items-center gap-2 text-xs text-amber-800">
+                        <Info className="w-4 h-4 text-amber-600 shrink-0" />
+                        <span>This section is <strong>deleted / disabled</strong>. It will NOT appear on the public page. You can edit content below or click <strong>Enable Section</strong> to publish it.</span>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => toggleModuleEnabled('how-to-guide', true)}
+                        className="px-3 py-1 bg-amber-600 hover:bg-amber-700 text-white rounded-lg text-xs font-bold shrink-0 cursor-pointer shadow-2xs self-start sm:self-auto"
+                      >
+                        Enable Section
+                      </button>
+                    </div>
+                  )}
 
                   <div className="space-y-4">
                     <div className="space-y-1.5">
-                      <label className="block text-xs font-bold text-[#222325]">
-                        Section Display Title (Header on Public Page)
-                      </label>
+                      <div className="flex items-center justify-between">
+                        <label className="block text-xs font-bold text-[#222325]">
+                          Section Display Title (Header on Public Page)
+                        </label>
+                        {getModuleTitle('how-to-guide', `How to Use the ${currentCalc.name}`) !== '' && (
+                          <button
+                            type="button"
+                            onClick={() => updateModuleTitle('how-to-guide', '')}
+                            className="text-[11px] text-[#74767e] hover:text-rose-600 transition-colors cursor-pointer flex items-center gap-1 font-semibold"
+                            title="Delete this header title"
+                          >
+                            <Trash2 className="w-3 h-3" />
+                            <span>Delete Title</span>
+                          </button>
+                        )}
+                      </div>
                       <input
                         type="text"
                         value={getModuleTitle('how-to-guide', `How to Use the ${currentCalc.name}`)}
                         onChange={(e) => updateModuleTitle('how-to-guide', e.target.value)}
-                        placeholder={`How to Use the ${currentCalc.name}`}
+                        placeholder={`Leave blank to hide header, or e.g. How to Use the ${currentCalc.name}`}
                         className="w-full px-3.5 py-2.5 bg-[#fafafa] border border-[#e4e5e7] rounded-lg text-xs font-bold text-[#222325] focus:outline-none focus:border-[#1dbf73]"
                       />
+                      {getModuleTitle('how-to-guide', `How to Use the ${currentCalc.name}`) === '' && (
+                        <p className="text-[11px] text-amber-600 font-medium">
+                          Display title is deleted — the header banner will not appear on the live calculator page.
+                        </p>
+                      )}
                     </div>
 
                     <div className="space-y-1.5">
@@ -640,6 +1223,18 @@ export const AdminContentSeo: React.FC = () => {
                         placeholder="Write clear, step-by-step instructions with numbered lists, pro-tips, and explanations..."
                         minHeight="240px"
                       />
+                    </div>
+
+                    <div className="flex justify-end pt-3 border-t border-[#f0f0f0]">
+                      <button
+                        type="button"
+                        onClick={handleSaveAll}
+                        disabled={isSaving}
+                        className="px-5 py-2.5 bg-[#1dbf73] hover:bg-[#19a463] text-white text-xs font-bold rounded-lg flex items-center gap-2 transition-all cursor-pointer shadow-sm disabled:opacity-50"
+                      >
+                        <Save className="w-4 h-4" />
+                        <span>{isSaving ? 'Saving Changes...' : 'Save Changes'}</span>
+                      </button>
                     </div>
                   </div>
                 </div>
@@ -659,27 +1254,105 @@ export const AdminContentSeo: React.FC = () => {
                       </p>
                     </div>
 
-                    <button
-                      type="button"
-                      onClick={handleAddExample}
-                      className="px-4 py-2 bg-[#222325] hover:bg-black text-white text-xs font-bold rounded-lg flex items-center gap-1.5 transition-all cursor-pointer shadow-2xs shrink-0"
-                    >
-                      <Plus className="w-3.5 h-3.5" />
-                      <span>Add Worked Example</span>
-                    </button>
+                    <div className="flex items-center gap-2">
+                      <button
+                        type="button"
+                        onClick={handleAddExample}
+                        className="px-3.5 py-1.5 bg-[#222325] hover:bg-black text-white text-xs font-bold rounded-lg flex items-center gap-1.5 transition-all cursor-pointer shadow-2xs shrink-0"
+                      >
+                        <Plus className="w-3.5 h-3.5" />
+                        <span>Add Example</span>
+                      </button>
+                      <button
+                        type="button"
+                        onClick={handleDeleteAllExamples}
+                        className="px-3 py-1.5 bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 rounded-lg text-xs font-bold transition-all cursor-pointer shadow-2xs shrink-0 flex items-center gap-1.5"
+                        title="Delete all examples and disable this section"
+                      >
+                        <Trash2 className="w-3.5 h-3.5" />
+                        <span>Delete All Examples</span>
+                      </button>
+                    </div>
                   </div>
 
+                  {/* Section Live Status & Master Toggle Bar */}
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-3.5 bg-[#f9fafb] border border-[#e4e5e7] rounded-xl">
+                    <div className="flex items-center gap-2.5">
+                      <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-bold ${
+                        isModuleEnabled('worked-examples')
+                          ? 'bg-emerald-50 text-emerald-700 border border-emerald-200'
+                          : 'bg-amber-50 text-amber-700 border border-amber-200'
+                      }`}>
+                        <span className={`w-2 h-2 rounded-full ${isModuleEnabled('worked-examples') ? 'bg-emerald-500' : 'bg-amber-500'}`}></span>
+                        <span>{isModuleEnabled('worked-examples') ? 'Active on Public Page' : 'Disabled on Public Page'}</span>
+                      </span>
+                      <span className="text-xs text-[#74767e]">
+                        {isModuleEnabled('worked-examples')
+                          ? 'This section is currently visible to visitors.'
+                          : 'This section is hidden on the public calculator page.'}
+                      </span>
+                    </div>
+
+                    <div className="flex items-center gap-2">
+                      <button
+                        type="button"
+                        onClick={() => toggleModuleEnabled('worked-examples', !isModuleEnabled('worked-examples'))}
+                        className={`px-3.5 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer border ${
+                          isModuleEnabled('worked-examples')
+                            ? 'bg-white hover:bg-slate-50 text-slate-700 border-[#e4e5e7]'
+                            : 'bg-[#1dbf73] hover:bg-[#19a463] text-white border-[#1dbf73]'
+                        }`}
+                      >
+                        {isModuleEnabled('worked-examples') ? 'Disable Section' : 'Enable Section'}
+                      </button>
+                    </div>
+                  </div>
+
+                  {!isModuleEnabled('worked-examples') && (
+                    <div className="p-3.5 bg-amber-50/70 border border-amber-200 rounded-xl flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                      <div className="flex items-center gap-2 text-xs text-amber-800">
+                        <Info className="w-4 h-4 text-amber-600 shrink-0" />
+                        <span>Worked Examples is <strong>deleted / disabled</strong> and will NOT appear on the public page. You can add scenarios below or click <strong>Enable Section</strong> to publish them.</span>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => toggleModuleEnabled('worked-examples', true)}
+                        className="px-3 py-1 bg-amber-600 hover:bg-amber-700 text-white rounded-lg text-xs font-bold shrink-0 cursor-pointer shadow-2xs self-start sm:self-auto"
+                      >
+                        Enable Section
+                      </button>
+                    </div>
+                  )}
+
                   <div className="space-y-1.5">
-                    <label className="block text-xs font-bold text-[#222325]">
-                      Section Display Title (Header on Public Page)
-                    </label>
+                    <div className="flex items-center justify-between">
+                      <label className="block text-xs font-bold text-[#222325]">
+                        Section Display Title (Header on Public Page)
+                      </label>
+                      {getModuleTitle('worked-examples', 'Worked Examples & Real Scenarios') !== '' && (
+                        <button
+                          type="button"
+                          onClick={() => updateModuleTitle('worked-examples', '')}
+                          className="text-[11px] text-[#74767e] hover:text-rose-600 transition-colors cursor-pointer flex items-center gap-1 font-semibold"
+                          title="Delete this header title"
+                        >
+                          <Trash2 className="w-3 h-3" />
+                          <span>Delete Title</span>
+                        </button>
+                      )}
+                    </div>
                     <input
                       type="text"
                       value={getModuleTitle('worked-examples', 'Worked Examples & Real Scenarios')}
                       onChange={(e) => updateModuleTitle('worked-examples', e.target.value)}
-                      placeholder="Worked Examples & Real Scenarios"
+                      placeholder="Leave blank to hide header, or e.g. Worked Examples & Real Scenarios"
                       className="w-full px-3.5 py-2.5 bg-[#fafafa] border border-[#e4e5e7] rounded-lg text-xs font-bold text-[#222325] focus:outline-none focus:border-[#1dbf73]"
                     />
+                    {getModuleTitle('worked-examples', 'Worked Examples & Real Scenarios') === '' && (
+                      <p className="text-[11px] text-amber-600 font-medium">
+                        Display title is deleted — the header banner will not appear on the live calculator page.
+                      </p>
+                    )}
                   </div>
 
                   <div className="space-y-5 pt-2">
@@ -825,27 +1498,105 @@ export const AdminContentSeo: React.FC = () => {
                       </p>
                     </div>
 
-                    <a
-                      href={`/admin/calculators/${currentCalc.id}?tab=formulas`}
-                      className="px-3.5 py-1.5 bg-[#222325] hover:bg-black text-white rounded-lg text-xs font-bold transition-all flex items-center gap-1.5 shadow-2xs"
-                    >
-                      <Sliders className="w-3.5 h-3.5" />
-                      <span>Edit Output Equations &rarr;</span>
-                    </a>
+                    <div className="flex items-center gap-2">
+                      <a
+                        href={`/admin/calculators/${currentCalc.id}?tab=formulas`}
+                        className="px-3.5 py-1.5 bg-[#222325] hover:bg-black text-white rounded-lg text-xs font-bold transition-all flex items-center gap-1.5 shadow-2xs shrink-0"
+                      >
+                        <Sliders className="w-3.5 h-3.5" />
+                        <span>Edit Equations &rarr;</span>
+                      </a>
+                      <button
+                        type="button"
+                        onClick={handleDeleteFormulaGuide}
+                        className="px-3 py-1.5 bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 rounded-lg text-xs font-bold transition-all cursor-pointer shadow-2xs shrink-0 flex items-center gap-1.5"
+                        title="Delete formula explanation and disable this section"
+                      >
+                        <Trash2 className="w-3.5 h-3.5" />
+                        <span>Delete Formula Section</span>
+                      </button>
+                    </div>
                   </div>
+
+                  {/* Section Live Status & Master Toggle Bar */}
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-3.5 bg-[#f9fafb] border border-[#e4e5e7] rounded-xl">
+                    <div className="flex items-center gap-2.5">
+                      <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-bold ${
+                        isModuleEnabled('formula-methodology')
+                          ? 'bg-emerald-50 text-emerald-700 border border-emerald-200'
+                          : 'bg-amber-50 text-amber-700 border border-amber-200'
+                      }`}>
+                        <span className={`w-2 h-2 rounded-full ${isModuleEnabled('formula-methodology') ? 'bg-emerald-500' : 'bg-amber-500'}`}></span>
+                        <span>{isModuleEnabled('formula-methodology') ? 'Active on Public Page' : 'Disabled on Public Page'}</span>
+                      </span>
+                      <span className="text-xs text-[#74767e]">
+                        {isModuleEnabled('formula-methodology')
+                          ? 'This section is currently visible to visitors.'
+                          : 'This section is hidden on the public calculator page.'}
+                      </span>
+                    </div>
+
+                    <div className="flex items-center gap-2">
+                      <button
+                        type="button"
+                        onClick={() => toggleModuleEnabled('formula-methodology', !isModuleEnabled('formula-methodology'))}
+                        className={`px-3.5 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer border ${
+                          isModuleEnabled('formula-methodology')
+                            ? 'bg-white hover:bg-slate-50 text-slate-700 border-[#e4e5e7]'
+                            : 'bg-[#1dbf73] hover:bg-[#19a463] text-white border-[#1dbf73]'
+                        }`}
+                      >
+                        {isModuleEnabled('formula-methodology') ? 'Disable Section' : 'Enable Section'}
+                      </button>
+                    </div>
+                  </div>
+
+                  {!isModuleEnabled('formula-methodology') && (
+                    <div className="p-3.5 bg-amber-50/70 border border-amber-200 rounded-xl flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                      <div className="flex items-center gap-2 text-xs text-amber-800">
+                        <Info className="w-4 h-4 text-amber-600 shrink-0" />
+                        <span>Formula section is <strong>deleted / disabled</strong> and will NOT appear on the public page. You can edit content below or click <strong>Enable Section</strong> to publish it.</span>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => toggleModuleEnabled('formula-methodology', true)}
+                        className="px-3 py-1 bg-amber-600 hover:bg-amber-700 text-white rounded-lg text-xs font-bold shrink-0 cursor-pointer shadow-2xs self-start sm:self-auto"
+                      >
+                        Enable Section
+                      </button>
+                    </div>
+                  )}
 
                   <div className="space-y-4">
                     <div className="space-y-1.5">
-                      <label className="block text-xs font-bold text-[#222325]">
-                        Section Display Title (Header on Public Page)
-                      </label>
+                      <div className="flex items-center justify-between">
+                        <label className="block text-xs font-bold text-[#222325]">
+                          Section Display Title (Header on Public Page)
+                        </label>
+                        {getModuleTitle('formula-methodology', 'Formula & Mathematical Logic') !== '' && (
+                          <button
+                            type="button"
+                            onClick={() => updateModuleTitle('formula-methodology', '')}
+                            className="text-[11px] text-[#74767e] hover:text-rose-600 transition-colors cursor-pointer flex items-center gap-1 font-semibold"
+                            title="Delete this header title"
+                          >
+                            <Trash2 className="w-3 h-3" />
+                            <span>Delete Title</span>
+                          </button>
+                        )}
+                      </div>
                       <input
                         type="text"
                         value={getModuleTitle('formula-methodology', 'Formula & Mathematical Logic')}
                         onChange={(e) => updateModuleTitle('formula-methodology', e.target.value)}
-                        placeholder="Formula & Mathematical Logic"
+                        placeholder="Leave blank to hide header, or e.g. Formula & Mathematical Logic"
                         className="w-full px-3.5 py-2.5 bg-[#fafafa] border border-[#e4e5e7] rounded-lg text-xs font-bold text-[#222325] focus:outline-none focus:border-[#1dbf73]"
                       />
+                      {getModuleTitle('formula-methodology', 'Formula & Mathematical Logic') === '' && (
+                        <p className="text-[11px] text-amber-600 font-medium">
+                          Display title is deleted — the header banner will not appear on the live calculator page.
+                        </p>
+                      )}
                     </div>
 
                     <div className="space-y-1.5">
@@ -853,16 +1604,8 @@ export const AdminContentSeo: React.FC = () => {
                         Methodology Explanation & Narrative Proof (Rich-Text Editor)
                       </label>
                       <RichTextEditor
-                        value={currentCalc.content?.formulaExplanation || ''}
-                        onChange={(html) =>
-                          setCurrentCalc({
-                            ...currentCalc,
-                            content: {
-                              ...(currentCalc.content || { formulaExplanation: '', usageInstructions: '', faqs: [] }),
-                              formulaExplanation: html,
-                            },
-                          })
-                        }
+                        value={getFormulaContent()}
+                        onChange={(html) => updateFormulaContent(html)}
                         placeholder="Describe the mathematical foundation, compounding frequency, formulas, and proofs..."
                         minHeight="220px"
                       />
@@ -908,27 +1651,105 @@ export const AdminContentSeo: React.FC = () => {
                       </p>
                     </div>
 
-                    <button
-                      type="button"
-                      onClick={insertAssumptionsTemplate}
-                      className="px-3.5 py-1.5 bg-[#f4fdf8] hover:bg-[#e8faef] text-[#1dbf73] border border-[#d8f5e5] rounded-lg text-xs font-bold transition-all cursor-pointer shadow-2xs shrink-0"
-                    >
-                      Insert Standard Disclosure Template
-                    </button>
+                    <div className="flex items-center gap-2">
+                      <button
+                        type="button"
+                        onClick={insertAssumptionsTemplate}
+                        className="px-3.5 py-1.5 bg-[#f4fdf8] hover:bg-[#e8faef] text-[#1dbf73] border border-[#d8f5e5] rounded-lg text-xs font-bold transition-all cursor-pointer shadow-2xs shrink-0"
+                      >
+                        Insert Template
+                      </button>
+                      <button
+                        type="button"
+                        onClick={handleDeleteAssumptionsGuide}
+                        className="px-3 py-1.5 bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 rounded-lg text-xs font-bold transition-all cursor-pointer shadow-2xs shrink-0 flex items-center gap-1.5"
+                        title="Delete assumptions and disable this section"
+                      >
+                        <Trash2 className="w-3.5 h-3.5" />
+                        <span>Delete Assumptions Section</span>
+                      </button>
+                    </div>
                   </div>
+
+                  {/* Section Live Status & Master Toggle Bar */}
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-3.5 bg-[#f9fafb] border border-[#e4e5e7] rounded-xl">
+                    <div className="flex items-center gap-2.5">
+                      <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-bold ${
+                        isModuleEnabled('assumptions-info')
+                          ? 'bg-emerald-50 text-emerald-700 border border-emerald-200'
+                          : 'bg-amber-50 text-amber-700 border border-amber-200'
+                      }`}>
+                        <span className={`w-2 h-2 rounded-full ${isModuleEnabled('assumptions-info') ? 'bg-emerald-500' : 'bg-amber-500'}`}></span>
+                        <span>{isModuleEnabled('assumptions-info') ? 'Active on Public Page' : 'Disabled on Public Page'}</span>
+                      </span>
+                      <span className="text-xs text-[#74767e]">
+                        {isModuleEnabled('assumptions-info')
+                          ? 'This section is currently visible to visitors.'
+                          : 'This section is hidden on the public calculator page.'}
+                      </span>
+                    </div>
+
+                    <div className="flex items-center gap-2">
+                      <button
+                        type="button"
+                        onClick={() => toggleModuleEnabled('assumptions-info', !isModuleEnabled('assumptions-info'))}
+                        className={`px-3.5 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer border ${
+                          isModuleEnabled('assumptions-info')
+                            ? 'bg-white hover:bg-slate-50 text-slate-700 border-[#e4e5e7]'
+                            : 'bg-[#1dbf73] hover:bg-[#19a463] text-white border-[#1dbf73]'
+                        }`}
+                      >
+                        {isModuleEnabled('assumptions-info') ? 'Disable Section' : 'Enable Section'}
+                      </button>
+                    </div>
+                  </div>
+
+                  {!isModuleEnabled('assumptions-info') && (
+                    <div className="p-3.5 bg-amber-50/70 border border-amber-200 rounded-xl flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                      <div className="flex items-center gap-2 text-xs text-amber-800">
+                        <Info className="w-4 h-4 text-amber-600 shrink-0" />
+                        <span>Assumptions section is <strong>deleted / disabled</strong> and will NOT appear on the public page. You can edit content below or click <strong>Enable Section</strong> to publish it.</span>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => toggleModuleEnabled('assumptions-info', true)}
+                        className="px-3 py-1 bg-amber-600 hover:bg-amber-700 text-white rounded-lg text-xs font-bold shrink-0 cursor-pointer shadow-2xs self-start sm:self-auto"
+                      >
+                        Enable Section
+                      </button>
+                    </div>
+                  )}
 
                   <div className="space-y-4">
                     <div className="space-y-1.5">
-                      <label className="block text-xs font-bold text-[#222325]">
-                        Section Display Title (Header on Public Page)
-                      </label>
+                      <div className="flex items-center justify-between">
+                        <label className="block text-xs font-bold text-[#222325]">
+                          Section Display Title (Header on Public Page)
+                        </label>
+                        {getModuleTitle('assumptions-info', 'Key Assumptions & Statutory Notes') !== '' && (
+                          <button
+                            type="button"
+                            onClick={() => updateModuleTitle('assumptions-info', '')}
+                            className="text-[11px] text-[#74767e] hover:text-rose-600 transition-colors cursor-pointer flex items-center gap-1 font-semibold"
+                            title="Delete this header title"
+                          >
+                            <Trash2 className="w-3 h-3" />
+                            <span>Delete Title</span>
+                          </button>
+                        )}
+                      </div>
                       <input
                         type="text"
                         value={getModuleTitle('assumptions-info', 'Key Assumptions & Statutory Notes')}
                         onChange={(e) => updateModuleTitle('assumptions-info', e.target.value)}
-                        placeholder="Key Assumptions & Statutory Notes"
+                        placeholder="Leave blank to hide header, or e.g. Key Assumptions & Statutory Notes"
                         className="w-full px-3.5 py-2.5 bg-[#fafafa] border border-[#e4e5e7] rounded-lg text-xs font-bold text-[#222325] focus:outline-none focus:border-[#1dbf73]"
                       />
+                      {getModuleTitle('assumptions-info', 'Key Assumptions & Statutory Notes') === '' && (
+                        <p className="text-[11px] text-amber-600 font-medium">
+                          Display title is deleted — the header banner will not appear on the live calculator page.
+                        </p>
+                      )}
                     </div>
 
                     <div className="space-y-1.5">
@@ -1088,6 +1909,28 @@ export const AdminContentSeo: React.FC = () => {
                         </div>
                       </div>
                     ))}
+
+                    {(currentCalc.contentSections || []).length === 0 && (
+                      <div className="p-8 bg-white rounded-xl border border-dashed border-[#e4e5e7] text-center space-y-3">
+                        <p className="text-xs text-[#74767e]">
+                          No custom content sections yet. Click &quot;Add Content Section&quot; above to create formatted articles or guides.
+                        </p>
+                      </div>
+                    )}
+
+                    {(currentCalc.contentSections || []).length > 0 && (
+                      <div className="flex justify-end pt-3">
+                        <button
+                          type="button"
+                          onClick={handleSaveAll}
+                          disabled={isSaving}
+                          className="px-5 py-2.5 bg-[#1dbf73] hover:bg-[#19a463] text-white text-xs font-bold rounded-lg flex items-center gap-2 transition-all cursor-pointer shadow-sm disabled:opacity-50"
+                        >
+                          <Save className="w-4 h-4" />
+                          <span>{isSaving ? 'Saving Sections...' : 'Save All Content Sections'}</span>
+                        </button>
+                      </div>
+                    )}
                   </div>
                 </div>
               )}
@@ -1322,6 +2165,41 @@ export const AdminContentSeo: React.FC = () => {
               )}
             </div>
           )}
+        </div>
+      )}
+
+      {/* In-App Confirmation Modal (Safe for Iframes & Preview) */}
+      {confirmModal && confirmModal.isOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-xs">
+          <div className="bg-white rounded-2xl border border-[#e4e5e7] p-6 max-w-md w-full shadow-2xl space-y-5">
+            <div className="flex items-start gap-3.5">
+              <div className="w-10 h-10 rounded-xl bg-rose-50 text-rose-600 flex items-center justify-center border border-rose-200 shrink-0">
+                <Trash2 className="w-5 h-5" />
+              </div>
+              <div className="space-y-1">
+                <h3 className="text-base font-bold text-[#222325]">{confirmModal.title}</h3>
+                <p className="text-xs text-[#74767e] leading-relaxed">{confirmModal.message}</p>
+              </div>
+            </div>
+
+            <div className="flex items-center justify-end gap-3 pt-3 border-t border-[#f0f0f0]">
+              <button
+                type="button"
+                onClick={() => setConfirmModal(null)}
+                className="px-4 py-2 bg-[#fafafa] hover:bg-[#e4e5e7] text-[#404145] text-xs font-bold rounded-lg border border-[#e4e5e7] transition-all cursor-pointer"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={() => confirmModal.action()}
+                className="px-4 py-2 bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold rounded-lg transition-all cursor-pointer shadow-sm flex items-center gap-1.5"
+              >
+                <Trash2 className="w-3.5 h-3.5" />
+                <span>{confirmModal.confirmLabel || 'Delete'}</span>
+              </button>
+            </div>
+          </div>
         </div>
       )}
     </div>

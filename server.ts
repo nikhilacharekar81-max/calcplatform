@@ -41,11 +41,18 @@ function getInitialDb(): DatabaseSchema {
   };
 }
 
+let memoryDb: DatabaseSchema | null = null;
+
 // Database helper with safe atomic writing & retry logic
 function readDb(): DatabaseSchema {
+  if (memoryDb) {
+    return memoryDb;
+  }
+
   if (!fs.existsSync(DB_FILE)) {
     const initial = getInitialDb();
     writeDb(initial, 'initial_file_creation');
+    memoryDb = initial;
     return initial;
   }
 
@@ -57,12 +64,15 @@ function readDb(): DatabaseSchema {
         throw new Error('Database file is empty during read');
       }
       const parsed = JSON.parse(raw);
-      return {
+      memoryDb = {
         categories: Array.isArray(parsed.categories) ? parsed.categories : [],
         subcategories: Array.isArray(parsed.subcategories) ? parsed.subcategories : [],
         calculators: Array.isArray(parsed.calculators) ? parsed.calculators : [],
+        posts: Array.isArray(parsed.posts) ? parsed.posts : [],
+        blogCategories: Array.isArray(parsed.blogCategories) ? parsed.blogCategories : [],
         settings: { ...defaultSettings, ...(parsed.settings || {}) },
       };
+      return memoryDb;
     } catch (err) {
       attempts++;
       if (attempts >= 5) {
@@ -78,6 +88,7 @@ function readDb(): DatabaseSchema {
 }
 
 function writeDb(data: DatabaseSchema, source: string = 'unknown'): boolean {
+  memoryDb = data;
   try {
     let prevCalcCount = 0;
     let prevCalcIds: string[] = [];
@@ -101,7 +112,14 @@ function writeDb(data: DatabaseSchema, source: string = 'unknown'): boolean {
     const nextCalcIds = data.calculators ? data.calculators.map((c: any) => c.id) : [];
 
     // SAFETY GUARD (PHASE 4): Block accidental empty writes that wipe existing calculators
-    if (prevCalcCount > 0 && nextCalcCount === 0 && source !== 'explicit_delete_all_confirmed') {
+    const allowedZeroCalcSources = [
+      'explicit_delete_all_confirmed',
+      'explicit_delete_category',
+      'explicit_delete_subcategory',
+      'explicit_delete_calculator',
+    ];
+
+    if (prevCalcCount > 0 && nextCalcCount === 0 && !allowedZeroCalcSources.includes(source)) {
       const stack = new Error().stack;
       console.error(`[BLOCKED CALCULATOR DB WRITE] Attempted to wipe all ${prevCalcCount} calculators from disk! Source: ${source}`);
       console.error('Stack trace:', stack);
@@ -135,6 +153,14 @@ async function startServer() {
   const isDev = process.env.NODE_ENV !== 'production';
 
   app.use(express.json({ limit: '10mb' }));
+
+  // Instant Health Check endpoints for Cloud Run & container orchestrators
+  app.get('/healthz', (_req: Request, res: Response) => {
+    return res.status(200).send('OK');
+  });
+  app.get('/api/health', (_req: Request, res: Response) => {
+    return res.status(200).json({ status: 'healthy', timestamp: new Date().toISOString() });
+  });
 
   // Helper for slug generation & conflict resolution
   function cleanSlug(text: string): string {
@@ -258,15 +284,14 @@ async function startServer() {
   });
 
   // ==========================================
-  // PUBLIC API
+  // PUBLIC ROUTE & CATEGORY HELPERS
   // ==========================================
-  app.get('/api/public/categories', (_req: Request, res: Response) => {
-    const db = readDb();
+  function getPublicCategoriesData(db: DatabaseSchema) {
     const activeCategories = db.categories
       .filter((c) => c.isActive)
       .sort((a, b) => a.order - b.order);
 
-    const result = activeCategories.map((cat) => {
+    return activeCategories.map((cat) => {
       const activeSubs = db.subcategories.filter((s) => s.categoryId === cat.id && s.isActive);
       const activeSubIds = new Set(activeSubs.map((s) => s.id));
       const activeCalcs = db.calculators.filter(
@@ -280,8 +305,449 @@ async function startServer() {
         subcategories: activeSubs.sort((a, b) => a.order - b.order),
       };
     });
+  }
 
-    return res.json(result);
+  function cleanPathSlug(s: string): string {
+    return (s || '')
+      .toLowerCase()
+      .replace(/\.html?$/i, '')
+      .replace(/[_\s+]+/g, '-')
+      .replace(/[^a-z0-9-]/g, '')
+      .replace(/-+/g, '-')
+      .replace(/^-|-$/g, '');
+  }
+
+  function resolveRouteData(rawUrlPath: string, db: DatabaseSchema, queryParams?: Record<string, any>) {
+    if (!rawUrlPath) return { type: 'home' };
+
+    // Strip query string and hash, normalize slashes and casing
+    const pathWithoutQuery = rawUrlPath.split('?')[0].split('#')[0];
+    let decoded = pathWithoutQuery;
+    try {
+      decoded = decodeURIComponent(pathWithoutQuery);
+    } catch {
+      decoded = pathWithoutQuery;
+    }
+
+    // Strip trailing .html if present
+    decoded = decoded.replace(/\.html?$/i, '');
+
+    const cleanPath = decoded.trim().toLowerCase().replace(/^\/+|\/+$/g, '');
+
+    // Extract any query param calculator target
+    const explicitCalcParam = queryParams?.calculator || queryParams?.calc || queryParams?.slug || queryParams?.id;
+    if (explicitCalcParam && typeof explicitCalcParam === 'string') {
+      const targetParam = explicitCalcParam.toLowerCase();
+      const calcFound = db.calculators.find(
+        (c) =>
+          c.isActive &&
+          (c.slug.toLowerCase() === targetParam ||
+            c.id.toLowerCase() === targetParam ||
+            cleanPathSlug(c.slug) === cleanPathSlug(targetParam))
+      );
+      if (calcFound) {
+        const cat = db.categories.find((c) => c.id === calcFound.categoryId && c.isActive) || db.categories[0];
+        const sub = db.subcategories.find((s) => s.id === calcFound.subcategoryId && s.isActive) || db.subcategories[0];
+        return {
+          type: 'calculator',
+          category: cat,
+          subcategory: sub,
+          calculator: calcFound,
+          relatedCalculators: db.calculators.filter((c) => c.subcategoryId === sub?.id && c.id !== calcFound.id && c.isActive).slice(0, 6),
+        };
+      }
+    }
+
+    if (!cleanPath) {
+      return { type: 'home' };
+    }
+
+    let parts = cleanPath.split('/').filter(Boolean);
+
+    // Strip generic path prefixes if present, e.g. /category/tax, /calculators/income-tax-calculator
+    const genericPrefixes = ['category', 'categories', 'subcategory', 'subcategories', 'calculator', 'calculators', 'calc', 'calcs', 'tools', 'tool', 'app', 'apps'];
+    let prefixIntent: 'category' | 'subcategory' | 'calculator' | null = null;
+    if (parts.length > 1 && genericPrefixes.includes(parts[0])) {
+      const p0 = parts[0];
+      if (p0.startsWith('categor')) prefixIntent = 'category';
+      else if (p0.startsWith('subcategor')) prefixIntent = 'subcategory';
+      else if (p0.startsWith('calc') || p0.startsWith('tool')) prefixIntent = 'calculator';
+      parts = parts.slice(1);
+    }
+
+    // Strip common sub-actions or tab suffixes if present, e.g. /income-tax-calculator/how-to, /income-tax-calculator/embed
+    const subActionSuffixes = ['how-to', 'faqs', 'examples', 'assumptions', 'formula', 'audit', 'embed', 'results', 'calculate'];
+    if (parts.length > 1 && subActionSuffixes.includes(parts[parts.length - 1])) {
+      parts = parts.slice(0, parts.length - 1);
+    }
+
+    // Helper for category slug matching (e.g. "income-tax-tax" can also match "income-tax", "tax", "taxes")
+    const matchCategory = (slug: string) => {
+      const s = cleanPathSlug(slug);
+      return db.categories.find((c) => {
+        if (!c.isActive) return false;
+        const cSlug = cleanPathSlug(c.slug);
+        const cId = c.id.toLowerCase();
+        return (
+          cSlug === s ||
+          cId === s ||
+          cSlug.replace(/-tax$/, '') === s ||
+          s.replace(/-tax$/, '') === cSlug ||
+          (s === 'tax' || s === 'taxes' || s === 'income-tax') && (cSlug.includes('tax') || c.name.toLowerCase().includes('tax'))
+        );
+      });
+    };
+
+    // Helper for subcategory slug matching
+    const matchSubcategory = (slug: string, catId?: string) => {
+      const s = cleanPathSlug(slug);
+      return db.subcategories.find((sub) => {
+        if (!sub.isActive) return false;
+        if (catId && sub.categoryId !== catId) return false;
+        const subSlug = cleanPathSlug(sub.slug);
+        const subId = sub.id.toLowerCase();
+        return (
+          subSlug === s ||
+          subId === s ||
+          subSlug.replace(/-tax$/, '') === s ||
+          s.replace(/-tax$/, '') === subSlug ||
+          ((s === 'income-tax' || s === 'tax') && subSlug.includes('income-tax'))
+        );
+      });
+    };
+
+    // Helper for calculator matching by exact slug, id, alphanumeric equivalence, or common tax aliases
+    const matchCalculator = (slug: string) => {
+      const s = cleanPathSlug(slug);
+      const alphaS = s.replace(/[^a-z0-9]/g, '');
+      return db.calculators.find((c) => {
+        if (!c.isActive) return false;
+        const cSlug = cleanPathSlug(c.slug);
+        const cId = c.id.toLowerCase();
+        const alphaCSlug = cSlug.replace(/[^a-z0-9]/g, '');
+        return (
+          cSlug === s ||
+          cId === s ||
+          alphaCSlug === alphaS ||
+          cSlug === s.replace(/^calc[-_]/, '') ||
+          cSlug === s + '-calculator' ||
+          (cSlug.includes('income-tax') && (
+            s === 'income-tax' ||
+            s === 'incometax' ||
+            s === 'income-tax-calc' ||
+            s === 'incometaxcalculator' ||
+            s === 'tax-calculator' ||
+            s === 'taxes-calculator' ||
+            s === 'tax-calc' ||
+            s === 'tax' ||
+            s === 'taxes'
+          ))
+        );
+      });
+    };
+
+    // 1. Exact 3-Part Match: /:catSlug/:subSlug/:calcSlug
+    if (parts.length >= 3) {
+      const [catSlug, subSlug, calcSlug] = parts;
+      const category = matchCategory(catSlug);
+      const subcategory = category ? matchSubcategory(subSlug, category.id) : null;
+      let calculator = subcategory
+        ? db.calculators.find(
+            (c) =>
+              c.isActive &&
+              c.subcategoryId === subcategory.id &&
+              (cleanPathSlug(c.slug) === cleanPathSlug(calcSlug) || c.id.toLowerCase() === calcSlug.toLowerCase())
+          )
+        : null;
+
+      if (!calculator) {
+        calculator = matchCalculator(calcSlug);
+      }
+
+      if (calculator) {
+        const finalCategory =
+          category ||
+          db.categories.find((c) => c.id === calculator?.categoryId && c.isActive) ||
+          db.categories[0];
+        const finalSubcategory =
+          subcategory ||
+          db.subcategories.find((s) => s.id === calculator?.subcategoryId && s.isActive) ||
+          db.subcategories[0];
+
+        calculator.viewsCount = (calculator.viewsCount || 0) + 1;
+        const relatedCalculators = db.calculators
+          .filter((c) => c.subcategoryId === finalSubcategory.id && c.id !== calculator?.id && c.isActive)
+          .slice(0, 6);
+
+        return {
+          type: 'calculator',
+          category: finalCategory,
+          subcategory: finalSubcategory,
+          calculator,
+          relatedCalculators,
+        };
+      }
+    }
+
+    // 2. 2-Part Match: /:catSlug/:subSlug OR /:subSlug/:calcSlug OR /:catSlug/:calcSlug
+    if (parts.length === 2) {
+      const [p0, p1] = parts;
+
+      // If user came with category prefix intent or p1 is a subcategory
+      if (prefixIntent === 'category') {
+        const cat = matchCategory(p0) || matchCategory(p1);
+        if (cat) {
+          const subcategories = db.subcategories.filter((s) => s.categoryId === cat.id && s.isActive).sort((a, b) => a.order - b.order);
+          const activeSubIds = new Set(subcategories.map((s) => s.id));
+          const calculators = db.calculators.filter((c) => c.categoryId === cat.id && c.isActive && activeSubIds.has(c.subcategoryId)).sort((a, b) => a.order - b.order);
+          return { type: 'category', category: cat, subcategories, calculators };
+        }
+      }
+
+      // Check if p0 is a category and p1 is a calculator OR subcategory
+      const category = matchCategory(p0);
+      if (category) {
+        // Direct calculator match under this category
+        const directCalc = db.calculators.find(
+          (c) =>
+            c.isActive &&
+            c.categoryId === category.id &&
+            (cleanPathSlug(c.slug) === cleanPathSlug(p1) ||
+              c.id.toLowerCase() === p1.toLowerCase() ||
+              cleanPathSlug(c.slug) === `${cleanPathSlug(p1)}-calculator`)
+        );
+        if (directCalc) {
+          const sub =
+            db.subcategories.find((s) => s.id === directCalc.subcategoryId && s.isActive) ||
+            db.subcategories[0];
+          directCalc.viewsCount = (directCalc.viewsCount || 0) + 1;
+          return {
+            type: 'calculator',
+            category,
+            subcategory: sub,
+            calculator: directCalc,
+            relatedCalculators: db.calculators
+              .filter((c) => c.subcategoryId === sub?.id && c.id !== directCalc.id && c.isActive)
+              .slice(0, 6),
+          };
+        }
+
+        const subcategory = matchSubcategory(p1, category.id);
+        if (subcategory) {
+          // If subcategory has a primary matching calculator with slug matching subcategory
+          const matchingCalc = db.calculators.find(
+            (c) =>
+              c.isActive &&
+              c.subcategoryId === subcategory.id &&
+              (cleanPathSlug(c.slug) === cleanPathSlug(p1) ||
+                cleanPathSlug(c.slug) === `${cleanPathSlug(p1)}-calculator`)
+          );
+          if (matchingCalc) {
+            matchingCalc.viewsCount = (matchingCalc.viewsCount || 0) + 1;
+            return {
+              type: 'calculator',
+              category,
+              subcategory,
+              calculator: matchingCalc,
+              relatedCalculators: db.calculators
+                .filter((c) => c.subcategoryId === subcategory.id && c.id !== matchingCalc.id && c.isActive)
+                .slice(0, 6),
+            };
+          }
+
+          const calculators = db.calculators
+            .filter((c) => c.subcategoryId === subcategory.id && c.isActive)
+            .sort((a, b) => a.order - b.order);
+
+          const siblingSubcategories = db.subcategories
+            .filter((s) => s.categoryId === category.id && s.isActive)
+            .sort((a, b) => a.order - b.order);
+
+          return {
+            type: 'subcategory',
+            category,
+            subcategory,
+            calculators,
+            siblingSubcategories,
+          };
+        }
+      }
+
+      // Check if p1 or p0 is a calculator
+      const calcMatch = matchCalculator(p1) || matchCalculator(p0);
+      if (calcMatch) {
+        const cat =
+          db.categories.find((c) => c.id === calcMatch.categoryId && c.isActive) || db.categories[0];
+        const sub =
+          db.subcategories.find((s) => s.id === calcMatch.subcategoryId && s.isActive) ||
+          db.subcategories[0];
+        calcMatch.viewsCount = (calcMatch.viewsCount || 0) + 1;
+        const relatedCalculators = db.calculators
+          .filter((c) => c.subcategoryId === sub.id && c.id !== calcMatch.id && c.isActive)
+          .slice(0, 6);
+
+        return {
+          type: 'calculator',
+          category: cat,
+          subcategory: sub,
+          calculator: calcMatch,
+          relatedCalculators,
+        };
+      }
+
+      // Check if p1 is a subcategory across any category
+      const subcategory = matchSubcategory(p1);
+      if (subcategory) {
+        const cat = db.categories.find((c) => c.id === subcategory.categoryId && c.isActive);
+        if (cat) {
+          const calculators = db.calculators
+            .filter((c) => c.subcategoryId === subcategory.id && c.isActive)
+            .sort((a, b) => a.order - b.order);
+
+          const siblingSubcategories = db.subcategories
+            .filter((s) => s.categoryId === cat.id && s.isActive)
+            .sort((a, b) => a.order - b.order);
+
+          return {
+            type: 'subcategory',
+            category: cat,
+            subcategory,
+            calculators,
+            siblingSubcategories,
+          };
+        }
+      }
+    }
+
+    // 3. 1-Part Match: /:slug
+    if (parts.length === 1) {
+      const p0 = parts[0];
+
+      // If user explicitly visited /category/...
+      if (prefixIntent === 'category') {
+        const category = matchCategory(p0);
+        if (category) {
+          const subcategories = db.subcategories
+            .filter((s) => s.categoryId === category.id && s.isActive)
+            .sort((a, b) => a.order - b.order);
+          const activeSubIds = new Set(subcategories.map((s) => s.id));
+          const calculators = db.calculators
+            .filter((c) => c.categoryId === category.id && c.isActive && activeSubIds.has(c.subcategoryId))
+            .sort((a, b) => a.order - b.order);
+          return { type: 'category', category, subcategories, calculators };
+        }
+      }
+
+      // Check if it's a calculator slug first (e.g. /income-tax-calculator, /tax-calculator, /incometax)
+      const calcMatch = matchCalculator(p0);
+      if (calcMatch) {
+        const cat =
+          db.categories.find((c) => c.id === calcMatch.categoryId && c.isActive) || db.categories[0];
+        const sub =
+          db.subcategories.find((s) => s.id === calcMatch.subcategoryId && s.isActive) ||
+          db.subcategories[0];
+        calcMatch.viewsCount = (calcMatch.viewsCount || 0) + 1;
+        const relatedCalculators = db.calculators
+          .filter((c) => c.subcategoryId === sub.id && c.id !== calcMatch.id && c.isActive)
+          .slice(0, 6);
+
+        return {
+          type: 'calculator',
+          category: cat,
+          subcategory: sub,
+          calculator: calcMatch,
+          relatedCalculators,
+        };
+      }
+
+      // Check if it's a category slug
+      const category = matchCategory(p0);
+      if (category && (p0 === cleanPathSlug(category.slug) || p0 === category.id.toLowerCase() || p0.includes('tax'))) {
+        const subcategories = db.subcategories
+          .filter((s) => s.categoryId === category.id && s.isActive)
+          .sort((a, b) => a.order - b.order);
+
+        const activeSubIds = new Set(subcategories.map((s) => s.id));
+        const calculators = db.calculators
+          .filter((c) => c.categoryId === category.id && c.isActive && activeSubIds.has(c.subcategoryId))
+          .sort((a, b) => a.order - b.order);
+
+        return {
+          type: 'category',
+          category,
+          subcategories,
+          calculators,
+        };
+      }
+
+      // Check if it's a subcategory slug directly, e.g. /salary-tax or /income-tax
+      const subcategory = matchSubcategory(p0);
+      if (subcategory) {
+        const cat = db.categories.find((c) => c.id === subcategory.categoryId && c.isActive);
+        if (cat) {
+          const calculators = db.calculators
+            .filter((c) => c.subcategoryId === subcategory.id && c.isActive)
+            .sort((a, b) => a.order - b.order);
+
+          const siblingSubcategories = db.subcategories
+            .filter((s) => s.categoryId === cat.id && s.isActive)
+            .sort((a, b) => a.order - b.order);
+
+          return {
+            type: 'subcategory',
+            category: cat,
+            subcategory,
+            calculators,
+            siblingSubcategories,
+          };
+        }
+      }
+
+      // Category fallback
+      if (category) {
+        const subcategories = db.subcategories
+          .filter((s) => s.categoryId === category.id && s.isActive)
+          .sort((a, b) => a.order - b.order);
+
+        const activeSubIds = new Set(subcategories.map((s) => s.id));
+        const calculators = db.calculators
+          .filter((c) => c.categoryId === category.id && c.isActive && activeSubIds.has(c.subcategoryId))
+          .sort((a, b) => a.order - b.order);
+
+        return {
+          type: 'category',
+          category,
+          subcategories,
+          calculators,
+        };
+      }
+    }
+
+    // Safe fallback: If there is an active calculator with income-tax or if only one calculator exists
+    if (cleanPath.includes('tax') || cleanPath.includes('calc')) {
+      const fallbackCalc = db.calculators.find((c) => c.isActive && c.slug.includes('tax')) || db.calculators.find((c) => c.isActive);
+      if (fallbackCalc) {
+        const cat = db.categories.find((c) => c.id === fallbackCalc.categoryId && c.isActive) || db.categories[0];
+        const sub = db.subcategories.find((s) => s.id === fallbackCalc.subcategoryId && s.isActive) || db.subcategories[0];
+        return {
+          type: 'calculator',
+          category: cat,
+          subcategory: sub,
+          calculator: fallbackCalc,
+          relatedCalculators: db.calculators.filter((c) => c.subcategoryId === sub?.id && c.id !== fallbackCalc.id && c.isActive).slice(0, 6),
+        };
+      }
+    }
+
+    return null;
+  }
+
+  // ==========================================
+  // PUBLIC API
+  // ==========================================
+  app.get('/api/public/categories', (_req: Request, res: Response) => {
+    const db = readDb();
+    return res.json(getPublicCategoriesData(db));
   });
 
   app.get('/api/public/subcategories', (req: Request, res: Response) => {
@@ -378,120 +844,88 @@ async function startServer() {
     return res.json(result);
   });
 
+  // ==========================================
+  // PUBLIC BLOG API ENDPOINTS
+  // ==========================================
+  app.get('/api/public/blogs', (req: Request, res: Response) => {
+    const db = readDb();
+    const { category, tag, search, featured, limit } = req.query;
+    let posts = (db.posts || []).filter((p) => p.status === 'published');
+
+    if (category) {
+      posts = posts.filter((p) => p.category.toLowerCase() === (category as string).toLowerCase());
+    }
+    if (tag) {
+      const qTag = (tag as string).toLowerCase();
+      posts = posts.filter((p) => (p.tags || []).some((t) => t.toLowerCase() === qTag));
+    }
+    if (search) {
+      const q = (search as string).toLowerCase();
+      posts = posts.filter(
+        (p) =>
+          p.title.toLowerCase().includes(q) ||
+          p.excerpt.toLowerCase().includes(q) ||
+          p.content.toLowerCase().includes(q)
+      );
+    }
+    if (featured === 'true') {
+      posts = posts.filter((p) => p.isFeatured);
+    }
+
+    posts.sort((a, b) => new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime());
+
+    if (limit) {
+      posts = posts.slice(0, parseInt(limit as string, 10));
+    }
+
+    return res.json(posts);
+  });
+
+  app.get('/api/public/blog-categories', (_req: Request, res: Response) => {
+    const db = readDb();
+    const categories = db.blogCategories || [];
+    const posts = (db.posts || []).filter((p) => p.status === 'published');
+
+    const result = categories.map((cat) => ({
+      ...cat,
+      postCount: posts.filter((p) => p.category.toLowerCase() === cat.name.toLowerCase()).length,
+    }));
+
+    return res.json(result);
+  });
+
+  app.get('/api/public/blogs/:slug', (req: Request, res: Response) => {
+    const db = readDb();
+    const slug = req.params.slug;
+    const postIndex = (db.posts || []).findIndex((p) => p.slug.toLowerCase() === slug.toLowerCase() && p.status === 'published');
+
+    if (postIndex === -1) {
+      return res.status(404).json({ error: 'Blog post not found' });
+    }
+
+    db.posts![postIndex].views = (db.posts![postIndex].views || 0) + 1;
+    writeDb(db, 'increment_blog_views');
+
+    const post = db.posts![postIndex];
+    const related = (db.posts || [])
+      .filter((p) => p.status === 'published' && p.id !== post.id && p.category === post.category)
+      .slice(0, 3);
+
+    return res.json({ post, related });
+  });
+
   // Dynamic Route Resolver for SEO-friendly URLs:
   // /:catSlug
   // /:catSlug/:subSlug
   // /:catSlug/:subSlug/:calcSlug
   app.get('/api/public/resolve', (req: Request, res: Response) => {
-    const rawPath = (req.query.path as string || '').replace(/^\/|\/$/g, '');
-    const parts = rawPath.split('/').filter(Boolean);
-
+    const rawPath = (req.query.path as string || '');
     const db = readDb();
-    const activeCatMap = new Map(db.categories.filter((c) => c.isActive).map((c) => [c.id, c]));
-    const activeSubMap = new Map(
-      db.subcategories.filter((s) => s.isActive && activeCatMap.has(s.categoryId)).map((s) => [s.id, s])
-    );
-
-    if (parts.length === 0) {
-      return res.json({ type: 'home' });
+    const result = resolveRouteData(rawPath, db, req.query);
+    if (!result) {
+      return res.status(404).json({ error: 'Route not found or inactive' });
     }
-
-    if (parts.length === 1) {
-      const catSlug = parts[0];
-      const category = db.categories.find((c) => c.slug === catSlug && c.isActive);
-      if (!category) {
-        return res.status(404).json({ error: 'Category not found or inactive' });
-      }
-
-      const subcategories = db.subcategories
-        .filter((s) => s.categoryId === category.id && s.isActive)
-        .sort((a, b) => a.order - b.order);
-
-      const activeSubIds = new Set(subcategories.map((s) => s.id));
-      const calculators = db.calculators
-        .filter((c) => c.categoryId === category.id && c.isActive && activeSubIds.has(c.subcategoryId))
-        .sort((a, b) => a.order - b.order);
-
-      return res.json({
-        type: 'category',
-        category,
-        subcategories,
-        calculators,
-      });
-    }
-
-    if (parts.length === 2) {
-      const [catSlug, subSlug] = parts;
-      const category = db.categories.find((c) => c.slug === catSlug && c.isActive);
-      if (!category) {
-        return res.status(404).json({ error: 'Category not found or inactive' });
-      }
-
-      const subcategory = db.subcategories.find(
-        (s) => s.slug === subSlug && s.categoryId === category.id && s.isActive
-      );
-      if (!subcategory) {
-        return res.status(404).json({ error: 'Subcategory not found or inactive' });
-      }
-
-      const calculators = db.calculators
-        .filter((c) => c.subcategoryId === subcategory.id && c.isActive)
-        .sort((a, b) => a.order - b.order);
-
-      // Sibling subcategories for easy navigation
-      const siblingSubcategories = db.subcategories
-        .filter((s) => s.categoryId === category.id && s.isActive)
-        .sort((a, b) => a.order - b.order);
-
-      return res.json({
-        type: 'subcategory',
-        category,
-        subcategory,
-        calculators,
-        siblingSubcategories,
-      });
-    }
-
-    if (parts.length === 3) {
-      const [catSlug, subSlug, calcSlug] = parts;
-      const category = db.categories.find((c) => c.slug === catSlug && c.isActive);
-      if (!category) {
-        return res.status(404).json({ error: 'Category not found or inactive' });
-      }
-
-      const subcategory = db.subcategories.find(
-        (s) => s.slug === subSlug && s.categoryId === category.id && s.isActive
-      );
-      if (!subcategory) {
-        return res.status(404).json({ error: 'Subcategory not found or inactive' });
-      }
-
-      const calculator = db.calculators.find(
-        (c) => c.slug === calcSlug && c.subcategoryId === subcategory.id && c.isActive
-      );
-      if (!calculator) {
-        return res.status(404).json({ error: 'Calculator not found or inactive' });
-      }
-
-      // Increment view count quietly
-      calculator.viewsCount = (calculator.viewsCount || 0) + 1;
-      writeDb(db);
-
-      // Related calculators in the same subcategory
-      const relatedCalculators = db.calculators
-        .filter((c) => c.subcategoryId === subcategory.id && c.id !== calculator.id && c.isActive)
-        .slice(0, 6);
-
-      return res.json({
-        type: 'calculator',
-        category,
-        subcategory,
-        calculator,
-        relatedCalculators,
-      });
-    }
-
-    return res.status(404).json({ error: 'Path not found' });
+    return res.json(result);
   });
 
   // ==========================================
@@ -675,29 +1109,34 @@ async function startServer() {
   });
 
   app.delete('/api/admin/categories/:id', requireAdmin, (req: Request, res: Response) => {
-    const db = readDb();
-    const { id } = req.params;
-    const { force } = req.query;
+    try {
+      const db = readDb();
+      const { id } = req.params;
+      const { force } = req.query;
 
-    const subCount = db.subcategories.filter((s) => s.categoryId === id).length;
-    const calcCount = db.calculators.filter((c) => c.categoryId === id).length;
+      const subCount = db.subcategories.filter((s) => s.categoryId === id).length;
+      const calcCount = db.calculators.filter((c) => c.categoryId === id).length;
 
-    if ((subCount > 0 || calcCount > 0) && force !== 'true') {
-      return res.status(409).json({
-        error: `Cannot delete category: contains ${subCount} subcategories and ${calcCount} calculators. Confirm deletion with force=true to cascade delete.`,
-        requiresConfirmation: true,
-        subCount,
-        calcCount,
-      });
+      if ((subCount > 0 || calcCount > 0) && force !== 'true') {
+        return res.status(409).json({
+          error: `Cannot delete category: contains ${subCount} subcategories and ${calcCount} calculators. Confirm deletion with force=true to cascade delete.`,
+          requiresConfirmation: true,
+          subCount,
+          calcCount,
+        });
+      }
+
+      // Cascade delete subcategories and calculators under this category
+      db.categories = db.categories.filter((c) => c.id !== id);
+      db.subcategories = db.subcategories.filter((s) => s.categoryId !== id);
+      db.calculators = db.calculators.filter((c) => c.categoryId !== id);
+
+      writeDb(db, 'explicit_delete_category');
+      return res.json({ success: true, message: 'Category deleted safely' });
+    } catch (err: any) {
+      console.error('Error deleting category:', err);
+      return res.status(500).json({ error: err.message || 'Failed to delete category' });
     }
-
-    // Cascade delete subcategories and calculators under this category
-    db.categories = db.categories.filter((c) => c.id !== id);
-    db.subcategories = db.subcategories.filter((s) => s.categoryId !== id);
-    db.calculators = db.calculators.filter((c) => c.categoryId !== id);
-
-    writeDb(db);
-    return res.json({ success: true, message: 'Category deleted safely' });
   });
 
   app.post('/api/admin/categories/reorder', requireAdmin, (req: Request, res: Response) => {
@@ -864,24 +1303,29 @@ async function startServer() {
   });
 
   app.delete('/api/admin/subcategories/:id', requireAdmin, (req: Request, res: Response) => {
-    const db = readDb();
-    const { id } = req.params;
-    const { force } = req.query;
+    try {
+      const db = readDb();
+      const { id } = req.params;
+      const { force } = req.query;
 
-    const calcCount = db.calculators.filter((c) => c.subcategoryId === id).length;
-    if (calcCount > 0 && force !== 'true') {
-      return res.status(409).json({
-        error: `Cannot delete subcategory: contains ${calcCount} calculators. Confirm deletion with force=true.`,
-        requiresConfirmation: true,
-        calcCount,
-      });
+      const calcCount = db.calculators.filter((c) => c.subcategoryId === id).length;
+      if (calcCount > 0 && force !== 'true') {
+        return res.status(409).json({
+          error: `Cannot delete subcategory: contains ${calcCount} calculators. Confirm deletion with force=true.`,
+          requiresConfirmation: true,
+          calcCount,
+        });
+      }
+
+      db.subcategories = db.subcategories.filter((s) => s.id !== id);
+      db.calculators = db.calculators.filter((c) => c.subcategoryId !== id);
+      writeDb(db, 'explicit_delete_subcategory');
+
+      return res.json({ success: true });
+    } catch (err: any) {
+      console.error('Error deleting subcategory:', err);
+      return res.status(500).json({ error: err.message || 'Failed to delete subcategory' });
     }
-
-    db.subcategories = db.subcategories.filter((s) => s.id !== id);
-    db.calculators = db.calculators.filter((c) => c.subcategoryId !== id);
-    writeDb(db);
-
-    return res.json({ success: true });
   });
 
   app.post('/api/admin/subcategories/reorder', requireAdmin, (req: Request, res: Response) => {
@@ -1211,11 +1655,16 @@ async function startServer() {
   });
 
   app.delete('/api/admin/calculators/:id', requireAdmin, (req: Request, res: Response) => {
-    const db = readDb();
-    const { id } = req.params;
-    db.calculators = db.calculators.filter((c) => c.id !== id);
-    writeDb(db);
-    return res.json({ success: true });
+    try {
+      const db = readDb();
+      const { id } = req.params;
+      db.calculators = db.calculators.filter((c) => c.id !== id);
+      writeDb(db, 'explicit_delete_calculator');
+      return res.json({ success: true });
+    } catch (err: any) {
+      console.error('Error deleting calculator:', err);
+      return res.status(500).json({ error: err.message || 'Failed to delete calculator' });
+    }
   });
 
   app.post('/api/admin/calculators/reorder', requireAdmin, (req: Request, res: Response) => {
@@ -1231,6 +1680,89 @@ async function startServer() {
     });
 
     writeDb(db);
+    return res.json({ success: true });
+  });
+
+  // ==========================================
+  // ADMIN BLOG API ENDPOINTS
+  // ==========================================
+  app.get('/api/admin/blogs', requireAdmin, (_req: Request, res: Response) => {
+    const db = readDb();
+    return res.json(db.posts || []);
+  });
+
+  app.post('/api/admin/blogs', requireAdmin, (req: Request, res: Response) => {
+    const db = readDb();
+    const body = req.body;
+    if (!body.title) {
+      return res.status(400).json({ error: 'Post title is required' });
+    }
+
+    const newPost = {
+      id: `post_${Date.now()}`,
+      slug: body.slug || body.title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, ''),
+      title: body.title,
+      excerpt: body.excerpt || '',
+      content: body.content || '',
+      featuredImage: body.featuredImage || 'https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?auto=format&fit=crop&w=1200&q=80',
+      category: body.category || 'Tax Planning',
+      tags: Array.isArray(body.tags) ? body.tags : [],
+      author: body.author || {
+        name: 'CA Rajesh Sharma',
+        role: 'Senior Tax Consultant',
+        avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=200&q=80'
+      },
+      status: body.status || 'published',
+      publishedAt: body.publishedAt || new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+      readTimeMinutes: body.readTimeMinutes || 5,
+      views: 0,
+      isFeatured: Boolean(body.isFeatured),
+      seoTitle: body.seoTitle || body.title,
+      seoDescription: body.seoDescription || body.excerpt,
+      seoKeywords: body.seoKeywords || [],
+      embeddedCalculators: body.embeddedCalculators || []
+    };
+
+    if (!db.posts) db.posts = [];
+    db.posts.unshift(newPost);
+    writeDb(db, 'create_blog_post');
+
+    return res.json(newPost);
+  });
+
+  app.put('/api/admin/blogs/:id', requireAdmin, (req: Request, res: Response) => {
+    const db = readDb();
+    const id = req.params.id;
+    const body = req.body;
+    const index = (db.posts || []).findIndex((p) => p.id === id);
+
+    if (index === -1) {
+      return res.status(404).json({ error: 'Blog post not found' });
+    }
+
+    db.posts![index] = {
+      ...db.posts![index],
+      ...body,
+      id,
+      updatedAt: new Date().toISOString(),
+    };
+
+    writeDb(db, 'update_blog_post');
+    return res.json(db.posts![index]);
+  });
+
+  app.delete('/api/admin/blogs/:id', requireAdmin, (req: Request, res: Response) => {
+    const db = readDb();
+    const id = req.params.id;
+    const initialCount = (db.posts || []).length;
+    db.posts = (db.posts || []).filter((p) => p.id !== id);
+
+    if (db.posts.length === initialCount) {
+      return res.status(404).json({ error: 'Blog post not found' });
+    }
+
+    writeDb(db, 'delete_blog_post');
     return res.json({ success: true });
   });
 
@@ -1300,19 +1832,74 @@ async function startServer() {
   });
 
   // ==========================================
-  // VITE / STATIC SERVING
+  // VITE / STATIC SERVING WITH SSR INITIAL DATA
   // ==========================================
   if (isDev) {
     const vite = await createViteServer({
       server: { middlewareMode: true },
-      appType: 'spa',
+      appType: 'custom',
     });
     app.use(vite.middlewares);
+
+    app.use('*', async (req: Request, res: Response, next) => {
+      const url = req.originalUrl;
+      // Skip API routes, Vite internals, and static file assets
+      if (
+        url.startsWith('/api') ||
+        url.startsWith('/@') ||
+        url.startsWith('/src') ||
+        /\.(js|jsx|ts|tsx|css|json|png|jpe?g|gif|svg|ico|webp|woff2?|ttf|eot|map)$/i.test(url.split('?')[0])
+      ) {
+        return next();
+      }
+
+      try {
+        let template = fs.readFileSync(path.resolve(__dirname, 'index.html'), 'utf-8');
+        template = await vite.transformIndexHtml(url, template);
+
+        const db = readDb();
+        const initialRoute = resolveRouteData(url.split('?')[0], db);
+        const categories = getPublicCategoriesData(db);
+        const { adminPasswordHash, ...safeSettings } = db.settings;
+
+        const ssrScript = `
+    <script id="__SSR_DATA__">
+      window.__INITIAL_ROUTE_DATA__ = ${JSON.stringify(initialRoute)};
+      window.__INITIAL_CATEGORIES__ = ${JSON.stringify(categories)};
+      window.__SITE_SETTINGS__ = ${JSON.stringify(safeSettings)};
+    </script>
+`;
+        const html = template.replace('</head>', `${ssrScript}</head>`);
+        return res.status(200).set({ 'Content-Type': 'text/html' }).end(html);
+      } catch (err: any) {
+        vite.ssrFixStacktrace(err);
+        return next(err);
+      }
+    });
   } else {
     const distPath = path.join(__dirname, 'dist');
-    app.use(express.static(distPath));
-    app.get('*', (_req: Request, res: Response) => {
-      res.sendFile(path.join(distPath, 'index.html'));
+    app.use(express.static(distPath, { index: false }));
+    app.get('*', (req: Request, res: Response) => {
+      try {
+        const url = req.originalUrl;
+        let template = fs.readFileSync(path.join(distPath, 'index.html'), 'utf-8');
+        const db = readDb();
+        const initialRoute = resolveRouteData(url.split('?')[0], db);
+        const categories = getPublicCategoriesData(db);
+        const { adminPasswordHash, ...safeSettings } = db.settings;
+
+        const ssrScript = `
+    <script id="__SSR_DATA__">
+      window.__INITIAL_ROUTE_DATA__ = ${JSON.stringify(initialRoute)};
+      window.__INITIAL_CATEGORIES__ = ${JSON.stringify(categories)};
+      window.__SITE_SETTINGS__ = ${JSON.stringify(safeSettings)};
+    </script>
+`;
+        const html = template.replace('</head>', `${ssrScript}</head>`);
+        return res.status(200).set({ 'Content-Type': 'text/html' }).end(html);
+      } catch {
+        res.sendFile(path.join(distPath, 'index.html'));
+      }
     });
   }
 
@@ -1325,3 +1912,13 @@ startServer().catch((err) => {
   console.error('Fatal server startup error:', err);
   process.exit(1);
 });
+
+// Guard against unhandled errors crashing the process
+process.on('uncaughtException', (err) => {
+  console.error('Uncaught exception caught by global safety handler:', err);
+});
+
+process.on('unhandledRejection', (reason, promise) => {
+  console.error('Unhandled rejection at:', promise, 'reason:', reason);
+});
+

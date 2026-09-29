@@ -350,10 +350,30 @@ export const AdminCalculatorEditor: React.FC<AdminCalculatorEditorProps> = ({
   };
 
   const handleRemoveContentSection = (id: string) => {
-    setCalculator((prev) => ({
-      ...prev,
-      contentSections: (prev.contentSections || []).filter((s) => s.id !== id),
-    }));
+    setCalculator((prev) => {
+      const removed = (prev.contentSections || []).find((s) => s.id === id);
+      const remaining = (prev.contentSections || []).filter((s) => s.id !== id);
+      remaining.forEach((s, idx) => {
+        s.order = idx + 1;
+      });
+
+      const isHowTo =
+        removed?.sectionType === 'how-to' ||
+        removed?.title?.toLowerCase().includes('how to');
+      const isFormula =
+        removed?.sectionType === 'formula' ||
+        removed?.title?.toLowerCase().includes('formula');
+
+      const content = { ...(prev.content || {}) };
+      if (isHowTo) content.usageInstructions = '';
+      if (isFormula) content.formulaExplanation = '';
+
+      return {
+        ...prev,
+        contentSections: remaining,
+        content,
+      };
+    });
   };
 
   const handleMoveContentSection = (index: number, direction: 'up' | 'down') => {
@@ -1342,6 +1362,7 @@ export const AdminCalculatorEditor: React.FC<AdminCalculatorEditorProps> = ({
                       type="button"
                       onClick={() => handleRemoveContentSection(sec.id)}
                       className="text-rose-500 hover:text-rose-700 p-1 cursor-pointer"
+                      title="Delete this section"
                     >
                       <Trash2 className="w-4 h-4" />
                     </button>
@@ -1389,6 +1410,26 @@ export const AdminCalculatorEditor: React.FC<AdminCalculatorEditorProps> = ({
                 </div>
               </div>
             ))}
+
+            {(calculator.contentSections || []).length === 0 && (
+              <div className="p-8 bg-[#fafafa] rounded-xl border border-dashed border-[#e4e5e7] text-center space-y-2">
+                <p className="text-xs text-[#74767e]">
+                  No content sections currently configured. Click &quot;Create Content Section&quot; above to add one.
+                </p>
+              </div>
+            )}
+
+            <div className="flex justify-end pt-3">
+              <button
+                type="button"
+                onClick={() => handleSave()}
+                disabled={isSaving}
+                className="px-5 py-2.5 bg-[#1dbf73] hover:bg-[#19a463] text-white text-xs font-bold rounded-lg flex items-center gap-2 transition-all cursor-pointer shadow-sm disabled:opacity-50"
+              >
+                <Save className="w-4 h-4" />
+                <span>{isSaving ? 'Saving...' : 'Save Calculator Sections'}</span>
+              </button>
+            </div>
           </div>
         </div>
       )}

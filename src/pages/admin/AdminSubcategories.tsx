@@ -209,21 +209,19 @@ export const AdminSubcategories: React.FC = () => {
     }
   };
 
-  const handleDeleteConfirm = async (force: boolean = false) => {
+  const handleDeleteConfirm = async () => {
     if (!deleteTarget) return;
     setIsDeleting(true);
     try {
-      const res = await api.adminDeleteSubcategory(deleteTarget.sub.id, force);
-      if (res.requiresConfirmation && !force) {
-        setDeleteTarget({
-          ...deleteTarget,
-          cascadeWarning: true,
-        });
-        setIsDeleting(false);
-        return;
-      }
+      const targetId = deleteTarget.sub.id;
+      await api.adminDeleteSubcategory(targetId, true);
+
+      // Optimistically update local state immediately
+      setSubcategories((prev) => prev.filter((s) => s.id !== targetId));
       setDeleteTarget(null);
-      loadSubcategories();
+
+      // Refresh list from server
+      await loadSubcategories();
     } catch (err: any) {
       alert(err.message || 'Failed to delete subcategory');
     } finally {
@@ -436,7 +434,7 @@ export const AdminSubcategories: React.FC = () => {
                         </button>
                         <button
                           type="button"
-                          onClick={() => setDeleteTarget({ sub })}
+                          onClick={() => setDeleteTarget({ sub, cascadeWarning: sub.calculatorsCount > 0 })}
                           className="p-1.5 text-rose-500 hover:text-rose-700 rounded hover:bg-rose-50 transition-colors cursor-pointer"
                           title="Delete subcategory"
                         >
@@ -652,7 +650,7 @@ export const AdminSubcategories: React.FC = () => {
               <button
                 type="button"
                 disabled={isDeleting}
-                onClick={() => handleDeleteConfirm(true)}
+                onClick={handleDeleteConfirm}
                 className="px-5 py-2 text-xs font-bold text-white bg-rose-600 hover:bg-rose-700 rounded-md transition-colors cursor-pointer disabled:opacity-50"
               >
                 {isDeleting ? 'Deleting...' : 'Confirm Delete'}

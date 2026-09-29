@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
-import { Award, Copy, Check, Share2, TrendingUp, Sparkles } from 'lucide-react';
-import { CalculatorOutput } from '../../../types/schema.ts';
+import { Award, Copy, Check, Share2, TrendingUp, Sparkles, Code } from 'lucide-react';
+import { CalculatorOutput, Calculator } from '../../../types/schema.ts';
+import { EmbedModal } from '../EmbedModal.tsx';
 
 interface ResultCardsModuleProps {
+  calculator?: Calculator;
   outputs: Array<{
     def: CalculatorOutput;
     formatted: string;
@@ -17,12 +19,14 @@ interface ResultCardsModuleProps {
 }
 
 export const ResultCardsModule: React.FC<ResultCardsModuleProps> = ({
+  calculator,
   outputs = [],
   calculatorName = 'Calculator',
   settings = {},
 }) => {
   const [copiedId, setCopiedId] = useState<string | null>(null);
   const [shareCopied, setShareCopied] = useState(false);
+  const [isEmbedModalOpen, setIsEmbedModalOpen] = useState(false);
 
   const title = settings.title || 'Calculated Results';
   const cardStyle = settings.highlightCardStyle || 'emerald';
@@ -65,26 +69,46 @@ export const ResultCardsModule: React.FC<ResultCardsModuleProps> = ({
           <h2 className="text-base sm:text-lg font-bold text-[#222325]">{title}</h2>
         </div>
 
-        {showShare && (
+        <div className="flex items-center gap-2">
           <button
             type="button"
-            onClick={handleShare}
-            className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-[#fafafa] hover:bg-[#f0f0f0] border border-[#e4e5e7] rounded-md text-xs font-bold text-[#404145] transition-all cursor-pointer"
+            onClick={() => setIsEmbedModalOpen(true)}
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-[#f4fdf8] hover:bg-[#e8faef] border border-[#d8f5e5] rounded-md text-xs font-bold text-[#1dbf73] transition-all cursor-pointer"
+            title="Embed this calculator as an iframe or download HTML page"
           >
-            {shareCopied ? (
-              <>
-                <Check className="w-3.5 h-3.5 text-[#1dbf73]" />
-                <span className="text-[#1dbf73]">Link Copied!</span>
-              </>
-            ) : (
-              <>
-                <Share2 className="w-3.5 h-3.5 text-[#74767e]" />
-                <span>Share Calculation</span>
-              </>
-            )}
+            <Code className="w-3.5 h-3.5" />
+            <span>Embed Widget</span>
           </button>
-        )}
+
+          {showShare && (
+            <button
+              type="button"
+              onClick={handleShare}
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-[#fafafa] hover:bg-[#f0f0f0] border border-[#e4e5e7] rounded-md text-xs font-bold text-[#404145] transition-all cursor-pointer"
+            >
+              {shareCopied ? (
+                <>
+                  <Check className="w-3.5 h-3.5 text-[#1dbf73]" />
+                  <span className="text-[#1dbf73]">Link Copied!</span>
+                </>
+              ) : (
+                <>
+                  <Share2 className="w-3.5 h-3.5 text-[#74767e]" />
+                  <span>Share Calculation</span>
+                </>
+              )}
+            </button>
+          )}
+        </div>
       </div>
+
+      {calculator && (
+        <EmbedModal
+          calculator={calculator}
+          isOpen={isEmbedModalOpen}
+          onClose={() => setIsEmbedModalOpen(false)}
+        />
+      )}
 
       {/* Primary KPI Hero Card */}
       {highlightOutput && (

@@ -3,6 +3,20 @@ import { ArrowRight, Calculator as CalcIcon, Sparkles, Edit3, BookOpen, Layers, 
 import { Category, Subcategory, Calculator } from '../types/schema.ts';
 import { Breadcrumbs } from '../components/layout/Breadcrumbs.tsx';
 import { DynamicCalculatorRenderer } from '../components/calculator/DynamicCalculatorRenderer.tsx';
+import { EnterpriseTaxCalculatorApp } from '../components/calculator/EnterpriseTaxCalculatorApp.tsx';
+import { SalaryTaxCalculatorApp } from '../components/calculator/SalaryTaxCalculatorApp.tsx';
+import { SalaryTaxGuideContent } from '../components/calculator/SalaryTaxGuideContent.tsx';
+import { OldVsNewRegimeCalculatorApp } from '../components/calculator/OldVsNewRegimeCalculatorApp.tsx';
+import { OldVsNewRegimeGuideContent } from '../components/calculator/OldVsNewRegimeGuideContent.tsx';
+import { TdsCalculatorApp } from '../components/calculator/TdsCalculatorApp.tsx';
+import { TdsGuideContent } from '../components/calculator/TdsGuideContent.tsx';
+import { CapitalGainsCalculatorApp } from '../components/calculator/CapitalGainsCalculatorApp.tsx';
+import { CapitalGainsGuideContent } from '../components/calculator/CapitalGainsGuideContent.tsx';
+import { HraCalculatorApp } from '../components/calculator/HraCalculatorApp.tsx';
+import { HraGuideContent } from '../components/calculator/HraGuideContent.tsx';
+import { LoansCalculatorApp } from '../components/calculator/LoansCalculatorApp.tsx';
+import { HomeLoanGuideContent } from '../components/calculator/HomeLoanGuideContent.tsx';
+import { PersonalLoanGuideContent } from '../components/calculator/PersonalLoanGuideContent.tsx';
 import { getAdminToken } from '../services/api.ts';
 
 interface CalculatorPageProps {
@@ -45,19 +59,45 @@ export const CalculatorPage: React.FC<CalculatorPageProps> = ({
       document.head.appendChild(script);
     }
 
+    const activeFaqs = (calculator.faqs || calculator.content?.faqs || []).filter(
+      (f: any) => f.isEnabled !== false
+    );
+
+    const schemaGraph: any[] = [
+      {
+        '@type': 'WebApplication',
+        '@id': `${window.location.href}#webapp`,
+        name: calculator.name,
+        description: calculator.shortDescription || calculator.seoDescription,
+        applicationCategory: 'UtilityApplication',
+        operatingSystem: 'Any',
+        browserRequirements: 'Requires JavaScript',
+        url: window.location.href,
+        about: {
+          '@type': 'Thing',
+          name: category.name,
+        },
+      },
+    ];
+
+    if (activeFaqs.length > 0) {
+      schemaGraph.push({
+        '@type': 'FAQPage',
+        '@id': `${window.location.href}#faqpage`,
+        mainEntity: activeFaqs.map((faq: any) => ({
+          '@type': 'Question',
+          name: faq.question,
+          acceptedAnswer: {
+            '@type': 'Answer',
+            text: (faq.answer || '').replace(/<[^>]*>?/gm, '').trim(),
+          },
+        })),
+      });
+    }
+
     const schemaData = {
       '@context': 'https://schema.org',
-      '@type': 'WebApplication',
-      name: calculator.name,
-      description: calculator.shortDescription || calculator.seoDescription,
-      applicationCategory: 'UtilityApplication',
-      operatingSystem: 'Any',
-      browserRequirements: 'Requires JavaScript',
-      url: window.location.href,
-      about: {
-        '@type': 'Thing',
-        name: category.name,
-      },
+      '@graph': schemaGraph,
     };
 
     script.textContent = JSON.stringify(schemaData);
@@ -129,48 +169,203 @@ export const CalculatorPage: React.FC<CalculatorPageProps> = ({
         )}
       </div>
 
-      {/* Main Dynamic Calculator Engine Rendering All Configured Modules */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-        <main className="lg:col-span-8 xl:col-span-9 space-y-8">
-          <DynamicCalculatorRenderer calculator={calculator} />
-        </main>
+      {/* Main Dynamic Calculator Engine Rendering */}
+      {calculator.slug === 'income-tax-calculator' ? (
+        <EnterpriseTaxCalculatorApp calculator={calculator} />
+      ) : calculator.slug === 'capital-gains-tax' ? (
+        <div className="space-y-12">
+          <CapitalGainsCalculatorApp />
+          <CapitalGainsGuideContent />
+        </div>
+      ) : calculator.slug === 'hra' ? (
+        <div className="space-y-12">
+          <HraCalculatorApp />
+          <HraGuideContent />
+        </div>
+      ) : calculator.slug === 'home-loan-emi-calculator' ? (
+        <div className="space-y-12">
+          <LoansCalculatorApp calculator={calculator} />
+          <HomeLoanGuideContent />
+        </div>
+      ) : calculator.slug === 'personal-loan-emi-calculator' ? (
+        <div className="space-y-12">
+          <LoansCalculatorApp calculator={calculator} />
+          <PersonalLoanGuideContent />
+        </div>
+      ) : category.slug === 'loans-emi' || calculator.engineType === 'loans_emi' || calculator.slug.includes('loan') || calculator.slug.includes('emi') ? (
+        <LoansCalculatorApp calculator={calculator} />
+      ) : calculator.slug === 'old-vs-new-tax-regime' || calculator.slug === 'old-vs-new-tax-regime-calculator' ? (
+        <div className="space-y-10">
+          <OldVsNewRegimeCalculatorApp />
 
-        {/* Sidebar: Related Tools */}
-        <aside className="lg:col-span-4 xl:col-span-3 space-y-6">
-          <div className="p-5 bg-[#fafafa] rounded-xl border border-[#e4e5e7] space-y-4 sticky top-20">
-            <h3 className="text-xs font-bold text-[#222325] uppercase tracking-wider">
-              Related {subcategory.name} Tools
-            </h3>
-            {relatedCalculators.length > 0 ? (
-              <div className="space-y-2.5">
-                {relatedCalculators.map((rel) => (
-                  <a
-                    key={rel.id}
-                    href={`/${category.slug}/${subcategory.slug}/${rel.slug}`}
-                    className="block p-3.5 bg-white rounded-lg border border-[#e4e5e7] hover:border-[#1dbf73] hover:shadow-xs transition-all group"
-                  >
-                    <div className="flex items-center justify-between">
-                      <span className="text-xs font-bold text-[#222325] group-hover:text-[#1dbf73] truncate">
-                        {rel.name}
-                      </span>
-                      <ArrowRight className="w-3.5 h-3.5 text-[#74767e] group-hover:text-[#1dbf73] transition-colors shrink-0" />
-                    </div>
-                    {rel.shortDescription && (
-                      <p className="text-[11px] text-[#74767e] mt-1 line-clamp-1">
-                        {rel.shortDescription}
-                      </p>
-                    )}
-                  </a>
-                ))}
+          {/* Guide Content */}
+          <OldVsNewRegimeGuideContent />
+
+          {/* FAQ Accordion Section */}
+          {calculator.faqs && calculator.faqs.length > 0 && (
+            <div className="bg-white rounded-3xl border border-slate-200 p-6 sm:p-8 shadow-xs space-y-4">
+              <div className="flex items-center gap-2.5 border-b border-slate-100 pb-3">
+                <div className="w-8 h-8 rounded-lg bg-[#f4fdf8] text-[#1dbf73] flex items-center justify-center border border-[#d8f5e5] shrink-0">
+                  <BookOpen className="w-4 h-4" />
+                </div>
+                <h3 className="text-base sm:text-lg font-bold text-[#222325]">
+                  Frequently Asked Questions (Old vs. New Tax Regime FY 2026-27)
+                </h3>
               </div>
-            ) : (
-              <p className="text-xs text-[#74767e]">
-                No other calculators in this subcategory yet.
-              </p>
-            )}
-          </div>
-        </aside>
-      </div>
+              <div className="space-y-3">
+                {calculator.faqs
+                  .filter((f) => f.isEnabled !== false)
+                  .map((faq, idx) => (
+                    <details
+                      key={faq.id || idx}
+                      open
+                      className="group border border-slate-200 rounded-2xl overflow-hidden bg-[#fafafa]"
+                    >
+                      <summary className="p-4 font-bold text-xs sm:text-sm text-[#222325] flex items-center justify-between gap-3 cursor-pointer hover:bg-slate-100 transition-colors list-none">
+                        <span>{faq.question}</span>
+                        <span className="text-slate-400 group-open:rotate-180 transition-transform">
+                          ▼
+                        </span>
+                      </summary>
+                      <div
+                        className="p-4 pt-3 text-xs sm:text-sm text-[#404145] leading-relaxed border-t border-slate-100 bg-white prose prose-slate max-w-none"
+                        dangerouslySetInnerHTML={{ __html: faq.answer }}
+                      />
+                    </details>
+                  ))}
+              </div>
+            </div>
+          )}
+        </div>
+      ) : calculator.slug === 'salary-tax' || calculator.slug === 'salary-tax-calculator' ? (
+        <div className="space-y-10">
+          <SalaryTaxCalculatorApp />
+
+          {/* Complete 16-Section Editorial Guide */}
+          <SalaryTaxGuideContent />
+
+          {/* Section 17: FAQ Accordion Section */}
+          {calculator.faqs && calculator.faqs.length > 0 && (
+            <div className="bg-white rounded-3xl border border-slate-200 p-6 sm:p-8 shadow-xs space-y-4">
+              <div className="flex items-center gap-2.5 border-b border-slate-100 pb-3">
+                <div className="w-8 h-8 rounded-lg bg-[#f4fdf8] text-[#1dbf73] flex items-center justify-center border border-[#d8f5e5] shrink-0">
+                  <BookOpen className="w-4 h-4" />
+                </div>
+                <h3 className="text-base sm:text-lg font-bold text-[#222325]">
+                  Frequently Asked Questions (Salary Tax FY 2026-27)
+                </h3>
+              </div>
+              <div className="space-y-3">
+                {calculator.faqs
+                  .filter((f) => f.isEnabled !== false)
+                  .map((faq, idx) => (
+                    <details
+                      key={faq.id || idx}
+                      open
+                      className="group border border-slate-200 rounded-2xl overflow-hidden bg-[#fafafa]"
+                    >
+                      <summary className="p-4 font-bold text-xs sm:text-sm text-[#222325] flex items-center justify-between gap-3 cursor-pointer hover:bg-slate-100 transition-colors list-none">
+                        <span>{faq.question}</span>
+                        <span className="text-slate-400 group-open:rotate-180 transition-transform">
+                          ▼
+                        </span>
+                      </summary>
+                      <div
+                        className="p-4 pt-3 text-xs sm:text-sm text-[#404145] leading-relaxed border-t border-slate-100 bg-white prose prose-slate max-w-none"
+                        dangerouslySetInnerHTML={{ __html: faq.answer }}
+                      />
+                    </details>
+                  ))}
+              </div>
+            </div>
+          )}
+        </div>
+      ) : calculator.slug === 'tds' || calculator.slug === 'tds-calculator' ? (
+        <div className="space-y-10">
+          <TdsCalculatorApp />
+
+          {/* Complete TDS Guide Content */}
+          <TdsGuideContent />
+
+          {/* FAQ Accordion Section */}
+          {calculator.faqs && calculator.faqs.length > 0 && (
+            <div className="bg-white rounded-3xl border border-slate-200 p-6 sm:p-8 shadow-xs space-y-4">
+              <div className="flex items-center gap-2.5 border-b border-slate-100 pb-3">
+                <div className="w-8 h-8 rounded-lg bg-[#f4fdf8] text-[#1dbf73] flex items-center justify-center border border-[#d8f5e5] shrink-0">
+                  <BookOpen className="w-4 h-4" />
+                </div>
+                <h3 className="text-base sm:text-lg font-bold text-[#222325]">
+                  Frequently Asked Questions (TDS FY 2026-27)
+                </h3>
+              </div>
+              <div className="space-y-3">
+                {calculator.faqs
+                  .filter((f) => f.isEnabled !== false)
+                  .map((faq, idx) => (
+                    <details
+                      key={faq.id || idx}
+                      open
+                      className="group border border-slate-200 rounded-2xl overflow-hidden bg-[#fafafa]"
+                    >
+                      <summary className="p-4 font-bold text-xs sm:text-sm text-[#222325] flex items-center justify-between gap-3 cursor-pointer hover:bg-slate-100 transition-colors list-none">
+                        <span>{faq.question}</span>
+                        <span className="text-slate-400 group-open:rotate-180 transition-transform">
+                          ▼
+                        </span>
+                      </summary>
+                      <div
+                        className="p-4 pt-3 text-xs sm:text-sm text-[#404145] leading-relaxed border-t border-slate-100 bg-white prose prose-slate max-w-none"
+                        dangerouslySetInnerHTML={{ __html: faq.answer }}
+                      />
+                    </details>
+                  ))}
+              </div>
+            </div>
+          )}
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+          <main className="lg:col-span-8 xl:col-span-9 space-y-8">
+            <DynamicCalculatorRenderer calculator={calculator} />
+          </main>
+
+          {/* Sidebar: Related Tools */}
+          <aside className="lg:col-span-4 xl:col-span-3 space-y-6">
+            <div className="p-5 bg-[#fafafa] rounded-xl border border-[#e4e5e7] space-y-4 sticky top-20">
+              <h3 className="text-xs font-bold text-[#222325] uppercase tracking-wider">
+                Related {subcategory.name} Tools
+              </h3>
+              {relatedCalculators.length > 0 ? (
+                <div className="space-y-2.5">
+                  {relatedCalculators.map((rel) => (
+                    <a
+                      key={rel.id}
+                      href={`/${category.slug}/${subcategory.slug}/${rel.slug}`}
+                      className="block p-3.5 bg-white rounded-lg border border-[#e4e5e7] hover:border-[#1dbf73] hover:shadow-xs transition-all group"
+                    >
+                      <div className="flex items-center justify-between">
+                        <span className="text-xs font-bold text-[#222325] group-hover:text-[#1dbf73] truncate">
+                          {rel.name}
+                        </span>
+                        <ArrowRight className="w-3.5 h-3.5 text-[#74767e] group-hover:text-[#1dbf73] transition-colors shrink-0" />
+                      </div>
+                      {rel.shortDescription && (
+                        <p className="text-[11px] text-[#74767e] mt-1 line-clamp-1">
+                          {rel.shortDescription}
+                        </p>
+                      )}
+                    </a>
+                  ))}
+                </div>
+              ) : (
+                <p className="text-xs text-[#74767e]">
+                  No other calculators in this subcategory yet.
+                </p>
+              )}
+            </div>
+          </aside>
+        </div>
+      )}
     </div>
   );
 };

@@ -180,21 +180,19 @@ export const AdminCategories: React.FC = () => {
     }
   };
 
-  const handleDeleteConfirm = async (force: boolean = false) => {
+  const handleDeleteConfirm = async () => {
     if (!deleteTarget) return;
     setIsDeleting(true);
     try {
-      const res = await api.adminDeleteCategory(deleteTarget.category.id, force);
-      if (res.requiresConfirmation && !force) {
-        setDeleteTarget({
-          ...deleteTarget,
-          cascadeWarning: true,
-        });
-        setIsDeleting(false);
-        return;
-      }
+      const targetId = deleteTarget.category.id;
+      await api.adminDeleteCategory(targetId, true);
+
+      // Optimistically update local state immediately
+      setCategories((prev) => prev.filter((c) => c.id !== targetId));
       setDeleteTarget(null);
-      loadCategories();
+
+      // Refresh list from server
+      await loadCategories();
     } catch (err: any) {
       alert(err.message || 'Failed to delete category');
     } finally {
@@ -392,7 +390,7 @@ export const AdminCategories: React.FC = () => {
                         </button>
                         <button
                           type="button"
-                          onClick={() => setDeleteTarget({ category: cat })}
+                          onClick={() => setDeleteTarget({ category: cat, cascadeWarning: cat.subcategoriesCount > 0 || cat.calculatorsCount > 0 })}
                           className="p-1.5 text-rose-500 hover:text-rose-700 rounded hover:bg-rose-50 transition-colors cursor-pointer"
                           title="Delete category"
                         >
@@ -602,7 +600,7 @@ export const AdminCategories: React.FC = () => {
               <button
                 type="button"
                 disabled={isDeleting}
-                onClick={() => handleDeleteConfirm(true)}
+                onClick={handleDeleteConfirm}
                 className="px-5 py-2 text-xs font-bold text-white bg-rose-600 hover:bg-rose-700 rounded-md transition-colors cursor-pointer disabled:opacity-50"
               >
                 {isDeleting ? 'Deleting...' : 'Confirm Delete'}

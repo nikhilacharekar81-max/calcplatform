@@ -18,11 +18,10 @@ export const FaqAccordionModule: React.FC<FaqAccordionModuleProps> = ({
   faqs = [],
   settings = {},
 }) => {
-  const [openIndices, setOpenIndices] = useState<number[]>([0]);
-  const title = settings.title || 'Frequently Asked Questions';
-  const allowMultiple = settings.allowMultipleOpen || false;
-
   const validFaqs = faqs.filter((f) => f.isEnabled !== false);
+  const [openIndices, setOpenIndices] = useState<number[]>(() => validFaqs.map((_, i) => i));
+  const title = settings.title || 'Frequently Asked Questions';
+  const allowMultiple = settings.allowMultipleOpen !== undefined ? settings.allowMultipleOpen : true;
 
   const toggleFaq = (idx: number) => {
     if (allowMultiple) {

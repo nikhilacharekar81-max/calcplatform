@@ -1,681 +1,427 @@
 {
   "categories": [
     {
-      "id": "cat_1790504986048_uai46",
-      "name": "Maths",
-      "slug": "maths",
+      "id": "cat_1790615570728_tax",
+      "name": "Income Tax & Tax",
+      "slug": "income-tax-tax",
       "description": "",
-      "seoTitle": "Maths",
+      "seoTitle": "Income Tax & Tax",
       "seoDescription": "",
       "seoKeywords": "",
       "icon": "Folder",
       "order": 1,
       "isActive": true,
-      "createdAt": "2026-09-27T10:29:46.048Z",
-      "updatedAt": "2026-09-27T10:29:46.048Z"
+      "createdAt": "2026-09-28T17:12:50.727Z",
+      "updatedAt": "2026-09-28T17:12:50.727Z"
+    },
+    {
+      "id": "cat_loans_emi",
+      "name": "Loans & EMI",
+      "slug": "loans-emi",
+      "description": "India-focused loan and EMI calculators for home, personal, car, bike, education, business, gold loans, and prepayment planning.",
+      "seoTitle": "Loans & EMI Calculators",
+      "seoDescription": "Calculate EMIs, loan eligibility, prepayments, and interest rates across home, personal, car, bike, and business loans in India.",
+      "seoKeywords": "loans, emi, home loan, personal loan, car loan, bike loan, education loan, gold loan, loan eligibility",
+      "icon": "CreditCard",
+      "order": 2,
+      "isActive": true,
+      "createdAt": "2026-09-29T16:55:49.825Z",
+      "updatedAt": "2026-09-29T16:55:49.825Z"
     }
   ],
   "subcategories": [
     {
-      "id": "sub_1790505115006_ra7ky",
-      "categoryId": "cat_1790504986048_uai46",
-      "name": "Basic Maths",
-      "slug": "basic-maths",
+      "id": "sub_1790615570728_0",
+      "categoryId": "cat_1790615570728_tax",
+      "name": "Income Tax",
+      "slug": "income-tax",
       "description": "",
-      "seoTitle": "Basic Maths",
+      "seoTitle": "Income Tax",
       "seoDescription": "",
       "seoKeywords": "",
       "order": 1,
       "isActive": true,
-      "createdAt": "2026-09-27T10:31:55.006Z",
-      "updatedAt": "2026-09-27T10:31:55.006Z"
+      "createdAt": "2026-09-28T17:12:50.727Z",
+      "updatedAt": "2026-09-28T17:12:50.727Z"
+    },
+    {
+      "id": "sub_1790615570728_1",
+      "categoryId": "cat_1790615570728_tax",
+      "name": "Salary Tax",
+      "slug": "salary-tax",
+      "description": "",
+      "seoTitle": "Salary Tax",
+      "seoDescription": "",
+      "seoKeywords": "",
+      "order": 2,
+      "isActive": true,
+      "createdAt": "2026-09-28T17:12:50.727Z",
+      "updatedAt": "2026-09-28T17:12:50.727Z"
+    },
+    {
+      "id": "sub_1790615570728_2",
+      "categoryId": "cat_1790615570728_tax",
+      "name": "Old vs New Tax Regime",
+      "slug": "old-vs-new-tax-regime",
+      "description": "",
+      "seoTitle": "Old vs New Tax Regime",
+      "seoDescription": "",
+      "seoKeywords": "",
+      "order": 3,
+      "isActive": true,
+      "createdAt": "2026-09-28T17:12:50.727Z",
+      "updatedAt": "2026-09-28T17:12:50.727Z"
+    },
+    {
+      "id": "sub_1790615570728_3",
+      "categoryId": "cat_1790615570728_tax",
+      "name": "TDS",
+      "slug": "tds",
+      "description": "",
+      "seoTitle": "TDS",
+      "seoDescription": "",
+      "seoKeywords": "",
+      "order": 4,
+      "isActive": true,
+      "createdAt": "2026-09-28T17:12:50.727Z",
+      "updatedAt": "2026-09-28T17:12:50.727Z"
+    },
+    {
+      "id": "sub_1790615570728_4",
+      "categoryId": "cat_1790615570728_tax",
+      "name": "Capital Gains Tax",
+      "slug": "capital-gains-tax",
+      "description": "",
+      "seoTitle": "Capital Gains Tax",
+      "seoDescription": "",
+      "seoKeywords": "",
+      "order": 5,
+      "isActive": true,
+      "createdAt": "2026-09-28T17:12:50.727Z",
+      "updatedAt": "2026-09-28T17:12:50.727Z"
+    },
+    {
+      "id": "sub_1790615570728_5",
+      "categoryId": "cat_1790615570728_tax",
+      "name": "HRA",
+      "slug": "hra",
+      "description": "",
+      "seoTitle": "HRA",
+      "seoDescription": "",
+      "seoKeywords": "",
+      "order": 6,
+      "isActive": true,
+      "createdAt": "2026-09-28T17:12:50.727Z",
+      "updatedAt": "2026-09-28T17:12:50.727Z"
+    },
+    {
+      "id": "sub_1790615570728_6",
+      "categoryId": "cat_1790615570728_tax",
+      "name": "Tax Deductions",
+      "slug": "tax-deductions",
+      "description": "",
+      "seoTitle": "Tax Deductions",
+      "seoDescription": "",
+      "seoKeywords": "",
+      "order": 7,
+      "isActive": true,
+      "createdAt": "2026-09-28T17:12:50.727Z",
+      "updatedAt": "2026-09-28T17:12:50.727Z"
+    },
+    {
+      "id": "sub_1790615570728_7",
+      "categoryId": "cat_1790615570728_tax",
+      "name": "House Property Tax",
+      "slug": "house-property-tax",
+      "description": "",
+      "seoTitle": "House Property Tax",
+      "seoDescription": "",
+      "seoKeywords": "",
+      "order": 8,
+      "isActive": true,
+      "createdAt": "2026-09-28T17:12:50.727Z",
+      "updatedAt": "2026-09-28T17:12:50.727Z"
+    },
+    {
+      "id": "sub_1790615570728_8",
+      "categoryId": "cat_1790615570728_tax",
+      "name": "Business & Professional Tax",
+      "slug": "business-professional-tax",
+      "description": "",
+      "seoTitle": "Business & Professional Tax",
+      "seoDescription": "",
+      "seoKeywords": "",
+      "order": 9,
+      "isActive": true,
+      "createdAt": "2026-09-28T17:12:50.727Z",
+      "updatedAt": "2026-09-28T17:12:50.727Z"
+    },
+    {
+      "id": "sub_loans_home_loan",
+      "categoryId": "cat_loans_emi",
+      "name": "Home Loan",
+      "slug": "home-loan",
+      "description": "Home Loan tools and calculators.",
+      "seoTitle": "Home Loan Calculators",
+      "seoDescription": "Calculate monthly EMI, interest payable, total payment, and tax benefits under Sec 24(b) & Sec 80C.",
+      "seoKeywords": "home loan",
+      "order": 1,
+      "isActive": true,
+      "createdAt": "2026-09-29T16:55:49.825Z",
+      "updatedAt": "2026-09-29T16:55:49.825Z"
+    },
+    {
+      "id": "sub_loans_personal_loan",
+      "categoryId": "cat_loans_emi",
+      "name": "Personal Loan",
+      "slug": "personal-loan",
+      "description": "Personal Loan tools and calculators.",
+      "seoTitle": "Personal Loan Calculators",
+      "seoDescription": "Calculate personal loan EMI, total interest, and processing fee breakdowns for amounts up to ₹40 Lakhs.",
+      "seoKeywords": "personal loan",
+      "order": 2,
+      "isActive": true,
+      "createdAt": "2026-09-29T16:55:49.825Z",
+      "updatedAt": "2026-09-29T16:55:49.825Z"
+    },
+    {
+      "id": "sub_loans_car_loan",
+      "categoryId": "cat_loans_emi",
+      "name": "Car Loan",
+      "slug": "car-loan",
+      "description": "Car Loan tools and calculators.",
+      "seoTitle": "Car Loan Calculators",
+      "seoDescription": "Calculate new or used car loan EMI, down payment impact, and total interest cost.",
+      "seoKeywords": "car loan",
+      "order": 3,
+      "isActive": true,
+      "createdAt": "2026-09-29T16:55:49.825Z",
+      "updatedAt": "2026-09-29T16:55:49.825Z"
+    },
+    {
+      "id": "sub_loans_bike_loan",
+      "categoryId": "cat_loans_emi",
+      "name": "Bike Loan",
+      "slug": "bike-loan",
+      "description": "Bike Loan tools and calculators.",
+      "seoTitle": "Bike Loan Calculators",
+      "seoDescription": "Calculate two-wheeler loan EMI and interest breakdown based on vehicle price and down payment.",
+      "seoKeywords": "bike loan",
+      "order": 4,
+      "isActive": true,
+      "createdAt": "2026-09-29T16:55:49.825Z",
+      "updatedAt": "2026-09-29T16:55:49.825Z"
+    },
+    {
+      "id": "sub_loans_education_loan",
+      "categoryId": "cat_loans_emi",
+      "name": "Education Loan",
+      "slug": "education-loan",
+      "description": "Education Loan tools and calculators.",
+      "seoTitle": "Education Loan Calculators",
+      "seoDescription": "Calculate student loan EMI, moratorium period interest, and Section 80E 100% tax deduction benefits.",
+      "seoKeywords": "education loan",
+      "order": 5,
+      "isActive": true,
+      "createdAt": "2026-09-29T16:55:49.825Z",
+      "updatedAt": "2026-09-29T16:55:49.825Z"
+    },
+    {
+      "id": "sub_loans_business_loan",
+      "categoryId": "cat_loans_emi",
+      "name": "Business Loan",
+      "slug": "business-loan",
+      "description": "Business Loan tools and calculators.",
+      "seoTitle": "Business Loan Calculators",
+      "seoDescription": "Calculate business loan EMI, gross interest, and loan processing charges for MSME & commercial credit.",
+      "seoKeywords": "business loan",
+      "order": 6,
+      "isActive": true,
+      "createdAt": "2026-09-29T16:55:49.825Z",
+      "updatedAt": "2026-09-29T16:55:49.825Z"
+    },
+    {
+      "id": "sub_loans_gold_loan",
+      "categoryId": "cat_loans_emi",
+      "name": "Gold Loan",
+      "slug": "gold-loan",
+      "description": "Gold Loan tools and calculators.",
+      "seoTitle": "Gold Loan Calculators",
+      "seoDescription": "Calculate maximum eligible gold loan amount based on per-gram gold rate, purity (22K/24K), and RBI LTV limits.",
+      "seoKeywords": "gold loan",
+      "order": 7,
+      "isActive": true,
+      "createdAt": "2026-09-29T16:55:49.825Z",
+      "updatedAt": "2026-09-29T16:55:49.825Z"
+    },
+    {
+      "id": "sub_loans_loan_against_property",
+      "categoryId": "cat_loans_emi",
+      "name": "Loan Against Property",
+      "slug": "loan-against-property",
+      "description": "Loan Against Property tools and calculators.",
+      "seoTitle": "Loan Against Property Calculators",
+      "seoDescription": "Calculate loan against property (LAP) EMI, eligible loan amount up to 70% property valuation, and interest cost.",
+      "seoKeywords": "loan against property",
+      "order": 8,
+      "isActive": true,
+      "createdAt": "2026-09-29T16:55:49.825Z",
+      "updatedAt": "2026-09-29T16:55:49.825Z"
+    },
+    {
+      "id": "sub_loans_emi",
+      "categoryId": "cat_loans_emi",
+      "name": "EMI",
+      "slug": "emi",
+      "description": "EMI tools and calculators.",
+      "seoTitle": "EMI Calculators",
+      "seoDescription": "Universal EMI calculator for all types of loans with monthly & yearly amortization schedule breakdown.",
+      "seoKeywords": "emi",
+      "order": 9,
+      "isActive": true,
+      "createdAt": "2026-09-29T16:55:49.825Z",
+      "updatedAt": "2026-09-29T16:55:49.825Z"
+    },
+    {
+      "id": "sub_loans_loan_eligibility",
+      "categoryId": "cat_loans_emi",
+      "name": "Loan Eligibility",
+      "slug": "loan-eligibility",
+      "description": "Loan Eligibility tools and calculators.",
+      "seoTitle": "Loan Eligibility Calculators",
+      "seoDescription": "Calculate maximum eligible loan amount based on net monthly salary, existing EMIs, and FOIR ratio.",
+      "seoKeywords": "loan eligibility",
+      "order": 10,
+      "isActive": true,
+      "createdAt": "2026-09-29T16:55:49.826Z",
+      "updatedAt": "2026-09-29T16:55:49.826Z"
+    },
+    {
+      "id": "sub_loans_loan_prepayment",
+      "categoryId": "cat_loans_emi",
+      "name": "Loan Prepayment",
+      "slug": "loan-prepayment",
+      "description": "Loan Prepayment tools and calculators.",
+      "seoTitle": "Loan Prepayment Calculators",
+      "seoDescription": "Calculate total interest savings and reduced loan tenure by making partial or lump-sum loan prepayments.",
+      "seoKeywords": "loan prepayment",
+      "order": 11,
+      "isActive": true,
+      "createdAt": "2026-09-29T16:55:49.826Z",
+      "updatedAt": "2026-09-29T16:55:49.826Z"
+    },
+    {
+      "id": "sub_loans_loan_affordability",
+      "categoryId": "cat_loans_emi",
+      "name": "Loan Affordability",
+      "slug": "loan-affordability",
+      "description": "Loan Affordability tools and calculators.",
+      "seoTitle": "Loan Affordability Calculators",
+      "seoDescription": "Calculate maximum affordable loan amount and property price based on your desired monthly EMI budget.",
+      "seoKeywords": "loan affordability",
+      "order": 12,
+      "isActive": true,
+      "createdAt": "2026-09-29T16:55:49.826Z",
+      "updatedAt": "2026-09-29T16:55:49.826Z"
     }
   ],
   "calculators": [
     {
-      "id": "calc_1790505129990_otjvg",
-      "name": "Percentage Calculator",
-      "slug": "percentage-calculator",
-      "shortDescription": "",
-      "categoryId": "cat_1790504986048_uai46",
-      "subcategoryId": "sub_1790505115006_ra7ky",
-      "engineType": "custom_formula",
-      "fields": [
-        {
-          "id": "amount",
-          "label": "Principal Amount",
-          "type": "number",
-          "defaultValue": 500000,
-          "placeholder": "500000",
-          "prefix": "₹",
-          "suffix": "",
-          "min": 1000,
-          "max": 100000000,
-          "step": 1000,
-          "helpText": "Enter total base amount"
-        },
-        {
-          "id": "rate",
-          "label": "Annual Interest Rate (%)",
-          "type": "slider",
-          "defaultValue": 8.5,
-          "prefix": "",
-          "suffix": "%",
-          "min": 1,
-          "max": 30,
-          "step": 0.1,
-          "helpText": "Annual percentage rate"
-        },
-        {
-          "id": "tenureYears",
-          "label": "Tenure (Years)",
-          "type": "number",
-          "defaultValue": 5,
-          "prefix": "",
-          "suffix": "Yrs",
-          "min": 1,
-          "max": 40,
-          "step": 1,
-          "helpText": "Loan or investment duration in years"
-        }
-      ],
-      "outputs": [
-        {
-          "id": "monthlyPayment",
-          "label": "Monthly Payment (EMI)",
-          "formula": "(amount * (rate / 1200) * pow(1 + (rate / 1200), tenureYears * 12)) / (pow(1 + (rate / 1200), tenureYears * 12) - 1)",
-          "format": "currency_inr",
-          "highlight": true,
-          "description": "Estimated monthly installment"
-        },
-        {
-          "id": "totalPayment",
-          "label": "Total Payment",
-          "formula": "monthlyPayment * tenureYears * 12",
-          "format": "currency_inr",
-          "highlight": false,
-          "description": "Total principal + interest repayment"
-        },
-        {
-          "id": "totalInterest",
-          "label": "Total Interest Payable",
-          "formula": "totalPayment - amount",
-          "format": "currency_inr",
-          "highlight": false,
-          "description": "Aggregate interest cost"
-        }
-      ],
-      "presets": [],
-      "modules": [
-        {
-          "id": "mod_calculator-inputs",
-          "moduleId": "calculator-inputs",
-          "name": "Interactive Inputs & Controls",
-          "isEnabled": true,
-          "order": 1,
-          "settings": {
-            "title": "Parameters & Inputs",
-            "layout": "two-column",
-            "showResetButton": true
-          }
-        },
-        {
-          "id": "mod_result-cards",
-          "moduleId": "result-cards",
-          "name": "Results & KPI Summary",
-          "isEnabled": true,
-          "order": 2,
-          "settings": {
-            "title": "Calculated Results",
-            "highlightCardStyle": "emerald",
-            "showShareActions": true
-          }
-        },
-        {
-          "id": "mod_chart-visualizer",
-          "moduleId": "chart-visualizer",
-          "name": "Visual Chart & Graph Engine",
-          "isEnabled": true,
-          "order": 3,
-          "settings": {
-            "chartType": "donut",
-            "chartTitle": "Visual Breakdown",
-            "showLegend": true
-          }
-        },
-        {
-          "id": "mod_breakdown-visualizer",
-          "moduleId": "breakdown-visualizer",
-          "name": "Distribution & Itemized Breakdown",
-          "isEnabled": true,
-          "order": 4,
-          "settings": {
-            "title": "Distribution Breakdown",
-            "showPercentages": true
-          }
-        },
-        {
-          "id": "mod_amortization-table",
-          "moduleId": "amortization-table",
-          "name": "Amortization & Schedule Table",
-          "isEnabled": true,
-          "order": 5,
-          "settings": {
-            "title": "Payment & Growth Schedule",
-            "defaultView": "yearly",
-            "pageSize": 10
-          }
-        },
-        {
-          "id": "mod_scenario-comparison",
-          "moduleId": "scenario-comparison",
-          "name": "Scenario & Alternative Comparator",
-          "isEnabled": true,
-          "order": 6,
-          "settings": {
-            "title": "Scenario Comparison & Sensitivity"
-          }
-        },
-        {
-          "id": "mod_timeline-milestones",
-          "moduleId": "timeline-milestones",
-          "name": "Milestone & Growth Timeline",
-          "isEnabled": true,
-          "order": 7,
-          "settings": {
-            "title": "Key Milestones & Timeline"
-          }
-        },
-        {
-          "id": "mod_formula-methodology",
-          "moduleId": "formula-methodology",
-          "name": "Formula, Math & Logic Steps",
-          "isEnabled": true,
-          "order": 8,
-          "settings": {
-            "title": "Formula & Mathematical Logic",
-            "showStepByStep": true
-          }
-        },
-        {
-          "id": "mod_how-to-guide",
-          "moduleId": "how-to-guide",
-          "name": "How-to Guide & Instructions",
-          "isEnabled": true,
-          "order": 9,
-          "settings": {
-            "title": "How to Use This Calculator"
-          }
-        },
-        {
-          "id": "mod_worked-examples",
-          "moduleId": "worked-examples",
-          "name": "Worked Examples & Real Scenarios",
-          "isEnabled": true,
-          "order": 10,
-          "settings": {
-            "title": "Worked Examples & Scenarios"
-          }
-        },
-        {
-          "id": "mod_faq-accordion",
-          "moduleId": "faq-accordion",
-          "name": "FAQ Accordion & Schema Q&A",
-          "isEnabled": true,
-          "order": 11,
-          "settings": {
-            "title": "Frequently Asked Questions",
-            "allowMultipleOpen": false
-          }
-        },
-        {
-          "id": "mod_assumptions-info",
-          "moduleId": "assumptions-info",
-          "name": "Assumptions, Rules & Disclosures",
-          "isEnabled": true,
-          "order": 12,
-          "settings": {
-            "title": "Key Assumptions & Statutory Notes"
-          }
-        }
-      ],
-      "contentSections": [
-        {
-          "id": "sec_overview",
-          "title": "Overview & Computational Methodology",
-          "sectionType": "overview",
-          "htmlContent": "How are you",
-          "isEnabled": true,
-          "order": 1
-        },
-        {
-          "id": "sec_how_to",
-          "title": "Step-by-Step Instructions",
-          "sectionType": "how-to",
-          "htmlContent": "<ol class=\"list-decimal pl-5 space-y-1.5 my-3\">\n  <li>Enter the total amount.</li>\n  <li>Adjust the annual rate and tenure.</li>\n  <li>Review the computed monthly EMI, total interest, and visual amortization schedule below.</li>\n</ol>",
-          "isEnabled": true,
-          "order": 2
-        }
-      ],
-      "faqs": [
-        {
-          "id": "faq_1",
-          "question": "How is the calculation evaluated?",
-          "answer": "<p>The calculation uses standard reducing-balance math computed directly on your browser for instant, real-time results.</p>",
-          "isEnabled": true,
-          "order": 1
-        },
-        {
-          "id": "faq_2",
-          "question": "Can I change parameters anytime?",
-          "answer": "<p>Yes, all values update automatically in real-time as you type or drag the sliders.</p>",
-          "isEnabled": true,
-          "order": 2
-        }
-      ],
-      "examples": [],
-      "chartConfig": {
-        "enabled": true,
-        "chartType": "donut",
-        "title": "Principal vs Interest Breakdown",
-        "segments": [
-          {
-            "label": "Principal Amount",
-            "outputId": "amount",
-            "color": "#1dbf73"
-          },
-          {
-            "label": "Total Interest",
-            "outputId": "totalInterest",
-            "color": "#ff7640"
-          }
-        ]
-      },
-      "content": {
-        "formulaExplanation": "",
-        "usageInstructions": "",
-        "faqs": []
-      },
-      "seoTitle": "Percentage Calculator - Free Online Calculator",
-      "seoDescription": "",
-      "seoKeywords": "",
-      "noIndex": false,
-      "order": 1,
-      "isActive": true,
-      "isFeatured": false,
-      "isPopular": false,
-      "viewsCount": 71,
-      "createdAt": "2026-09-27T10:32:09.990Z",
-      "updatedAt": "2026-09-27T13:46:05.460Z"
-    },
-    {
-      "id": "calc_1790513018381_g16us",
-      "name": "Addition Calculator",
-      "slug": "addition-calculator",
-      "shortDescription": "Quickly add two or more numbers together with step-by-step breakdown.",
-      "categoryId": "cat_1790504986048_uai46",
-      "subcategoryId": "sub_1790505115006_ra7ky",
-      "engineType": "custom_formula",
-      "fields": [
-        {
-          "id": "num1",
-          "label": "First Number",
-          "type": "number",
-          "defaultValue": 50,
-          "placeholder": "Enter first number"
-        },
-        {
-          "id": "num2",
-          "label": "Second Number",
-          "type": "number",
-          "defaultValue": 25,
-          "placeholder": "Enter second number"
-        }
-      ],
-      "outputs": [
-        {
-          "id": "sum",
-          "label": "Total Sum",
-          "formula": "num1 + num2",
-          "format": "number",
-          "highlight": true
-        }
-      ],
-      "presets": [
-        {
-          "id": "preset_1",
-          "name": "Simple Addition",
-          "values": {
-            "num1": 100,
-            "num2": 250
-          }
-        },
-        {
-          "id": "preset_2",
-          "name": "Large Sum",
-          "values": {
-            "num1": 5000,
-            "num2": 12500
-          }
-        }
-      ],
-      "modules": [
-        {
-          "id": "mod_calculator-inputs",
-          "moduleId": "calculator-inputs",
-          "name": "Interactive Inputs & Controls",
-          "isEnabled": true,
-          "order": 1,
-          "settings": {
-            "title": "Parameters & Inputs",
-            "layout": "two-column",
-            "showResetButton": true
-          }
-        },
-        {
-          "id": "mod_result-cards",
-          "moduleId": "result-cards",
-          "name": "Results & KPI Summary",
-          "isEnabled": true,
-          "order": 2,
-          "settings": {
-            "title": "Calculated Results",
-            "highlightCardStyle": "emerald",
-            "showShareActions": true
-          }
-        },
-        {
-          "id": "mod_chart-visualizer",
-          "moduleId": "chart-visualizer",
-          "name": "Visual Chart & Graph Engine",
-          "isEnabled": true,
-          "order": 3,
-          "settings": {
-            "chartType": "donut",
-            "chartTitle": "Visual Breakdown",
-            "showLegend": true
-          }
-        },
-        {
-          "id": "mod_breakdown-visualizer",
-          "moduleId": "breakdown-visualizer",
-          "name": "Distribution & Itemized Breakdown",
-          "isEnabled": true,
-          "order": 4,
-          "settings": {
-            "title": "Distribution Breakdown",
-            "showPercentages": true
-          }
-        },
-        {
-          "id": "mod_amortization-table",
-          "moduleId": "amortization-table",
-          "name": "Amortization & Schedule Table",
-          "isEnabled": true,
-          "order": 5,
-          "settings": {
-            "title": "Payment & Growth Schedule",
-            "defaultView": "yearly",
-            "pageSize": 10
-          }
-        },
-        {
-          "id": "mod_scenario-comparison",
-          "moduleId": "scenario-comparison",
-          "name": "Scenario & Alternative Comparator",
-          "isEnabled": true,
-          "order": 6,
-          "settings": {
-            "title": "Scenario Comparison & Sensitivity"
-          }
-        },
-        {
-          "id": "mod_timeline-milestones",
-          "moduleId": "timeline-milestones",
-          "name": "Milestone & Growth Timeline",
-          "isEnabled": true,
-          "order": 7,
-          "settings": {
-            "title": "Key Milestones & Timeline"
-          }
-        },
-        {
-          "id": "mod_formula-methodology",
-          "moduleId": "formula-methodology",
-          "name": "Formula, Math & Logic Steps",
-          "isEnabled": true,
-          "order": 8,
-          "settings": {
-            "title": "Formula & Mathematical Logic",
-            "showStepByStep": true
-          }
-        },
-        {
-          "id": "mod_how-to-guide",
-          "moduleId": "how-to-guide",
-          "name": "How-to Guide & Instructions",
-          "isEnabled": true,
-          "order": 9,
-          "settings": {
-            "title": "How to Use This Calculator"
-          }
-        },
-        {
-          "id": "mod_worked-examples",
-          "moduleId": "worked-examples",
-          "name": "Worked Examples & Real Scenarios",
-          "isEnabled": true,
-          "order": 10,
-          "settings": {
-            "title": "Worked Examples & Scenarios"
-          }
-        },
-        {
-          "id": "mod_faq-accordion",
-          "moduleId": "faq-accordion",
-          "name": "FAQ Accordion & Schema Q&A",
-          "isEnabled": true,
-          "order": 11,
-          "settings": {
-            "title": "Frequently Asked Questions",
-            "allowMultipleOpen": false
-          }
-        },
-        {
-          "id": "mod_assumptions-info",
-          "moduleId": "assumptions-info",
-          "name": "Assumptions, Rules & Disclosures",
-          "isEnabled": true,
-          "order": 12,
-          "settings": {
-            "title": "Key Assumptions & Statutory Notes"
-          }
-        }
-      ],
-      "contentSections": [
-        {
-          "id": "sec_1",
-          "title": "What is Addition?",
-          "htmlContent": "<p>Addition is one of the four basic arithmetic operations. It combines two or more numbers into a single total sum.</p>",
-          "isEnabled": true,
-          "order": 1,
-          "sectionType": "overview"
-        }
-      ],
-      "faqs": [
-        {
-          "id": "faq_1",
-          "question": "How does addition work?",
-          "answer": "Addition combines quantities. For example, 50 + 25 equals 75.",
-          "isEnabled": true,
-          "order": 1
-        }
-      ],
-      "examples": [],
-      "chartConfig": {
-        "enabled": false,
-        "chartType": "donut",
-        "title": "Sum Breakdown",
-        "segments": []
-      },
-      "content": {
-        "formulaExplanation": "Total = Number 1 + Number 2",
-        "usageInstructions": "Enter your numbers in the fields above to compute the sum instantly.",
-        "faqs": []
-      },
-      "seoTitle": "Addition Calculator - Free Online Math Tool",
-      "seoDescription": "Perform quick and accurate addition calculations with instant results.",
-      "order": 2,
-      "isActive": true,
-      "createdAt": "2026-09-27T12:43:38.381Z",
-      "updatedAt": "2026-09-27T13:40:58.672Z",
-      "viewsCount": 6
-    },
-    {
-      "id": "calc_income_tax_2026",
+      "id": "calc_income_tax_suite_2026",
       "name": "Income Tax Calculator",
       "slug": "income-tax-calculator",
-      "shortDescription": "Calculate federal income tax liabilities, progressive tax brackets, effective rate, and net take-home pay.",
-      "categoryId": "cat_1790504986048_uai46",
-      "subcategoryId": "sub_1790505115006_ra7ky",
+      "shortDescription": "Enterprise White-Label Income Tax Calculator & Comparison Engine (FY 2025-26 & FY 2026-27) with side-by-side audit and custom white-label studio.",
+      "categoryId": "cat_1790615570728_tax",
+      "subcategoryId": "sub_1790615570728_0",
       "engineType": "custom_formula",
       "fields": [
         {
-          "id": "jurisdiction",
-          "label": "Tax Jurisdiction",
-          "type": "select",
-          "defaultValue": "US",
-          "options": [
-            {
-              "label": "US Federal (2025/2026)",
-              "value": "US"
-            },
-            {
-              "label": "India (FY 2025-26)",
-              "value": "IN"
-            }
-          ]
-        },
-        {
-          "id": "grossIncome",
-          "label": "Gross Annual Income",
+          "id": "grossSalary",
+          "label": "Gross Salary (Basic + DA + HRA + Allowances)",
           "type": "number",
-          "defaultValue": 85000,
+          "defaultValue": 1800000,
           "min": 0,
-          "max": 10000000,
-          "step": 1000,
-          "prefix": "$",
-          "helpText": "Total annual gross salary or business revenue before deductions."
+          "step": 10000,
+          "prefix": "₹"
         },
         {
-          "id": "filingStatus",
-          "label": "Filing Status (US)",
-          "type": "select",
-          "defaultValue": "single",
-          "options": [
-            {
-              "label": "Single",
-              "value": "single"
-            },
-            {
-              "label": "Married Filing Jointly",
-              "value": "married"
-            },
-            {
-              "label": "Head of Household",
-              "value": "head"
-            }
-          ]
-        },
-        {
-          "id": "indiaRegime",
-          "label": "Tax Regime (India)",
-          "type": "select",
-          "defaultValue": "new",
-          "options": [
-            {
-              "label": "New Regime (Default)",
-              "value": "new"
-            },
-            {
-              "label": "Old Regime",
-              "value": "old"
-            }
-          ]
-        },
-        {
-          "id": "useStandardDeduction",
-          "label": "Use Standard Deduction?",
-          "type": "checkbox",
-          "defaultValue": true
-        },
-        {
-          "id": "additionalDeductions",
-          "label": "Retirement & Itemized Deductions",
+          "id": "professionalTax",
+          "label": "Professional Tax Paid",
           "type": "number",
-          "defaultValue": 0,
+          "defaultValue": 2500,
           "min": 0,
           "step": 500,
-          "prefix": "$",
-          "helpText": "401(k), IRA, 80C/80D or itemized deductions."
+          "prefix": "₹"
+        },
+        {
+          "id": "propertyType",
+          "label": "Property Occupancy Type",
+          "type": "select",
+          "defaultValue": "self",
+          "options": [
+            {
+              "label": "Self-Occupied (Home Loan Interest)",
+              "value": "self"
+            },
+            {
+              "label": "Let-Out (Rental Income & Loan Interest)",
+              "value": "letout"
+            }
+          ]
+        },
+        {
+          "id": "homeLoanInterest",
+          "label": "Home Loan Interest Paid (Sec 24b)",
+          "type": "number",
+          "defaultValue": 200000,
+          "min": 0,
+          "step": 5000,
+          "prefix": "₹"
+        },
+        {
+          "id": "sec80C",
+          "label": "Sec 80C Investments (PPF, ELSS, EPF)",
+          "type": "number",
+          "defaultValue": 150000,
+          "min": 0,
+          "max": 150000,
+          "step": 5000,
+          "prefix": "₹"
+        },
+        {
+          "id": "sec80D",
+          "label": "Sec 80D Health Insurance",
+          "type": "number",
+          "defaultValue": 25000,
+          "min": 0,
+          "step": 1000,
+          "prefix": "₹"
+        },
+        {
+          "id": "sec80CCD",
+          "label": "Sec 80CCD(1B) NPS Tier-1",
+          "type": "number",
+          "defaultValue": 50000,
+          "min": 0,
+          "max": 50000,
+          "step": 1000,
+          "prefix": "₹"
         }
       ],
       "outputs": [
         {
-          "id": "totalDeduction",
-          "label": "Total Deductions & Exemptions",
-          "formula": "(useStandardDeduction ? (jurisdiction == \"IN\" ? (indiaRegime == \"new\" ? 75000 : 50000) : (filingStatus == \"married\" ? 30000 : (filingStatus == \"head\" ? 22500 : 15000))) : 0) + additionalDeductions",
+          "id": "netTaxPayableNew",
+          "label": "Net Tax Payable (New Regime)",
+          "formula": "tax_in(grossSalary, \"new\")",
           "format": "currency",
-          "prefix": "$"
+          "prefix": "₹"
         },
         {
-          "id": "taxableIncome",
-          "label": "Net Taxable Income",
-          "formula": "max(0, grossIncome - totalDeduction)",
+          "id": "netTaxPayableOld",
+          "label": "Net Tax Payable (Old Regime)",
+          "formula": "tax_in(grossSalary, \"old\")",
           "format": "currency",
-          "prefix": "$"
-        },
-        {
-          "id": "totalTax",
-          "label": "Total Tax Liability",
-          "formula": "jurisdiction == \"IN\" ? tax_in(taxableIncome, indiaRegime) : tax_us(taxableIncome, filingStatus)",
-          "format": "currency",
-          "prefix": "$"
-        },
-        {
-          "id": "effectiveRate",
-          "label": "Effective Tax Rate",
-          "formula": "grossIncome > 0 ? (totalTax / grossIncome) * 100 : 0",
-          "format": "percent",
-          "suffix": "%"
-        },
-        {
-          "id": "marginalRate",
-          "label": "Marginal Tax Bracket",
-          "formula": "jurisdiction == \"IN\" ? tax_in_marginal(taxableIncome, indiaRegime) : tax_us_marginal(taxableIncome, filingStatus)",
-          "format": "percent",
-          "suffix": "%"
-        },
-        {
-          "id": "takeHomePay",
-          "label": "Annual Net Take-Home Salary",
-          "formula": "max(0, grossIncome - totalTax)",
-          "format": "currency",
-          "prefix": "$"
-        },
-        {
-          "id": "monthlyTakeHome",
-          "label": "Monthly Net Take-Home Pay",
-          "formula": "takeHomePay / 12",
-          "format": "currency",
-          "prefix": "$"
-        },
-        {
-          "id": "biWeeklyTakeHome",
-          "label": "Bi-Weekly Net Pay (26x)",
-          "formula": "takeHomePay / 26",
-          "format": "currency",
-          "prefix": "$"
+          "prefix": "₹"
         }
       ],
       "modules": [
@@ -686,7 +432,7 @@
           "isEnabled": true,
           "order": 1,
           "settings": {
-            "title": "Tax Parameters",
+            "title": "Income & Tax Parameters",
             "layout": "grid_2_col",
             "showResetButton": true
           }
@@ -698,193 +444,1006 @@
           "isEnabled": true,
           "order": 2,
           "settings": {
-            "title": "Tax Calculation Summary",
+            "title": "Tax Liability & Side-by-Side Summary",
             "highlightCardStyle": "hero_primary",
             "showShareActions": true
           }
         },
         {
-          "id": "mod_chart-visualizer",
-          "moduleId": "chart-visualizer",
-          "name": "Visual Chart & Graph Engine",
-          "isEnabled": true,
-          "order": 3,
-          "settings": {
-            "chartType": "donut",
-            "chartTitle": "Income vs Tax Allocation",
-            "showLegend": true
-          }
-        },
-        {
-          "id": "mod_breakdown-visualizer",
-          "moduleId": "breakdown-visualizer",
-          "name": "Distribution & Itemized Breakdown",
-          "isEnabled": true,
-          "order": 4,
-          "settings": {
-            "title": "Paycheck Distribution Breakdown",
-            "showPercentages": true
-          }
-        },
-        {
-          "id": "mod_scenario-comparison",
-          "moduleId": "scenario-comparison",
-          "name": "Scenario & Alternative Comparator",
-          "isEnabled": true,
-          "order": 5,
-          "settings": {
-            "title": "Income & Filing Scenario Modeling"
-          }
-        },
-        {
-          "id": "mod_timeline-milestones",
-          "moduleId": "timeline-milestones",
-          "name": "Milestone & Growth Timeline",
-          "isEnabled": true,
-          "order": 6,
-          "settings": {
-            "title": "Tax & Salary Milestones"
-          }
-        },
-        {
-          "id": "mod_formula-methodology",
-          "moduleId": "formula-methodology",
-          "name": "Formula, Math & Logic Steps",
-          "isEnabled": true,
-          "order": 7,
-          "settings": {
-            "title": "Tax Bracket Calculation Methodology",
-            "showStepByStep": true,
-            "customExplanation": "Taxable income is passed through progressive marginal brackets. Lower slices of income are taxed at lower percentage rates before reaching higher marginal brackets."
-          }
-        },
-        {
           "id": "mod_how-to-guide",
           "moduleId": "how-to-guide",
-          "name": "How-to Guide & Instructions",
-          "isEnabled": true,
-          "order": 8,
+          "name": "how-to-guide",
+          "isEnabled": false,
+          "order": 3,
           "settings": {
-            "title": "How to Use the Income Tax Calculator"
-          }
-        },
-        {
-          "id": "mod_worked-examples",
-          "moduleId": "worked-examples",
-          "name": "Worked Examples & Real Scenarios",
-          "isEnabled": true,
-          "order": 9,
-          "settings": {
-            "title": "Worked Income Tax Examples"
+            "title": ""
           }
         },
         {
           "id": "mod_faq-accordion",
           "moduleId": "faq-accordion",
-          "name": "FAQ Accordion & Schema Q&A",
+          "name": "Frequently Asked Questions (FAQs)",
           "isEnabled": true,
-          "order": 10,
+          "order": 4,
           "settings": {
-            "title": "Income Tax Frequently Asked Questions",
-            "allowMultipleOpen": true
-          }
-        },
-        {
-          "id": "mod_assumptions-info",
-          "moduleId": "assumptions-info",
-          "name": "Assumptions, Rules & Disclosures",
-          "isEnabled": true,
-          "order": 11,
-          "settings": {
-            "title": "Statutory Tax Rules & Disclosures"
+            "title": "Frequently Asked Questions (FAQs)"
           }
         }
       ],
       "contentSections": [
         {
-          "id": "sec_how_to_use",
-          "sectionType": "how-to",
-          "title": "How to Calculate Your Income Tax Liability",
-          "content": "<p>Follow these steps to estimate your progressive income tax:</p><ol><li><strong>Select your Jurisdiction:</strong> Choose US Federal or India tax framework.</li><li><strong>Enter Annual Gross Income:</strong> Input your total annual gross salary or revenue before deductions.</li><li><strong>Set Filing Status:</strong> Select single, married joint, or head of household status.</li><li><strong>Apply Deductions:</strong> Enable standard deduction or enter custom retirement contributions (401k, IRA, 80C).</li><li><strong>View Breakdown:</strong> Review your progressive tax bracket breakdown and net monthly take-home salary.</li></ol>",
-          "order": 1,
-          "isEnabled": true
-        },
-        {
-          "id": "sec_assumptions",
-          "sectionType": "assumptions",
-          "title": "Tax Calculation Assumptions & Statutory Rules",
-          "content": "<p>This calculator incorporates standard statutory tax brackets:</p><ul><li>US Federal tax rates include 10%, 12%, 22%, 24%, 32%, 35%, and 37% progressive marginal rates.</li><li>India New Tax Regime includes standard deduction of ₹75,000 and Section 87A rebate for taxable income up to ₹12 Lakhs.</li><li>Estimates reflect federal individual income tax obligations and do not include state or municipal local income taxes.</li></ul>",
-          "order": 2,
-          "isEnabled": true
+          "id": "sec_1790675661643_fj2hl",
+          "title": "Online Income Tax Calculator: Old vs. New Tax Regime (FY 2025-26)",
+          "sectionType": "custom",
+          "htmlContent": "<!--StartFragment--><h1 data-path-to-node=\"0\">Online Income Tax Calculator: Old vs. New Tax Regime (FY 2025-26)</h1><p data-path-to-node=\"1\">Navigating the nuances of Indian income tax computations can often feel overwhelming, particularly when deciding which tax structure suits your financial situation. The <strong>Online Income Tax Calculator (FY 2025-26 / AY 2026-27)</strong> is built to instantly compute your estimated tax liability, compare your outcomes across both tax regimes, and clarify how your salary breakdown, allowances, and investments impact your final tax payable.</p><h2 data-path-to-node=\"3\">How to Use the Indian Income Tax Calculator</h2><p data-path-to-node=\"4\">To get the most accurate estimate from the calculator, gather your financial documents and follow these steps:</p><ol start=\"1\" data-path-to-node=\"5\"><li><p data-path-to-node=\"5,0,0\"><strong>Select Your Financial Year:</strong> Ensure the calculator is set to <strong>FY 2025-26 (Assessment Year 2026-27)</strong> to apply the correct active slab rates.</p></li><li><p data-path-to-node=\"5,1,0\"><strong>Enter Gross Income Details:</strong> Input your salary components, including basic salary, dearness allowance, special allowances, and any income from other sources (such as interest or rental income).</p></li><li><p data-path-to-node=\"5,2,0\"><strong>Input Allowances &amp; Deductions (Old Regime):</strong> If you are evaluating the old tax regime, enter your actual rent paid for HRA calculations, life insurance premiums, PPF investments under Section 80C, health insurance under Section 80D, and home loan interest.</p></li><li><p data-path-to-node=\"5,3,0\"><strong>Run the Comparison:</strong> Click calculate to view a side-by-side output showing your taxable income and net tax liability under both the Old and New Tax Regimes.</p></li></ol><h2 data-path-to-node=\"7\">Calculator Methodology &amp; Formula Logic</h2><p data-path-to-node=\"8\">Understanding the underlying computational steps ensures you can audit your figures and verify how the tool derives your final tax payable.</p><h3 data-path-to-node=\"9\">Step 1: Gross Total Income &amp; Allowances</h3><p data-path-to-node=\"10\">The calculation begins by aggregating all streams of income into your <strong>Gross Total Income (GTI)</strong>. From this aggregate figure, standard deductions (such as the standard salary deduction) and permissible exemptions like House Rent Allowance (HRA) or Leave Travel Allowance (LTA) under the old regime are subtracted to arrive at your net figure before Chapter VI-A deductions.</p><h3 data-path-to-node=\"11\">Step 2: Deductions &amp; Exemptions (Old Regime)</h3><p data-path-to-node=\"12\">Under the <strong>Old Tax Regime</strong>, eligible deductions such as investments under Section 80C (capped at ₹1,50,000), medical insurance under Section 80D, and interest paid on housing loans under Section 24 are subtracted from your taxable base. Under the <strong>New Tax Regime</strong>, these specific deductions are omitted in exchange for lower baseline tax rates.</p><h3 data-path-to-node=\"13\">Step 3: Tax Slab Computation &amp; Rebates (Section 87A)</h3><p data-path-to-node=\"14\">Once net taxable income is determined, applicable slab rates are applied. After computing the tentative tax, the tool factors in the tax rebate under <strong>Section 87A</strong> and any applicable marginal relief, followed by the addition of health and education cess (4%).</p><h2 data-path-to-node=\"16\">Income Tax Slabs &amp; Rates for FY 2025-26 (AY 2026-27)</h2><p data-path-to-node=\"17\">Tax liability varies significantly depending on the regime you select. The tables below outline the active slabs for the current financial year.</p><h3 data-path-to-node=\"18\">New Tax Regime Slabs</h3><table data-path-to-node=\"19\"><thead><tr><td><strong>Net Taxable Income (₹)</strong></td><td><strong>Tax Rate</strong></td></tr></thead><tbody><tr><td><span data-path-to-node=\"19,1,0,0\">Up to ₹3,00,000</span></td><td><span data-path-to-node=\"19,1,1,0\">Nil</span></td></tr><tr><td><span data-path-to-node=\"19,2,0,0\">₹3,00,001 to ₹7,00,000</span></td><td><span data-path-to-node=\"19,2,1,0\">5% (subject to Section 87A rebate)</span></td></tr><tr><td><span data-path-to-node=\"19,3,0,0\">₹7,00,001 to ₹10,00,000</span></td><td><span data-path-to-node=\"19,3,1,0\">10%</span></td></tr><tr><td><span data-path-to-node=\"19,4,0,0\">₹10,00,001 to ₹12,00,000</span></td><td><span data-path-to-node=\"19,4,1,0\">15%</span></td></tr><tr><td><span data-path-to-node=\"19,5,0,0\">₹12,00,001 to ₹15,00,000</span></td><td><span data-path-to-node=\"19,5,1,0\">20%</span></td></tr><tr><td><span data-path-to-node=\"19,6,0,0\">Above ₹15,00,000</span></td><td><span data-path-to-node=\"19,6,1,0\">30%</span></td></tr></tbody></table><h3 data-path-to-node=\"20\">Old Tax Regime Slabs</h3><table data-path-to-node=\"21\"><thead><tr><td><strong>Net Taxable Income (₹)</strong></td><td><strong>Tax Rate (Below 60 Years)</strong></td></tr></thead><tbody><tr><td><span data-path-to-node=\"21,1,0,0\">Up to ₹2,50,000</span></td><td><span data-path-to-node=\"21,1,1,0\">Nil</span></td></tr><tr><td><span data-path-to-node=\"21,2,0,0\">₹2,50,001 to ₹5,00,000</span></td><td><span data-path-to-node=\"21,2,1,0\">5%</span></td></tr><tr><td><span data-path-to-node=\"21,3,0,0\">₹5,00,001 to ₹10,00,000</span></td><td><span data-path-to-node=\"21,3,1,0\">20%</span></td></tr><tr><td><span data-path-to-node=\"21,4,0,0\">Above ₹10,00,000</span></td><td><span data-path-to-node=\"21,4,1,0\">30%</span></td></tr></tbody></table><p data-path-to-node=\"22\"><em>(Note: Senior citizens and super senior citizens enjoy higher basic exemption thresholds of ₹3,00,000 and ₹5,00,000 respectively under the old regime).</em></p><h2 data-path-to-node=\"24\">Key Differences: Old Tax Regime vs. New Tax Regime</h2><p data-path-to-node=\"25\">Choosing the right structure requires balancing deductions against tax rates:</p><ul data-path-to-node=\"26\"><li><p data-path-to-node=\"26,0,0\"><strong>Deductions:</strong> The Old Regime permits over 70 tax exemptions and deductions (including 80C, 80D, HRA, and LTA). The New Regime removes almost all deductions, though the standard deduction applies to salaried individuals under both structures.</p></li><li><p data-path-to-node=\"26,1,0\"><strong>Tax Slabs:</strong> The New Regime features wider tax slabs and lower baseline rates at various income tiers, making it beneficial for individuals with minimal traditional investments.</p></li><li><p data-path-to-node=\"26,2,0\"><strong>Flexibility:</strong> Salaried individuals can generally switch between regimes annually when filing their Income Tax Returns (ITR), whereas business owners face stricter limitations on switching.</p></li></ul><h2 data-path-to-node=\"28\">Frequently Asked Questions (FAQs)</h2><ul data-path-to-node=\"29\"><li><p data-path-to-node=\"29,0,0\"><strong>1. Which tax regime should I choose using the calculator?</strong></p><p data-path-to-node=\"29,0,0\">If your total deductions (HRA, 80C, 80D, home loan interest) exceed the threshold where the lower tax rates of the New Regime become more advantageous, the Old Regime usually results in lower tax payable. Use the calculator to test your exact figures.</p></li><li><p data-path-to-node=\"29,1,0\"><strong>2. Is the Standard Deduction available in both tax regimes?</strong></p><p data-path-to-node=\"29,1,0\">Yes, the standard deduction is available to salaried individuals and pensioners under both the Old and New Tax Regimes for FY 2025-26.</p></li><li><p data-path-to-node=\"29,2,0\"><strong>3. What documents do I need before using the calculator?</strong></p><p data-path-to-node=\"29,2,0\">Keep your current salary slips, Form 16 (if available), rent receipts or agreements if claiming HRA, and investment proofs for Section 80C and 80D handy.</p></li><li><p data-path-to-node=\"29,3,0\"><strong>4. How does the Section 87A rebate work?</strong></p><p data-path-to-node=\"29,3,0\">Section 87A provides a tax rebate that can eliminate tax liability entirely if your net taxable income falls below specified statutory limits under each regime.</p></li><li><p data-path-to-node=\"29,4,0\"><strong>5. Can I switch my tax regime after submitting investment proofs to my employer?</strong></p><p data-path-to-node=\"29,4,0\">Yes. Even if you declare one regime to your employer for TDS deduction purposes, you have the legal right to choose the alternative regime when filing your personal ITR at the end of the financial year.</p></li><li><p data-path-to-node=\"29,5,0\"><strong>6. Are maintenance charges included when calculating HRA exemptions?</strong></p><p data-path-to-node=\"29,5,0\">No. Only the core rent paid to the landlord is considered; separate utility bills and society maintenance fees are excluded.</p></li><li><p data-path-to-node=\"29,6,0\"><strong>7. What happens if my income exceeds ₹50 lakhs?</strong></p><p data-path-to-node=\"29,6,0\">High-income earners are subject to a surcharge on their income tax liability. The calculator incorporates applicable surcharge tiers based on your gross income input.</p></li><li><p data-path-to-node=\"29,7,0\"><strong>8. Does the calculator account for cess?</strong></p><p data-path-to-node=\"29,7,0\">Yes, the final computed tax output automatically adds the standard 4% Health and Education Cess mandated by the Income Tax Act.</p></li><li><p data-path-to-node=\"29,8,0\"><strong>9. Is my financial data stored when I use this online tool?</strong></p><p data-path-to-node=\"29,8,0\">No calculations or financial figures input into the browser utility are retained on external servers, ensuring complete privacy.</p></li><li><p data-path-to-node=\"29,9,0\"><strong>10. Can freelancers use this income tax calculator?</strong></p><p data-path-to-node=\"29,9,0\">While the tool accommodates standard salary breakdowns, freelancers and business owners should also account for professional expenses and presumptive taxation provisions under Section 44AD.</p></li></ul><h2 data-path-to-node=\"31\">Important Legal &amp; Verification Notices</h2><p data-path-to-node=\"32\"><em>This calculator and guide are provided for estimation, educational simulation, and tax planning purposes only. Tax laws are subject to amendment, and individual circumstances vary. Users are strongly advised to verify all computed tax liabilities and consult a qualified Chartered Accountant (CA) or review official CBDT portals prior to filing official Income Tax Returns (ITR).</em></p>",
+          "isEnabled": true,
+          "order": 1
         }
       ],
       "faqs": [
         {
-          "id": "faq_1",
-          "question": "What is the difference between Marginal and Effective Tax Rate?",
-          "answer": "Your marginal tax rate is the highest bracket percentage applied to your last dollar of income. Your effective tax rate is the actual overall percentage of your gross income paid in taxes (Total Tax ÷ Gross Income).",
-          "order": 1,
-          "isEnabled": true
+          "id": "faq_tax_account_req",
+          "question": "Do I need to create an account to use an online tax calculator?",
+          "answer": "<p>No. Most quality online tax calculators allow you to run instant estimates anonymously without requiring registration or logins.</p>",
+          "isEnabled": true,
+          "order": 1
         },
         {
-          "id": "faq_2",
-          "question": "How does a standard deduction reduce taxable income?",
-          "answer": "A standard deduction is a fixed dollar amount reduce from your gross income before applying tax rate brackets, ensuring lower income brackets remain untaxed.",
-          "order": 2,
-          "isEnabled": true
-        }
-      ],
-      "examples": [
+          "id": "faq_tax_legally_binding",
+          "question": "Are online tax calculations legally binding for filing?",
+          "answer": "<p>No. Calculators are estimation tools designed to help you plan. Your final tax liability is determined when you officially file your Income Tax Return (ITR) on the government portal.</p>",
+          "isEnabled": true,
+          "order": 2
+        },
         {
-          "id": "ex_1",
-          "title": "US Single Tax Filer (5,000 Gross Income)",
-          "scenario": "Individual earning 5,000 annually with 5,000 single standard deduction.",
-          "inputs": [
-            {
-              "label": "Gross Annual Income",
-              "value": "5,000"
-            },
-            {
-              "label": "Filing Status",
-              "value": "Single"
-            },
-            {
-              "label": "Standard Deduction",
-              "value": "5,000"
-            }
-          ],
-          "steps": [
-            {
-              "title": "Taxable Income Calculation",
-              "calculation": "5,000 - 5,000",
-              "result": "0,000"
-            },
-            {
-              "title": "Federal Progressive Tax",
-              "calculation": "10% on first 1,925 + 12% to 8,475 + 22% on remainder",
-              "result": ",314"
-            }
-          ],
-          "finalResultLabel": "Net Annual Take-Home Pay",
-          "finalResultValue": "5,686 (,307 / month)",
-          "order": 1,
-          "isEnabled": true
+          "id": "faq_tax_freelancers_biz",
+          "question": "Can freelancers and business owners use a standard tax calculator?",
+          "answer": "<p>Yes, provided the calculator includes fields for business income, professional receipts, and allowable business expenses alongside regular salary inputs.</p>",
+          "isEnabled": true,
+          "order": 3
+        },
+        {
+          "id": "faq_tax_mistake_deductions",
+          "question": "What happens if I make a mistake while entering my deductions?",
+          "answer": "<p>Since the calculator is an estimation tool, any input error simply alters the estimated output. You can re-enter the correct figures instantly to see the revised tax amount.</p>",
+          "isEnabled": true,
+          "order": 4
+        },
+        {
+          "id": "faq_tax_capital_gains",
+          "question": "Is capital gains tax calculated automatically by online calculators?",
+          "answer": "<p>It depends on the platform. Advanced calculators provide specific input fields for short-term and long-term capital gains so they can apply the correct separate tax rates.</p>",
+          "isEnabled": true,
+          "order": 5
+        },
+        {
+          "id": "faq_tax_update_budget_rules",
+          "question": "How often are online tax calculators updated with new budget rules?",
+          "answer": "<p>Reliable tax calculator platforms update their backend logic immediately following the Union Budget announcements and official notifications issued for the relevant financial year.</p>",
+          "isEnabled": true,
+          "order": 6
+        },
+        {
+          "id": "faq_tax_marginal_relief",
+          "question": "What is marginal relief, and how does it save me money if my income slightly exceeds ₹12 Lakhs?",
+          "answer": "<p>If your taxable income crosses ₹12 Lakhs under the New Tax Regime, your tax liability cannot exceed the amount of income earned above ₹12 Lakhs. Marginal relief absorbs the difference so you don't lose more money in tax than you did in extra earnings.</p>",
+          "isEnabled": true,
+          "order": 7
+        },
+        {
+          "id": "faq_tax_cess_auto",
+          "question": "Is the 4% Health and Education Cess added automatically by tax calculators?",
+          "answer": "<p>Yes. Reliable online calculators compute your base tax across slabs, apply any eligible Section 87A rebates, and then add a final 4% Health and Education Cess to arrive at your net payable tax.</p>",
+          "isEnabled": true,
+          "order": 8
+        },
+        {
+          "id": "faq_tax_nps_new_regime",
+          "question": "Can I claim an employer's NPS contribution under the New Tax Regime?",
+          "answer": "<p>Yes. Employer contributions to the National Pension System under Section 80CCD(2)—up to 14% of your basic salary—are deductible even if you choose the New Tax Regime.</p>",
+          "isEnabled": true,
+          "order": 9
+        },
+        {
+          "id": "faq_tax_surcharge_diff",
+          "question": "What is the maximum surcharge difference between the Old and New Tax Regimes for high earners?",
+          "answer": "<p>For ultra-high-income earners with taxable income exceeding ₹5 Crores, the peak surcharge rate under the Old Tax Regime is 37%, whereas the New Tax Regime caps the maximum surcharge at 25%.</p>",
+          "isEnabled": true,
+          "order": 10
+        },
+        {
+          "id": "faq_tax_miss_deadline",
+          "question": "What happens if I miss the July 31st ITR filing deadline after calculating my tax?",
+          "answer": "<p>If you miss the standard July 31 deadline for non-audit cases, you can still file a belated return until December 31st of the assessment year, though it attracts late fees under Section 234F and potential interest penalties.</p>",
+          "isEnabled": true,
+          "order": 11
+        },
+        {
+          "id": "faq_tax_75k_standard_deduction",
+          "question": "How does the ₹75,000 standard deduction make a salary of up to ₹12,75,000 tax-free under the New Regime?",
+          "answer": "<p>When your gross salary is ₹12,75,000, subtracting the ₹75,000 standard deduction brings your net taxable income down exactly to ₹12,00,000. The resulting tax liability is then entirely offset by the Section 87A rebate, resulting in zero net tax.</p>",
+          "isEnabled": true,
+          "order": 12
         }
       ],
-      "chartConfig": {
-        "type": "donut",
-        "title": "Gross Income Allocation",
-        "showLegend": true
-      },
-      "seoTitle": "Income Tax Calculator — Federal Progressive Tax & Take-Home Pay",
-      "seoDescription": "Interactive Income Tax Calculator for US Federal and India progressive tax rates. Calculate tax liability, marginal brackets, and net take-home pay.",
-      "seoKeywords": "income tax calculator, federal tax estimator, progressive tax brackets, net take home pay",
+      "examples": [],
+      "seoTitle": "Enterprise Income Tax Calculator — Old vs New Regime (FY 2025-26 & FY 2026-27)",
+      "seoDescription": "Calculate Indian Income Tax liability under Old and New Tax Regimes with full deductions support and white-label branding.",
+      "seoKeywords": "income tax calculator, old vs new regime, salary tax calculator",
       "isActive": true,
       "isFeatured": true,
       "isPopular": true,
-      "createdAt": "2026-09-27T14:56:02.991Z",
-      "updatedAt": "2026-09-27T14:56:02.991Z",
+      "createdAt": "2026-09-28T19:31:21.994Z",
+      "updatedAt": "2026-09-29T15:14:06.345Z",
+      "viewsCount": 25,
+      "content": {
+        "formulaExplanation": "",
+        "usageInstructions": "",
+        "faqs": [
+          {
+            "id": "faq_tax_account_req",
+            "question": "Do I need to create an account to use an online tax calculator?",
+            "answer": "<p>No. Most quality online tax calculators allow you to run instant estimates anonymously without requiring registration or logins.</p>",
+            "isEnabled": true,
+            "order": 1
+          },
+          {
+            "id": "faq_tax_legally_binding",
+            "question": "Are online tax calculations legally binding for filing?",
+            "answer": "<p>No. Calculators are estimation tools designed to help you plan. Your final tax liability is determined when you officially file your Income Tax Return (ITR) on the government portal.</p>",
+            "isEnabled": true,
+            "order": 2
+          },
+          {
+            "id": "faq_tax_freelancers_biz",
+            "question": "Can freelancers and business owners use a standard tax calculator?",
+            "answer": "<p>Yes, provided the calculator includes fields for business income, professional receipts, and allowable business expenses alongside regular salary inputs.</p>",
+            "isEnabled": true,
+            "order": 3
+          },
+          {
+            "id": "faq_tax_mistake_deductions",
+            "question": "What happens if I make a mistake while entering my deductions?",
+            "answer": "<p>Since the calculator is an estimation tool, any input error simply alters the estimated output. You can re-enter the correct figures instantly to see the revised tax amount.</p>",
+            "isEnabled": true,
+            "order": 4
+          },
+          {
+            "id": "faq_tax_capital_gains",
+            "question": "Is capital gains tax calculated automatically by online calculators?",
+            "answer": "<p>It depends on the platform. Advanced calculators provide specific input fields for short-term and long-term capital gains so they can apply the correct separate tax rates.</p>",
+            "isEnabled": true,
+            "order": 5
+          },
+          {
+            "id": "faq_tax_update_budget_rules",
+            "question": "How often are online tax calculators updated with new budget rules?",
+            "answer": "<p>Reliable tax calculator platforms update their backend logic immediately following the Union Budget announcements and official notifications issued for the relevant financial year.</p>",
+            "isEnabled": true,
+            "order": 6
+          },
+          {
+            "id": "faq_tax_marginal_relief",
+            "question": "What is marginal relief, and how does it save me money if my income slightly exceeds ₹12 Lakhs?",
+            "answer": "<p>If your taxable income crosses ₹12 Lakhs under the New Tax Regime, your tax liability cannot exceed the amount of income earned above ₹12 Lakhs. Marginal relief absorbs the difference so you don't lose more money in tax than you did in extra earnings.</p>",
+            "isEnabled": true,
+            "order": 7
+          },
+          {
+            "id": "faq_tax_cess_auto",
+            "question": "Is the 4% Health and Education Cess added automatically by tax calculators?",
+            "answer": "<p>Yes. Reliable online calculators compute your base tax across slabs, apply any eligible Section 87A rebates, and then add a final 4% Health and Education Cess to arrive at your net payable tax.</p>",
+            "isEnabled": true,
+            "order": 8
+          },
+          {
+            "id": "faq_tax_nps_new_regime",
+            "question": "Can I claim an employer's NPS contribution under the New Tax Regime?",
+            "answer": "<p>Yes. Employer contributions to the National Pension System under Section 80CCD(2)—up to 14% of your basic salary—are deductible even if you choose the New Tax Regime.</p>",
+            "isEnabled": true,
+            "order": 9
+          },
+          {
+            "id": "faq_tax_surcharge_diff",
+            "question": "What is the maximum surcharge difference between the Old and New Tax Regimes for high earners?",
+            "answer": "<p>For ultra-high-income earners with taxable income exceeding ₹5 Crores, the peak surcharge rate under the Old Tax Regime is 37%, whereas the New Tax Regime caps the maximum surcharge at 25%.</p>",
+            "isEnabled": true,
+            "order": 10
+          },
+          {
+            "id": "faq_tax_miss_deadline",
+            "question": "What happens if I miss the July 31st ITR filing deadline after calculating my tax?",
+            "answer": "<p>If you miss the standard July 31 deadline for non-audit cases, you can still file a belated return until December 31st of the assessment year, though it attracts late fees under Section 234F and potential interest penalties.</p>",
+            "isEnabled": true,
+            "order": 11
+          },
+          {
+            "id": "faq_tax_75k_standard_deduction",
+            "question": "How does the ₹75,000 standard deduction make a salary of up to ₹12,75,000 tax-free under the New Regime?",
+            "answer": "<p>When your gross salary is ₹12,75,000, subtracting the ₹75,000 standard deduction brings your net taxable income down exactly to ₹12,00,000. The resulting tax liability is then entirely offset by the Section 87A rebate, resulting in zero net tax.</p>",
+            "isEnabled": true,
+            "order": 12
+          }
+        ]
+      }
+    },
+    {
+      "id": "calc_salary_tax_2026",
+      "name": "Salary Tax Calculator FY 2026-27 (AY 2027-28)",
+      "slug": "salary-tax",
+      "categoryId": "cat_1790615570728_tax",
+      "subcategoryId": "sub_1790615570728_1",
+      "shortDescription": "Instant dual-regime salary tax calculator for FY 2026-27 (AY 2027-28). Compare Old vs New Tax Regime with ₹75,000 standard deduction, Section 87A rebate marginal relief, HRA, 80C, and take-home salary projections.",
+      "seoTitle": "Salary Tax Calculator FY 2026-27 | Old vs New Regime Comparison",
+      "seoDescription": "Calculate your salary tax for FY 2026-27 (AY 2027-28). Compare Old vs New Tax Regime with revised tax slabs, ₹75,000 standard deduction, zero-tax up to ₹12.75L, and marginal relief.",
+      "isActive": true,
+      "order": 1,
+      "formulaType": "javascript",
+      "modules": [
+        {
+          "id": "mod_salary_calculator_core",
+          "moduleId": "calculator-inputs",
+          "name": "Salary Tax Engine & Comparison",
+          "isEnabled": true,
+          "order": 1
+        },
+        {
+          "id": "mod_salary_faqs",
+          "moduleId": "faq-accordion",
+          "name": "Frequently Asked Questions (FAQs)",
+          "isEnabled": true,
+          "order": 2,
+          "settings": {
+            "title": "Frequently Asked Questions (FAQs)"
+          }
+        }
+      ],
+      "faqs": [
+        {
+          "id": "faq_sal_1",
+          "question": "Do I need to create an account to use the online tax calculator?",
+          "answer": "<p>No. You can run instant calculations anonymously without logging in or signing up.</p>",
+          "isEnabled": true,
+          "order": 1
+        },
+        {
+          "id": "faq_sal_2",
+          "question": "Is the calculator result legally binding for final filing?",
+          "answer": "<p>No. Calculators are estimation tools meant for planning. Your actual tax due is confirmed when you officially file your Income Tax Return (ITR) on the government portal.</p>",
+          "isEnabled": true,
+          "order": 2
+        },
+        {
+          "id": "faq_sal_3",
+          "question": "Can freelancers and business owners use this calculator?",
+          "answer": "<p>Yes, as long as the tool has input boxes for business income, professional receipts, and allowable business expenses alongside salary fields.</p>",
+          "isEnabled": true,
+          "order": 3
+        },
+        {
+          "id": "faq_sal_4",
+          "question": "What if I type the wrong deduction amount by mistake?",
+          "answer": "<p>You can simply edit the number in the input box, and the calculator will update your estimated tax instantly.</p>",
+          "isEnabled": true,
+          "order": 4
+        },
+        {
+          "id": "faq_sal_5",
+          "question": "Does the calculator figure out capital gains automatically?",
+          "answer": "<p>It depends on the specific page layout, but advanced calculators provide dedicated boxes for short-term and long-term capital gains to apply separate tax rates correctly.</p>",
+          "isEnabled": true,
+          "order": 5
+        },
+        {
+          "id": "faq_sal_6",
+          "question": "How often are tax calculators updated with new budget rules?",
+          "answer": "<p>Trustworthy calculator platforms update their backend logic right after the Union Budget announcements and official tax department notifications roll out.</p>",
+          "isEnabled": true,
+          "order": 6
+        },
+        {
+          "id": "faq_sal_7",
+          "question": "What is marginal relief, and how does it save me money if my income slightly exceeds ₹12 Lakhs?",
+          "answer": "<p>If your taxable income crosses ₹12 Lakhs under the New Tax Regime, your tax cannot be higher than the extra money you earned above that ₹12 Lakh limit. Marginal relief covers the difference so a small raise doesn't cost you more in tax than the raise itself.</p>",
+          "isEnabled": true,
+          "order": 7
+        },
+        {
+          "id": "faq_sal_8",
+          "question": "Is the 4% Health and Education Cess added automatically?",
+          "answer": "<p>Yes. Good online calculators compute your base tax, apply any Section 87A rebates or marginal relief, and then add the 4% cess automatically to show your final payable tax.</p>",
+          "isEnabled": true,
+          "order": 8
+        },
+        {
+          "id": "faq_sal_9",
+          "question": "Can I claim an employer's NPS contribution under the New Tax Regime?",
+          "answer": "<p>Yes. Employer contributions to the National Pension System up to 14% of basic salary are allowed even under the New Tax Regime.</p>",
+          "isEnabled": true,
+          "order": 9
+        },
+        {
+          "id": "faq_sal_10",
+          "question": "What is the maximum surcharge difference between the Old and New Regimes for high earners?",
+          "answer": "<p>For ultra-high earners making over ₹5 Crores, the highest surcharge is capped at 25% under the New Tax Regime, compared to 37% under the Old Tax Regime.</p>",
+          "isEnabled": true,
+          "order": 10
+        },
+        {
+          "id": "faq_sal_11",
+          "question": "What happens if I miss the July 31st ITR deadline after calculating my tax?",
+          "answer": "<p>You can still file a belated return up until December 31st of the assessment year, but it will carry late fees under Section 234F.</p>",
+          "isEnabled": true,
+          "order": 11
+        },
+        {
+          "id": "faq_sal_12",
+          "question": "How does the ₹75,000 standard deduction make a salary of up to ₹12,75,000 tax-free under the New Regime?",
+          "answer": "<p>When your gross salary is ₹12,75,000, subtracting the ₹75,000 standard deduction brings your net taxable income down to exactly ₹12,00,000. The Section 87A rebate then cancels out the tax entirely, leaving you with zero tax to pay.</p>",
+          "isEnabled": true,
+          "order": 12
+        }
+      ],
+      "content": {
+        "formulaExplanation": "Calculates tax under both Section 115BAC (New Regime) and Section 115BAC opt-out (Old Regime) taking into account progressive slabs, Section 87A rebate with marginal relief, surcharge thresholds, and 4% Health & Education Cess.",
+        "usageInstructions": "Enter your annual Basic Salary, HRA, and allowances. If choosing Old Regime, input your 80C investments, 80D health insurance, and rent paid to see live comparative tax liability.",
+        "faqs": [
+          {
+            "id": "faq_sal_1",
+            "question": "Do I need to create an account to use the online tax calculator?",
+            "answer": "<p>No. You can run instant calculations anonymously without logging in or signing up.</p>",
+            "isEnabled": true,
+            "order": 1
+          },
+          {
+            "id": "faq_sal_2",
+            "question": "Is the calculator result legally binding for final filing?",
+            "answer": "<p>No. Calculators are estimation tools meant for planning. Your actual tax due is confirmed when you officially file your Income Tax Return (ITR) on the government portal.</p>",
+            "isEnabled": true,
+            "order": 2
+          },
+          {
+            "id": "faq_sal_3",
+            "question": "Can freelancers and business owners use this calculator?",
+            "answer": "<p>Yes, as long as the tool has input boxes for business income, professional receipts, and allowable business expenses alongside salary fields.</p>",
+            "isEnabled": true,
+            "order": 3
+          },
+          {
+            "id": "faq_sal_4",
+            "question": "What if I type the wrong deduction amount by mistake?",
+            "answer": "<p>You can simply edit the number in the input box, and the calculator will update your estimated tax instantly.</p>",
+            "isEnabled": true,
+            "order": 4
+          },
+          {
+            "id": "faq_sal_5",
+            "question": "Does the calculator figure out capital gains automatically?",
+            "answer": "<p>It depends on the specific page layout, but advanced calculators provide dedicated boxes for short-term and long-term capital gains to apply separate tax rates correctly.</p>",
+            "isEnabled": true,
+            "order": 5
+          },
+          {
+            "id": "faq_sal_6",
+            "question": "How often are tax calculators updated with new budget rules?",
+            "answer": "<p>Trustworthy calculator platforms update their backend logic right after the Union Budget announcements and official tax department notifications roll out.</p>",
+            "isEnabled": true,
+            "order": 6
+          },
+          {
+            "id": "faq_sal_7",
+            "question": "What is marginal relief, and how does it save me money if my income slightly exceeds ₹12 Lakhs?",
+            "answer": "<p>If your taxable income crosses ₹12 Lakhs under the New Tax Regime, your tax cannot be higher than the extra money you earned above that ₹12 Lakh limit. Marginal relief covers the difference so a small raise doesn't cost you more in tax than the raise itself.</p>",
+            "isEnabled": true,
+            "order": 7
+          },
+          {
+            "id": "faq_sal_8",
+            "question": "Is the 4% Health and Education Cess added automatically?",
+            "answer": "<p>Yes. Good online calculators compute your base tax, apply any Section 87A rebates or marginal relief, and then add the 4% cess automatically to show your final payable tax.</p>",
+            "isEnabled": true,
+            "order": 8
+          },
+          {
+            "id": "faq_sal_9",
+            "question": "Can I claim an employer's NPS contribution under the New Tax Regime?",
+            "answer": "<p>Yes. Employer contributions to the National Pension System up to 14% of basic salary are allowed even under the New Tax Regime.</p>",
+            "isEnabled": true,
+            "order": 9
+          },
+          {
+            "id": "faq_sal_10",
+            "question": "What is the maximum surcharge difference between the Old and New Regimes for high earners?",
+            "answer": "<p>For ultra-high earners making over ₹5 Crores, the highest surcharge is capped at 25% under the New Tax Regime, compared to 37% under the Old Tax Regime.</p>",
+            "isEnabled": true,
+            "order": 10
+          },
+          {
+            "id": "faq_sal_11",
+            "question": "What happens if I miss the July 31st ITR deadline after calculating my tax?",
+            "answer": "<p>You can still file a belated return up until December 31st of the assessment year, but it will carry late fees under Section 234F.</p>",
+            "isEnabled": true,
+            "order": 11
+          },
+          {
+            "id": "faq_sal_12",
+            "question": "How does the ₹75,000 standard deduction make a salary of up to ₹12,75,000 tax-free under the New Regime?",
+            "answer": "<p>When your gross salary is ₹12,75,000, subtracting the ₹75,000 standard deduction brings your net taxable income down to exactly ₹12,00,000. The Section 87A rebate then cancels out the tax entirely, leaving you with zero tax to pay.</p>",
+            "isEnabled": true,
+            "order": 12
+          }
+        ]
+      }
+    },
+    {
+      "id": "calc_old_vs_new_2026",
+      "name": "Old vs. New Tax Regime Comparison Calculator FY 2026-27 (AY 2027-28)",
+      "slug": "old-vs-new-tax-regime",
+      "categoryId": "cat_1790615570728_tax",
+      "subcategoryId": "sub_1790615570728_2",
+      "shortDescription": "Compare Old vs New Tax Regime for FY 2026-27 (AY 2027-28). Instant side-by-side comparison with ₹75,000 standard deduction, Section 87A rebate marginal relief, 80C, 80D, HRA, and break-even deduction analysis.",
+      "seoTitle": "Old vs New Tax Regime Calculator FY 2026-27 | Compare Tax Liability",
+      "seoDescription": "Calculate and compare your income tax under the Old vs New Tax Regime for FY 2026-27 (AY 2027-28). Find which regime saves you more money with ₹75k standard deduction and marginal relief.",
+      "isActive": true,
+      "order": 1,
+      "formulaType": "javascript",
+      "modules": [
+        {
+          "id": "mod_old_vs_new_core",
+          "moduleId": "calculator-inputs",
+          "name": "Old vs New Regime Dual Engine",
+          "isEnabled": true,
+          "order": 1
+        },
+        {
+          "id": "mod_old_vs_new_faqs",
+          "moduleId": "faq-accordion",
+          "name": "Old vs New Regime FAQs",
+          "isEnabled": true,
+          "order": 2,
+          "settings": {
+            "title": "Frequently Asked Questions"
+          }
+        }
+      ],
+      "faqs": [
+        {
+          "id": "faq_ovn_exp_1",
+          "question": "Can I split my tax-saving investments across the year, or do I need proof before calculating?",
+          "answer": "<p>You do not need to lock in all your tax-saving instruments on day one. You can distribute your investments (such as ELSS, PPF, or life insurance premiums) across the financial year. However, to claim deductions under the Old Regime during final filing, you must hold valid payment receipts and documentary proofs.</p>",
+          "isEnabled": true,
+          "order": 1
+        },
+        {
+          "id": "faq_ovn_exp_2",
+          "question": "How does the calculator treat home loan self-occupied property interest under Section 24 in both regimes?",
+          "answer": "<p>Under the Old Tax Regime, you can claim a deduction of up to ₹2,00,000 on home loan interest paid for a self-occupied residential property. Under the New Tax Regime, this deduction for self-occupied properties is strictly not allowed.</p>",
+          "isEnabled": true,
+          "order": 2
+        },
+        {
+          "id": "faq_ovn_exp_3",
+          "question": "What happens if my salary changes mid-year? Should I recalculate quarterly?",
+          "answer": "<p>Yes. Receiving a mid-year appraisal, switching organizations, or earning unexpected bonuses alters your annual taxable income bracket. Running your figures through a dual-regime calculator quarterly ensures your monthly TDS aligns cleanly with your projected year-end liability.</p>",
+          "isEnabled": true,
+          "order": 3
+        },
+        {
+          "id": "faq_ovn_exp_4",
+          "question": "Does the New Tax Regime affect my provident fund (EPF) or gratuity payouts?",
+          "answer": "<p>No. Statutory contributions to recognized Employee Provident Funds (EPF) and tax-exempt limits on gratuity or leave encashment are governed by separate statutory provisions and remain unaffected by your choice of tax regime.</p>",
+          "isEnabled": true,
+          "order": 4
+        },
+        {
+          "id": "faq_ovn_exp_5",
+          "question": "Can I change my tax regime choice after submitting my employer declaration?",
+          "answer": "<p>Yes. Your declaration to your employer is only meant for calculating monthly TDS deductions. When filing your Income Tax Return (ITR) at the end of the year, you are completely free to choose whichever regime is more beneficial, provided you do not have business or professional income restrictions.</p>",
+          "isEnabled": true,
+          "order": 5
+        },
+        {
+          "id": "faq_ovn_exp_6",
+          "question": "Are surcharge rates different between the Old and New Tax Regimes for high earners?",
+          "answer": "<p>Yes. For ultra-high-net-worth individuals, the maximum surcharge rate under the New Tax Regime is capped at 25% for incomes above specified thresholds, whereas the Old Tax Regime can scale up to 37% for incomes exceeding ₹5 Crores, making the New Regime advantageous for top-tier earners.</p>",
+          "isEnabled": true,
+          "order": 6
+        },
+        {
+          "id": "faq_ovn_exp_7",
+          "question": "What happens if I miss filing Form 10IEA as a business owner?",
+          "answer": "<p>If you are a business owner or professional opting out of the default New Tax Regime and you fail to file the required form within the stipulated statutory timeline, the tax authorities may default your filing to the New Tax Regime, potentially disrupting your anticipated tax liabilities.</p>",
+          "isEnabled": true,
+          "order": 7
+        }
+      ],
+      "content": {
+        "formulaExplanation": "Simultaneously computes tax liability under Section 115BAC (New Regime) and Old Regime with progressive slab rates, Section 87A rebate with marginal relief, and 4% Health & Education Cess.",
+        "usageInstructions": "Enter your Annual Basic Salary, Allowances, 80C investments, Health Insurance (80D), and Home Loan Interest to view the live comparison and winning regime.",
+        "faqs": [
+          {
+            "id": "faq_ovn_exp_1",
+            "question": "Can I split my tax-saving investments across the year, or do I need proof before calculating?",
+            "answer": "<p>You do not need to lock in all your tax-saving instruments on day one. You can distribute your investments (such as ELSS, PPF, or life insurance premiums) across the financial year. However, to claim deductions under the Old Regime during final filing, you must hold valid payment receipts and documentary proofs.</p>",
+            "isEnabled": true,
+            "order": 1
+          },
+          {
+            "id": "faq_ovn_exp_2",
+            "question": "How does the calculator treat home loan self-occupied property interest under Section 24 in both regimes?",
+            "answer": "<p>Under the Old Tax Regime, you can claim a deduction of up to ₹2,00,000 on home loan interest paid for a self-occupied residential property. Under the New Tax Regime, this deduction for self-occupied properties is strictly not allowed.</p>",
+            "isEnabled": true,
+            "order": 2
+          },
+          {
+            "id": "faq_ovn_exp_3",
+            "question": "What happens if my salary changes mid-year? Should I recalculate quarterly?",
+            "answer": "<p>Yes. Receiving a mid-year appraisal, switching organizations, or earning unexpected bonuses alters your annual taxable income bracket. Running your figures through a dual-regime calculator quarterly ensures your monthly TDS aligns cleanly with your projected year-end liability.</p>",
+            "isEnabled": true,
+            "order": 3
+          },
+          {
+            "id": "faq_ovn_exp_4",
+            "question": "Does the New Tax Regime affect my provident fund (EPF) or gratuity payouts?",
+            "answer": "<p>No. Statutory contributions to recognized Employee Provident Funds (EPF) and tax-exempt limits on gratuity or leave encashment are governed by separate statutory provisions and remain unaffected by your choice of tax regime.</p>",
+            "isEnabled": true,
+            "order": 4
+          },
+          {
+            "id": "faq_ovn_exp_5",
+            "question": "Can I change my tax regime choice after submitting my employer declaration?",
+            "answer": "<p>Yes. Your declaration to your employer is only meant for calculating monthly TDS deductions. When filing your Income Tax Return (ITR) at the end of the year, you are completely free to choose whichever regime is more beneficial, provided you do not have business or professional income restrictions.</p>",
+            "isEnabled": true,
+            "order": 5
+          },
+          {
+            "id": "faq_ovn_exp_6",
+            "question": "Are surcharge rates different between the Old and New Tax Regimes for high earners?",
+            "answer": "<p>Yes. For ultra-high-net-worth individuals, the maximum surcharge rate under the New Tax Regime is capped at 25% for incomes above specified thresholds, whereas the Old Tax Regime can scale up to 37% for incomes exceeding ₹5 Crores, making the New Regime advantageous for top-tier earners.</p>",
+            "isEnabled": true,
+            "order": 6
+          },
+          {
+            "id": "faq_ovn_exp_7",
+            "question": "What happens if I miss filing Form 10IEA as a business owner?",
+            "answer": "<p>If you are a business owner or professional opting out of the default New Tax Regime and you fail to file the required form within the stipulated statutory timeline, the tax authorities may default your filing to the New Tax Regime, potentially disrupting your anticipated tax liabilities.</p>",
+            "isEnabled": true,
+            "order": 7
+          }
+        ]
+      },
+      "viewsCount": 2
+    },
+    {
+      "id": "calc_tds_2026",
+      "name": "TDS Calculator FY 2026-27 (AY 2027-28)",
+      "slug": "tds",
+      "categoryId": "cat_1790615570728_tax",
+      "subcategoryId": "sub_1790615570728_3",
+      "shortDescription": "Calculate Tax Deducted at Source (TDS) under Section 194J, 194I, 194C, 194H, 194A, 194Q, 194R, 194S, 194T for FY 2026-27 with instant threshold checks, missing PAN penalty (Sec 206AA), Form 13, and CSV export.",
+      "seoTitle": "TDS Calculator FY 2026-27 | Rates, Sections & Threshold Limits",
+      "seoDescription": "Accurate online TDS Calculator for FY 2026-27 (AY 2027-28). Compute TDS for professional fees (194J), rent (194I), contractor (194C), commission (194H), crypto (194S), and goods (194Q).",
+      "isActive": true,
+      "order": 1,
+      "formulaType": "javascript",
+      "modules": [
+        {
+          "id": "mod_tds_core",
+          "moduleId": "calculator-inputs",
+          "name": "TDS Rate and Threshold Engine",
+          "isEnabled": true,
+          "order": 1
+        },
+        {
+          "id": "mod_tds_faqs",
+          "moduleId": "faq-accordion",
+          "name": "TDS FAQs",
+          "isEnabled": true,
+          "order": 2,
+          "settings": {
+            "title": "Frequently Asked Questions"
+          }
+        }
+      ],
+      "faqs": [
+        {
+          "id": "faq_tds_1",
+          "question": "What happens if a payee does not provide their PAN (Section 206AA)?",
+          "answer": "<p>Under Section 206AA of the Income-tax Act, if a payee fails to furnish a valid PAN to the deductor, TDS must be deducted at the higher penalty rate of 20% (or the applicable statutory rate if higher). For Section 194Q and 194O, this penalty rate is capped at 5%.</p>",
+          "isEnabled": true,
+          "order": 1
+        },
+        {
+          "id": "faq_tds_2",
+          "question": "How do I claim a lower or nil TDS deduction rate using Form 13?",
+          "answer": "<p>A taxpayer expecting their total tax liability to be lower than standard TDS rates can file Form 13 online on the TRACES portal under Section 197. The Assessing Officer issues a certificate specifying the lower deduction rate, which the deductor must apply upon verifying the certificate number.</p>",
+          "isEnabled": true,
+          "order": 2
+        },
+        {
+          "id": "faq_tds_3",
+          "question": "Can I submit Form 15G or Form 15H to avoid TDS on interest income?",
+          "answer": "<p>Yes. If your estimated total taxable income for the financial year is below the basic exemption limit, you can submit Form 15G (for individuals under 60) or Form 15H (for senior citizens aged 60+) to the bank or deductor to prevent TDS deductions under Section 194A.</p>",
+          "isEnabled": true,
+          "order": 3
+        },
+        {
+          "id": "faq_tds_4",
+          "question": "What are the single and aggregate invoice thresholds for contractors under Section 194C?",
+          "answer": "<p>Under Section 194C, TDS @ 1% (Individual/HUF) or 2% (Company/Firm) is deducted if a single invoice exceeds ₹30,000 or if the aggregate payments made to the contractor exceed ₹1,00,000 in a financial year.</p>",
+          "isEnabled": true,
+          "order": 4
+        },
+        {
+          "id": "faq_tds_5",
+          "question": "How does Section 194Q on purchase of goods work?",
+          "answer": "<p>Buyers with gross business turnover exceeding ₹10 Crores in the preceding financial year must deduct TDS @ 0.1% on purchase of goods from a resident seller if total purchases exceed ₹50,00,000 in the current FY. TDS is computed strictly on the value exceeding ₹50 Lakhs.</p>",
+          "isEnabled": true,
+          "order": 5
+        },
+        {
+          "id": "faq_tds_6",
+          "question": "When is TDS under Section 194S applicable on Crypto and Virtual Digital Assets?",
+          "answer": "<p>TDS @ 1% is deducted by the buyer or crypto exchange on consideration paid for the transfer of Virtual Digital Assets (cryptocurrency, tokens, NFTs) if the annual transaction value exceeds ₹10,000 (or ₹50,000 for specified individual buyers with no business income).</p>",
+          "isEnabled": true,
+          "order": 6
+        },
+        {
+          "id": "faq_tds_7",
+          "question": "What is the due date for depositing TDS and filing quarterly returns?",
+          "answer": "<p>TDS deducted during any calendar month must be deposited to the government treasury by the 7th day of the subsequent month (April 30th for March). Quarterly returns (Form 24Q for salary, Form 26Q for non-salary) are due by July 31 (Q1), October 31 (Q2), January 31 (Q3), and May 31 (Q4).</p>",
+          "isEnabled": true,
+          "order": 7
+        },
+        {
+          "id": "faq_tds_8",
+          "question": "How does the payee get credit for the TDS deducted?",
+          "answer": "<p>Once the deductor files the quarterly TDS return, the tax credit is mapped to the payee's PAN and reflected in their Annual Information Statement (AIS) and Form 26AS. The deductor also issues Form 16A (for non-salary) or Form 16 (for salary) generated from the TRACES portal.</p>",
+          "isEnabled": true,
+          "order": 8
+        }
+      ],
+      "content": {
+        "formulaExplanation": "Calculates TDS liability based on applicable Income-tax Act sections (194J, 194I, 194C, 194H, 194A, 194Q, 194R, 194S, 194T), Section 206AA higher penalty rates, Form 13 lower deduction rates, and optional Surcharge & 4% Cess.",
+        "usageInstructions": "Select payment category and section, input current transaction and prior aggregate payments, toggle PAN status, and view immediate TDS deductible and net payable to payee."
+      },
       "viewsCount": 1
+    },
+    {
+      "id": "calc_capital_gains",
+      "name": "Advanced India Capital Gains Tax Calculator & Portfolio Simulator",
+      "slug": "capital-gains-tax",
+      "shortDescription": "Enterprise-grade capital gains tax calculation engine aligned with FY 2026-27 regulations covering listed equity Sec 112A, real estate indexation comparison, debt mutual funds Sec 50AA, loss carry-forward, and Section 54/54F reinvestment.",
+      "categoryId": "cat_1790615570728_tax",
+      "subcategoryId": "sub_1790615570728_4",
+      "engineType": "capital_gains",
+      "fields": [],
+      "outputs": [],
+      "order": 1,
+      "isActive": true,
+      "seoTitle": "Advanced India Capital Gains Tax Calculator FY 2026-27",
+      "seoDescription": "Calculate STCG and LTCG for listed equity, real estate with dual indexation, debt funds Sec 50AA, loss carry-forward, and Section 54 exemptions.",
+      "createdAt": "2026-09-29T12:39:09.605Z",
+      "updatedAt": "2026-09-29T12:39:09.605Z",
+      "viewsCount": 1
+    },
+    {
+      "id": "calc_hra",
+      "name": "HRA Calculator - House Rent Allowance Exemption FY 2026-27",
+      "slug": "hra",
+      "shortDescription": "Calculate tax-exempt House Rent Allowance (HRA) under Section 10(13A) for metro and non-metro cities with monthly/annual toggles and landlord PAN validation.",
+      "categoryId": "cat_1790615570728_tax",
+      "subcategoryId": "sub_1790615570728_5",
+      "engineType": "hra",
+      "fields": [],
+      "outputs": [],
+      "order": 1,
+      "isActive": true,
+      "seoTitle": "HRA Calculator FY 2026-27 - Calculate House Rent Allowance Exemption",
+      "seoDescription": "Calculate your tax-exempt HRA under Section 10(13A) for metro and non-metro cities. Compare rent paid against basic salary.",
+      "createdAt": "2026-09-29T13:20:20.759Z",
+      "updatedAt": "2026-09-29T13:20:20.759Z"
+    },
+    {
+      "id": "calc_home_loan_emi_calculator",
+      "name": "Home Loan EMI Calculator",
+      "slug": "home-loan-emi-calculator",
+      "shortDescription": "Calculate monthly EMI, interest payable, total payment, and tax benefits under Sec 24(b) & Sec 80C.",
+      "categoryId": "cat_loans_emi",
+      "subcategoryId": "sub_loans_home_loan",
+      "engineType": "loans_emi",
+      "fields": [],
+      "outputs": [],
+      "order": 1,
+      "isActive": true,
+      "seoTitle": "Home Loan EMI Calculator - Calculate Online (India FY 2026-27)",
+      "seoDescription": "Calculate monthly EMI, interest payable, total payment, and tax benefits under Sec 24(b) & Sec 80C.",
+      "createdAt": "2026-09-29T16:55:49.825Z",
+      "updatedAt": "2026-09-29T16:55:49.825Z"
+    },
+    {
+      "id": "calc_personal_loan_emi_calculator",
+      "name": "Personal Loan EMI Calculator",
+      "slug": "personal-loan-emi-calculator",
+      "shortDescription": "Calculate personal loan EMI, total interest, and processing fee breakdowns for amounts up to ₹40 Lakhs.",
+      "categoryId": "cat_loans_emi",
+      "subcategoryId": "sub_loans_personal_loan",
+      "engineType": "loans_emi",
+      "fields": [],
+      "outputs": [],
+      "order": 2,
+      "isActive": true,
+      "seoTitle": "Personal Loan EMI Calculator - Calculate Online (India FY 2026-27)",
+      "seoDescription": "Calculate personal loan EMI, total interest, and processing fee breakdowns for amounts up to ₹40 Lakhs.",
+      "createdAt": "2026-09-29T16:55:49.825Z",
+      "updatedAt": "2026-09-29T16:55:49.825Z"
+    },
+    {
+      "id": "calc_car_loan_emi_calculator",
+      "name": "Car Loan EMI Calculator",
+      "slug": "car-loan-emi-calculator",
+      "shortDescription": "Calculate new or used car loan EMI, down payment impact, and total interest cost.",
+      "categoryId": "cat_loans_emi",
+      "subcategoryId": "sub_loans_car_loan",
+      "engineType": "loans_emi",
+      "fields": [],
+      "outputs": [],
+      "order": 3,
+      "isActive": true,
+      "seoTitle": "Car Loan EMI Calculator - Calculate Online (India FY 2026-27)",
+      "seoDescription": "Calculate new or used car loan EMI, down payment impact, and total interest cost.",
+      "createdAt": "2026-09-29T16:55:49.825Z",
+      "updatedAt": "2026-09-29T16:55:49.825Z"
+    },
+    {
+      "id": "calc_bike_loan_emi_calculator",
+      "name": "Bike Loan EMI Calculator",
+      "slug": "bike-loan-emi-calculator",
+      "shortDescription": "Calculate two-wheeler loan EMI and interest breakdown based on vehicle price and down payment.",
+      "categoryId": "cat_loans_emi",
+      "subcategoryId": "sub_loans_bike_loan",
+      "engineType": "loans_emi",
+      "fields": [],
+      "outputs": [],
+      "order": 4,
+      "isActive": true,
+      "seoTitle": "Bike Loan EMI Calculator - Calculate Online (India FY 2026-27)",
+      "seoDescription": "Calculate two-wheeler loan EMI and interest breakdown based on vehicle price and down payment.",
+      "createdAt": "2026-09-29T16:55:49.825Z",
+      "updatedAt": "2026-09-29T16:55:49.825Z"
+    },
+    {
+      "id": "calc_education_loan_emi_calculator",
+      "name": "Education Loan EMI Calculator",
+      "slug": "education-loan-emi-calculator",
+      "shortDescription": "Calculate student loan EMI, moratorium period interest, and Section 80E 100% tax deduction benefits.",
+      "categoryId": "cat_loans_emi",
+      "subcategoryId": "sub_loans_education_loan",
+      "engineType": "loans_emi",
+      "fields": [],
+      "outputs": [],
+      "order": 5,
+      "isActive": true,
+      "seoTitle": "Education Loan EMI Calculator - Calculate Online (India FY 2026-27)",
+      "seoDescription": "Calculate student loan EMI, moratorium period interest, and Section 80E 100% tax deduction benefits.",
+      "createdAt": "2026-09-29T16:55:49.825Z",
+      "updatedAt": "2026-09-29T16:55:49.825Z"
+    },
+    {
+      "id": "calc_business_loan_emi_calculator",
+      "name": "Business Loan EMI Calculator",
+      "slug": "business-loan-emi-calculator",
+      "shortDescription": "Calculate business loan EMI, gross interest, and loan processing charges for MSME & commercial credit.",
+      "categoryId": "cat_loans_emi",
+      "subcategoryId": "sub_loans_business_loan",
+      "engineType": "loans_emi",
+      "fields": [],
+      "outputs": [],
+      "order": 6,
+      "isActive": true,
+      "seoTitle": "Business Loan EMI Calculator - Calculate Online (India FY 2026-27)",
+      "seoDescription": "Calculate business loan EMI, gross interest, and loan processing charges for MSME & commercial credit.",
+      "createdAt": "2026-09-29T16:55:49.825Z",
+      "updatedAt": "2026-09-29T16:55:49.825Z"
+    },
+    {
+      "id": "calc_gold_loan_calculator",
+      "name": "Gold Loan Calculator",
+      "slug": "gold-loan-calculator",
+      "shortDescription": "Calculate maximum eligible gold loan amount based on per-gram gold rate, purity (22K/24K), and RBI LTV limits.",
+      "categoryId": "cat_loans_emi",
+      "subcategoryId": "sub_loans_gold_loan",
+      "engineType": "loans_emi",
+      "fields": [],
+      "outputs": [],
+      "order": 7,
+      "isActive": true,
+      "seoTitle": "Gold Loan Calculator - Calculate Online (India FY 2026-27)",
+      "seoDescription": "Calculate maximum eligible gold loan amount based on per-gram gold rate, purity (22K/24K), and RBI LTV limits.",
+      "createdAt": "2026-09-29T16:55:49.825Z",
+      "updatedAt": "2026-09-29T16:55:49.825Z"
+    },
+    {
+      "id": "calc_loan_against_property_calculator",
+      "name": "Loan Against Property Calculator",
+      "slug": "loan-against-property-calculator",
+      "shortDescription": "Calculate loan against property (LAP) EMI, eligible loan amount up to 70% property valuation, and interest cost.",
+      "categoryId": "cat_loans_emi",
+      "subcategoryId": "sub_loans_loan_against_property",
+      "engineType": "loans_emi",
+      "fields": [],
+      "outputs": [],
+      "order": 8,
+      "isActive": true,
+      "seoTitle": "Loan Against Property Calculator - Calculate Online (India FY 2026-27)",
+      "seoDescription": "Calculate loan against property (LAP) EMI, eligible loan amount up to 70% property valuation, and interest cost.",
+      "createdAt": "2026-09-29T16:55:49.825Z",
+      "updatedAt": "2026-09-29T16:55:49.825Z"
+    },
+    {
+      "id": "calc_emi_calculator",
+      "name": "EMI Calculator",
+      "slug": "emi-calculator",
+      "shortDescription": "Universal EMI calculator for all types of loans with monthly & yearly amortization schedule breakdown.",
+      "categoryId": "cat_loans_emi",
+      "subcategoryId": "sub_loans_emi",
+      "engineType": "loans_emi",
+      "fields": [],
+      "outputs": [],
+      "order": 9,
+      "isActive": true,
+      "seoTitle": "EMI Calculator - Calculate Online (India FY 2026-27)",
+      "seoDescription": "Universal EMI calculator for all types of loans with monthly & yearly amortization schedule breakdown.",
+      "createdAt": "2026-09-29T16:55:49.825Z",
+      "updatedAt": "2026-09-29T16:55:49.825Z"
+    },
+    {
+      "id": "calc_loan_eligibility_calculator",
+      "name": "Loan Eligibility Calculator",
+      "slug": "loan-eligibility-calculator",
+      "shortDescription": "Calculate maximum eligible loan amount based on net monthly salary, existing EMIs, and FOIR ratio.",
+      "categoryId": "cat_loans_emi",
+      "subcategoryId": "sub_loans_loan_eligibility",
+      "engineType": "loans_emi",
+      "fields": [],
+      "outputs": [],
+      "order": 10,
+      "isActive": true,
+      "seoTitle": "Loan Eligibility Calculator - Calculate Online (India FY 2026-27)",
+      "seoDescription": "Calculate maximum eligible loan amount based on net monthly salary, existing EMIs, and FOIR ratio.",
+      "createdAt": "2026-09-29T16:55:49.826Z",
+      "updatedAt": "2026-09-29T16:55:49.826Z"
+    },
+    {
+      "id": "calc_loan_prepayment_calculator",
+      "name": "Loan Prepayment Calculator",
+      "slug": "loan-prepayment-calculator",
+      "shortDescription": "Calculate total interest savings and reduced loan tenure by making partial or lump-sum loan prepayments.",
+      "categoryId": "cat_loans_emi",
+      "subcategoryId": "sub_loans_loan_prepayment",
+      "engineType": "loans_emi",
+      "fields": [],
+      "outputs": [],
+      "order": 11,
+      "isActive": true,
+      "seoTitle": "Loan Prepayment Calculator - Calculate Online (India FY 2026-27)",
+      "seoDescription": "Calculate total interest savings and reduced loan tenure by making partial or lump-sum loan prepayments.",
+      "createdAt": "2026-09-29T16:55:49.826Z",
+      "updatedAt": "2026-09-29T16:55:49.826Z"
+    },
+    {
+      "id": "calc_loan_affordability_calculator",
+      "name": "Loan Affordability Calculator",
+      "slug": "loan-affordability-calculator",
+      "shortDescription": "Calculate maximum affordable loan amount and property price based on your desired monthly EMI budget.",
+      "categoryId": "cat_loans_emi",
+      "subcategoryId": "sub_loans_loan_affordability",
+      "engineType": "loans_emi",
+      "fields": [],
+      "outputs": [],
+      "order": 12,
+      "isActive": true,
+      "seoTitle": "Loan Affordability Calculator - Calculate Online (India FY 2026-27)",
+      "seoDescription": "Calculate maximum affordable loan amount and property price based on your desired monthly EMI budget.",
+      "createdAt": "2026-09-29T16:55:49.826Z",
+      "updatedAt": "2026-09-29T16:55:49.826Z"
+    }
+  ],
+  "posts": [
+    {
+      "id": "post_1",
+      "slug": "how-to-maximize-12-75-lakh-zero-tax-under-new-regime",
+      "title": "How to Maximize ₹12.75 Lakh Zero-Tax Under the New Tax Regime (FY 2026-27)",
+      "excerpt": "Discover how the ₹4,00,000 basic exemption, ₹75,000 standard deduction, and Section 87A rebate combine to make salaries up to ₹12.75 Lakh completely tax-free.",
+      "content": "<p>The New Tax Regime has established itself as the default taxation framework for individual taxpayers in India for <strong>Financial Year (FY) 2026-27 (Assessment Year 2027-28)</strong>. With progressive slab adjustments and enhanced rebate provisions, middle-income earners can enjoy substantial take-home pay without wrestling with complex investment proofs.</p><h2>The Anatomy of ₹12.75 Lakh Tax-Free Salary</h2><p>Under current tax provisions, the calculation operates through three primary layers:</p><ul><li><strong>Basic Exemption Limit:</strong> Income up to ₹4,00,000 incurs zero income tax.</li><li><strong>Standard Deduction:</strong> Salaried individuals and pensioners are entitled to a flat ₹75,000 standard deduction, which is subtracted directly from gross salary.</li><li><strong>Section 87A Tax Rebate:</strong> Resident individuals whose net taxable income does not exceed ₹12,00,000 receive a direct tax rebate covering their entire tax liability.</li></ul><p>When you combine a gross salary of <strong>₹12,75,000</strong> with the ₹75,000 standard deduction, your net taxable income drops to exactly ₹12,00,000—qualifying you for full Section 87A relief and reducing your tax payable to <strong>₹0</strong>.</p>",
+      "featuredImage": "https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?auto=format&fit=crop&w=1200&q=80",
+      "category": "Tax Planning",
+      "tags": [
+        "New Tax Regime",
+        "Section 87A",
+        "Standard Deduction",
+        "FY 2026-27"
+      ],
+      "author": {
+        "name": "CA Rajesh Sharma",
+        "role": "Senior Tax Consultant",
+        "avatar": "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=200&q=80",
+        "bio": "Practicing Chartered Accountant with over 15 years of expertise in direct taxation and corporate structuring."
+      },
+      "status": "published",
+      "publishedAt": "2026-04-01T09:00:00Z",
+      "updatedAt": "2026-04-01T09:00:00Z",
+      "readTimeMinutes": 5,
+      "views": 1422,
+      "isFeatured": true,
+      "seoTitle": "How to Maximize ₹12.75 Lakh Zero-Tax Under New Regime",
+      "seoDescription": "Learn how ₹12.75L salary becomes tax-free under FY 2026-27 New Tax Regime using standard deductions and Section 87A rebates.",
+      "seoKeywords": [
+        "new tax regime",
+        "section 87a",
+        "zero tax salary",
+        "fy 2026-27"
+      ],
+      "embeddedCalculators": [
+        "income-tax-calculator"
+      ]
+    },
+    {
+      "id": "post_2",
+      "slug": "tds-compliance-checklist-for-freelancers-and-businesses",
+      "title": "Essential TDS Compliance Checklist for Businesses & Freelancers (FY 2026-27)",
+      "excerpt": "Avoid 30% expense disallowances and Section 206AA penalty notices with this comprehensive TDS compliance guide covering 194J, 194C, and 194Q.",
+      "content": "<p>Tax Deducted at Source (TDS) compliance is non-negotiable for businesses, partnership firms, and growing enterprises in India. Failing to deduct or deposit TDS on professional fees, contractor payments, or rent can trigger compounding interest penalties and disallowance of business expenses under Section 40(a)(ia).</p><h2>Key Sections to Monitor in FY 2026-27</h2><ul><li><strong>Section 194J:</strong> Professional and technical service fees @ 10% or 2% above ₹50,000/year.</li><li><strong>Section 194C:</strong> Contractor payments @ 1% or 2% for single bills > ₹30,000 or aggregate > ₹1,00,000.</li><li><strong>Section 206AA:</strong> Mandatory PAN furnishing. Missing PAN triggers an automatic 20% penalty deduction.</li></ul>",
+      "featuredImage": "https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?auto=format&fit=crop&w=1200&q=80",
+      "category": "TDS & Compliance",
+      "tags": [
+        "TDS",
+        "Section 194J",
+        "Section 206AA",
+        "Business Compliance"
+      ],
+      "author": {
+        "name": "Priya Iyer",
+        "role": "Corporate Legal & Tax Advisor",
+        "avatar": "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=200&q=80",
+        "bio": "Specializes in corporate accounts payable audit, GST, and direct tax withholding mechanisms."
+      },
+      "status": "published",
+      "publishedAt": "2026-04-10T11:30:00Z",
+      "updatedAt": "2026-04-10T11:30:00Z",
+      "readTimeMinutes": 7,
+      "views": 980,
+      "isFeatured": false,
+      "seoTitle": "TDS Compliance Checklist for Businesses & Freelancers",
+      "seoDescription": "Master TDS compliance for FY 2026-27. Understand 194J, 194C thresholds, PAN penalties, and avoid corporate tax expense disallowances.",
+      "seoKeywords": [
+        "tds calculator",
+        "section 194j",
+        "tds compliance 2026"
+      ],
+      "embeddedCalculators": [
+        "tds"
+      ]
+    }
+  ],
+  "blogCategories": [
+    {
+      "id": "bc_1",
+      "name": "Tax Planning",
+      "slug": "tax-planning",
+      "description": "Strategies to optimize your income tax liability under FY 2026-27 rules."
+    },
+    {
+      "id": "bc_2",
+      "name": "TDS & Compliance",
+      "slug": "tds-compliance",
+      "description": "Guides on Section 194J, 194C, 206AA, and corporate compliance."
+    },
+    {
+      "id": "bc_3",
+      "name": "Union Budget 2026",
+      "slug": "union-budget-2026",
+      "description": "Analysis of latest tax slabs, standard deductions, and rebate updates."
     }
   ],
   "settings": {

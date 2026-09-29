@@ -10,12 +10,14 @@ import {
   Menu,
   X,
   BookOpen,
+  Code,
+  FileText,
 } from 'lucide-react';
 import { api } from '../../services/api.ts';
 
 interface AdminLayoutProps {
-  currentTab: 'dashboard' | 'categories' | 'subcategories' | 'calculators' | 'modules' | 'content-seo' | 'settings' | 'calculator-editor';
-  onNavigate: (tab: 'dashboard' | 'categories' | 'subcategories' | 'calculators' | 'modules' | 'content-seo' | 'settings' | 'calculator-editor', param?: string) => void;
+  currentTab: 'dashboard' | 'categories' | 'subcategories' | 'calculators' | 'modules' | 'content-seo' | 'settings' | 'calculator-editor' | 'embed-studio' | 'blogs' | 'blog-editor';
+  onNavigate: (tab: 'dashboard' | 'categories' | 'subcategories' | 'calculators' | 'modules' | 'content-seo' | 'settings' | 'calculator-editor' | 'embed-studio' | 'blogs' | 'blog-editor', param?: string) => void;
   onLogout: () => void;
   children: React.ReactNode;
 }
@@ -34,7 +36,9 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({
     { id: 'subcategories', label: 'Subcategories', icon: Layers },
     { id: 'calculators', label: 'Calculators', icon: Calculator },
     { id: 'modules', label: 'Modules & Order', icon: Layers },
+    { id: 'blogs', label: 'Blog & Articles CMS', icon: FileText },
     { id: 'content-seo', label: 'Rich-Text & SEO Content', icon: BookOpen },
+    { id: 'embed-studio', label: 'Embed & Rich HTML Studio', icon: Code },
     { id: 'settings', label: 'Settings & SEO', icon: Settings },
   ] as const;
 
