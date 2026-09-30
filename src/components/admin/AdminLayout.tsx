@@ -16,8 +16,8 @@ import {
 import { api } from '../../services/api.ts';
 
 interface AdminLayoutProps {
-  currentTab: 'dashboard' | 'categories' | 'subcategories' | 'calculators' | 'modules' | 'content-seo' | 'settings' | 'calculator-editor' | 'embed-studio' | 'blogs' | 'blog-editor';
-  onNavigate: (tab: 'dashboard' | 'categories' | 'subcategories' | 'calculators' | 'modules' | 'content-seo' | 'settings' | 'calculator-editor' | 'embed-studio' | 'blogs' | 'blog-editor', param?: string) => void;
+  currentTab: 'dashboard' | 'categories' | 'subcategories' | 'calculators' | 'modules' | 'content-seo' | 'settings' | 'calculator-editor' | 'embed-studio' | 'blogs' | 'blog-editor' | 'blog-categories' | 'blog-dashboard';
+  onNavigate: (tab: 'dashboard' | 'categories' | 'subcategories' | 'calculators' | 'modules' | 'content-seo' | 'settings' | 'calculator-editor' | 'embed-studio' | 'blogs' | 'blog-editor' | 'blog-categories' | 'blog-dashboard', param?: string) => void;
   onLogout: () => void;
   children: React.ReactNode;
 }
@@ -30,17 +30,27 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({
 }) => {
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
 
-  const navItems = [
-    { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
-    { id: 'categories', label: 'Categories', icon: FolderTree },
-    { id: 'subcategories', label: 'Subcategories', icon: Layers },
+  const calcNavItems = [
+    { id: 'dashboard', label: 'Dashboard Overview', icon: LayoutDashboard },
+    { id: 'categories', label: 'Calc Categories', icon: FolderTree },
+    { id: 'subcategories', label: 'Calc Subcategories', icon: Layers },
     { id: 'calculators', label: 'Calculators', icon: Calculator },
     { id: 'modules', label: 'Modules & Order', icon: Layers },
-    { id: 'blogs', label: 'Blog & Articles CMS', icon: FileText },
+  ] as const;
+
+  const blogNavItems = [
+    { id: 'blog-dashboard', label: 'Blog CMS Dashboard', icon: LayoutDashboard },
+    { id: 'blogs', label: 'Blog Articles', icon: FileText },
+    { id: 'blog-categories', label: 'Blog Categories & Subs', icon: FolderTree },
+  ] as const;
+
+  const customNavItems = [
     { id: 'content-seo', label: 'Rich-Text & SEO Content', icon: BookOpen },
     { id: 'embed-studio', label: 'Embed & Rich HTML Studio', icon: Code },
     { id: 'settings', label: 'Settings & SEO', icon: Settings },
   ] as const;
+
+  const allNavItems = [...calcNavItems, ...blogNavItems, ...customNavItems];
 
   const handleLogoutClick = async () => {
     await api.logout();
@@ -62,30 +72,87 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({
         </div>
 
         {/* Navigation links */}
-        <div className="flex-1 p-4 space-y-1.5 overflow-y-auto">
-          <div className="text-[11px] font-bold text-[#74767e] uppercase tracking-wider px-3 py-2">
-            Admin Console
-          </div>
-          {navItems.map((item) => {
-            const Icon = item.icon;
-            const isActive = currentTab === item.id || (item.id === 'calculators' && currentTab === 'calculator-editor');
+        <div className="flex-1 p-4 space-y-4 overflow-y-auto">
+          {/* Group 1: Calculators */}
+          <div className="space-y-1">
+            <div className="text-[10px] font-extrabold text-[#74767e] uppercase tracking-wider px-3 py-1">
+              Calculator Platform
+            </div>
+            {calcNavItems.map((item) => {
+              const Icon = item.icon;
+              const isActive = currentTab === item.id || (item.id === 'calculators' && currentTab === 'calculator-editor');
 
-            return (
-              <button
-                key={item.id}
-                type="button"
-                onClick={() => onNavigate(item.id)}
-                className={`w-full flex items-center gap-3 px-3.5 py-2.5 text-xs font-bold rounded-md transition-all cursor-pointer text-left ${
-                  isActive
-                    ? 'bg-[#e8faf1] text-[#013a12] border-l-4 border-[#1dbf73]'
-                    : 'text-[#62646a] hover:text-[#222325] hover:bg-[#f7f7f7]'
-                }`}
-              >
-                <Icon className={`w-4 h-4 shrink-0 stroke-[1.75] ${isActive ? 'text-[#1dbf73]' : 'text-[#74767e]'}`} />
-                <span>{item.label}</span>
-              </button>
-            );
-          })}
+              return (
+                <button
+                  key={item.id}
+                  type="button"
+                  onClick={() => onNavigate(item.id)}
+                  className={`w-full flex items-center gap-3 px-3 py-2 text-xs font-bold rounded-lg transition-all cursor-pointer text-left ${
+                    isActive
+                      ? 'bg-emerald-50 text-emerald-950 border-l-4 border-[#1dbf73]'
+                      : 'text-[#62646a] hover:text-[#222325] hover:bg-[#f7f7f7]'
+                  }`}
+                >
+                  <Icon className={`w-3.5 h-3.5 shrink-0 stroke-[2.2] ${isActive ? 'text-[#1dbf73]' : 'text-[#74767e]'}`} />
+                  <span>{item.label}</span>
+                </button>
+              );
+            })}
+          </div>
+
+          {/* Group 2: Editorial CMS */}
+          <div className="space-y-1">
+            <div className="text-[10px] font-extrabold text-[#74767e] uppercase tracking-wider px-3 py-1 border-t border-slate-100 pt-3">
+              Editorial Blog CMS
+            </div>
+            {blogNavItems.map((item) => {
+              const Icon = item.icon;
+              const isActive = currentTab === item.id || (item.id === 'blogs' && currentTab === 'blog-editor');
+
+              return (
+                <button
+                  key={item.id}
+                  type="button"
+                  onClick={() => onNavigate(item.id)}
+                  className={`w-full flex items-center gap-3 px-3 py-2 text-xs font-bold rounded-lg transition-all cursor-pointer text-left ${
+                    isActive
+                      ? 'bg-emerald-50 text-emerald-950 border-l-4 border-[#1dbf73]'
+                      : 'text-[#62646a] hover:text-[#222325] hover:bg-[#f7f7f7]'
+                  }`}
+                >
+                  <Icon className={`w-3.5 h-3.5 shrink-0 stroke-[2.2] ${isActive ? 'text-[#1dbf73]' : 'text-[#74767e]'}`} />
+                  <span>{item.label}</span>
+                </button>
+              );
+            })}
+          </div>
+
+          {/* Group 3: Settings & Customisation */}
+          <div className="space-y-1">
+            <div className="text-[10px] font-extrabold text-[#74767e] uppercase tracking-wider px-3 py-1 border-t border-slate-100 pt-3">
+              Settings &amp; Design
+            </div>
+            {customNavItems.map((item) => {
+              const Icon = item.icon;
+              const isActive = currentTab === item.id;
+
+              return (
+                <button
+                  key={item.id}
+                  type="button"
+                  onClick={() => onNavigate(item.id)}
+                  className={`w-full flex items-center gap-3 px-3 py-2 text-xs font-bold rounded-lg transition-all cursor-pointer text-left ${
+                    isActive
+                      ? 'bg-emerald-50 text-emerald-950 border-l-4 border-[#1dbf73]'
+                      : 'text-[#62646a] hover:text-[#222325] hover:bg-[#f7f7f7]'
+                  }`}
+                >
+                  <Icon className={`w-3.5 h-3.5 shrink-0 stroke-[2.2] ${isActive ? 'text-[#1dbf73]' : 'text-[#74767e]'}`} />
+                  <span>{item.label}</span>
+                </button>
+              );
+            })}
+          </div>
         </div>
 
         {/* Footer Actions */}
@@ -129,7 +196,7 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({
       {/* Mobile Drawer */}
       {mobileNavOpen && (
         <div className="md:hidden bg-white border-b border-[#e4e5e7] p-4 space-y-1.5 z-30">
-          {navItems.map((item) => {
+          {allNavItems.map((item) => {
             const Icon = item.icon;
             const isActive = currentTab === item.id;
             return (

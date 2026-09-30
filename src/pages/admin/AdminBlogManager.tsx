@@ -15,6 +15,7 @@ import {
   Folder,
 } from 'lucide-react';
 import { BlogPost } from '../../types/schema.ts';
+import { api } from '../../services/api.ts';
 
 interface AdminBlogManagerProps {
   onEditPost: (post: BlogPost | null) => void;
@@ -27,17 +28,12 @@ export const AdminBlogManager: React.FC<AdminBlogManagerProps> = ({ onEditPost }
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState<'all' | 'published' | 'draft'>('all');
   const [deletingId, setDeletingId] = useState<string | null>(null);
+  const [deleteConfirmId, setDeleteConfirmId] = useState<string | null>(null);
 
   const fetchPosts = async () => {
     try {
       setLoading(true);
-      const res = await fetch('/api/admin/blogs', {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem('calc_admin_token') || ''}`,
-        },
-      });
-      if (!res.ok) throw new Error('Failed to fetch blog posts');
-      const data = await res.json();
+      const data = await api.adminGetBlogs();
       setPosts(data);
       setError('');
     } catch (err: any) {
@@ -52,17 +48,11 @@ export const AdminBlogManager: React.FC<AdminBlogManagerProps> = ({ onEditPost }
   }, []);
 
   const handleDelete = async (id: string) => {
-    if (!confirm('Are you sure you want to delete this blog post?')) return;
     try {
       setDeletingId(id);
-      const res = await fetch(`/api/admin/blogs/${id}`, {
-        method: 'DELETE',
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem('calc_admin_token') || ''}`,
-        },
-      });
-      if (!res.ok) throw new Error('Failed to delete post');
+      await api.adminDeleteBlog(id);
       setPosts((prev) => prev.filter((p) => p.id !== id));
+      setDeleteConfirmId(null);
     } catch (err: any) {
       alert(err.message || 'Error deleting post');
     } finally {
@@ -247,15 +237,34 @@ export const AdminBlogManager: React.FC<AdminBlogManagerProps> = ({ onEditPost }
                       >
                         <Edit className="w-3.5 h-3.5" />
                       </button>
-                      <button
-                        type="button"
-                        onClick={() => handleDelete(post.id)}
-                        disabled={deletingId === post.id}
-                        className="p-2 rounded-lg bg-rose-50 text-rose-600 border border-rose-200 hover:bg-rose-600 hover:text-white inline-flex items-center transition-colors"
-                        title="Delete Article"
-                      >
-                        <Trash2 className="w-3.5 h-3.5" />
-                      </button>
+                      {deleteConfirmId === post.id ? (
+                        <div className="inline-flex items-center gap-1.5 bg-rose-50/50 p-1 rounded-xl border border-rose-100">
+                          <button
+                            type="button"
+                            onClick={() => handleDelete(post.id)}
+                            disabled={deletingId === post.id}
+                            className="px-2.5 py-1.5 text-[10px] font-extrabold bg-rose-600 hover:bg-rose-700 text-white rounded-lg transition-all cursor-pointer shadow-xs"
+                          >
+                            {deletingId === post.id ? 'Deleting...' : 'Confirm'}
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => setDeleteConfirmId(null)}
+                            className="px-2 py-1.5 text-[10px] font-bold bg-slate-100 hover:bg-slate-200 text-slate-600 rounded-lg transition-all cursor-pointer"
+                          >
+                            Cancel
+                          </button>
+                        </div>
+                      ) : (
+                        <button
+                          type="button"
+                          onClick={() => setDeleteConfirmId(post.id)}
+                          className="p-2 rounded-lg bg-rose-50 text-rose-600 border border-rose-200 hover:bg-rose-600 hover:text-white inline-flex items-center transition-colors cursor-pointer"
+                          title="Delete Article"
+                        >
+                          <Trash2 className="w-3.5 h-3.5" />
+                        </button>
+                      )}
                     </td>
                   </tr>
                 ))}

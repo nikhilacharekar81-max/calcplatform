@@ -1,4 +1,4 @@
-import { Category, Subcategory, Calculator, StatsResponse, SiteSettings, BlogPost, BlogCategory } from '../types/schema.ts';
+import { Category, Subcategory, Calculator, StatsResponse, SiteSettings, BlogPost, BlogCategory, BlogSubcategory } from '../types/schema.ts';
 
 const TOKEN_KEY = 'calc_admin_token';
 
@@ -553,7 +553,18 @@ export const api = {
     return data;
   },
 
-  async adminCreateBlogCategory(cat: { name: string; description?: string }): Promise<BlogCategory> {
+  // ==========================================
+  // BLOG CATEGORIES & SUBCATEGORIES APIS
+  // ==========================================
+  async adminGetBlogCategories(): Promise<BlogCategory[]> {
+    const res = await fetch('/api/admin/blog-categories', {
+      headers: getAuthHeaders(),
+    });
+    if (!res.ok) throw new Error('Failed to fetch blog categories');
+    return res.json();
+  },
+
+  async adminCreateBlogCategory(cat: { name: string; slug?: string; description?: string; order?: number; isActive?: boolean }): Promise<BlogCategory> {
     const res = await fetch('/api/admin/blog-categories', {
       method: 'POST',
       headers: getAuthHeaders(),
@@ -564,6 +575,17 @@ export const api = {
     return data;
   },
 
+  async adminUpdateBlogCategory(id: string, cat: { name?: string; slug?: string; description?: string; order?: number; isActive?: boolean }): Promise<BlogCategory> {
+    const res = await fetch(`/api/admin/blog-categories/${encodeURIComponent(id)}`, {
+      method: 'PUT',
+      headers: getAuthHeaders(),
+      body: JSON.stringify(cat),
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || 'Failed to update blog category');
+    return data;
+  },
+
   async adminDeleteBlogCategory(id: string): Promise<{ success: boolean }> {
     const res = await fetch(`/api/admin/blog-categories/${encodeURIComponent(id)}`, {
       method: 'DELETE',
@@ -571,6 +593,93 @@ export const api = {
     });
     const data = await res.json();
     if (!res.ok) throw new Error(data.error || 'Failed to delete blog category');
+    return data;
+  },
+
+  async adminGetBlogSubcategories(blogCategoryId?: string): Promise<Array<BlogSubcategory & { categoryName?: string }>> {
+    const query = new URLSearchParams();
+    if (blogCategoryId) query.set('blogCategoryId', blogCategoryId);
+
+    const res = await fetch(`/api/admin/blog-subcategories?${query.toString()}`, {
+      headers: getAuthHeaders(),
+    });
+    if (!res.ok) throw new Error('Failed to fetch blog subcategories');
+    return res.json();
+  },
+
+  async adminCreateBlogSubcategory(sub: { blogCategoryId: string; name: string; slug?: string; description?: string; order?: number; isActive?: boolean }): Promise<BlogSubcategory> {
+    const res = await fetch('/api/admin/blog-subcategories', {
+      method: 'POST',
+      headers: getAuthHeaders(),
+      body: JSON.stringify(sub),
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || 'Failed to create blog subcategory');
+    return data;
+  },
+
+  async adminUpdateBlogSubcategory(id: string, sub: { blogCategoryId?: string; name?: string; slug?: string; description?: string; order?: number; isActive?: boolean }): Promise<BlogSubcategory> {
+    const res = await fetch(`/api/admin/blog-subcategories/${encodeURIComponent(id)}`, {
+      method: 'PUT',
+      headers: getAuthHeaders(),
+      body: JSON.stringify(sub),
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || 'Failed to update blog subcategory');
+    return data;
+  },
+
+  async adminDeleteBlogSubcategory(id: string): Promise<{ success: boolean }> {
+    const res = await fetch(`/api/admin/blog-subcategories/${encodeURIComponent(id)}`, {
+      method: 'DELETE',
+      headers: getAuthHeaders(),
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || 'Failed to delete blog subcategory');
+    return data;
+  },
+
+  async adminBulkCategoryStatus(ids: string[], isActive: boolean): Promise<{ success: boolean }> {
+    const res = await fetch('/api/admin/blog-categories/bulk-status', {
+      method: 'POST',
+      headers: getAuthHeaders(),
+      body: JSON.stringify({ ids, isActive }),
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || 'Failed to update categories bulk status');
+    return data;
+  },
+
+  async adminBulkCategoryDelete(ids: string[]): Promise<{ success: boolean }> {
+    const res = await fetch('/api/admin/blog-categories/bulk-delete', {
+      method: 'POST',
+      headers: getAuthHeaders(),
+      body: JSON.stringify({ ids }),
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || 'Failed to bulk delete categories');
+    return data;
+  },
+
+  async adminBulkSubcategoryStatus(ids: string[], isActive: boolean): Promise<{ success: boolean }> {
+    const res = await fetch('/api/admin/blog-subcategories/bulk-status', {
+      method: 'POST',
+      headers: getAuthHeaders(),
+      body: JSON.stringify({ ids, isActive }),
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || 'Failed to update subcategories bulk status');
+    return data;
+  },
+
+  async adminBulkSubcategoryDelete(ids: string[]): Promise<{ success: boolean }> {
+    const res = await fetch('/api/admin/blog-subcategories/bulk-delete', {
+      method: 'POST',
+      headers: getAuthHeaders(),
+      body: JSON.stringify({ ids }),
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || 'Failed to bulk delete subcategories');
     return data;
   },
 };

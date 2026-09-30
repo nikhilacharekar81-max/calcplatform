@@ -174,7 +174,9 @@ export interface BlogPost {
   excerpt: string;
   content: string;
   featuredImage: string;
-  category: string;
+  category: string; // legacy category string
+  blogCategoryId?: string;
+  blogSubcategoryId?: string;
   tags: string[];
   author: {
     name: string;
@@ -199,7 +201,25 @@ export interface BlogCategory {
   name: string;
   slug: string;
   description?: string;
+  order?: number;
+  isActive?: boolean;
   postCount?: number;
+  subcategoriesCount?: number;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+export interface BlogSubcategory {
+  id: string;
+  blogCategoryId: string;
+  name: string;
+  slug: string;
+  description?: string;
+  order?: number;
+  isActive?: boolean;
+  postCount?: number;
+  createdAt?: string;
+  updatedAt?: string;
 }
 
 export interface DatabaseSchema {
@@ -208,6 +228,7 @@ export interface DatabaseSchema {
   calculators: Calculator[];
   posts?: BlogPost[];
   blogCategories?: BlogCategory[];
+  blogSubcategories?: BlogSubcategory[];
   settings: SiteSettings;
 }
 

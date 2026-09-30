@@ -17,6 +17,10 @@ import { HraGuideContent } from '../components/calculator/HraGuideContent.tsx';
 import { LoansCalculatorApp } from '../components/calculator/LoansCalculatorApp.tsx';
 import { HomeLoanGuideContent } from '../components/calculator/HomeLoanGuideContent.tsx';
 import { PersonalLoanGuideContent } from '../components/calculator/PersonalLoanGuideContent.tsx';
+import { CarLoanGuideContent } from '../components/calculator/CarLoanGuideContent.tsx';
+import { BikeLoanGuideContent } from '../components/calculator/BikeLoanGuideContent.tsx';
+import { EducationLoanGuideContent } from '../components/calculator/EducationLoanGuideContent.tsx';
+import { BusinessLoanGuideContent } from '../components/calculator/BusinessLoanGuideContent.tsx';
 import { getAdminToken } from '../services/api.ts';
 
 interface CalculatorPageProps {
@@ -191,6 +195,26 @@ export const CalculatorPage: React.FC<CalculatorPageProps> = ({
         <div className="space-y-12">
           <LoansCalculatorApp calculator={calculator} />
           <PersonalLoanGuideContent />
+        </div>
+      ) : calculator.slug === 'car-loan-emi-calculator' ? (
+        <div className="space-y-12">
+          <LoansCalculatorApp calculator={calculator} />
+          <CarLoanGuideContent />
+        </div>
+      ) : calculator.slug === 'bike-loan-emi-calculator' ? (
+        <div className="space-y-12">
+          <LoansCalculatorApp calculator={calculator} />
+          <BikeLoanGuideContent />
+        </div>
+      ) : calculator.slug === 'education-loan-emi-calculator' ? (
+        <div className="space-y-12">
+          <LoansCalculatorApp calculator={calculator} />
+          <EducationLoanGuideContent />
+        </div>
+      ) : calculator.slug === 'business-loan-emi-calculator' ? (
+        <div className="space-y-12">
+          <LoansCalculatorApp calculator={calculator} />
+          <BusinessLoanGuideContent />
         </div>
       ) : category.slug === 'loans-emi' || calculator.engineType === 'loans_emi' || calculator.slug.includes('loan') || calculator.slug.includes('emi') ? (
         <LoansCalculatorApp calculator={calculator} />

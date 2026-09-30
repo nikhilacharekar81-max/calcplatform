@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   ArrowLeft,
   Save,
@@ -16,7 +16,8 @@ import {
   List,
   Heading,
 } from 'lucide-react';
-import { BlogPost } from '../../types/schema.ts';
+import { BlogPost, BlogCategory, BlogSubcategory } from '../../types/schema.ts';
+import { api } from '../../services/api.ts';
 
 interface AdminBlogEditorProps {
   post: BlogPost | null;
@@ -25,6 +26,9 @@ interface AdminBlogEditorProps {
 }
 
 export const AdminBlogEditor: React.FC<AdminBlogEditorProps> = ({ post, onBack, onSaved }) => {
+  const [categories, setCategories] = useState<BlogCategory[]>([]);
+  const [subcategories, setSubcategories] = useState<BlogSubcategory[]>([]);
+
   const [formData, setFormData] = useState<Partial<BlogPost>>(
     post || {
       title: '',
@@ -33,6 +37,8 @@ export const AdminBlogEditor: React.FC<AdminBlogEditorProps> = ({ post, onBack, 
       content: '<p>Start writing your tax article or compliance guide here...</p>',
       featuredImage: 'https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?auto=format&fit=crop&w=1200&q=80',
       category: 'Tax Planning',
+      blogCategoryId: '',
+      blogSubcategoryId: '',
       tags: ['Tax Planning', 'FY 2026-27'],
       author: {
         name: 'CA Rajesh Sharma',
@@ -53,6 +59,22 @@ export const AdminBlogEditor: React.FC<AdminBlogEditorProps> = ({ post, onBack, 
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState('');
   const [tagInput, setTagInput] = useState((formData.tags || []).join(', '));
+
+  useEffect(() => {
+    const fetchTaxonomies = async () => {
+      try {
+        const [cats, subs] = await Promise.all([
+          api.adminGetBlogCategories(),
+          api.adminGetBlogSubcategories(),
+        ]);
+        setCategories(cats);
+        setSubcategories(subs);
+      } catch (err) {
+        console.error('Failed to load taxonomies in editor:', err);
+      }
+    };
+    fetchTaxonomies();
+  }, []);
 
   const handleTitleChange = (val: string) => {
     setFormData((prev) => ({
@@ -348,16 +370,48 @@ export const AdminBlogEditor: React.FC<AdminBlogEditorProps> = ({ post, onBack, 
             </h3>
 
             <div>
-              <label className="block text-xs font-bold text-slate-700 mb-1.5">Category</label>
+              <label className="block text-xs font-bold text-slate-700 mb-1.5">Category *</label>
               <select
-                value={formData.category || 'Tax Planning'}
-                onChange={(e) => setFormData((prev) => ({ ...prev, category: e.target.value }))}
-                className="w-full p-3 bg-slate-50 border border-slate-300 rounded-xl text-xs font-bold text-[#222325]"
+                required
+                value={formData.blogCategoryId || ''}
+                onChange={(e) => {
+                  const selectedId = e.target.value;
+                  const catObj = categories.find((c) => c.id === selectedId);
+                  setFormData((prev) => ({
+                    ...prev,
+                    blogCategoryId: selectedId,
+                    category: catObj ? catObj.name : 'Tax Planning',
+                    blogSubcategoryId: '', // reset subcategory on parent change
+                  }));
+                }}
+                className="w-full p-3 bg-slate-50 border border-slate-300 rounded-xl text-xs font-bold text-[#222325] focus:outline-none focus:border-[#1dbf73]"
               >
-                <option value="Tax Planning">Tax Planning</option>
-                <option value="TDS & Compliance">TDS & Compliance</option>
-                <option value="Union Budget 2026">Union Budget 2026</option>
-                <option value="Personal Finance">Personal Finance</option>
+                <option value="">Select Category...</option>
+                {categories.map((c) => (
+                  <option key={c.id} value={c.id}>
+                    {c.name}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <div>
+              <label className="block text-xs font-bold text-slate-700 mb-1.5">Subcategory (Optional)</label>
+              <select
+                value={formData.blogSubcategoryId || ''}
+                onChange={(e) =>
+                  setFormData((prev) => ({ ...prev, blogSubcategoryId: e.target.value || undefined }))
+                }
+                className="w-full p-3 bg-slate-50 border border-slate-300 rounded-xl text-xs font-bold text-[#222325] focus:outline-none focus:border-[#1dbf73]"
+              >
+                <option value="">Select Subcategory...</option>
+                {subcategories
+                  .filter((s) => s.blogCategoryId === formData.blogCategoryId)
+                  .map((s) => (
+                    <option key={s.id} value={s.id}>
+                      {s.name}
+                    </option>
+                  ))}
               </select>
             </div>
 

@@ -1244,7 +1244,8 @@
       "seoTitle": "Business Loan EMI Calculator - Calculate Online (India FY 2026-27)",
       "seoDescription": "Calculate business loan EMI, gross interest, and loan processing charges for MSME & commercial credit.",
       "createdAt": "2026-09-29T16:55:49.825Z",
-      "updatedAt": "2026-09-29T16:55:49.825Z"
+      "updatedAt": "2026-09-29T16:55:49.825Z",
+      "viewsCount": 1
     },
     {
       "id": "calc_gold_loan_calculator",
@@ -1349,101 +1350,432 @@
       "updatedAt": "2026-09-29T16:55:49.826Z"
     }
   ],
-  "posts": [
-    {
-      "id": "post_1",
-      "slug": "how-to-maximize-12-75-lakh-zero-tax-under-new-regime",
-      "title": "How to Maximize ₹12.75 Lakh Zero-Tax Under the New Tax Regime (FY 2026-27)",
-      "excerpt": "Discover how the ₹4,00,000 basic exemption, ₹75,000 standard deduction, and Section 87A rebate combine to make salaries up to ₹12.75 Lakh completely tax-free.",
-      "content": "<p>The New Tax Regime has established itself as the default taxation framework for individual taxpayers in India for <strong>Financial Year (FY) 2026-27 (Assessment Year 2027-28)</strong>. With progressive slab adjustments and enhanced rebate provisions, middle-income earners can enjoy substantial take-home pay without wrestling with complex investment proofs.</p><h2>The Anatomy of ₹12.75 Lakh Tax-Free Salary</h2><p>Under current tax provisions, the calculation operates through three primary layers:</p><ul><li><strong>Basic Exemption Limit:</strong> Income up to ₹4,00,000 incurs zero income tax.</li><li><strong>Standard Deduction:</strong> Salaried individuals and pensioners are entitled to a flat ₹75,000 standard deduction, which is subtracted directly from gross salary.</li><li><strong>Section 87A Tax Rebate:</strong> Resident individuals whose net taxable income does not exceed ₹12,00,000 receive a direct tax rebate covering their entire tax liability.</li></ul><p>When you combine a gross salary of <strong>₹12,75,000</strong> with the ₹75,000 standard deduction, your net taxable income drops to exactly ₹12,00,000—qualifying you for full Section 87A relief and reducing your tax payable to <strong>₹0</strong>.</p>",
-      "featuredImage": "https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?auto=format&fit=crop&w=1200&q=80",
-      "category": "Tax Planning",
-      "tags": [
-        "New Tax Regime",
-        "Section 87A",
-        "Standard Deduction",
-        "FY 2026-27"
-      ],
-      "author": {
-        "name": "CA Rajesh Sharma",
-        "role": "Senior Tax Consultant",
-        "avatar": "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=200&q=80",
-        "bio": "Practicing Chartered Accountant with over 15 years of expertise in direct taxation and corporate structuring."
-      },
-      "status": "published",
-      "publishedAt": "2026-04-01T09:00:00Z",
-      "updatedAt": "2026-04-01T09:00:00Z",
-      "readTimeMinutes": 5,
-      "views": 1422,
-      "isFeatured": true,
-      "seoTitle": "How to Maximize ₹12.75 Lakh Zero-Tax Under New Regime",
-      "seoDescription": "Learn how ₹12.75L salary becomes tax-free under FY 2026-27 New Tax Regime using standard deductions and Section 87A rebates.",
-      "seoKeywords": [
-        "new tax regime",
-        "section 87a",
-        "zero tax salary",
-        "fy 2026-27"
-      ],
-      "embeddedCalculators": [
-        "income-tax-calculator"
-      ]
-    },
-    {
-      "id": "post_2",
-      "slug": "tds-compliance-checklist-for-freelancers-and-businesses",
-      "title": "Essential TDS Compliance Checklist for Businesses & Freelancers (FY 2026-27)",
-      "excerpt": "Avoid 30% expense disallowances and Section 206AA penalty notices with this comprehensive TDS compliance guide covering 194J, 194C, and 194Q.",
-      "content": "<p>Tax Deducted at Source (TDS) compliance is non-negotiable for businesses, partnership firms, and growing enterprises in India. Failing to deduct or deposit TDS on professional fees, contractor payments, or rent can trigger compounding interest penalties and disallowance of business expenses under Section 40(a)(ia).</p><h2>Key Sections to Monitor in FY 2026-27</h2><ul><li><strong>Section 194J:</strong> Professional and technical service fees @ 10% or 2% above ₹50,000/year.</li><li><strong>Section 194C:</strong> Contractor payments @ 1% or 2% for single bills > ₹30,000 or aggregate > ₹1,00,000.</li><li><strong>Section 206AA:</strong> Mandatory PAN furnishing. Missing PAN triggers an automatic 20% penalty deduction.</li></ul>",
-      "featuredImage": "https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?auto=format&fit=crop&w=1200&q=80",
-      "category": "TDS & Compliance",
-      "tags": [
-        "TDS",
-        "Section 194J",
-        "Section 206AA",
-        "Business Compliance"
-      ],
-      "author": {
-        "name": "Priya Iyer",
-        "role": "Corporate Legal & Tax Advisor",
-        "avatar": "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=200&q=80",
-        "bio": "Specializes in corporate accounts payable audit, GST, and direct tax withholding mechanisms."
-      },
-      "status": "published",
-      "publishedAt": "2026-04-10T11:30:00Z",
-      "updatedAt": "2026-04-10T11:30:00Z",
-      "readTimeMinutes": 7,
-      "views": 980,
-      "isFeatured": false,
-      "seoTitle": "TDS Compliance Checklist for Businesses & Freelancers",
-      "seoDescription": "Master TDS compliance for FY 2026-27. Understand 194J, 194C thresholds, PAN penalties, and avoid corporate tax expense disallowances.",
-      "seoKeywords": [
-        "tds calculator",
-        "section 194j",
-        "tds compliance 2026"
-      ],
-      "embeddedCalculators": [
-        "tds"
-      ]
-    }
-  ],
+  "posts": [],
   "blogCategories": [
     {
-      "id": "bc_1",
-      "name": "Tax Planning",
-      "slug": "tax-planning",
-      "description": "Strategies to optimize your income tax liability under FY 2026-27 rules."
+      "id": "bcat_seed_1",
+      "name": "Finance",
+      "slug": "finance",
+      "description": "Finance topics, compliance news, and financial guides.",
+      "order": 1,
+      "isActive": true,
+      "createdAt": "2026-09-30T06:40:52.678Z",
+      "updatedAt": "2026-09-30T06:40:52.678Z"
     },
     {
-      "id": "bc_2",
-      "name": "TDS & Compliance",
-      "slug": "tds-compliance",
-      "description": "Guides on Section 194J, 194C, 206AA, and corporate compliance."
+      "id": "bcat_seed_2",
+      "name": "Education",
+      "slug": "education",
+      "description": "Education topics, compliance news, and financial guides.",
+      "order": 2,
+      "isActive": true,
+      "createdAt": "2026-09-30T06:40:52.678Z",
+      "updatedAt": "2026-09-30T06:40:52.678Z"
     },
     {
-      "id": "bc_3",
-      "name": "Union Budget 2026",
-      "slug": "union-budget-2026",
-      "description": "Analysis of latest tax slabs, standard deductions, and rebate updates."
+      "id": "bcat_seed_3",
+      "name": "Government Schemes",
+      "slug": "government-schemes",
+      "description": "Government Schemes topics, compliance news, and financial guides.",
+      "order": 3,
+      "isActive": true,
+      "createdAt": "2026-09-30T06:40:52.678Z",
+      "updatedAt": "2026-09-30T06:40:52.678Z"
+    },
+    {
+      "id": "bcat_seed_4",
+      "name": "Business",
+      "slug": "business",
+      "description": "Business topics, compliance news, and financial guides.",
+      "order": 4,
+      "isActive": true,
+      "createdAt": "2026-09-30T06:40:52.678Z",
+      "updatedAt": "2026-09-30T06:40:52.678Z"
+    },
+    {
+      "id": "bcat_seed_5",
+      "name": "Personal Finance",
+      "slug": "personal-finance",
+      "description": "Personal Finance topics, compliance news, and financial guides.",
+      "order": 5,
+      "isActive": true,
+      "createdAt": "2026-09-30T06:40:52.678Z",
+      "updatedAt": "2026-09-30T06:40:52.678Z"
+    },
+    {
+      "id": "bcat_seed_6",
+      "name": "Calculators",
+      "slug": "calculators",
+      "description": "Calculators topics, compliance news, and financial guides.",
+      "order": 6,
+      "isActive": true,
+      "createdAt": "2026-09-30T06:40:52.678Z",
+      "updatedAt": "2026-09-30T06:40:52.678Z"
+    }
+  ],
+  "blogSubcategories": [
+    {
+      "id": "bsub_seed_1_1",
+      "blogCategoryId": "bcat_seed_1",
+      "name": "Loans",
+      "slug": "loans",
+      "description": "Loans guidelines and updates under Finance.",
+      "order": 1,
+      "isActive": true,
+      "createdAt": "2026-09-30T06:40:52.678Z",
+      "updatedAt": "2026-09-30T06:40:52.678Z"
+    },
+    {
+      "id": "bsub_seed_1_2",
+      "blogCategoryId": "bcat_seed_1",
+      "name": "Savings",
+      "slug": "savings",
+      "description": "Savings guidelines and updates under Finance.",
+      "order": 2,
+      "isActive": true,
+      "createdAt": "2026-09-30T06:40:52.678Z",
+      "updatedAt": "2026-09-30T06:40:52.678Z"
+    },
+    {
+      "id": "bsub_seed_1_3",
+      "blogCategoryId": "bcat_seed_1",
+      "name": "Investments",
+      "slug": "investments",
+      "description": "Investments guidelines and updates under Finance.",
+      "order": 3,
+      "isActive": true,
+      "createdAt": "2026-09-30T06:40:52.678Z",
+      "updatedAt": "2026-09-30T06:40:52.678Z"
+    },
+    {
+      "id": "bsub_seed_1_4",
+      "blogCategoryId": "bcat_seed_1",
+      "name": "Insurance",
+      "slug": "insurance",
+      "description": "Insurance guidelines and updates under Finance.",
+      "order": 4,
+      "isActive": true,
+      "createdAt": "2026-09-30T06:40:52.678Z",
+      "updatedAt": "2026-09-30T06:40:52.678Z"
+    },
+    {
+      "id": "bsub_seed_1_5",
+      "blogCategoryId": "bcat_seed_1",
+      "name": "Tax",
+      "slug": "tax",
+      "description": "Tax guidelines and updates under Finance.",
+      "order": 5,
+      "isActive": true,
+      "createdAt": "2026-09-30T06:40:52.678Z",
+      "updatedAt": "2026-09-30T06:40:52.678Z"
+    },
+    {
+      "id": "bsub_seed_1_6",
+      "blogCategoryId": "bcat_seed_1",
+      "name": "Banking",
+      "slug": "banking",
+      "description": "Banking guidelines and updates under Finance.",
+      "order": 6,
+      "isActive": true,
+      "createdAt": "2026-09-30T06:40:52.678Z",
+      "updatedAt": "2026-09-30T06:40:52.678Z"
+    },
+    {
+      "id": "bsub_seed_2_1",
+      "blogCategoryId": "bcat_seed_2",
+      "name": "Education Loans",
+      "slug": "education-loans",
+      "description": "Education Loans guidelines and updates under Education.",
+      "order": 1,
+      "isActive": true,
+      "createdAt": "2026-09-30T06:40:52.678Z",
+      "updatedAt": "2026-09-30T06:40:52.678Z"
+    },
+    {
+      "id": "bsub_seed_2_2",
+      "blogCategoryId": "bcat_seed_2",
+      "name": "Scholarships",
+      "slug": "scholarships",
+      "description": "Scholarships guidelines and updates under Education.",
+      "order": 2,
+      "isActive": true,
+      "createdAt": "2026-09-30T06:40:52.678Z",
+      "updatedAt": "2026-09-30T06:40:52.678Z"
+    },
+    {
+      "id": "bsub_seed_2_3",
+      "blogCategoryId": "bcat_seed_2",
+      "name": "Exams",
+      "slug": "exams",
+      "description": "Exams guidelines and updates under Education.",
+      "order": 3,
+      "isActive": true,
+      "createdAt": "2026-09-30T06:40:52.678Z",
+      "updatedAt": "2026-09-30T06:40:52.678Z"
+    },
+    {
+      "id": "bsub_seed_2_4",
+      "blogCategoryId": "bcat_seed_2",
+      "name": "Courses",
+      "slug": "courses",
+      "description": "Courses guidelines and updates under Education.",
+      "order": 4,
+      "isActive": true,
+      "createdAt": "2026-09-30T06:40:52.678Z",
+      "updatedAt": "2026-09-30T06:40:52.678Z"
+    },
+    {
+      "id": "bsub_seed_2_5",
+      "blogCategoryId": "bcat_seed_2",
+      "name": "Study Abroad",
+      "slug": "study-abroad",
+      "description": "Study Abroad guidelines and updates under Education.",
+      "order": 5,
+      "isActive": true,
+      "createdAt": "2026-09-30T06:40:52.678Z",
+      "updatedAt": "2026-09-30T06:40:52.678Z"
+    },
+    {
+      "id": "bsub_seed_3_1",
+      "blogCategoryId": "bcat_seed_3",
+      "name": "Education",
+      "slug": "education",
+      "description": "Education guidelines and updates under Government Schemes.",
+      "order": 1,
+      "isActive": true,
+      "createdAt": "2026-09-30T06:40:52.678Z",
+      "updatedAt": "2026-09-30T06:40:52.678Z"
+    },
+    {
+      "id": "bsub_seed_3_2",
+      "blogCategoryId": "bcat_seed_3",
+      "name": "Students",
+      "slug": "students",
+      "description": "Students guidelines and updates under Government Schemes.",
+      "order": 2,
+      "isActive": true,
+      "createdAt": "2026-09-30T06:40:52.678Z",
+      "updatedAt": "2026-09-30T06:40:52.678Z"
+    },
+    {
+      "id": "bsub_seed_3_3",
+      "blogCategoryId": "bcat_seed_3",
+      "name": "Business",
+      "slug": "business",
+      "description": "Business guidelines and updates under Government Schemes.",
+      "order": 3,
+      "isActive": true,
+      "createdAt": "2026-09-30T06:40:52.678Z",
+      "updatedAt": "2026-09-30T06:40:52.678Z"
+    },
+    {
+      "id": "bsub_seed_3_4",
+      "blogCategoryId": "bcat_seed_3",
+      "name": "Farmers",
+      "slug": "farmers",
+      "description": "Farmers guidelines and updates under Government Schemes.",
+      "order": 4,
+      "isActive": true,
+      "createdAt": "2026-09-30T06:40:52.678Z",
+      "updatedAt": "2026-09-30T06:40:52.678Z"
+    },
+    {
+      "id": "bsub_seed_3_5",
+      "blogCategoryId": "bcat_seed_3",
+      "name": "Women",
+      "slug": "women",
+      "description": "Women guidelines and updates under Government Schemes.",
+      "order": 5,
+      "isActive": true,
+      "createdAt": "2026-09-30T06:40:52.678Z",
+      "updatedAt": "2026-09-30T06:40:52.678Z"
+    },
+    {
+      "id": "bsub_seed_3_6",
+      "blogCategoryId": "bcat_seed_3",
+      "name": "Housing",
+      "slug": "housing",
+      "description": "Housing guidelines and updates under Government Schemes.",
+      "order": 6,
+      "isActive": true,
+      "createdAt": "2026-09-30T06:40:52.678Z",
+      "updatedAt": "2026-09-30T06:40:52.678Z"
+    },
+    {
+      "id": "bsub_seed_3_7",
+      "blogCategoryId": "bcat_seed_3",
+      "name": "Employment",
+      "slug": "employment",
+      "description": "Employment guidelines and updates under Government Schemes.",
+      "order": 7,
+      "isActive": true,
+      "createdAt": "2026-09-30T06:40:52.678Z",
+      "updatedAt": "2026-09-30T06:40:52.678Z"
+    },
+    {
+      "id": "bsub_seed_4_1",
+      "blogCategoryId": "bcat_seed_4",
+      "name": "Business Loans",
+      "slug": "business-loans",
+      "description": "Business Loans guidelines and updates under Business.",
+      "order": 1,
+      "isActive": true,
+      "createdAt": "2026-09-30T06:40:52.678Z",
+      "updatedAt": "2026-09-30T06:40:52.678Z"
+    },
+    {
+      "id": "bsub_seed_4_2",
+      "blogCategoryId": "bcat_seed_4",
+      "name": "MSME",
+      "slug": "msme",
+      "description": "MSME guidelines and updates under Business.",
+      "order": 2,
+      "isActive": true,
+      "createdAt": "2026-09-30T06:40:52.678Z",
+      "updatedAt": "2026-09-30T06:40:52.678Z"
+    },
+    {
+      "id": "bsub_seed_4_3",
+      "blogCategoryId": "bcat_seed_4",
+      "name": "Startups",
+      "slug": "startups",
+      "description": "Startups guidelines and updates under Business.",
+      "order": 3,
+      "isActive": true,
+      "createdAt": "2026-09-30T06:40:52.678Z",
+      "updatedAt": "2026-09-30T06:40:52.678Z"
+    },
+    {
+      "id": "bsub_seed_4_4",
+      "blogCategoryId": "bcat_seed_4",
+      "name": "Small Business",
+      "slug": "small-business",
+      "description": "Small Business guidelines and updates under Business.",
+      "order": 4,
+      "isActive": true,
+      "createdAt": "2026-09-30T06:40:52.678Z",
+      "updatedAt": "2026-09-30T06:40:52.678Z"
+    },
+    {
+      "id": "bsub_seed_5_1",
+      "blogCategoryId": "bcat_seed_5",
+      "name": "Budgeting",
+      "slug": "budgeting",
+      "description": "Budgeting guidelines and updates under Personal Finance.",
+      "order": 1,
+      "isActive": true,
+      "createdAt": "2026-09-30T06:40:52.678Z",
+      "updatedAt": "2026-09-30T06:40:52.678Z"
+    },
+    {
+      "id": "bsub_seed_5_2",
+      "blogCategoryId": "bcat_seed_5",
+      "name": "Saving Money",
+      "slug": "saving-money",
+      "description": "Saving Money guidelines and updates under Personal Finance.",
+      "order": 2,
+      "isActive": true,
+      "createdAt": "2026-09-30T06:40:52.678Z",
+      "updatedAt": "2026-09-30T06:40:52.678Z"
+    },
+    {
+      "id": "bsub_seed_5_3",
+      "blogCategoryId": "bcat_seed_5",
+      "name": "Credit Score",
+      "slug": "credit-score",
+      "description": "Credit Score guidelines and updates under Personal Finance.",
+      "order": 3,
+      "isActive": true,
+      "createdAt": "2026-09-30T06:40:52.678Z",
+      "updatedAt": "2026-09-30T06:40:52.678Z"
+    },
+    {
+      "id": "bsub_seed_5_4",
+      "blogCategoryId": "bcat_seed_5",
+      "name": "Debt",
+      "slug": "debt",
+      "description": "Debt guidelines and updates under Personal Finance.",
+      "order": 4,
+      "isActive": true,
+      "createdAt": "2026-09-30T06:40:52.678Z",
+      "updatedAt": "2026-09-30T06:40:52.678Z"
+    },
+    {
+      "id": "bsub_seed_5_5",
+      "blogCategoryId": "bcat_seed_5",
+      "name": "Financial Planning",
+      "slug": "financial-planning",
+      "description": "Financial Planning guidelines and updates under Personal Finance.",
+      "order": 5,
+      "isActive": true,
+      "createdAt": "2026-09-30T06:40:52.678Z",
+      "updatedAt": "2026-09-30T06:40:52.678Z"
+    },
+    {
+      "id": "bsub_seed_6_1",
+      "blogCategoryId": "bcat_seed_6",
+      "name": "EMI",
+      "slug": "emi",
+      "description": "EMI guidelines and updates under Calculators.",
+      "order": 1,
+      "isActive": true,
+      "createdAt": "2026-09-30T06:40:52.678Z",
+      "updatedAt": "2026-09-30T06:40:52.678Z"
+    },
+    {
+      "id": "bsub_seed_6_2",
+      "blogCategoryId": "bcat_seed_6",
+      "name": "Loan",
+      "slug": "loan",
+      "description": "Loan guidelines and updates under Calculators.",
+      "order": 2,
+      "isActive": true,
+      "createdAt": "2026-09-30T06:40:52.678Z",
+      "updatedAt": "2026-09-30T06:40:52.678Z"
+    },
+    {
+      "id": "bsub_seed_6_3",
+      "blogCategoryId": "bcat_seed_6",
+      "name": "Investment",
+      "slug": "investment",
+      "description": "Investment guidelines and updates under Calculators.",
+      "order": 3,
+      "isActive": true,
+      "createdAt": "2026-09-30T06:40:52.678Z",
+      "updatedAt": "2026-09-30T06:40:52.678Z"
+    },
+    {
+      "id": "bsub_seed_6_4",
+      "blogCategoryId": "bcat_seed_6",
+      "name": "Tax",
+      "slug": "tax",
+      "description": "Tax guidelines and updates under Calculators.",
+      "order": 4,
+      "isActive": true,
+      "createdAt": "2026-09-30T06:40:52.678Z",
+      "updatedAt": "2026-09-30T06:40:52.678Z"
+    },
+    {
+      "id": "bsub_seed_6_5",
+      "blogCategoryId": "bcat_seed_6",
+      "name": "Salary",
+      "slug": "salary",
+      "description": "Salary guidelines and updates under Calculators.",
+      "order": 5,
+      "isActive": true,
+      "createdAt": "2026-09-30T06:40:52.678Z",
+      "updatedAt": "2026-09-30T06:40:52.678Z"
+    },
+    {
+      "id": "bsub_seed_6_6",
+      "blogCategoryId": "bcat_seed_6",
+      "name": "Education",
+      "slug": "education",
+      "description": "Education guidelines and updates under Calculators.",
+      "order": 6,
+      "isActive": true,
+      "createdAt": "2026-09-30T06:40:52.678Z",
+      "updatedAt": "2026-09-30T06:40:52.678Z"
     }
   ],
   "settings": {

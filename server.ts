@@ -70,6 +70,7 @@ function readDb(): DatabaseSchema {
         calculators: Array.isArray(parsed.calculators) ? parsed.calculators : [],
         posts: Array.isArray(parsed.posts) ? parsed.posts : [],
         blogCategories: Array.isArray(parsed.blogCategories) ? parsed.blogCategories : [],
+        blogSubcategories: Array.isArray(parsed.blogSubcategories) ? parsed.blogSubcategories : [],
         settings: { ...defaultSettings, ...(parsed.settings || {}) },
       };
       return memoryDb;
@@ -1763,6 +1764,305 @@ async function startServer() {
     }
 
     writeDb(db, 'delete_blog_post');
+    return res.json({ success: true });
+  });
+
+  // ==========================================
+  // ADMIN BLOG CATEGORIES & SUBCATEGORIES API
+  // ==========================================
+  app.get('/api/admin/blog-categories', requireAdmin, (_req: Request, res: Response) => {
+    const db = readDb();
+    const categories = db.blogCategories || [];
+    const subcategories = db.blogSubcategories || [];
+    const posts = db.posts || [];
+
+    const result = categories.map((cat) => {
+      const catSubs = subcategories.filter((s) => s.blogCategoryId === cat.id);
+      const catPosts = posts.filter(
+        (p) => p.blogCategoryId === cat.id || p.category?.toLowerCase() === cat.name.toLowerCase()
+      );
+      return {
+        ...cat,
+        subcategoriesCount: catSubs.length,
+        postCount: catPosts.length,
+      };
+    }).sort((a, b) => (a.order || 0) - (b.order || 0));
+
+    return res.json(result);
+  });
+
+  app.post('/api/admin/blog-categories', requireAdmin, (req: Request, res: Response) => {
+    const db = readDb();
+    const { name, slug, description, order, isActive } = req.body;
+
+    if (!name || !name.trim()) {
+      return res.status(400).json({ error: 'Blog category name is required' });
+    }
+
+    let finalSlug = cleanSlug(slug || name);
+    if (!finalSlug) {
+      return res.status(400).json({ error: 'Invalid blog category slug' });
+    }
+
+    if (!db.blogCategories) db.blogCategories = [];
+    if (db.blogCategories.some((c) => c.slug === finalSlug)) {
+      return res.status(400).json({ error: `Blog category slug "${finalSlug}" is already taken.` });
+    }
+
+    const newCategory = {
+      id: `bcat_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`,
+      name: name.trim(),
+      slug: finalSlug,
+      description: description?.trim() || '',
+      order: typeof order === 'number' ? order : db.blogCategories.length + 1,
+      isActive: isActive !== false,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    };
+
+    db.blogCategories.push(newCategory);
+    writeDb(db, 'admin_create_blog_category');
+
+    return res.status(201).json(newCategory);
+  });
+
+  app.put('/api/admin/blog-categories/:id', requireAdmin, (req: Request, res: Response) => {
+    const db = readDb();
+    const { id } = req.params;
+    if (!db.blogCategories) db.blogCategories = [];
+    const index = db.blogCategories.findIndex((c) => c.id === id);
+
+    if (index === -1) {
+      return res.status(404).json({ error: 'Blog category not found' });
+    }
+
+    const { name, slug, description, order, isActive } = req.body;
+
+    let finalSlug = slug ? cleanSlug(slug) : db.blogCategories[index].slug;
+    if (
+      finalSlug !== db.blogCategories[index].slug &&
+      db.blogCategories.some((c) => c.slug === finalSlug && c.id !== id)
+    ) {
+      return res.status(400).json({ error: `Blog category slug "${finalSlug}" is already taken.` });
+    }
+
+    const updated = {
+      ...db.blogCategories[index],
+      name: name?.trim() || db.blogCategories[index].name,
+      slug: finalSlug,
+      description: description !== undefined ? description.trim() : db.blogCategories[index].description,
+      order: typeof order === 'number' ? order : db.blogCategories[index].order,
+      isActive: isActive !== undefined ? Boolean(isActive) : db.blogCategories[index].isActive,
+      updatedAt: new Date().toISOString(),
+    };
+
+    db.blogCategories[index] = updated;
+    writeDb(db, 'admin_update_blog_category');
+
+    return res.json(updated);
+  });
+
+  app.delete('/api/admin/blog-categories/:id', requireAdmin, (req: Request, res: Response) => {
+    const db = readDb();
+    const { id } = req.params;
+    if (!db.blogCategories) db.blogCategories = [];
+    const initialCount = db.blogCategories.length;
+    db.blogCategories = db.blogCategories.filter((c) => c.id !== id);
+
+    if (db.blogCategories.length === initialCount) {
+      return res.status(404).json({ error: 'Blog category not found' });
+    }
+
+    // Clean up or unassign associated blog subcategories
+    if (db.blogSubcategories) {
+      db.blogSubcategories = db.blogSubcategories.filter((s) => s.blogCategoryId !== id);
+    }
+
+    writeDb(db, 'admin_delete_blog_category');
+    return res.json({ success: true });
+  });
+
+  app.post('/api/admin/blog-categories/bulk-status', requireAdmin, (req: Request, res: Response) => {
+    const db = readDb();
+    const { ids, isActive } = req.body;
+    if (!Array.isArray(ids)) {
+      return res.status(400).json({ error: 'ids must be an array' });
+    }
+    if (!db.blogCategories) db.blogCategories = [];
+    db.blogCategories = db.blogCategories.map((c) => {
+      if (ids.includes(c.id)) {
+        return { ...c, isActive: Boolean(isActive), updatedAt: new Date().toISOString() };
+      }
+      return c;
+    });
+    writeDb(db, 'admin_bulk_status_blog_category');
+    return res.json({ success: true });
+  });
+
+  app.post('/api/admin/blog-categories/bulk-delete', requireAdmin, (req: Request, res: Response) => {
+    const db = readDb();
+    const { ids } = req.body;
+    if (!Array.isArray(ids)) {
+      return res.status(400).json({ error: 'ids must be an array' });
+    }
+    if (!db.blogCategories) db.blogCategories = [];
+    db.blogCategories = db.blogCategories.filter((c) => !ids.includes(c.id));
+    if (db.blogSubcategories) {
+      db.blogSubcategories = db.blogSubcategories.filter((s) => !ids.includes(s.blogCategoryId));
+    }
+    writeDb(db, 'admin_bulk_delete_blog_category');
+    return res.json({ success: true });
+  });
+
+  app.get('/api/admin/blog-subcategories', requireAdmin, (req: Request, res: Response) => {
+    const db = readDb();
+    const { blogCategoryId } = req.query;
+    let subcategories = db.blogSubcategories || [];
+    const posts = db.posts || [];
+    const categories = db.blogCategories || [];
+
+    if (blogCategoryId && typeof blogCategoryId === 'string') {
+      subcategories = subcategories.filter((s) => s.blogCategoryId === blogCategoryId);
+    }
+
+    const categoryMap = new Map(categories.map((c) => [c.id, c.name]));
+
+    const result = subcategories.map((sub) => {
+      const subPosts = posts.filter((p) => p.blogSubcategoryId === sub.id);
+      return {
+        ...sub,
+        categoryName: categoryMap.get(sub.blogCategoryId) || 'Uncategorized',
+        postCount: subPosts.length,
+      };
+    }).sort((a, b) => (a.order || 0) - (b.order || 0));
+
+    return res.json(result);
+  });
+
+  app.post('/api/admin/blog-subcategories', requireAdmin, (req: Request, res: Response) => {
+    const db = readDb();
+    const { blogCategoryId, name, slug, description, order, isActive } = req.body;
+
+    if (!blogCategoryId) {
+      return res.status(400).json({ error: 'Parent blog category is required' });
+    }
+
+    if (!name || !name.trim()) {
+      return res.status(400).json({ error: 'Blog subcategory name is required' });
+    }
+
+    let finalSlug = cleanSlug(slug || name);
+    if (!finalSlug) {
+      return res.status(400).json({ error: 'Invalid blog subcategory slug' });
+    }
+
+    if (!db.blogSubcategories) db.blogSubcategories = [];
+    if (
+      db.blogSubcategories.some(
+        (s) => s.blogCategoryId === blogCategoryId && s.slug === finalSlug
+      )
+    ) {
+      return res.status(400).json({ error: `Blog subcategory slug "${finalSlug}" is already taken in this category.` });
+    }
+
+    const newSubcategory = {
+      id: `bsub_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`,
+      blogCategoryId,
+      name: name.trim(),
+      slug: finalSlug,
+      description: description?.trim() || '',
+      order: typeof order === 'number' ? order : db.blogSubcategories.length + 1,
+      isActive: isActive !== false,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    };
+
+    db.blogSubcategories.push(newSubcategory);
+    writeDb(db, 'admin_create_blog_subcategory');
+
+    return res.status(201).json(newSubcategory);
+  });
+
+  app.put('/api/admin/blog-subcategories/:id', requireAdmin, (req: Request, res: Response) => {
+    const db = readDb();
+    const { id } = req.params;
+    if (!db.blogSubcategories) db.blogSubcategories = [];
+    const index = db.blogSubcategories.findIndex((s) => s.id === id);
+
+    if (index === -1) {
+      return res.status(404).json({ error: 'Blog subcategory not found' });
+    }
+
+    const { blogCategoryId, name, slug, description, order, isActive } = req.body;
+    const targetCatId = blogCategoryId || db.blogSubcategories[index].blogCategoryId;
+
+    let finalSlug = slug ? cleanSlug(slug) : db.blogSubcategories[index].slug;
+    if (
+      db.blogSubcategories.some(
+        (s) => s.blogCategoryId === targetCatId && s.slug === finalSlug && s.id !== id
+      )
+    ) {
+      return res.status(400).json({ error: `Blog subcategory slug "${finalSlug}" is already taken in this category.` });
+    }
+
+    const updated = {
+      ...db.blogSubcategories[index],
+      blogCategoryId: targetCatId,
+      name: name?.trim() || db.blogSubcategories[index].name,
+      slug: finalSlug,
+      description: description !== undefined ? description.trim() : db.blogSubcategories[index].description,
+      order: typeof order === 'number' ? order : db.blogSubcategories[index].order,
+      isActive: isActive !== undefined ? Boolean(isActive) : db.blogSubcategories[index].isActive,
+      updatedAt: new Date().toISOString(),
+    };
+
+    db.blogSubcategories[index] = updated;
+    writeDb(db, 'admin_update_blog_subcategory');
+
+    return res.json(updated);
+  });
+
+  app.delete('/api/admin/blog-subcategories/:id', requireAdmin, (req: Request, res: Response) => {
+    const db = readDb();
+    const { id } = req.params;
+    if (!db.blogSubcategories) db.blogSubcategories = [];
+    const initialCount = db.blogSubcategories.length;
+    db.blogSubcategories = db.blogSubcategories.filter((s) => s.id !== id);
+
+    if (db.blogSubcategories.length === initialCount) {
+      return res.status(404).json({ error: 'Blog subcategory not found' });
+    }
+
+    writeDb(db, 'admin_delete_blog_subcategory');
+    return res.json({ success: true });
+  });
+
+  app.post('/api/admin/blog-subcategories/bulk-status', requireAdmin, (req: Request, res: Response) => {
+    const db = readDb();
+    const { ids, isActive } = req.body;
+    if (!Array.isArray(ids)) {
+      return res.status(400).json({ error: 'ids must be an array' });
+    }
+    if (!db.blogSubcategories) db.blogSubcategories = [];
+    db.blogSubcategories = db.blogSubcategories.map((s) => {
+      if (ids.includes(s.id)) {
+        return { ...s, isActive: Boolean(isActive), updatedAt: new Date().toISOString() };
+      }
+      return s;
+    });
+    writeDb(db, 'admin_bulk_status_blog_subcategory');
+    return res.json({ success: true });
+  });
+
+  app.post('/api/admin/blog-subcategories/bulk-delete', requireAdmin, (req: Request, res: Response) => {
+    const db = readDb();
+    const { ids } = req.body;
+    if (!Array.isArray(ids)) {
+      return res.status(400).json({ error: 'ids must be an array' });
+    }
+    if (!db.blogSubcategories) db.blogSubcategories = [];
+    db.blogSubcategories = db.blogSubcategories.filter((s) => !ids.includes(s.id));
+    writeDb(db, 'admin_bulk_delete_blog_subcategory');
     return res.json({ success: true });
   });
 

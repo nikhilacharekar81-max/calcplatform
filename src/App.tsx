@@ -13,6 +13,7 @@ import { AlertCircle } from 'lucide-react';
 import { Category, Subcategory, Calculator, SiteSettings, BlogPost } from './types/schema.ts';
 import { BlogIndexPage } from './pages/BlogIndexPage.tsx';
 import { BlogPostPage } from './pages/BlogPostPage.tsx';
+import { AdminBlogCategories } from './pages/admin/AdminBlogCategories.tsx';
 
 // Code-split admin pages so public visitors never load heavy admin bundles on hard refresh
 const AdminLoginPage = React.lazy(() =>
@@ -54,6 +55,9 @@ const AdminBlogManager = React.lazy(() =>
 const AdminBlogEditor = React.lazy(() =>
   import('./pages/admin/AdminBlogEditor.tsx').then((m) => ({ default: m.AdminBlogEditor }))
 );
+const AdminBlogDashboard = React.lazy(() =>
+  import('./pages/admin/AdminBlogDashboard.tsx').then((m) => ({ default: m.AdminBlogDashboard }))
+);
 
 const isSubpagePath = (path: string) => {
   return path !== '/' && path !== '' && !path.startsWith('/admin') && path !== '/search' && !path.startsWith('/blog');
@@ -86,7 +90,7 @@ const getInitialRouteData = () => {
 export default function App() {
   const [currentPath, setCurrentPath] = useState(window.location.pathname);
   const [isAdminAuthenticated, setIsAdminAuthenticated] = useState<boolean | null>(null);
-  const [adminTab, setAdminTab] = useState<'dashboard' | 'categories' | 'subcategories' | 'calculators' | 'modules' | 'content-seo' | 'settings' | 'calculator-editor' | 'embed-studio' | 'blogs' | 'blog-editor'>('dashboard');
+  const [adminTab, setAdminTab] = useState<'dashboard' | 'categories' | 'subcategories' | 'calculators' | 'modules' | 'content-seo' | 'settings' | 'calculator-editor' | 'embed-studio' | 'blogs' | 'blog-editor' | 'blog-categories' | 'blog-dashboard'>('dashboard');
   const [activeCalculatorId, setActiveCalculatorId] = useState<string>('new');
   const [activeBlogPost, setActiveBlogPost] = useState<BlogPost | null>(null);
   const [isSearchModalOpen, setIsSearchModalOpen] = useState(false);
@@ -197,6 +201,10 @@ export default function App() {
         }
       } else if (segments[1] === 'blogs') {
         setAdminTab('blogs');
+      } else if (segments[1] === 'blog-categories') {
+        setAdminTab('blog-categories');
+      } else if (segments[1] === 'blog-dashboard') {
+        setAdminTab('blog-dashboard');
       } else if (segments[1] === 'settings') setAdminTab('settings');
       else setAdminTab('dashboard');
     }
@@ -319,7 +327,8 @@ export default function App() {
             navigateTo('/admin');
           }}
         >
-          {adminTab === 'dashboard' && <AdminDashboard onNavigate={handleAdminNavigate} />}
+           {adminTab === 'dashboard' && <AdminDashboard onNavigate={handleAdminNavigate} />}
+          {adminTab === 'blog-dashboard' && <AdminBlogDashboard onNavigate={handleAdminNavigate} />}
           {adminTab === 'categories' && <AdminCategories />}
           {adminTab === 'subcategories' && <AdminSubcategories />}
           {adminTab === 'calculators' && <AdminCalculators onNavigate={handleAdminNavigate} />}
@@ -341,6 +350,7 @@ export default function App() {
               onSaved={() => setAdminTab('blogs')}
             />
           )}
+          {adminTab === 'blog-categories' && <AdminBlogCategories />}
           {adminTab === 'calculator-editor' && (
             <AdminCalculatorEditor
               calculatorId={activeCalculatorId}
