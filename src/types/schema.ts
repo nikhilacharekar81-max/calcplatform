@@ -194,6 +194,7 @@ export interface BlogPost {
   seoDescription?: string;
   seoKeywords?: string[];
   embeddedCalculators?: string[];
+  showFeaturedImage?: boolean;
 }
 
 export interface BlogCategory {

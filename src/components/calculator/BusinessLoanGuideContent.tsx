@@ -1,408 +1,924 @@
 import React from 'react';
-import { BookOpen, Building2, TrendingUp, AlertCircle, ShieldCheck, DollarSign } from 'lucide-react';
+import {
+  Building2,
+  TrendingUp,
+  AlertCircle,
+  ShieldCheck,
+  Percent,
+  Calendar,
+  CheckCircle2,
+  FileSpreadsheet,
+  Briefcase,
+  HelpCircle,
+  Layers,
+  ArrowRight,
+  Info,
+  DollarSign,
+  AlertTriangle,
+  Lightbulb,
+  Check,
+} from 'lucide-react';
 
 export const BusinessLoanGuideContent: React.FC = () => {
   return (
     <div className="space-y-12 font-sans text-[#404145] leading-relaxed">
-      {/* Article Header & Intro */}
+      {/* 1. Article Header & Intro */}
       <div className="bg-white rounded-3xl border border-slate-200 p-6 sm:p-10 shadow-xs space-y-4">
         <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-50 border border-emerald-200 text-xs font-bold text-emerald-800">
-          <Building2 className="w-3.5 h-3.5" />
-          Business Financing &amp; Working Capital
+          <Briefcase className="w-3.5 h-3.5" />
+          <span>Business Financing &amp; Working Capital</span>
         </div>
-        <h1 className="text-2xl sm:text-3xl font-black text-[#222325]">
-          Business Loan EMI Calculator: Calculate Your Monthly EMI, Interest &amp; Total Repayment
-        </h1>
-        <p className="text-sm sm:text-base text-[#62646a] leading-relaxed">
-          Taking a business loan can help you buy equipment, add inventory, open another location, manage working capital, or handle a large business expense.
-        </p>
-        <p className="text-sm sm:text-base text-[#62646a] leading-relaxed">
-          But before taking a loan, one question matters more than the approved loan amount:
-        </p>
-        <div className="p-5 rounded-2xl bg-emerald-50 border border-emerald-200 space-y-1 text-emerald-950">
-          <p className="text-xs sm:text-sm font-semibold">The fundamental financial test for any business owner:</p>
-          <p className="text-base sm:text-xl font-black italic">&ldquo;Can my business comfortably handle this monthly EMI even during lean months?&rdquo;</p>
-        </div>
-        <p className="text-sm sm:text-base text-[#62646a] leading-relaxed">
-          Our <strong>Business Loan EMI Calculator</strong> helps you estimate your monthly EMI, total interest, and total repayment amount before you commit to a loan. Enter your <strong>loan amount, interest rate, and loan tenure</strong> to get an estimate within seconds.
-        </p>
-        <p className="text-sm sm:text-base text-[#62646a] leading-relaxed">
-          The calculator is useful whether you run a small shop, work as a self-employed professional, operate a manufacturing business, run a service company, or manage an established enterprise.
-        </p>
-        <p className="text-xs text-[#74767e] italic">
-          Important: The calculator provides a mathematical estimate. The actual EMI charged by a lender can differ because of the lender's interest-rate method, repayment schedule, fees, rounding practices, rate changes, and loan terms.
-        </p>
-      </div>
-
-      {/* What Is a Business Loan EMI? */}
-      <div className="bg-white rounded-3xl border border-slate-200 p-6 sm:p-10 shadow-xs space-y-4">
-        <h2 className="text-xl font-extrabold text-[#222325]">
-          What Is a Business Loan EMI?
+        <h2 className="text-2xl sm:text-3xl lg:text-4xl font-black text-[#222325] tracking-tight">
+          Business Loan EMI Calculator
         </h2>
-        <p className="text-sm text-[#62646a]">
-          EMI stands for <strong>Equated Monthly Instalment</strong>. It is the amount you are scheduled to pay towards your loan each month. An EMI normally contains two parts:
+        <p className="text-base sm:text-lg text-[#62646a] leading-relaxed">
+          Before taking a business loan, you need to know one basic number: <strong>how much will you have to pay every month?</strong>
         </p>
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200 space-y-1">
-            <div className="font-bold text-[#222325] text-sm">Principal Component</div>
-            <p className="text-xs text-[#62646a]">The portion of the EMI that directly reduces the money you originally borrowed.</p>
-          </div>
-          <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200 space-y-1">
-            <div className="font-bold text-[#222325] text-sm">Interest Component</div>
-            <p className="text-xs text-[#62646a]">The borrowing cost charged by the bank or NBFC for providing the capital.</p>
-          </div>
-        </div>
-        <p className="text-sm text-[#62646a]">
-          At the beginning of a typical reducing-balance loan, a larger part of the EMI goes towards interest. As the outstanding loan balance comes down, the interest component generally becomes smaller and more of the EMI goes towards the principal.
+        <p className="text-sm sm:text-base text-[#62646a] leading-relaxed">
+          The <strong>Business Loan EMI Calculator</strong> helps you estimate your monthly EMI, total interest and total repayment using your <strong>loan amount, interest rate and loan tenure</strong>. If your loan has a processing fee, you can also include it in the calculation to get a better idea of the amount you may actually receive.
         </p>
-        <p className="text-sm text-[#62646a]">
-          This is why looking only at the monthly EMI can sometimes be misleading. A loan with a lower EMI may still cost considerably more overall if the repayment period is much longer.
+        <p className="text-sm sm:text-base text-[#62646a] leading-relaxed">
+          The calculator is useful when comparing different loan amounts, interest rates and repayment periods before making a borrowing decision.
         </p>
       </div>
 
-      {/* How to Use the Calculator */}
+      {/* 2. Business Loan EMI Calculator at a Glance */}
+      <div className="bg-white rounded-3xl border border-slate-200 p-6 sm:p-10 shadow-xs space-y-4">
+        <div className="flex items-center justify-between border-b border-slate-100 pb-3">
+          <div className="flex items-center gap-2.5">
+            <div className="w-8 h-8 rounded-lg bg-emerald-50 text-[#1dbf73] flex items-center justify-center border border-emerald-100">
+              <Building2 className="w-4 h-4" />
+            </div>
+            <div>
+              <h2 className="text-xl font-extrabold text-[#222325]">
+                Business Loan EMI Calculator at a Glance
+              </h2>
+              <p className="text-xs text-[#74767e]">
+                Quick summary connecting inputs to outputs
+              </p>
+            </div>
+          </div>
+          <span className="text-[10px] font-extrabold uppercase px-2.5 py-1 rounded-full bg-emerald-50 text-emerald-800 border border-emerald-200">
+            Overview
+          </span>
+        </div>
+
+        <div className="overflow-x-auto">
+          <table className="w-full text-xs sm:text-sm text-left border-collapse">
+            <thead>
+              <tr className="bg-slate-100 text-slate-900 font-bold border-b border-slate-200">
+                <th className="p-3.5 w-1/3">What you enter</th>
+                <th className="p-3.5 w-2/3">What you get</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-slate-100 text-[#404145]">
+              <tr className="hover:bg-slate-50">
+                <td className="p-3.5 font-bold text-[#222325]">Loan Amount</td>
+                <td className="p-3.5">Amount you want to borrow</td>
+              </tr>
+              <tr className="hover:bg-slate-50">
+                <td className="p-3.5 font-bold text-[#222325]">Interest Rate</td>
+                <td className="p-3.5">Annual interest rate</td>
+              </tr>
+              <tr className="hover:bg-slate-50">
+                <td className="p-3.5 font-bold text-[#222325]">Loan Tenure</td>
+                <td className="p-3.5">Time available to repay the loan</td>
+              </tr>
+              <tr className="hover:bg-slate-50">
+                <td className="p-3.5 font-bold text-[#222325]">Processing Fee</td>
+                <td className="p-3.5">Optional fee charged by the lender</td>
+              </tr>
+              <tr className="hover:bg-slate-50">
+                <td className="p-3.5 font-bold text-[#222325]">Monthly EMI</td>
+                <td className="p-3.5 font-semibold text-emerald-700">Estimated monthly repayment</td>
+              </tr>
+              <tr className="hover:bg-slate-50">
+                <td className="p-3.5 font-bold text-[#222325]">Total Interest</td>
+                <td className="p-3.5 font-semibold text-amber-700">Estimated interest paid during the loan</td>
+              </tr>
+              <tr className="hover:bg-slate-50">
+                <td className="p-3.5 font-bold text-[#222325]">Total Repayment</td>
+                <td className="p-3.5 font-bold text-[#222325]">Principal plus estimated interest</td>
+              </tr>
+              <tr className="hover:bg-slate-50">
+                <td className="p-3.5 font-bold text-[#222325]">Net Disbursed Amount</td>
+                <td className="p-3.5">Estimated amount after the included processing fee, where applicable</td>
+              </tr>
+              <tr className="hover:bg-slate-50">
+                <td className="p-3.5 font-bold text-[#222325]">Amortisation Schedule</td>
+                <td className="p-3.5">Breakdown of principal, interest and outstanding balance</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <p className="text-xs text-[#74767e] pt-2 italic font-semibold">
+          The result is an estimate. Your actual EMI and loan cost depend on the terms offered by your lender.
+        </p>
+      </div>
+
+      {/* How to Use the Business Loan EMI Calculator */}
       <div className="bg-white rounded-3xl border border-slate-200 p-6 sm:p-10 shadow-xs space-y-6">
         <h2 className="text-xl font-extrabold text-[#222325]">
           How to Use the Business Loan EMI Calculator
         </h2>
-        <p className="text-sm text-[#62646a]">
-          You only need three main inputs to calculate your business loan repayment:
+        <p className="text-sm sm:text-base text-[#62646a]">
+          Using the calculator is straightforward.
         </p>
 
         <div className="space-y-4">
-          <div className="p-4 sm:p-5 rounded-2xl bg-slate-50 border border-slate-200 space-y-2">
-            <h3 className="text-base font-bold text-[#222325]">1. Enter the Loan Amount</h3>
-            <p className="text-xs sm:text-sm text-[#62646a]">
-              Enter the amount you plan to borrow (e.g., ₹2,00,000, ₹5,00,000, ₹10,00,000, ₹25,00,000, or ₹50,00,000). Your actual eligible loan amount may differ from the amount entered because lenders assess business income, existing obligations, credit history, business vintage, and financial records.
+          <div className="p-4 sm:p-5 rounded-2xl bg-slate-50 border border-slate-200 space-y-1.5">
+            <h3 className="text-base font-bold text-[#222325]">Step 1: Enter the loan amount</h3>
+            <p className="text-xs sm:text-sm text-[#62646a]">Enter the amount you want to borrow.</p>
+            <p className="text-xs sm:text-sm font-mono font-bold text-emerald-700 bg-emerald-50 px-3 py-1 rounded-lg inline-block">
+              For example: ₹10,00,000
+            </p>
+            <p className="text-xs sm:text-sm text-[#62646a] pt-1">
+              Don't automatically enter the maximum amount a lender is willing to offer. Start with the amount your business actually needs.
             </p>
           </div>
 
-          <div className="p-4 sm:p-5 rounded-2xl bg-slate-50 border border-slate-200 space-y-2">
-            <h3 className="text-base font-bold text-[#222325]">2. Enter the Interest Rate</h3>
-            <p className="text-xs sm:text-sm text-[#62646a]">
-              Enter the annual interest rate quoted or assumed for your calculation (e.g. 12% per year). Business loan rates vary based on whether the loan is collateral-free or secured, the borrower's credit profile, business turnover, and lender policy.
+          <div className="p-4 sm:p-5 rounded-2xl bg-slate-50 border border-slate-200 space-y-1.5">
+            <h3 className="text-base font-bold text-[#222325]">Step 2: Enter the interest rate</h3>
+            <p className="text-xs sm:text-sm text-[#62646a]">Enter the annual interest rate offered by the lender.</p>
+            <p className="text-xs sm:text-sm font-mono font-bold text-emerald-700 bg-emerald-50 px-3 py-1 rounded-lg inline-block">
+              For example: 14% per year
+            </p>
+            <p className="text-xs sm:text-sm text-[#62646a] pt-1">
+              If you are only planning and don't have a lender offer yet, you can enter an assumed rate and later replace it with the actual rate.
             </p>
           </div>
 
-          <div className="p-4 sm:p-5 rounded-2xl bg-slate-50 border border-slate-200 space-y-2">
-            <h3 className="text-base font-bold text-[#222325]">3. Select the Loan Tenure</h3>
+          <div className="p-4 sm:p-5 rounded-2xl bg-slate-50 border border-slate-200 space-y-1.5">
+            <h3 className="text-base font-bold text-[#222325]">Step 3: Enter the loan tenure</h3>
+            <p className="text-xs sm:text-sm text-[#62646a]">Enter how long you plan to take to repay the loan.</p>
+            <p className="text-xs sm:text-sm font-mono font-bold text-emerald-700 bg-emerald-50 px-3 py-1 rounded-lg inline-block">
+              For example: 5 years
+            </p>
+            <p className="text-xs sm:text-sm text-[#62646a] pt-1">
+              Depending on the calculator, you may be able to enter the tenure in years or months.
+            </p>
+          </div>
+
+          <div className="p-4 sm:p-5 rounded-2xl bg-slate-50 border border-slate-200 space-y-1.5">
+            <h3 className="text-base font-bold text-[#222325]">Step 4: Add the processing fee if applicable</h3>
             <p className="text-xs sm:text-sm text-[#62646a]">
-              Choose how long you want to take to repay the loan (e.g., 1 to 5 years). A shorter tenure means higher monthly EMIs but lower total interest. A longer tenure means lower monthly EMIs but higher total interest paid over time.
+              If you know the processing fee, you can include it using the optional processing-fee field.
+            </p>
+            <p className="text-xs sm:text-sm text-[#62646a]">
+              Depending on the available option, you may enter:
+            </p>
+            <ul className="list-disc pl-5 space-y-1 text-xs sm:text-sm text-[#62646a]">
+              <li>A percentage of the loan amount</li>
+              <li>A flat fee in rupees</li>
+            </ul>
+          </div>
+
+          <div className="p-4 sm:p-5 rounded-2xl bg-slate-50 border border-slate-200 space-y-1.5">
+            <h3 className="text-base font-bold text-[#222325]">Step 5: Check your results</h3>
+            <p className="text-xs sm:text-sm text-[#62646a]">
+              The calculator can show:
+            </p>
+            <ul className="list-disc pl-5 space-y-1 text-xs sm:text-sm text-[#62646a]">
+              <li>Monthly EMI</li>
+              <li>Total interest</li>
+              <li>Total repayment</li>
+              <li>Processing fee</li>
+              <li>Net disbursed amount, where applicable</li>
+              <li>Amortisation schedule</li>
+            </ul>
+            <p className="text-xs sm:text-sm text-[#62646a] pt-1">
+              Try different combinations to see how the repayment changes.
             </p>
           </div>
         </div>
       </div>
 
-      {/* Business Loan EMI Formula */}
+      {/* 5. Business Loan EMI Example */}
       <div className="bg-white rounded-3xl border border-slate-200 p-6 sm:p-10 shadow-xs space-y-4">
         <h2 className="text-xl font-extrabold text-[#222325]">
-          Business Loan EMI Formula
+          Business Loan EMI Example
         </h2>
-        <p className="text-sm text-[#62646a]">
-          For a standard reducing-balance loan with a fixed periodic interest rate, the monthly EMI is calculated using:
+        <p className="text-sm sm:text-base text-[#62646a]">
+          Suppose you want to borrow:
         </p>
-        <div className="p-6 rounded-2xl bg-slate-900 text-white font-mono text-center text-sm sm:text-base overflow-x-auto my-3">
-          EMI = [P &times; r &times; (1+r)^n] / [(1+r)^n - 1]
+        <p className="text-base sm:text-lg font-black text-emerald-700">
+          ₹10 lakh
+        </p>
+        <p className="text-sm sm:text-base text-[#62646a]">
+          The assumed interest rate is:
+        </p>
+        <p className="text-base sm:text-lg font-bold text-[#222325]">
+          14% per year
+        </p>
+        <p className="text-sm sm:text-base text-[#62646a]">
+          And the repayment period is:
+        </p>
+        <p className="text-base sm:text-lg font-bold text-[#222325]">
+          5 years
+        </p>
+        <p className="text-sm sm:text-base text-[#62646a]">
+          Enter these three figures into the calculator.
+        </p>
+        <p className="text-sm sm:text-base text-[#62646a]">
+          You will get an estimated monthly EMI along with the total interest and total repayment.
+        </p>
+        <p className="text-sm sm:text-base text-[#62646a]">
+          Now change the tenure to 3 years.
+        </p>
+        <p className="text-sm sm:text-base text-[#62646a]">
+          The monthly EMI will generally increase because you are repaying the same loan over a shorter period. However, the total interest can be lower because the loan is being repaid faster.
+        </p>
+        <p className="text-sm sm:text-base text-[#62646a]">
+          Change the tenure again to 7 years and you can see the opposite effect: the monthly payment generally becomes lower, but the total interest can increase.
+        </p>
+        <p className="text-sm sm:text-base font-semibold text-[#222325]">
+          This is why it helps to test more than one scenario.
+        </p>
+      </div>
+
+      {/* 6. What Is EMI? */}
+      <div className="bg-white rounded-3xl border border-slate-200 p-6 sm:p-10 shadow-xs space-y-4">
+        <h2 className="text-xl font-extrabold text-[#222325]">
+          What Is EMI?
+        </h2>
+        <div className="p-4 rounded-2xl bg-emerald-50 border border-emerald-200 text-emerald-950 font-bold text-sm sm:text-base">
+          EMI stands for Equated Monthly Instalment. It is the amount you repay every month toward a loan.
         </div>
-        <div className="text-xs sm:text-sm text-[#62646a] space-y-2">
+        <p className="text-sm sm:text-base text-[#62646a]">
+          For a standard reducing-balance loan, an EMI contains both:
+        </p>
+        <ul className="list-disc pl-5 space-y-1 text-sm sm:text-base text-[#62646a]">
+          <li>A portion of the loan principal</li>
+          <li>A portion of the interest</li>
+        </ul>
+        <p className="text-sm sm:text-base text-[#62646a]">
+          As you continue making payments, the outstanding loan balance falls. The interest component can therefore change over the repayment period even when the scheduled EMI remains broadly the same.
+        </p>
+        <p className="text-xs sm:text-sm text-[#74767e] italic">
+          The exact repayment structure depends on the loan agreement.
+        </p>
+      </div>
+
+      {/* 7. What Information Does the Calculator Need? */}
+      <div className="bg-white rounded-3xl border border-slate-200 p-6 sm:p-10 shadow-xs space-y-6">
+        <h2 className="text-xl font-extrabold text-[#222325]">
+          What Information Does the Calculator Need?
+        </h2>
+        <p className="text-sm sm:text-base text-[#62646a]">
+          The calculator mainly needs three numbers.
+        </p>
+
+        <div className="space-y-4">
+          <div className="p-4 sm:p-5 rounded-2xl bg-slate-50 border border-slate-200 space-y-1.5">
+            <h3 className="text-base font-bold text-[#222325]">Loan Amount</h3>
+            <p className="text-xs sm:text-sm text-[#62646a]">This is the principal you want to borrow.</p>
+            <p className="text-xs sm:text-sm text-[#62646a]">For example: ₹5 lakh, ₹10 lakh, ₹25 lakh, ₹50 lakh, ₹1 crore.</p>
+          </div>
+
+          <div className="p-4 sm:p-5 rounded-2xl bg-slate-50 border border-slate-200 space-y-1.5">
+            <h3 className="text-base font-bold text-[#222325]">Interest Rate</h3>
+            <p className="text-xs sm:text-sm text-[#62646a]">This is the annual rate used to estimate the cost of borrowing.</p>
+            <p className="text-xs sm:text-sm text-[#62646a]">Your actual rate can depend on the lender, loan product and your business and financial profile.</p>
+          </div>
+
+          <div className="p-4 sm:p-5 rounded-2xl bg-slate-50 border border-slate-200 space-y-1.5">
+            <h3 className="text-base font-bold text-[#222325]">Loan Tenure</h3>
+            <p className="text-xs sm:text-sm text-[#62646a]">This is the repayment period.</p>
+            <p className="text-xs sm:text-sm text-[#62646a]">It may be expressed in months or years.</p>
+          </div>
+        </div>
+
+        <p className="text-sm sm:text-base font-semibold text-[#222325]">
+          These three figures are enough to calculate the basic EMI.
+        </p>
+      </div>
+
+      {/* 8. How Is Business Loan EMI Calculated? */}
+      <div className="bg-white rounded-3xl border border-slate-200 p-6 sm:p-10 shadow-xs space-y-4">
+        <h2 className="text-xl font-extrabold text-[#222325]">
+          How Is Business Loan EMI Calculated?
+        </h2>
+        <p className="text-sm sm:text-base text-[#62646a]">
+          For a standard reducing-balance loan, the commonly used EMI formula is:
+        </p>
+        <div className="p-5 rounded-2xl bg-slate-900 text-white font-mono text-center text-sm sm:text-base overflow-x-auto my-3">
+          EMI = P &times; R &times; (1 + R)&supn; &divide; [(1 + R)&supn; &minus; 1]
+        </div>
+        <div className="text-xs sm:text-sm text-[#62646a] space-y-1.5">
           <p>Where:</p>
           <ul className="list-disc pl-5 space-y-1">
             <li><strong>P</strong> = Principal loan amount</li>
-            <li><strong>r</strong> = Monthly interest rate (e.g., 12% &divide; 12 &divide; 100 = 0.01 per month)</li>
-            <li><strong>n</strong> = Total number of monthly instalments (e.g., 5 years &times; 12 = 60 months)</li>
+            <li><strong>R</strong> = Monthly interest rate</li>
+            <li><strong>N</strong> = Total number of monthly instalments</li>
           </ul>
         </div>
-        <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200 space-y-1">
-          <div className="font-bold text-[#222325] text-xs">Why Does the Interest Portion Change Every Month?</div>
-          <p className="text-xs text-[#62646a]">
-            Interest is calculated on the outstanding principal balance in a reducing-balance structure. When the outstanding principal is high, the monthly interest calculated is higher. As principal is repaid, the remaining balance falls, causing future monthly interest charges to decrease.
-          </p>
-        </div>
-      </div>
-
-      {/* Example: ₹10,00,000 Business Loan */}
-      <div className="bg-white rounded-3xl border border-slate-200 p-6 sm:p-10 shadow-xs space-y-4">
-        <h2 className="text-xl font-extrabold text-[#222325]">
-          Example: ₹10,00,000 Business Loan Breakdown
-        </h2>
-        <p className="text-sm text-[#62646a]">
-          Suppose you take a hypothetical <strong>₹10,00,000 business loan</strong> at <strong>12% p.a.</strong> for <strong>5 years (60 months)</strong>:
+        <p className="text-xs sm:text-sm text-[#62646a]">
+          The annual interest rate is converted into a monthly rate before the formula is applied.
         </p>
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-          <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200 text-center space-y-1">
-            <div className="text-xs text-slate-500 font-medium">Estimated Monthly EMI</div>
-            <div className="text-lg font-black text-emerald-600">₹22,244</div>
-          </div>
-          <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200 text-center space-y-1">
-            <div className="text-xs text-slate-500 font-medium">Estimated Total Interest</div>
-            <div className="text-lg font-black text-[#222325]">₹3,34,667</div>
-          </div>
-          <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200 text-center space-y-1">
-            <div className="text-xs text-slate-500 font-medium">Estimated Total Repayment</div>
-            <div className="text-lg font-black text-[#222325]">₹13,34,667</div>
-          </div>
-        </div>
-        <p className="text-sm text-[#62646a]">
-          Before borrowing, ask yourself: <em>&ldquo;If sales are lower than expected for a few months, can my business still make this ₹22,244 payment comfortably?&rdquo;</em> That question is often far more critical than whether a lender is willing to approve the sanction letter.
+        <p className="text-xs sm:text-sm text-[#62646a]">
+          You don't need to perform this calculation manually. Enter the figures into the calculator and it will calculate the estimated EMI for you.
         </p>
       </div>
 
-      {/* Short Tenure vs Long Tenure */}
+      {/* 9. How Does the Loan Amount Affect Your EMI? */}
       <div className="bg-white rounded-3xl border border-slate-200 p-6 sm:p-10 shadow-xs space-y-4">
         <h2 className="text-xl font-extrabold text-[#222325]">
-          Short Tenure vs. Long Tenure Trade-Offs
+          How Does the Loan Amount Affect Your EMI?
         </h2>
+        <p className="text-sm sm:text-base text-[#62646a]">
+          If the interest rate and tenure stay the same, borrowing more generally means paying a higher EMI.
+        </p>
+        <p className="text-sm sm:text-base text-[#62646a]">
+          For example, compare:
+        </p>
+
+        <div className="overflow-x-auto">
+          <table className="w-full text-xs sm:text-sm text-left border-collapse">
+            <thead>
+              <tr className="bg-slate-100 text-slate-900 font-bold border-b border-slate-200">
+                <th className="p-3 text-right">Loan Amount</th>
+                <th className="p-3 text-right">Interest Rate</th>
+                <th className="p-3 text-right">Tenure</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-slate-100 text-[#404145]">
+              <tr className="hover:bg-slate-50">
+                <td className="p-3 text-right font-bold text-[#222325]">₹10 lakh</td>
+                <td className="p-3 text-right">Same</td>
+                <td className="p-3 text-right">Same</td>
+              </tr>
+              <tr className="hover:bg-slate-50">
+                <td className="p-3 text-right font-bold text-[#222325]">₹15 lakh</td>
+                <td className="p-3 text-right">Same</td>
+                <td className="p-3 text-right">Same</td>
+              </tr>
+              <tr className="hover:bg-slate-50">
+                <td className="p-3 text-right font-bold text-[#222325]">₹20 lakh</td>
+                <td className="p-3 text-right">Same</td>
+                <td className="p-3 text-right">Same</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <p className="text-sm sm:text-base text-[#62646a] pt-2">
+          The calculator lets you compare the resulting EMI and total repayment.
+        </p>
+        <p className="text-sm sm:text-base text-[#62646a]">
+          This can help you decide whether you actually need the larger loan amount.
+        </p>
+        <p className="text-sm sm:text-base font-semibold text-[#222325]">
+          A higher loan limit from a lender doesn't mean you have to use all of it.
+        </p>
+      </div>
+
+      {/* 10. How Does the Interest Rate Affect Your EMI? */}
+      <div className="bg-white rounded-3xl border border-slate-200 p-6 sm:p-10 shadow-xs space-y-4">
+        <h2 className="text-xl font-extrabold text-[#222325]">
+          How Does the Interest Rate Affect Your EMI?
+        </h2>
+        <p className="text-sm sm:text-base text-[#62646a]">
+          The interest rate directly affects the cost of borrowing.
+        </p>
+        <p className="text-sm sm:text-base text-[#62646a]">
+          Suppose you keep the loan amount and tenure unchanged and compare:
+        </p>
+        <ul className="list-disc pl-5 space-y-1 text-sm sm:text-base text-[#62646a]">
+          <li>12%</li>
+          <li>13%</li>
+          <li>14%</li>
+          <li>15%</li>
+        </ul>
+        <p className="text-sm sm:text-base text-[#62646a]">
+          The EMI and total interest will change.
+        </p>
+        <p className="text-sm sm:text-base text-[#62646a]">
+          Even a small difference in the interest rate can become meaningful when the loan is large or the repayment period is long.
+        </p>
+        <p className="text-xs sm:text-sm text-[#74767e] italic">
+          When you have an actual loan offer, use the lender's quoted rate rather than an estimated rate.
+        </p>
+      </div>
+
+      {/* 11. How Does Tenure Affect Your EMI? */}
+      <div className="bg-white rounded-3xl border border-slate-200 p-6 sm:p-10 shadow-xs space-y-4">
+        <h2 className="text-xl font-extrabold text-[#222325]">
+          How Does Tenure Affect Your EMI?
+        </h2>
+        <p className="text-sm sm:text-base text-[#62646a]">
+          Tenure creates a trade-off between your monthly payment and the total interest.
+        </p>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
+          <div className="p-5 rounded-2xl bg-slate-50 border border-slate-200 space-y-1.5">
+            <h3 className="text-base font-bold text-[#222325]">Shorter tenure</h3>
+            <p className="text-xs text-[#62646a]">A shorter repayment period generally means:</p>
+            <ul className="list-disc pl-5 space-y-1 text-xs text-[#62646a]">
+              <li>Higher EMI</li>
+              <li>Fewer instalments</li>
+              <li>Lower total interest</li>
+            </ul>
+          </div>
+          <div className="p-5 rounded-2xl bg-slate-50 border border-slate-200 space-y-1.5">
+            <h3 className="text-base font-bold text-[#222325]">Longer tenure</h3>
+            <p className="text-xs text-[#62646a]">A longer repayment period generally means:</p>
+            <ul className="list-disc pl-5 space-y-1 text-xs text-[#62646a]">
+              <li>Lower EMI</li>
+              <li>More instalments</li>
+              <li>Higher total interest</li>
+            </ul>
+          </div>
+        </div>
+
+        <p className="text-sm sm:text-base text-[#62646a] pt-2">
+          So don't choose a loan tenure simply because it gives you the lowest EMI.
+        </p>
+        <p className="text-sm sm:text-base font-bold text-[#222325]">
+          Look at the <strong>total interest</strong> as well.
+        </p>
+      </div>
+
+      {/* 12. Should You Choose a Short or Long Business Loan Tenure? */}
+      <div className="bg-white rounded-3xl border border-slate-200 p-6 sm:p-10 shadow-xs space-y-4">
+        <h2 className="text-xl font-extrabold text-[#222325]">
+          Should You Choose a Short or Long Business Loan Tenure?
+        </h2>
+        <p className="text-sm sm:text-base text-[#62646a]">
+          There isn't one repayment period that works for every business.
+        </p>
+        <p className="text-sm sm:text-base text-[#62646a]">
+          A shorter tenure may suit a business with strong and predictable cash flow that can comfortably manage a larger EMI.
+        </p>
+        <p className="text-sm sm:text-base text-[#62646a]">
+          A longer tenure may reduce the monthly pressure and leave more cash available for everyday business needs.
+        </p>
+        <p className="text-sm sm:text-base text-[#62646a]">
+          Before choosing a tenure, consider:
+        </p>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs sm:text-sm text-[#62646a]">
+          <div className="flex items-center gap-2 p-2 bg-slate-50 rounded-xl border border-slate-200">
+            <Check className="w-4 h-4 text-emerald-600 shrink-0" />
+            <span>Monthly business expenses</span>
+          </div>
+          <div className="flex items-center gap-2 p-2 bg-slate-50 rounded-xl border border-slate-200">
+            <Check className="w-4 h-4 text-emerald-600 shrink-0" />
+            <span>Existing loan EMIs</span>
+          </div>
+          <div className="flex items-center gap-2 p-2 bg-slate-50 rounded-xl border border-slate-200">
+            <Check className="w-4 h-4 text-emerald-600 shrink-0" />
+            <span>Employee salaries</span>
+          </div>
+          <div className="flex items-center gap-2 p-2 bg-slate-50 rounded-xl border border-slate-200">
+            <Check className="w-4 h-4 text-emerald-600 shrink-0" />
+            <span>Rent</span>
+          </div>
+          <div className="flex items-center gap-2 p-2 bg-slate-50 rounded-xl border border-slate-200">
+            <Check className="w-4 h-4 text-emerald-600 shrink-0" />
+            <span>Supplier payments</span>
+          </div>
+          <div className="flex items-center gap-2 p-2 bg-slate-50 rounded-xl border border-slate-200">
+            <Check className="w-4 h-4 text-emerald-600 shrink-0" />
+            <span>Inventory requirements</span>
+          </div>
+          <div className="flex items-center gap-2 p-2 bg-slate-50 rounded-xl border border-slate-200">
+            <Check className="w-4 h-4 text-emerald-600 shrink-0" />
+            <span>Seasonal changes in sales</span>
+          </div>
+          <div className="flex items-center gap-2 p-2 bg-slate-50 rounded-xl border border-slate-200">
+            <Check className="w-4 h-4 text-emerald-600 shrink-0" />
+            <span>Emergency cash requirements</span>
+          </div>
+        </div>
+        <p className="text-sm sm:text-base font-semibold text-[#222325] pt-2">
+          The EMI should fit your business cash flow, including months when revenue is weaker.
+        </p>
+      </div>
+
+      {/* 13. What Is a Business Loan Processing Fee? */}
+      <div className="bg-white rounded-3xl border border-slate-200 p-6 sm:p-10 shadow-xs space-y-4">
+        <h2 className="text-xl font-extrabold text-[#222325]">
+          What Is a Business Loan Processing Fee?
+        </h2>
+        <p className="text-sm sm:text-base text-[#62646a]">
+          A processing fee is a charge that a lender may apply when processing a loan.
+        </p>
+        <p className="text-sm sm:text-base text-[#62646a]">
+          The amount can vary between lenders and loan products.
+        </p>
+        <p className="text-sm sm:text-base text-[#62646a]">
+          A lender may charge the fee as:
+        </p>
+        <ul className="list-disc pl-5 space-y-1 text-sm sm:text-base text-[#62646a]">
+          <li>A percentage of the loan amount</li>
+          <li>A flat amount</li>
+          <li>A fee subject to minimum or maximum limits</li>
+        </ul>
+        <p className="text-sm sm:text-base text-[#62646a]">
+          If your calculator has an optional processing-fee field, you can enter the applicable fee to see how it affects the amount you may receive.
+        </p>
+        <p className="text-sm sm:text-base text-[#62646a]">
+          For example, if the approved loan amount is ₹10 lakh and a processing fee is deducted before disbursement, the amount credited to your account may be lower than ₹10 lakh.
+        </p>
+        <p className="text-xs sm:text-sm text-[#74767e] italic font-semibold">
+          Check your lender's actual fee schedule before using the calculator for final financial planning.
+        </p>
+      </div>
+
+      {/* 14. Why Net Disbursed Amount Matters */}
+      <div className="bg-white rounded-3xl border border-slate-200 p-6 sm:p-10 shadow-xs space-y-4">
+        <h2 className="text-xl font-extrabold text-[#222325]">
+          Why Net Disbursed Amount Matters
+        </h2>
+        <p className="text-sm sm:text-base text-[#62646a]">
+          There is a difference between the <strong>loan amount approved</strong> and the <strong>amount that reaches your bank account</strong> when certain charges are deducted from the loan proceeds.
+        </p>
+        <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200 space-y-1 text-xs sm:text-sm">
+          <p><strong>Approved loan amount:</strong> ₹10,00,000</p>
+          <p><strong>Processing fee:</strong> ₹X</p>
+          <p className="font-bold text-emerald-700"><strong>Amount received:</strong> ₹X</p>
+        </div>
+        <p className="text-sm sm:text-base text-[#62646a]">
+          The exact amount depends on the lender's terms and the charges applicable to your loan.
+        </p>
+        <p className="text-sm sm:text-base text-[#62646a]">
+          This is why including a known processing fee in your calculation can give you a more realistic view of the funds available for your business.
+        </p>
+      </div>
+
+      {/* 15. What Is Total Interest? */}
+      <div className="bg-white rounded-3xl border border-slate-200 p-6 sm:p-10 shadow-xs space-y-4">
+        <h2 className="text-xl font-extrabold text-[#222325]">
+          What Is Total Interest?
+        </h2>
+        <p className="text-sm sm:text-base text-[#62646a]">
+          Total interest is the estimated amount you pay toward interest over the entire loan tenure.
+        </p>
+        <p className="text-sm sm:text-base text-[#62646a]">
+          It is separate from the original amount you borrowed.
+        </p>
+        <p className="text-sm sm:text-base text-[#62646a]">
+          For example, if you borrow ₹10 lakh, the total amount you repay can be higher than ₹10 lakh because of interest.
+        </p>
+        <p className="text-sm sm:text-base font-semibold text-[#222325]">
+          The calculator helps you see this cost before you take the loan.
+        </p>
+      </div>
+
+      {/* 16. What Is Total Repayment? */}
+      <div className="bg-white rounded-3xl border border-slate-200 p-6 sm:p-10 shadow-xs space-y-4">
+        <h2 className="text-xl font-extrabold text-[#222325]">
+          What Is Total Repayment?
+        </h2>
+        <p className="text-sm sm:text-base text-[#62646a]">
+          Total repayment is the estimated amount you pay toward the principal and interest during the complete loan period.
+        </p>
+        <p className="text-sm sm:text-base text-[#62646a]">
+          In a basic EMI calculation:
+        </p>
+        <div className="p-4 rounded-2xl bg-slate-100 border border-slate-200 text-center text-sm font-bold text-[#222325]">
+          Total Repayment = Principal + Total Interest
+        </div>
+        <p className="text-sm sm:text-base text-[#62646a]">
+          Processing fees and other lender charges may be separate depending on how the loan is structured.
+        </p>
+        <p className="text-sm sm:text-base text-[#62646a]">
+          That's why you should check the lender's complete loan terms rather than relying only on the EMI figure.
+        </p>
+      </div>
+
+      {/* 17. What Is an Amortisation Schedule? */}
+      <div className="bg-white rounded-3xl border border-slate-200 p-6 sm:p-10 shadow-xs space-y-4">
+        <h2 className="text-xl font-extrabold text-[#222325]">
+          What Is an Amortisation Schedule?
+        </h2>
+        <p className="text-sm sm:text-base text-[#62646a]">
+          An amortisation schedule shows how your loan repayment changes over time.
+        </p>
+        <p className="text-sm sm:text-base text-[#62646a]">
+          It can show:
+        </p>
+        <ul className="list-disc pl-5 space-y-1 text-sm sm:text-base text-[#62646a]">
+          <li>Opening loan balance</li>
+          <li>EMI</li>
+          <li>Principal paid</li>
+          <li>Interest paid</li>
+          <li>Closing loan balance</li>
+        </ul>
+        <p className="text-sm sm:text-base text-[#62646a] pt-2">
+          A simplified example looks like this:
+        </p>
+
+        <div className="overflow-x-auto">
+          <table className="w-full text-xs sm:text-sm text-left border-collapse">
+            <thead>
+              <tr className="bg-slate-100 text-slate-900 font-bold border-b border-slate-200">
+                <th className="p-3 text-right">Payment</th>
+                <th className="p-3 text-right">EMI</th>
+                <th className="p-3 text-right">Principal</th>
+                <th className="p-3 text-right">Interest</th>
+                <th className="p-3 text-right">Remaining Balance</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-slate-100 text-[#404145]">
+              <tr className="hover:bg-slate-50">
+                <td className="p-3 text-right font-semibold">1</td>
+                <td className="p-3 text-right">₹X</td>
+                <td className="p-3 text-right">₹X</td>
+                <td className="p-3 text-right">₹X</td>
+                <td className="p-3 text-right">₹X</td>
+              </tr>
+              <tr className="hover:bg-slate-50">
+                <td className="p-3 text-right font-semibold">2</td>
+                <td className="p-3 text-right">₹X</td>
+                <td className="p-3 text-right">₹X</td>
+                <td className="p-3 text-right">₹X</td>
+                <td className="p-3 text-right">₹X</td>
+              </tr>
+              <tr className="hover:bg-slate-50">
+                <td className="p-3 text-right font-semibold">3</td>
+                <td className="p-3 text-right">₹X</td>
+                <td className="p-3 text-right">₹X</td>
+                <td className="p-3 text-right">₹X</td>
+                <td className="p-3 text-right">₹X</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <p className="text-xs sm:text-sm text-[#62646a] pt-2">
+          The actual numbers depend on your loan amount, interest rate and tenure.
+        </p>
+        <p className="text-xs sm:text-sm text-[#62646a]">
+          If your calculator provides a full amortisation schedule, you can use it to see how quickly the outstanding balance falls.
+        </p>
+      </div>
+
+      {/* 18. Business Loan EMI for Different Business Needs */}
+      <div className="bg-white rounded-3xl border border-slate-200 p-6 sm:p-10 shadow-xs space-y-6">
+        <h2 className="text-xl font-extrabold text-[#222325]">
+          Business Loan EMI for Different Business Needs
+        </h2>
+        <p className="text-sm sm:text-base text-[#62646a]">
+          Businesses borrow money for different reasons.
+        </p>
+        <p className="text-sm sm:text-base text-[#62646a]">
+          You might need financing for:
+        </p>
+
+        <div className="space-y-4">
+          <div className="p-4 sm:p-5 rounded-2xl bg-slate-50 border border-slate-200 space-y-1">
+            <h3 className="text-base font-bold text-[#222325]">Equipment</h3>
+            <p className="text-xs sm:text-sm text-[#62646a]">Buying machinery, computers, commercial equipment or other business assets.</p>
+          </div>
+          <div className="p-4 sm:p-5 rounded-2xl bg-slate-50 border border-slate-200 space-y-1">
+            <h3 className="text-base font-bold text-[#222325]">Expansion</h3>
+            <p className="text-xs sm:text-sm text-[#62646a]">Opening another location or increasing production capacity.</p>
+          </div>
+          <div className="p-4 sm:p-5 rounded-2xl bg-slate-50 border border-slate-200 space-y-1">
+            <h3 className="text-base font-bold text-[#222325]">Inventory</h3>
+            <p className="text-xs sm:text-sm text-[#62646a]">Purchasing additional stock before a busy sales period.</p>
+          </div>
+          <div className="p-4 sm:p-5 rounded-2xl bg-slate-50 border border-slate-200 space-y-1">
+            <h3 className="text-base font-bold text-[#222325]">Renovation</h3>
+            <p className="text-xs sm:text-sm text-[#62646a]">Improving a shop, office, restaurant, clinic or other commercial space.</p>
+          </div>
+          <div className="p-4 sm:p-5 rounded-2xl bg-slate-50 border border-slate-200 space-y-1">
+            <h3 className="text-base font-bold text-[#222325]">Working Capital</h3>
+            <p className="text-xs sm:text-sm text-[#62646a]">Managing regular business expenses when cash flow is temporarily tight.</p>
+          </div>
+        </div>
+
+        <p className="text-sm sm:text-base text-[#62646a] pt-2">
+          The reason for borrowing matters.
+        </p>
+        <div className="p-4 rounded-2xl bg-emerald-50 border border-emerald-200 text-emerald-950 font-bold text-sm sm:text-base">
+          Before deciding how much to borrow, ask yourself: &ldquo;How much does my business actually need, and what EMI can it comfortably afford?&rdquo;
+        </div>
+      </div>
+
+      {/* 19. Can an EMI Calculator Tell You Whether Your Loan Will Be Approved? */}
+      <div className="bg-white rounded-3xl border border-slate-200 p-6 sm:p-10 shadow-xs space-y-4">
+        <h2 className="text-xl font-extrabold text-[#222325]">
+          Can an EMI Calculator Tell You Whether Your Loan Will Be Approved?
+        </h2>
+        <p className="text-base sm:text-lg font-bold text-rose-600">
+          No.
+        </p>
+        <p className="text-sm sm:text-base text-[#62646a]">
+          An EMI calculator only estimates repayment.
+        </p>
+        <p className="text-sm sm:text-base text-[#62646a]">
+          It does not check whether you qualify for a particular business loan or guarantee that a lender will approve your application.
+        </p>
+        <p className="text-sm sm:text-base text-[#62646a]">
+          Lenders may consider:
+        </p>
+        <ul className="list-disc pl-5 space-y-1 text-xs sm:text-sm text-[#62646a]">
+          <li>Credit history</li>
+          <li>Business turnover</li>
+          <li>Financial statements</li>
+          <li>Existing liabilities</li>
+          <li>Banking history</li>
+          <li>Business age</li>
+          <li>Cash flow</li>
+          <li>Documents</li>
+          <li>Business profile</li>
+          <li>Their own lending criteria</li>
+        </ul>
+        <p className="text-xs sm:text-sm text-[#74767e] pt-2 font-semibold">
+          Use the calculator for <strong>repayment planning</strong>, not as an approval checker.
+        </p>
+      </div>
+
+      {/* 20. Common Business Loan EMI Mistakes */}
+      <div className="bg-white rounded-3xl border border-slate-200 p-6 sm:p-10 shadow-xs space-y-6">
+        <h2 className="text-xl font-extrabold text-[#222325]">
+          Common Business Loan EMI Mistakes
+        </h2>
+
+        <div className="space-y-4">
+          <div className="p-4 sm:p-5 rounded-2xl bg-slate-50 border border-slate-200 space-y-1">
+            <h3 className="text-base font-bold text-[#222325]">Looking only at the EMI</h3>
+            <p className="text-xs sm:text-sm text-[#62646a]">A low EMI can result from a longer tenure. Check total interest too.</p>
+          </div>
+          <div className="p-4 sm:p-5 rounded-2xl bg-slate-50 border border-slate-200 space-y-1">
+            <h3 className="text-base font-bold text-[#222325]">Borrowing more than you need</h3>
+            <p className="text-xs sm:text-sm text-[#62646a]">A larger loan means a larger repayment obligation.</p>
+          </div>
+          <div className="p-4 sm:p-5 rounded-2xl bg-slate-50 border border-slate-200 space-y-1">
+            <h3 className="text-base font-bold text-[#222325]">Ignoring the interest rate</h3>
+            <p className="text-xs sm:text-sm text-[#62646a]">The rate has a direct effect on the cost of borrowing.</p>
+          </div>
+          <div className="p-4 sm:p-5 rounded-2xl bg-slate-50 border border-slate-200 space-y-1">
+            <h3 className="text-base font-bold text-[#222325]">Forgetting processing fees</h3>
+            <p className="text-xs sm:text-sm text-[#62646a]">A processing fee can reduce the amount you actually receive.</p>
+          </div>
+          <div className="p-4 sm:p-5 rounded-2xl bg-slate-50 border border-slate-200 space-y-1">
+            <h3 className="text-base font-bold text-[#222325]">Choosing a long tenure only because the EMI is lower</h3>
+            <p className="text-xs sm:text-sm text-[#62646a]">A lower monthly payment can come with higher total interest.</p>
+          </div>
+          <div className="p-4 sm:p-5 rounded-2xl bg-slate-50 border border-slate-200 space-y-1">
+            <h3 className="text-base font-bold text-[#222325]">Using an estimated rate as a final rate</h3>
+            <p className="text-xs sm:text-sm text-[#62646a]">Your calculator result changes when the interest rate changes. Use the lender's actual rate when you have it.</p>
+          </div>
+        </div>
+      </div>
+
+      {/* 21. How to Compare Different Business Loan Scenarios */}
+      <div className="bg-white rounded-3xl border border-slate-200 p-6 sm:p-10 shadow-xs space-y-6">
+        <h2 className="text-xl font-extrabold text-[#222325]">
+          How to Compare Different Business Loan Scenarios
+        </h2>
+        <p className="text-sm sm:text-base text-[#62646a]">
+          You don't have to settle on the first calculation.
+        </p>
+        <p className="text-sm sm:text-base text-[#62646a]">
+          Try several scenarios.
+        </p>
+
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200 space-y-1">
-            <div className="font-bold text-[#222325] text-sm">Shorter Tenure (e.g. 2 Years)</div>
-            <p className="text-xs text-[#62646a]">Higher monthly EMI, but the loan is repaid sooner with substantially lower total interest burden. Ideal for businesses with predictable, robust cash flow.</p>
+          <div className="p-4 sm:p-5 rounded-2xl bg-slate-50 border border-slate-200 space-y-1.5">
+            <h3 className="text-base font-bold text-[#222325]">Scenario 1: Change the loan amount</h3>
+            <p className="text-xs sm:text-sm text-[#62646a]">Compare ₹10 lakh, ₹15 lakh and ₹20 lakh.</p>
           </div>
-          <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200 space-y-1">
-            <div className="font-bold text-[#222325] text-sm">Longer Tenure (e.g. 5 Years)</div>
-            <p className="text-xs text-[#62646a]">Lower monthly EMI, easing monthly working capital pressure. However, total interest paid over the loan term is higher. Ideal for businesses with seasonal income variations.</p>
+          <div className="p-4 sm:p-5 rounded-2xl bg-slate-50 border border-slate-200 space-y-1.5">
+            <h3 className="text-base font-bold text-[#222325]">Scenario 2: Change the interest rate</h3>
+            <p className="text-xs sm:text-sm text-[#62646a]">Compare different rates offered by lenders.</p>
+          </div>
+          <div className="p-4 sm:p-5 rounded-2xl bg-slate-50 border border-slate-200 space-y-1.5">
+            <h3 className="text-base font-bold text-[#222325]">Scenario 3: Change the tenure</h3>
+            <p className="text-xs sm:text-sm text-[#62646a]">Compare a shorter and longer repayment period.</p>
+          </div>
+          <div className="p-4 sm:p-5 rounded-2xl bg-slate-50 border border-slate-200 space-y-1.5">
+            <h3 className="text-base font-bold text-[#222325]">Scenario 4: Add the processing fee</h3>
+            <p className="text-xs sm:text-sm text-[#62646a]">If you know the fee, include it and check the estimated net amount.</p>
           </div>
         </div>
-        <p className="text-sm text-[#62646a]">
-          Do not choose a tenure simply because the EMI looks small. Evaluate your actual business expenses: employee salaries, rent, GST, existing loan EMIs, supplier payments, and emergency cash buffers.
+
+        <p className="text-sm sm:text-base font-semibold text-[#222325] pt-2">
+          This gives you a clearer picture of what each borrowing option means for your business.
         </p>
       </div>
 
-      {/* Cash Flow vs Paper Profit */}
-      <div className="bg-white rounded-3xl border border-slate-200 p-6 sm:p-10 shadow-xs space-y-4">
-        <div className="flex items-center gap-2 font-bold text-[#222325] text-lg">
-          <TrendingUp className="w-5 h-5 text-emerald-600 shrink-0" />
-          Business Loan EMI and Cash Flow Reality
-        </div>
-        <p className="text-sm text-[#62646a]">
-          Your business may have a profitable year on paper but still face severe cash-flow crunches. For example, if customers take 30 to 60 days to pay invoices, your sales are recorded today, but actual cash reaches your bank account weeks later.
-        </p>
-        <p className="text-sm text-[#62646a]">
-          Meanwhile, your loan EMI is due on a fixed date every month. Projected accounting profit and available bank cash are not the same thing. Ensure your liquid cash inflow comfortably covers the EMI even when customer payments are delayed.
-        </p>
-      </div>
-
-      {/* Existing Loan Obligations */}
-      <div className="bg-white rounded-3xl border border-slate-200 p-6 sm:p-10 shadow-xs space-y-4">
+      {/* 22. Business Loan EMI Calculator Results Explained */}
+      <div className="bg-white rounded-3xl border border-slate-200 p-6 sm:p-10 shadow-xs space-y-6">
         <h2 className="text-xl font-extrabold text-[#222325]">
-          Cumulative Effect of Existing Debt
+          Business Loan EMI Calculator Results Explained
         </h2>
-        <p className="text-sm text-[#62646a]">
-          If you already pay existing business or equipment loans, adding another EMI increases total monthly fixed liabilities:
-        </p>
-        <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200 space-y-2 text-xs sm:text-sm text-[#62646a]">
-          <div className="flex justify-between border-b border-slate-200 pb-1">
-            <span>Existing Business Loan EMI:</span>
-            <span className="font-bold text-[#222325]">₹25,000</span>
-          </div>
-          <div className="flex justify-between border-b border-slate-200 pb-1">
-            <span>Equipment Finance EMI:</span>
-            <span className="font-bold text-[#222325]">₹15,000</span>
-          </div>
-          <div className="flex justify-between border-b border-slate-200 pb-1">
-            <span>Proposed New Business Loan EMI:</span>
-            <span className="font-bold text-emerald-700">₹20,000</span>
-          </div>
-          <div className="flex justify-between font-bold text-[#222325] pt-1 text-sm">
-            <span>Total Monthly Loan Commitment:</span>
-            <span className="text-emerald-800">₹60,000 / month</span>
-          </div>
-        </div>
-        <p className="text-xs text-[#74767e]">
-          Lenders evaluate your total Debt-Service Coverage Ratio (DSCR) and existing obligations when assessing new credit applications.
-        </p>
-      </div>
 
-      {/* Business Loan Use Cases */}
-      <div className="bg-white rounded-3xl border border-slate-200 p-6 sm:p-10 shadow-xs space-y-4">
-        <h2 className="text-xl font-extrabold text-[#222325]">
-          Evaluating Specific Business Loan Use Cases
-        </h2>
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-          <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200 space-y-1">
-            <div className="font-bold text-[#222325] text-sm">Working Capital</div>
-            <p className="text-xs text-[#62646a]">Used to buy bulk inventory, pay suppliers, or bridge seasonal cash gaps. Avoid using working capital loans to fund continuous operating losses.</p>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div className="p-4 sm:p-5 rounded-2xl bg-slate-50 border border-slate-200 space-y-1">
+            <h3 className="text-base font-bold text-[#222325]">Monthly EMI</h3>
+            <p className="text-xs sm:text-sm text-[#62646a]">The estimated amount payable every month.</p>
           </div>
-          <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200 space-y-1">
-            <div className="font-bold text-[#222325] text-sm">Equipment &amp; Machinery</div>
-            <p className="text-xs text-[#62646a]">Compare the expected monthly operating cost savings or additional production revenue generated by the machine against its monthly EMI.</p>
+          <div className="p-4 sm:p-5 rounded-2xl bg-slate-50 border border-slate-200 space-y-1">
+            <h3 className="text-base font-bold text-[#222325]">Total Interest</h3>
+            <p className="text-xs sm:text-sm text-[#62646a]">The estimated interest paid during the complete loan tenure.</p>
           </div>
-          <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200 space-y-1">
-            <div className="font-bold text-[#222325] text-sm">Business Expansion</div>
-            <p className="text-xs text-[#62646a]">Funding a second outlet or new branch. Prepare conservative cash-flow projections rather than relying on best-case scenario sales targets.</p>
+          <div className="p-4 sm:p-5 rounded-2xl bg-slate-50 border border-slate-200 space-y-1">
+            <h3 className="text-base font-bold text-[#222325]">Total Repayment</h3>
+            <p className="text-xs sm:text-sm text-[#62646a]">The estimated principal plus interest paid over the loan period.</p>
+          </div>
+          <div className="p-4 sm:p-5 rounded-2xl bg-slate-50 border border-slate-200 space-y-1">
+            <h3 className="text-base font-bold text-[#222325]">Processing Fee</h3>
+            <p className="text-xs sm:text-sm text-[#62646a]">The optional fee entered into the calculator.</p>
+          </div>
+          <div className="p-4 sm:p-5 rounded-2xl bg-slate-50 border border-slate-200 space-y-1">
+            <h3 className="text-base font-bold text-[#222325]">Net Disbursed Amount</h3>
+            <p className="text-xs sm:text-sm text-[#62646a]">The estimated amount remaining after an included processing fee, where the calculator provides this figure.</p>
+          </div>
+          <div className="p-4 sm:p-5 rounded-2xl bg-slate-50 border border-slate-200 space-y-1">
+            <h3 className="text-base font-bold text-[#222325]">Amortisation Schedule</h3>
+            <p className="text-xs sm:text-sm text-[#62646a]">A period-by-period breakdown showing principal, interest and the remaining loan balance.</p>
           </div>
         </div>
       </div>
 
-      {/* Credit Score & Business Eligibility */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div className="bg-white rounded-3xl border border-slate-200 p-6 sm:p-8 shadow-xs space-y-3">
-          <h2 className="text-lg font-extrabold text-[#222325]">
-            Fixed vs. Floating Rates
-          </h2>
-          <p className="text-xs sm:text-sm text-[#62646a]">
-            <strong>Fixed Rate:</strong> EMI remains unchanged throughout the loan duration.<br />
-            <strong>Floating Rate:</strong> Rate moves with the lender's benchmark, meaning monthly EMIs or loan tenures can increase during rate hike cycles.
-          </p>
-        </div>
-
-        <div className="bg-white rounded-3xl border border-slate-200 p-6 sm:p-8 shadow-xs space-y-3">
-          <h2 className="text-lg font-extrabold text-[#222325]">
-            Processing Fees &amp; Net Disbursement
-          </h2>
-          <p className="text-xs sm:text-sm text-[#62646a]">
-            Processing fees (typically 1% to 3% plus GST) are often deducted upfront from the sanctioned amount. If you borrow ₹10,00,000, you might receive ₹9,75,000 in hand while repaying interest on the full ₹10,00,000.
-          </p>
-        </div>
-      </div>
-
-      {/* Revenue vs Net Operating Cash */}
-      <div className="bg-white rounded-3xl border border-slate-200 p-6 sm:p-10 shadow-xs space-y-4">
-        <h2 className="text-xl font-extrabold text-[#222325]">
-          Business Revenue vs. Repayment Capacity
-        </h2>
-        <p className="text-sm text-[#62646a]">
-          Never compare your monthly EMI directly with gross sales revenue. Suppose your business records gross monthly sales of ₹10,00,000. That does not mean ₹10,00,000 is available for loan repayment.
-        </p>
-        <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200 space-y-1">
-          <div className="font-bold text-[#222325] text-xs sm:text-sm">Gross Sales (₹10,00,000) &minus; Operating Expenses = Net Cash Available</div>
-          <p className="text-xs text-[#62646a]">
-            Subtract inventory costs, salaries, factory rent, GST/taxes, electricity, logistics, software, and vendor payments. Only the remaining net surplus cash flow determines true loan repayment capacity.
-          </p>
-        </div>
-      </div>
-
-      {/* 10 Preparation Steps */}
-      <div className="bg-white rounded-3xl border border-slate-200 p-6 sm:p-10 shadow-xs space-y-4">
-        <h2 className="text-xl font-extrabold text-[#222325]">
-          10 Checklist Steps Before Applying for a Business Loan
-        </h2>
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs text-[#62646a]">
-          <div className="p-2.5 rounded-xl bg-slate-50 border border-slate-200">1. Review all existing business &amp; personal loan commitments.</div>
-          <div className="p-2.5 rounded-xl bg-slate-50 border border-slate-200">2. Check personal CIBIL and commercial credit reports.</div>
-          <div className="p-2.5 rounded-xl bg-slate-50 border border-slate-200">3. Organise GST returns, ITR filings, and audited P&amp;L statements.</div>
-          <div className="p-2.5 rounded-xl bg-slate-50 border border-slate-200">4. Calculate the exact capital required for the project.</div>
-          <div className="p-2.5 rounded-xl bg-slate-50 border border-slate-200">5. Prepare realistic monthly cash-flow projections.</div>
-          <div className="p-2.5 rounded-xl bg-slate-50 border border-slate-200">6. Stress-test the EMI in the calculator at higher interest rates.</div>
-          <div className="p-2.5 rounded-xl bg-slate-50 border border-slate-200">7. Compare shorter vs. longer tenure impact on total interest.</div>
-          <div className="p-2.5 rounded-xl bg-slate-50 border border-slate-200">8. Verify processing fees, legal charges, and documentation costs.</div>
-          <div className="p-2.5 rounded-xl bg-slate-50 border border-slate-200">9. Read foreclosure, part-prepayment, and penalty terms.</div>
-          <div className="p-2.5 rounded-xl bg-slate-50 border border-slate-200">10. Maintain an emergency cash cushion for business operations.</div>
-        </div>
-      </div>
-
-      {/* Frequently Asked Questions (Open by Default) */}
+      {/* 23. Frequently Asked Questions */}
       <div className="bg-white rounded-3xl border border-slate-200 p-6 sm:p-10 shadow-xs space-y-6">
         <div className="flex items-center gap-2.5 border-b border-slate-100 pb-3">
           <div className="w-8 h-8 rounded-lg bg-[#f4fdf8] text-[#1dbf73] flex items-center justify-center border border-[#d8f5e5] shrink-0">
-            <BookOpen className="w-4 h-4" />
+            <HelpCircle className="w-4 h-4" />
           </div>
           <h2 className="text-xl font-extrabold text-[#222325]">
             Frequently Asked Questions
           </h2>
         </div>
 
-        <div className="space-y-3">
+        <div className="space-y-4">
           {[
             {
-              q: 'What is a Business Loan EMI?',
-              a: 'A Business Loan EMI is the fixed monthly payment made to repay a business loan. It consists of both principal repayment and interest charged by the bank or NBFC.',
+              q: 'What is a Business Loan EMI Calculator?',
+              a: 'It is a tool that estimates your monthly business loan EMI using the loan amount, interest rate and repayment tenure. It can also show total interest and total repayment, and may allow you to include an optional processing fee.',
             },
             {
-              q: 'How is a Business Loan EMI calculated?',
-              a: 'Using the reducing-balance formula based on the principal loan amount, monthly interest rate, and total tenure in months.',
+              q: 'What do I need to calculate a business loan EMI?',
+              a: 'You need the loan amount, interest rate and loan tenure. If you know the processing fee and the calculator provides an optional processing-fee field, you can include that as well.',
             },
             {
-              q: 'Does a business loan affect my personal CIBIL score?',
-              a: 'Yes. For sole proprietorships, partnerships, or loans where business owners act as personal guarantors, repayment history directly impacts personal CIBIL scores.',
+              q: 'Does a higher loan amount increase the EMI?',
+              a: 'Yes. If the interest rate and tenure stay the same, a higher principal generally results in a higher EMI and higher total interest.',
             },
             {
-              q: 'What is the difference between fixed and floating business loan rates?',
-              a: 'A fixed rate keeps the interest rate and EMI constant throughout the tenure. A floating rate changes according to external market benchmarks (like RBI Repo Rate).',
+              q: 'Does a longer tenure reduce the EMI?',
+              a: 'Usually, yes. A longer tenure spreads the repayment across more instalments. However, the total interest can increase.',
             },
             {
-              q: 'Can I get a business loan without collateral?',
-              a: 'Yes. Unsecured business loans do not require collateral (property or machinery), but they often carry higher interest rates and require strong turnover and credit records.',
+              q: 'Does a lower EMI mean a cheaper loan?',
+              a: 'Not necessarily. A lower EMI can result from a longer tenure, which may increase the total interest paid.',
             },
             {
-              q: 'How does business cash flow affect loan eligibility?',
-              a: 'Lenders inspect bank statements and GST filings to ensure regular monthly cash inflows are sufficient to service the proposed EMI alongside operating costs.',
+              q: 'Can I include the processing fee?',
+              a: 'Yes, if the calculator provides the optional processing-fee feature. Enter the fee according to the lender’s actual terms.',
             },
             {
-              q: 'Can I prepay or foreclose a business loan early?',
-              a: 'Yes, most lenders allow early foreclosure or part-prepayment, though prepayment charges (1% to 5%) may apply depending on the loan agreement and lender policy.',
+              q: 'Can the calculator tell me whether my loan will be approved?',
+              a: 'No. It only estimates repayment. Loan approval depends on the lender’s eligibility and credit assessment.',
             },
             {
-              q: 'Is processing fee deducted from the loan sanction amount?',
-              a: 'Yes. Lenders usually deduct processing fees (1% to 3% plus GST) upfront from the sanctioned amount during loan disbursement.',
+              q: 'Is the EMI shown by the calculator final?',
+              a: 'No. It is an estimate based on the information entered. Your actual repayment depends on the lender’s final loan terms.',
             },
             {
-              q: 'Is it better to take a shorter or longer tenure for a business loan?',
-              a: 'A shorter tenure saves interest cost if cash flow is robust. A longer tenure lowers monthly EMI pressure, providing breathing room for businesses with variable monthly sales.',
-            },
-            {
-              q: 'How do existing EMIs impact my new business loan approval?',
-              a: 'Existing EMIs reduce your net Debt-Service Coverage Ratio (DSCR), which may lower the maximum new loan amount a bank is willing to sanction.',
-            },
-            {
-              q: 'What expenses are included in working capital borrowing?',
-              a: 'Raw material procurement, inventory stock, vendor payments, supplier invoices, employee wages, and temporary operational cash gaps.',
-            },
-            {
-              q: 'What happens if my customers delay invoice payments?',
-              a: 'Loan EMIs are due on fixed monthly dates regardless of customer payment delays. Maintain a 2 to 3-month EMI emergency cash buffer to handle delayed receivables.',
-            },
-            {
-              q: 'Is loan eligibility the same as monthly affordability?',
-              a: 'No. A bank may approve a high loan limit based on turnover, but affordability depends on your net operating surplus cash after all business and family expenses.',
-            },
-            {
-              q: 'What documents do lenders examine for business loans?',
-              a: 'Bank statements (12 months), GST returns, ITR filings (2-3 years), audited P&L and Balance Sheet, business registration proof, and KYC of promoters.',
-            },
-            {
-              q: 'What is more important: monthly EMI or total repayment?',
-              a: 'Both matter equally. Monthly EMI determines your immediate cash-flow pressure, while total interest and total repayment tell you the true cost of borrowing over time.',
+              q: 'Why should I check total interest?',
+              a: 'The EMI tells you what you may pay each month. Total interest tells you how much the borrowing may cost over the entire repayment period. Checking both gives you a better picture.',
             },
           ].map((faq, idx) => (
-            <details
-              key={idx}
-              open={true}
-              className="group border border-slate-200 rounded-2xl overflow-hidden bg-[#fafafa]"
-            >
-              <summary className="p-4 font-bold text-xs sm:text-sm text-[#222325] flex items-center justify-between gap-3 cursor-pointer hover:bg-slate-100 transition-colors list-none">
+            <div key={idx} className="p-4 sm:p-5 rounded-2xl bg-slate-50 border border-slate-200 space-y-2">
+              <h3 className="font-bold text-[#222325] text-sm sm:text-base flex items-start gap-2">
+                <span className="text-[#1dbf73] font-mono">Q{idx + 1}.</span>
                 <span>{faq.q}</span>
-                <span className="text-slate-400 group-open:rotate-180 transition-transform">▼</span>
-              </summary>
-              <div className="p-4 pt-0 text-xs sm:text-sm text-[#62646a] leading-relaxed border-t border-slate-200/60 bg-white">
+              </h3>
+              <p className="text-xs sm:text-sm text-[#62646a] pl-6 leading-relaxed">
                 {faq.a}
-              </div>
-            </details>
+              </p>
+            </div>
           ))}
         </div>
       </div>
 
-      {/* Final Checklist & Summary */}
-      <div className="bg-white rounded-3xl border border-slate-200 p-6 sm:p-10 shadow-xs space-y-4">
-        <h2 className="text-xl font-extrabold text-[#222325]">
-          Final Decision Rule for Business Borrowers
+      {/* 24. Final Takeaway */}
+      <div className="bg-gradient-to-br from-[#0f172a] to-[#1e293b] text-white rounded-3xl p-6 sm:p-10 shadow-xl space-y-4 border border-slate-800">
+        <h2 className="text-xl sm:text-2xl font-black text-[#1dbf73] tracking-tight">
+          Final Takeaway
         </h2>
-        <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200 font-bold text-center text-[#222325] text-xs sm:text-sm">
-          Sanction Amount &minus; Processing Fees &rarr; Disbursed Cash &rarr; Interest Rate &rarr; Tenure &rarr; EMI &rarr; Net Operating Surplus Cash Buffer
+        <p className="text-sm sm:text-base text-slate-300 leading-relaxed">
+          Don't judge a business loan by the EMI alone.
+        </p>
+        <p className="text-sm sm:text-base text-slate-300 leading-relaxed">
+          Enter your <strong>loan amount, interest rate and tenure</strong> into the calculator. Check the monthly EMI, then look at the total interest and total repayment.
+        </p>
+        <p className="text-sm sm:text-base text-slate-300 leading-relaxed">
+          If you know the processing fee, include it too.
+        </p>
+        <p className="text-sm sm:text-base text-slate-300 leading-relaxed">
+          Try different loan amounts and repayment periods. A few minutes of comparison can show you how much a small change in tenure or interest rate can affect the overall cost of borrowing.
+        </p>
+        <div className="p-4 rounded-2xl bg-emerald-500/20 border border-emerald-500/30 text-emerald-300 font-bold text-center text-sm sm:text-base">
+          The right loan calculation starts with a simple question:<br />
+          <span className="text-white text-base sm:text-lg">&ldquo;Can your business comfortably handle the repayment?&rdquo;</span>
         </div>
-        <p className="text-sm text-[#62646a]">
-          The goal of a Business Loan EMI Calculator is not to tell you how much you can borrow, but to help you understand what borrowing will cost your business each month.
-        </p>
-      </div>
-
-      {/* Disclaimer */}
-      <div className="bg-slate-50 rounded-3xl border border-slate-200 p-6 sm:p-8 text-xs text-slate-500 space-y-2">
-        <div className="font-bold text-[#222325]">Important Rate &amp; Calculator Disclaimer</div>
-        <p>
-          The Business Loan EMI Calculator provides mathematical estimates based on the information entered by the user and standard amortisation formulas. Actual loan terms, interest rates, processing fees, documentation charges, foreclosure rules, and EMI repayment schedules vary by lender and individual business credit assessment.
-        </p>
-        <p>
-          Always verify the official sanction letter, interest rate, fee schedule, and loan agreement directly with your lending bank or financial institution before making a borrowing decision.
-        </p>
       </div>
     </div>
   );

@@ -553,6 +553,38 @@ export const api = {
     return data;
   },
 
+  async adminToggleBlogStatus(id: string): Promise<{ success: boolean; status: 'published' | 'draft'; post: BlogPost }> {
+    const res = await fetch(`/api/admin/blogs/${encodeURIComponent(id)}/toggle`, {
+      method: 'PATCH',
+      headers: getAuthHeaders(),
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || 'Failed to toggle blog post status');
+    return data;
+  },
+
+  async adminBulkBlogStatus(ids: string[], status: 'published' | 'draft'): Promise<{ success: boolean; count: number }> {
+    const res = await fetch('/api/admin/blogs/bulk-status', {
+      method: 'POST',
+      headers: getAuthHeaders(),
+      body: JSON.stringify({ ids, status }),
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || 'Failed to update bulk blog status');
+    return data;
+  },
+
+  async adminBulkBlogDelete(ids: string[]): Promise<{ success: boolean; count: number }> {
+    const res = await fetch('/api/admin/blogs/bulk-delete', {
+      method: 'POST',
+      headers: getAuthHeaders(),
+      body: JSON.stringify({ ids }),
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || 'Failed to bulk delete blog posts');
+    return data;
+  },
+
   // ==========================================
   // BLOG CATEGORIES & SUBCATEGORIES APIS
   // ==========================================

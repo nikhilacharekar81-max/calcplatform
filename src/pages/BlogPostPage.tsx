@@ -12,6 +12,7 @@ import {
   Sparkles,
 } from 'lucide-react';
 import { BlogPost } from '../types/schema.ts';
+import { sanitizeBlogContent } from '../utils/sanitizeHtml.ts';
 import { Breadcrumbs } from '../components/layout/Breadcrumbs.tsx';
 import { EnterpriseTaxCalculatorApp } from '../components/calculator/EnterpriseTaxCalculatorApp.tsx';
 import { TdsCalculatorApp } from '../components/calculator/TdsCalculatorApp.tsx';
@@ -44,6 +45,25 @@ export const BlogPostPage: React.FC<BlogPostPageProps> = ({ slug }) => {
     }
     fetchPost();
   }, [slug]);
+
+  // Sync SEO Meta Title & Meta Description to Document HEAD
+  useEffect(() => {
+    if (data?.post) {
+      const title = data.post.seoTitle || data.post.title;
+      document.title = `${title} | CalcPlatform`;
+
+      const desc = data.post.seoDescription || data.post.excerpt;
+      if (desc) {
+        let metaTag = document.querySelector('meta[name="description"]');
+        if (!metaTag) {
+          metaTag = document.createElement('meta');
+          metaTag.setAttribute('name', 'description');
+          document.head.appendChild(metaTag);
+        }
+        metaTag.setAttribute('content', desc);
+      }
+    }
+  }, [data]);
 
   // Scroll Progress Bar
   useEffect(() => {
@@ -98,7 +118,7 @@ export const BlogPostPage: React.FC<BlogPostPageProps> = ({ slug }) => {
         style={{ width: `${scrollProgress}%` }}
       />
 
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-8">
+      <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-12 space-y-12">
         {/* Breadcrumbs */}
         <Breadcrumbs
           items={[
@@ -134,11 +154,13 @@ export const BlogPostPage: React.FC<BlogPostPageProps> = ({ slug }) => {
             {post.title}
           </h1>
 
-          <p className="text-sm sm:text-base text-[#62646a] leading-relaxed max-w-3xl">
-            {post.excerpt}
-          </p>
+          {post.excerpt && (
+            <p className="text-base sm:text-lg text-slate-600 font-normal leading-relaxed max-w-3xl">
+              {post.excerpt}
+            </p>
+          )}
 
-          <div className="pt-4 border-t border-slate-200 flex flex-col sm:flex-row items-center justify-between gap-4">
+          <div className="pt-4 flex flex-col sm:flex-row items-center justify-between gap-4">
             <div className="flex items-center gap-3">
               <img
                 src={post.author?.avatar}
@@ -163,19 +185,62 @@ export const BlogPostPage: React.FC<BlogPostPageProps> = ({ slug }) => {
         </header>
 
         {/* Featured Cover Image */}
-        <div className="rounded-3xl overflow-hidden border border-slate-200 shadow-md">
-          <img
-            src={post.featuredImage}
-            alt={post.title}
-            className="w-full h-auto max-h-[480px] object-cover"
-          />
-        </div>
+        {post.showFeaturedImage !== false && post.featuredImage && (
+          <div className="rounded-3xl overflow-hidden border border-slate-200 shadow-md">
+            <img
+              src={post.featuredImage}
+              alt={post.title}
+              className="w-full h-auto max-h-[480px] object-cover"
+            />
+          </div>
+        )}
 
         {/* Main Body Content */}
-        <article
-          className="prose prose-emerald max-w-none text-[#404145] text-sm sm:text-base leading-relaxed space-y-6 bg-white p-6 sm:p-10 rounded-3xl border border-slate-200 shadow-xs"
-          dangerouslySetInnerHTML={{ __html: post.content }}
-        />
+        {(() => {
+          const rawContent = sanitizeBlogContent(post.content || '');
+          const hasHtml = /<[a-z][\s\S]*>/i.test(rawContent);
+          let formatted = hasHtml 
+            ? rawContent 
+            : rawContent
+                .split(/\n\s*\n/)
+                .map((p) => `<p>${p.trim().replace(/\n/g, '<br/>')}</p>`)
+                .join('');
+
+          // Ensure every <a> tag in blog content explicitly opens in a new tab (_blank)
+          formatted = formatted.replace(/<a\s+(?:[^>]*?\s+)?href=["']([^"']+)["']([^>]*)>/gi, (match, href, rest) => {
+            const cleanRest = rest.replace(/target=["'][^"']*["']/gi, '').replace(/rel=["'][^"']*["']/gi, '').trim();
+            return `<a href="${href}" target="_blank" rel="noopener noreferrer"${cleanRest ? ' ' + cleanRest : ''}>`;
+          });
+
+          // Ensure tables have a clean horizontal scrolling wrapper for mobile responsive view
+          formatted = formatted.replace(/<table(?:\s+[^>]*)?>[\s\S]*?<\/table>/gi, (tbl) => {
+            return `<div class="w-full overflow-x-auto my-6 rounded-2xl border border-slate-200 shadow-3xs bg-white">${tbl}</div>`;
+          });
+
+          const handleArticleClick = (e: React.MouseEvent<HTMLElement>) => {
+            let target = e.target as HTMLElement | null;
+            while (target && target !== e.currentTarget) {
+              if (target.tagName === 'A') {
+                const anchor = target as HTMLAnchorElement;
+                const href = anchor.getAttribute('href');
+                if (href && (href.startsWith('http://') || href.startsWith('https://') || href.startsWith('//') || href.startsWith('/'))) {
+                  e.preventDefault();
+                  window.open(href, '_blank', 'noopener,noreferrer');
+                }
+                break;
+              }
+              target = target.parentElement;
+            }
+          };
+
+          return (
+            <article
+              onClick={handleArticleClick}
+              className="prose prose-emerald max-w-none text-slate-800 text-base sm:text-lg leading-relaxed bg-white p-6 sm:p-10 rounded-3xl border border-slate-200 shadow-xs blog-content cursor-auto"
+              dangerouslySetInnerHTML={{ __html: formatted }}
+            />
+          );
+        })()}
 
         {/* Embedded Interactive Calculator Widget (if specified) */}
         {post.embeddedCalculators && post.embeddedCalculators.length > 0 && (

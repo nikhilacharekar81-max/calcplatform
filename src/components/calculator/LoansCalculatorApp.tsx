@@ -14,7 +14,8 @@ import {
   Percent,
   CheckCircle2,
   TrendingUp,
-  Info
+  Info,
+  AlertTriangle
 } from 'lucide-react';
 import { Calculator } from '../../types/schema.ts';
 
@@ -37,16 +38,18 @@ export const LoansCalculatorApp: React.FC<LoansCalculatorAppProps> = ({ calculat
 
   const [interestRate, setInterestRate] = useState<number>(
     slug.includes('home') ? 8.5 :
+    slug.includes('property') ? 10.5 :
     slug.includes('car') ? 9.0 :
     slug.includes('bike') ? 11.5 :
     slug.includes('education') ? 9.5 :
     slug.includes('business') ? 14.0 :
-    slug.includes('gold') ? 9.0 :
+    slug.includes('gold') ? 10.0 :
     slug.includes('personal') ? 12.5 : 9.0
   );
 
   const [tenureYears, setTenureYears] = useState<number>(
     slug.includes('home') || slug.includes('property') ? 20 :
+    slug.includes('gold') ? 2 :
     slug.includes('personal') || slug.includes('business') ? 5 :
     slug.includes('car') ? 5 :
     slug.includes('bike') ? 3 :
@@ -54,9 +57,14 @@ export const LoansCalculatorApp: React.FC<LoansCalculatorAppProps> = ({ calculat
   );
 
   // Gold Loan State
-  const [goldGrams, setGoldGrams] = useState<number>(100);
+  const [goldGrams, setGoldGrams] = useState<number>(20);
   const [goldPurity, setGoldPurity] = useState<'24K' | '22K' | '18K'>('22K');
-  const [goldRatePerGram, setGoldRatePerGram] = useState<number>(7200);
+  const [goldRatePerGram, setGoldRatePerGram] = useState<number>(7000);
+
+  // Property / LAP State
+  const [propertyValue, setPropertyValue] = useState<number>(10000000); // ₹1 Cr
+  const propertyLtv = 65; // 65% LTV standard
+  const maxEligiblePropertyLoan = propertyValue * (propertyLtv / 100);
 
   // Loan Eligibility State
   const [monthlyIncome, setMonthlyIncome] = useState<number>(100000);
@@ -81,20 +89,6 @@ export const LoansCalculatorApp: React.FC<LoansCalculatorAppProps> = ({ calculat
     return formatINR(val);
   };
 
-  // Standard EMI Formula: EMI = [P x R x (1+R)^N]/[(1+R)^N-1]
-  const monthlyRate = interestRate / 12 / 100;
-  const totalMonths = tenureYears * 12;
-
-  let emi = 0;
-  if (monthlyRate > 0 && totalMonths > 0) {
-    emi = (loanAmount * monthlyRate * Math.pow(1 + monthlyRate, totalMonths)) / (Math.pow(1 + monthlyRate, totalMonths) - 1);
-  } else if (totalMonths > 0) {
-    emi = loanAmount / totalMonths;
-  }
-
-  const totalPayment = emi * totalMonths;
-  const totalInterest = Math.max(0, totalPayment - loanAmount);
-
   // Gold Loan Specific Calculations
   let goldPurityFactor = 1;
   if (goldPurity === '22K') goldPurityFactor = 22 / 24;
@@ -102,6 +96,22 @@ export const LoansCalculatorApp: React.FC<LoansCalculatorAppProps> = ({ calculat
 
   const totalGoldValue = goldGrams * goldRatePerGram * goldPurityFactor;
   const maxGoldLoanAmount = totalGoldValue * 0.75; // RBI 75% LTV
+
+  const effectivePrincipal = slug.includes('gold') ? maxGoldLoanAmount : loanAmount;
+
+  // Standard EMI Formula: EMI = [P x R x (1+R)^N]/[(1+R)^N-1]
+  const monthlyRate = interestRate / 12 / 100;
+  const totalMonths = tenureYears * 12;
+
+  let emi = 0;
+  if (monthlyRate > 0 && totalMonths > 0) {
+    emi = (effectivePrincipal * monthlyRate * Math.pow(1 + monthlyRate, totalMonths)) / (Math.pow(1 + monthlyRate, totalMonths) - 1);
+  } else if (totalMonths > 0) {
+    emi = effectivePrincipal / totalMonths;
+  }
+
+  const totalPayment = emi * totalMonths;
+  const totalInterest = Math.max(0, totalPayment - effectivePrincipal);
 
   // Loan Eligibility Calculations
   const maxAllowableEmi = Math.max(0, (monthlyIncome * (foirPercent / 100)) - existingEmis);
@@ -232,8 +242,48 @@ export const LoansCalculatorApp: React.FC<LoansCalculatorAppProps> = ({ calculat
             <span className="text-xs font-bold text-slate-500">₹ INR Currency</span>
           </div>
 
-          {/* Special Gold Loan Inputs */}
-          {slug.includes('gold') ? (
+          {/* Special Property / Gold / Eligibility Inputs */}
+          {slug.includes('property') ? (
+            <div className="space-y-4">
+              <div>
+                <div className="flex justify-between text-xs font-bold text-slate-700 mb-1.5">
+                  <span>Property Market Value (₹)</span>
+                  <span className="text-[#1dbf73]">{formatLakhs(propertyValue)}</span>
+                </div>
+                <input
+                  type="number"
+                  min={500000}
+                  max={100000000}
+                  step={100000}
+                  value={propertyValue}
+                  onChange={(e) => setPropertyValue(parseFloat(e.target.value) || 0)}
+                  className="w-full p-3.5 bg-slate-50 border border-slate-300 rounded-xl text-xs font-bold text-[#222325]"
+                />
+              </div>
+
+              <div>
+                <div className="flex justify-between text-xs font-bold text-slate-700 mb-1.5">
+                  <span>Loan Amount (Principal) (₹)</span>
+                  <span className="text-[#1dbf73]">{formatLakhs(loanAmount)}</span>
+                </div>
+                <input
+                  type="number"
+                  min={100000}
+                  max={propertyValue}
+                  step={50000}
+                  value={loanAmount}
+                  onChange={(e) => setLoanAmount(parseFloat(e.target.value) || 0)}
+                  className="w-full p-3.5 bg-slate-50 border border-slate-300 rounded-xl text-xs font-bold text-[#222325]"
+                />
+                {loanAmount > propertyValue * 0.70 && (
+                  <div className="mt-2 p-3 bg-amber-50 border border-amber-200 rounded-xl text-xs font-semibold text-amber-800 flex items-center gap-2">
+                    <AlertTriangle className="w-4 h-4 shrink-0 text-amber-600" />
+                    <span>Warning: Requested loan amount exceeds 70% of property value (Max recommended LTV limit for LAP).</span>
+                  </div>
+                )}
+              </div>
+            </div>
+          ) : slug.includes('gold') ? (
             <div className="space-y-4">
               <div>
                 <label className="block text-xs font-bold text-slate-700 mb-1.5">Gold Weight (Grams)</label>
@@ -432,6 +482,45 @@ export const LoansCalculatorApp: React.FC<LoansCalculatorAppProps> = ({ calculat
                   <div className="text-xs text-slate-400 mb-1">Max Eligible Gold Loan (75% RBI LTV)</div>
                   <div className="text-3xl font-black text-[#1dbf73]">{formatINR(maxGoldLoanAmount)}</div>
                 </div>
+                <div className="pt-4 border-t border-slate-800 space-y-2 text-xs text-slate-300">
+                  <div className="flex justify-between">
+                    <span>Monthly Loan EMI:</span>
+                    <span className="font-bold text-[#1dbf73] text-sm">{formatINR(emi)}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span>Total Interest Payable:</span>
+                    <span className="font-bold text-amber-400">{formatINR(totalInterest)}</span>
+                  </div>
+                  <div className="flex justify-between pt-2 border-t border-slate-800 font-bold text-white">
+                    <span>Total Amount Payable:</span>
+                    <span>{formatINR(totalPayment)}</span>
+                  </div>
+                </div>
+              </div>
+            ) : slug.includes('property') ? (
+              <div className="space-y-4">
+                <div>
+                  <div className="text-xs text-slate-400 mb-1">Max Eligible Loan Amount (65% LTV)</div>
+                  <div className="text-3xl font-black text-[#1dbf73]">{formatINR(maxEligiblePropertyLoan)}</div>
+                </div>
+                <div>
+                  <div className="text-xs text-slate-400 mb-1">Monthly Loan EMI</div>
+                  <div className="text-2xl font-black text-white">{formatINR(emi)}</div>
+                </div>
+                <div className="pt-4 border-t border-slate-800 space-y-2 text-xs text-slate-300">
+                  <div className="flex justify-between">
+                    <span>Requested Loan Principal:</span>
+                    <span className="font-bold text-white">{formatINR(loanAmount)}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span>Total Interest Payable:</span>
+                    <span className="font-bold text-amber-400">{formatINR(totalInterest)}</span>
+                  </div>
+                  <div className="flex justify-between pt-2 border-t border-slate-800 font-bold text-white">
+                    <span>Total Amount Payable:</span>
+                    <span>{formatINR(totalPayment)}</span>
+                  </div>
+                </div>
               </div>
             ) : slug.includes('eligibility') ? (
               <div className="space-y-4">
@@ -529,7 +618,7 @@ export const LoansCalculatorApp: React.FC<LoansCalculatorAppProps> = ({ calculat
       </div>
 
       {/* Amortization Schedule Table */}
-      {!slug.includes('gold') && !slug.includes('eligibility') && (
+      {!slug.includes('eligibility') && (
         <div className="bg-white rounded-3xl border border-slate-200 p-6 sm:p-8 shadow-xs space-y-4">
           <div className="flex items-center justify-between border-b border-slate-100 pb-3">
             <h3 className="text-base font-bold text-[#222325]">

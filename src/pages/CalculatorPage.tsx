@@ -21,6 +21,13 @@ import { CarLoanGuideContent } from '../components/calculator/CarLoanGuideConten
 import { BikeLoanGuideContent } from '../components/calculator/BikeLoanGuideContent.tsx';
 import { EducationLoanGuideContent } from '../components/calculator/EducationLoanGuideContent.tsx';
 import { BusinessLoanGuideContent } from '../components/calculator/BusinessLoanGuideContent.tsx';
+import { BusinessLoanCalculatorApp } from '../components/calculator/BusinessLoanCalculatorApp.tsx';
+import { GoldLoanGuideContent } from '../components/calculator/GoldLoanGuideContent.tsx';
+import { LoanAgainstPropertyGuideContent } from '../components/calculator/LoanAgainstPropertyGuideContent.tsx';
+import { EmiCalculatorGuideContent } from '../components/calculator/EmiCalculatorGuideContent.tsx';
+import { LoanEligibilityGuideContent } from '../components/calculator/LoanEligibilityGuideContent.tsx';
+import { LoanPrepaymentGuideContent } from '../components/calculator/LoanPrepaymentGuideContent.tsx';
+import { LoanAffordabilityGuideContent } from '../components/calculator/LoanAffordabilityGuideContent.tsx';
 import { getAdminToken } from '../services/api.ts';
 
 interface CalculatorPageProps {
@@ -48,10 +55,40 @@ export const CalculatorPage: React.FC<CalculatorPageProps> = ({
   ];
 
   useEffect(() => {
-    document.title = calculator.seoTitle || `${calculator.name} - CalcPlatform`;
+    const pageTitle = calculator.seoTitle || `${calculator.name} - CalcPlatform`;
+    const pageDesc = calculator.seoDescription || calculator.shortDescription || '';
+
+    document.title = pageTitle;
+
     const metaDesc = document.querySelector('meta[name="description"]');
     if (metaDesc) {
-      metaDesc.setAttribute('content', calculator.seoDescription || calculator.shortDescription || '');
+      metaDesc.setAttribute('content', pageDesc);
+    }
+
+    const ogTitle = document.querySelector('meta[property="og:title"]');
+    if (ogTitle) ogTitle.setAttribute('content', pageTitle);
+
+    const ogDesc = document.querySelector('meta[property="og:description"]');
+    if (ogDesc) ogDesc.setAttribute('content', pageDesc);
+
+    const twitterTitle = document.querySelector('meta[name="twitter:title"]');
+    if (twitterTitle) {
+      twitterTitle.setAttribute('content', pageTitle);
+    } else {
+      const t = document.createElement('meta');
+      t.setAttribute('name', 'twitter:title');
+      t.setAttribute('content', pageTitle);
+      document.head.appendChild(t);
+    }
+
+    const twitterDesc = document.querySelector('meta[name="twitter:description"]');
+    if (twitterDesc) {
+      twitterDesc.setAttribute('content', pageDesc);
+    } else {
+      const t = document.createElement('meta');
+      t.setAttribute('name', 'twitter:description');
+      t.setAttribute('content', pageDesc);
+      document.head.appendChild(t);
     }
 
     const schemaScriptId = 'calculator-jsonld-schema';
@@ -213,8 +250,38 @@ export const CalculatorPage: React.FC<CalculatorPageProps> = ({
         </div>
       ) : calculator.slug === 'business-loan-emi-calculator' ? (
         <div className="space-y-12">
-          <LoansCalculatorApp calculator={calculator} />
+          <BusinessLoanCalculatorApp calculator={calculator} />
           <BusinessLoanGuideContent />
+        </div>
+      ) : calculator.slug === 'loan-against-property-calculator' || calculator.slug.includes('property') ? (
+        <div className="space-y-12">
+          <LoansCalculatorApp calculator={calculator} />
+          <LoanAgainstPropertyGuideContent />
+        </div>
+      ) : calculator.slug === 'gold-loan-calculator' || calculator.slug === 'gold-loan' || subcategory.slug === 'gold-loan' ? (
+        <div className="space-y-12">
+          <LoansCalculatorApp calculator={calculator} />
+          <GoldLoanGuideContent />
+        </div>
+      ) : calculator.slug === 'emi-calculator' ? (
+        <div className="space-y-12">
+          <LoansCalculatorApp calculator={calculator} />
+          <EmiCalculatorGuideContent />
+        </div>
+      ) : calculator.slug === 'loan-eligibility-calculator' ? (
+        <div className="space-y-12">
+          <LoansCalculatorApp calculator={calculator} />
+          <LoanEligibilityGuideContent />
+        </div>
+      ) : calculator.slug === 'loan-prepayment-calculator' ? (
+        <div className="space-y-12">
+          <LoansCalculatorApp calculator={calculator} />
+          <LoanPrepaymentGuideContent />
+        </div>
+      ) : calculator.slug === 'loan-affordability' || calculator.slug === 'loan-affordability-calculator' ? (
+        <div className="space-y-12">
+          <LoansCalculatorApp calculator={calculator} />
+          <LoanAffordabilityGuideContent />
         </div>
       ) : category.slug === 'loans-emi' || calculator.engineType === 'loans_emi' || calculator.slug.includes('loan') || calculator.slug.includes('emi') ? (
         <LoansCalculatorApp calculator={calculator} />

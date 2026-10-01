@@ -87,8 +87,17 @@ const getInitialRouteData = () => {
   return null;
 };
 
+const getNormalizedPath = () => {
+  if (typeof window === 'undefined') return '/';
+  const hash = window.location.hash;
+  if (hash && hash.startsWith('#/')) {
+    return hash.substring(1).split('?')[0].split('#')[0] || '/';
+  }
+  return window.location.pathname;
+};
+
 export default function App() {
-  const [currentPath, setCurrentPath] = useState(window.location.pathname);
+  const [currentPath, setCurrentPath] = useState(getNormalizedPath);
   const [isAdminAuthenticated, setIsAdminAuthenticated] = useState<boolean | null>(null);
   const [adminTab, setAdminTab] = useState<'dashboard' | 'categories' | 'subcategories' | 'calculators' | 'modules' | 'content-seo' | 'settings' | 'calculator-editor' | 'embed-studio' | 'blogs' | 'blog-editor' | 'blog-categories' | 'blog-dashboard'>('dashboard');
   const [activeCalculatorId, setActiveCalculatorId] = useState<string>('new');
@@ -117,17 +126,21 @@ export default function App() {
   // Initialize routeLoading true ONLY if we don't have pre-injected SSR data
   const [routeLoading, setRouteLoading] = useState(() => {
     if (initialSsrData) return false;
-    return isSubpagePath(window.location.pathname);
+    return isSubpagePath(getNormalizedPath());
   });
   const [routeNotFound, setRouteNotFound] = useState(false);
 
-  // Synchronize browser history navigation (Back / Forward)
+  // Synchronize browser history navigation (Back / Forward & Hash Routing)
   useEffect(() => {
-    const handlePopState = () => {
-      setCurrentPath(window.location.pathname);
+    const handleNavigation = () => {
+      setCurrentPath(getNormalizedPath());
     };
-    window.addEventListener('popstate', handlePopState);
-    return () => window.removeEventListener('popstate', handlePopState);
+    window.addEventListener('popstate', handleNavigation);
+    window.addEventListener('hashchange', handleNavigation);
+    return () => {
+      window.removeEventListener('popstate', handleNavigation);
+      window.removeEventListener('hashchange', handleNavigation);
+    };
   }, []);
 
   // Global hotkey for search modal (`/` or `Ctrl+K`)
@@ -212,8 +225,9 @@ export default function App() {
 
   // Resolve Public Dynamic Routes
   useEffect(() => {
-    if (currentPath.startsWith('/admin') || currentPath === '/search') {
+    if (currentPath.startsWith('/admin') || currentPath === '/search' || currentPath === '/blog' || currentPath.startsWith('/blog/')) {
       setRouteLoading(false);
+      setRouteNotFound(false);
       return;
     }
 
@@ -286,7 +300,11 @@ export default function App() {
 
   const navigateTo = (url: string) => {
     if (url === currentPath) return;
-    window.history.pushState({}, '', url);
+    if (window.location.hash && window.location.hash.startsWith('#/')) {
+      window.location.hash = `#${url}`;
+    } else {
+      window.history.pushState({}, '', url);
+    }
     setCurrentPath(url);
     window.scrollTo(0, 0);
   };

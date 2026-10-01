@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { ErrorBoundary } from '../common/ErrorBoundary.tsx';
 import {
   LayoutDashboard,
   FolderTree,
@@ -253,7 +254,9 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({
         </header>
 
         <main className="p-4 sm:p-6 lg:p-8 flex-1 max-w-7xl w-full">
-          {children}
+          <ErrorBoundary>
+            {children}
+          </ErrorBoundary>
         </main>
       </div>
     </div>

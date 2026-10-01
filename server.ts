@@ -1,12 +1,18 @@
 import express, { Request, Response } from 'express';
+import compression from 'compression';
 import fs from 'fs';
 import path from 'path';
+import matter from 'gray-matter';
+import { marked } from 'marked';
 import { fileURLToPath } from 'url';
 import dotenv from 'dotenv';
 import { createServer as createViteServer } from 'vite';
 import { DatabaseSchema, Category, Subcategory, Calculator, SiteSettings } from './src/types/schema.ts';
 
 dotenv.config();
+
+const app = express();
+app.use(compression());
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -31,12 +37,67 @@ const defaultSettings: SiteSettings = {
   contactEmail: 'admin@calcplatform.org',
 };
 
-// INITIAL DATABASE: ABSOLUTELY 0 CATEGORIES, 0 SUBCATEGORIES, 0 CALCULATORS
+const defaultPosts: any[] = [
+  {
+    id: "post_1790755772368",
+    slug: "national-means-cum-merit-scholarship-scheme",
+    title: "National Means-cum-Merit Scholarship Scheme (NMMSS)",
+    excerpt: "Complete guide on National Means-cum-Merit Scholarship Scheme (NMMSS) for Class 8 students, eligibility, exam syllabus, and NSP application process.",
+    content: "<h1>National Means-cum-Merit Scholarship Scheme (NMMSS)</h1><p>The <strong>National Means-cum-Merit Scholarship Scheme (NMMSS)</strong> is a Centrally Sponsored Scheme aimed at providing financial support to meritorious students from economically weaker sections to arrest their drop-out rate at Class 8 and encourage them to continue study at secondary stage.</p><p>Under this scheme, scholarships of <strong>₹12,000 per annum</strong> (₹1,000 per month) are awarded to selected students of Class 9 every year and their continuation/renewal in Classes 10, 11 and 12 for study in State Government, Government-aided and Local body schools.</p><h2>Key Highlights &amp; Eligibility Criteria</h2><ul><li><strong>Target Group:</strong> Students studying as regular students in Class 8 in Government, Local Body and Government-aided schools.</li><li><strong>Family Income Limit:</strong> Parental income from all sources should not be more than <strong>₹3,50,000 per annum</strong>.</li><li><strong>Minimum Marks:</strong> The student must have secured at least 55% marks or equivalent grade in Class 7 examination (5% relaxation for SC/ST students).</li><li><strong>Scholarship Amount:</strong> ₹12,000 per year (₹1,000 per month) paid directly via Direct Benefit Transfer (DBT).</li></ul><h2>Selection Examination Structure</h2><p>Selection of students for the award of scholarship under the scheme is made through an examination conducted by the State/UT Governments consisting of two tests:</p><ol><li><strong>Mental Ability Test (MAT):</strong> Consisting of 90 multiple-choice questions testing reasoning and critical thinking.</li><li><strong>Scholastic Aptitude Test (SAT):</strong> Consisting of 90 multiple-choice questions covering Science, Social Studies, and Mathematics taught in Classes 7 and 8.</li></ol><h2>How to Apply on National Scholarship Portal (NSP)</h2><p>Eligible students can apply online through the official <a href=\"https://scholarships.gov.in\" target=\"_blank\" rel=\"noopener noreferrer\">National Scholarship Portal (NSP)</a> following the One-Time Registration (OTR) procedure.</p>",
+    featuredImage: "https://images.unsplash.com/photo-1523050854058-8df90110c9f1?auto=format&fit=crop&w=1200&q=80",
+    category: "Education",
+    tags: ["NMMSS", "Scholarship", "NSP", "Class 8"],
+    author: {
+      name: "CA Rajesh Sharma",
+      role: "Senior Tax Consultant",
+      avatar: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=200&q=80",
+      bio: "Practicing Chartered Accountant specializing in direct taxation."
+    },
+    status: "published",
+    publishedAt: "2026-09-30T08:30:00.000Z",
+    updatedAt: "2026-09-30T08:30:00.000Z",
+    readTimeMinutes: 5,
+    views: 24,
+    isFeatured: true,
+    seoTitle: "National Means-cum-Merit Scholarship Scheme (NMMSS) Guide",
+    seoDescription: "Complete guide on NMMSS scholarship eligibility, exam pattern, NSP registration, and Renewal process.",
+    seoKeywords: ["nmmss", "scholarship", "nsp portal", "means cum merit"],
+    embeddedCalculators: []
+  },
+  {
+    id: "post_1790755772367",
+    slug: "pm-usp-central-sector-scheme-of-scholarship-for-college-and-university-students-csss",
+    title: "PM-USP Central Sector Scheme of Scholarship for College and University Students (CSSS)",
+    excerpt: "Financial assistance guide for college and university students under the PM-USP Central Sector Scheme of Scholarship (CSSS).",
+    content: "<h1>PM-USP Central Sector Scheme of Scholarship for College and University Students (CSSS)</h1><p>Paying for college is not easy. Apart from tuition fees, students and their families may have to manage hostel expenses, books, travel, food, study materials and other day-to-day costs.</p><p>The <strong>PM-USP Central Sector Scheme of Scholarship for College and University Students (CSSS)</strong> is a Central Government scholarship designed to provide financial support to meritorious students pursuing higher education.</p><p>For students who meet the eligibility conditions, this scholarship can provide useful financial assistance during their college or university studies.</p><p>The important thing to remember is that this is a <strong>merit-based scholarship</strong>, and simply passing Class 12 does not automatically mean that a student will receive it. Students have to meet the scheme's eligibility requirements and apply through the <strong>National Scholarship Portal (NSP)</strong>.</p><p>For the <strong>2026–27 academic year</strong>, the scheme is listed on the National Scholarship Portal. NSP currently shows the renewal application window for PM-USP CSSS.</p><blockquote><p><strong>Important:</strong> Government scholarship rules, dates, eligibility conditions and application windows can change. Always check the latest information on the National Scholarship Portal and Ministry of Education before applying.</p></blockquote><h2>What is the PM-USP Central Sector Scheme of Scholarship?</h2><p>The PM-USP Central Sector Scheme of Scholarship for College and University Students is a scholarship scheme administered by the <strong>Department of Higher Education, Ministry of Education, Government of India</strong>.</p><p>The basic idea is simple: students who perform well academically and meet the prescribed family-income and other conditions may receive financial assistance for higher education.</p><p>The scholarship is intended for students pursuing <strong>regular degree courses</strong> in eligible colleges and institutions.</p><p>It is not meant to replace the entire cost of education. Instead, it provides financial support that can help reduce some of the pressure on students and their families.</p><p>The scholarship is applied for through the <strong>National Scholarship Portal (NSP)</strong> rather than by sending an application directly to the Ministry of Education.</p><h2>Is PM-USP CSSS active for 2026–27?</h2><p>Yes.</p><p>The National Scholarship Portal currently lists the <strong>PM-USP – Central Sector Scheme Of Scholarship For College And University Students (CSSS)</strong> under its merit-based schemes for <strong>Academic Year 2026–27</strong>.</p><p>The NSP currently displays:</p><ul><li><p>Scheme: PM-USP Central Sector Scheme of Scholarship for College and University Students</p></li><li><p>Academic year: <strong>2026–27</strong></p></li><li><p>Scheme type: <strong>Merit Based</strong></p></li><li><p>Portal opening: <strong>1 June 2026</strong></p></li><li><p>Current displayed renewal student-application deadline: <strong>30 September 2026</strong></p></li><li><p>Defective application verification: <strong>15 October 2026</strong></p></li><li><p>Institute verification: <strong>15 October 2026</strong></p></li><li><p>DNO/SNO/MNO verification: <strong>30 October 2026</strong></p></li></ul><p>These dates are the dates currently displayed by NSP and should be checked again before submitting an application because government portals can update schedules.</p><h1>How much scholarship does a student receive?</h1><p>According to the Ministry of Education's PM-USP CSSS FAQ, the scholarship rate is:</p><table><thead><tr><th>Level of study</th><th align=\"right\">Scholarship amount</th></tr></thead><tbody><tr><td>Graduation – first 3 years</td><td align=\"right\">₹12,000 per year</td></tr><tr><td>Post-Graduation</td><td align=\"right\">₹20,000 per year</td></tr><tr><td>Technical courses – 4th and 5th year, where applicable</td><td align=\"right\">₹20,000 per year</td></tr></tbody></table><p>For students pursuing <strong>B.Tech/BE</strong>, the Ministry's FAQ states that the scholarship is available for four years: ₹12,000 per year for the first three years and ₹20,000 in the fourth year.</p><p>The exact duration and amount applicable to an individual student depend on the course and the scheme conditions.</p><h3>What does ₹12,000 per year actually mean?</h3><p>It works out to an average of ₹1,000 per month if you simply divide the annual amount by 12.</p><p>However, students should not assume that the Government will necessarily transfer ₹1,000 every month.</p><p>The scholarship is an <strong>annual scholarship amount</strong>, and payment is made through the prescribed government payment process.</p><p>So, think of ₹12,000 as annual financial assistance rather than a guaranteed monthly allowance.</p><h1>Who can apply for PM-USP CSSS?</h1><p>The scheme has several eligibility conditions.</p><p>According to the Ministry of Education's published guidelines, students generally need to satisfy conditions relating to academic performance, course type, institution, family income and other scholarship benefits.</p><p>Some important conditions include:</p><h3>1. You must be pursuing an eligible regular course</h3><p>The guidelines specify that the student should be pursuing a <strong>regular degree course</strong>.</p><p>Students pursuing correspondence or distance-mode courses are not covered under this condition, and diploma courses are excluded from this scheme.</p><p>This distinction is important.</p><p>For example, a student should not assume that simply being enrolled in any higher-education programme automatically makes them eligible.</p><p>The course and institution need to satisfy the scheme requirements.</p><h3>2. Your institution must be recognised</h3><p>The scheme guidelines require students to study at eligible colleges or institutions recognised by the relevant regulatory authorities.</p><p>Before applying, students should therefore check whether their college and course information is correctly available in the National Scholarship Portal.</p><p>If the institution information shown in NSP is incorrect or missing, it is better to resolve the issue with the institution's scholarship/nodal officer rather than submitting an application with incorrect details.</p><h3>3. Family income matters</h3><p>The published PM-USP CSSS guidelines specify a <strong>gross parental/family income ceiling of ₹4.5 lakh per year</strong> for eligibility under the scheme.</p><p>This is an important condition that students should not overlook.</p><p>A student may have strong academic marks but still not qualify if the family's income is above the applicable limit.</p><p>For fresh applicants, the guidelines state that an income certificate is required.</p><h3>4. You generally cannot take another scholarship at the same time</h3><p>The PM-USP CSSS guidelines state that students should not be receiving another scholarship scheme, including applicable State-run scholarship schemes, fee-waiver or reimbursement benefits covered by the scheme's conditions.</p><p>This is one area where students should be particularly careful.</p><p>Do not assume that you can accept every scholarship for which you qualify.</p><p>Before applying, check the rules of both schemes and understand whether receiving another scholarship or fee reimbursement would make you ineligible for PM-USP CSSS.</p><h1>How are students selected?</h1><p>PM-USP CSSS is not simply a first-come-first-served scholarship.</p><p>It is a <strong>merit-based scheme</strong>.</p><p>The Ministry's guidelines provide for selection based on the prescribed merit process, with allocation across states/UTs and reservation according to the applicable Central Reservation Policy.</p><p>The guidelines mention reservation provisions including:</p><ul><li><p>15% for SC students</p></li><li><p>7.5% for ST students</p></li><li><p>27% for OBC students</p></li><li><p>5% horizontal reservation for students with benchmark disabilities</p></li></ul><p>These are subject to the scheme's applicable rules and overall conditions.</p><p>Therefore, getting good marks is important, but it does not mean every student with a particular percentage will automatically receive the scholarship.</p><h1>Do I have to apply every year?</h1><p>This is a very important question.</p><p>A student selected for PM-USP CSSS in the first year can continue to receive the scholarship through <strong>renewal</strong>, provided the student continues to satisfy the renewal conditions.</p><p>The Ministry's FAQ says the scholarship is renewable year by year, subject to the prescribed conditions.</p><p>So there are two different situations:</p><p><strong>Fresh application:</strong><br>You are applying for the scholarship for the first time.</p><p><strong>Renewal application:</strong><br>You have already been selected and are applying to continue the scholarship in the next eligible year.</p><p>Do not confuse the two.</p><h1>What are the renewal conditions?</h1><p>Renewal is not automatic.</p><p>The Ministry's published FAQ states that students must:</p><ul><li><p>Secure at least <strong>50% marks</strong> in the annual examination.</p></li><li><p>Maintain at least <strong>75% attendance</strong>.</p></li><li><p>Continue to satisfy the applicable scholarship conditions.</p></li><li><p>Not receive another scholarship in a manner that makes them ineligible.</p></li></ul><p>The guidelines also state that complaints involving indiscipline or criminal behaviour, including ragging, can result in forfeiture of the scholarship.</p><p>This means a student should not think:</p><blockquote><p>\"I received the scholarship once, so I will definitely receive it every year.\"</p></blockquote><p>You need to continue meeting the renewal requirements.</p><h1>What happens if I forget to apply for renewal?</h1><p>Missing a renewal application does not necessarily mean the opportunity is permanently lost.</p><p>The PM-USP CSSS guidelines state that students who missed applying for renewal online on NSP may be allowed to apply for renewal in a subsequent year if they fulfil the renewal eligibility conditions.</p><p>However, students should <strong>not deliberately wait</strong>.</p><p>The safer approach is to apply within the applicable NSP window every year.</p><p>Government portals have deadlines, and verification by institutions and authorities also takes time.</p><h1>How do I apply for PM-USP CSSS?</h1><p>The application is made online through the <strong>National Scholarship Portal</strong>.</p><p>The basic process is:</p><h3>Step 1: Complete One Time Registration</h3><p>NSP currently requires a <strong>One Time Registration (OTR)</strong> for scholarship applications.</p><p>The OTR is a unique number associated with the student's scholarship applications during their academic career.</p><h3>Step 2: Log in to NSP</h3><p>Use your OTR details to access the scholarship application system.</p><h3>Step 3: Find PM-USP CSSS</h3><p>Select the PM-USP Central Sector Scheme of Scholarship for College and University Students.</p><h3>Step 4: Enter your information carefully</h3><p>You may need to provide information relating to:</p><ul><li><p>Personal details</p></li><li><p>Academic details</p></li><li><p>College/institution</p></li><li><p>Course</p></li><li><p>Family income</p></li><li><p>Bank account</p></li><li><p>Aadhaar-related information</p></li><li><p>Other required documents</p></li></ul><h3>Step 5: Check everything before submitting</h3><p>A small mistake in your bank account, academic details, college information or other important information can create problems during verification.</p><p>Do not rush through the application just because the form is online.</p><h3>Step 6: Submit before the deadline</h3><p>Always check the current deadline displayed on NSP rather than relying on an old article, social-media post or YouTube video.</p><h1>Why is OTR important?</h1><p>The National Scholarship Portal says that OTR is mandatory for applying for scholarships from the applicable academic years.</p><p>NSP describes OTR as a unique 14-digit number issued based on Aadhaar/Aadhaar Enrolment ID and applicable throughout the student's academic career.</p><p>This means students should keep their OTR details safe.</p><p>Do not create unnecessary duplicate registrations.</p><h1>What documents may be required?</h1><p>The exact documents can depend on the application type and information requested by NSP.</p><p>Students should keep commonly required information and documents ready, such as:</p><ul><li><p>Aadhaar-related details</p></li><li><p>Academic marksheets</p></li><li><p>Family income certificate, where required</p></li><li><p>Bank account details</p></li><li><p>College/institution details</p></li><li><p>Course and admission details</p></li><li><p>Other documents requested by NSP</p></li></ul><p>For fresh applicants, the PM-USP guidelines specifically state that an income certificate is required.</p><p>Always follow the document list shown in the current NSP application rather than relying only on a third-party checklist.</p><h1>How is the scholarship paid?</h1><p>The scholarship is disbursed through <strong>Direct Benefit Transfer (DBT)</strong>.</p><p>The Ministry's FAQ explains that the scholarship is transferred directly to the beneficiary's bank account through the government payment system, and the Aadhaar-seeded bank account is used for the payment process.</p><p>This is why students should pay attention to their bank details.</p><p>If the application contains an incorrect or inactive bank account, or if there is an issue with Aadhaar seeding, payment can be affected.</p><h1>How can I check my scholarship payment?</h1><p>The Ministry's FAQ says students can track payment through the <strong>Public Financial Management System (PFMS)</strong> using the payment-status facility.</p><p>Students can also check their scholarship application status through NSP using their login credentials.</p><p>If the payment shows as successful but the money has not appeared in the expected account, check which bank account was Aadhaar-seeded and used for the transaction.</p><h1>What if I change my college?</h1><p>Changing college does not necessarily mean that the scholarship must immediately end.</p><p>The PM-USP CSSS guidelines state that a student changing their college or institute may continue/renew the scholarship if the course and institution meet the applicable requirements, including having a valid AISHE Code.</p><p>This is particularly useful for students who change institutions during their studies.</p><p>However, the new college should satisfy the scheme's conditions.</p><p>If you change college, do not simply assume that the scholarship record will automatically update. Check the NSP information and speak to the appropriate scholarship/nodal officer if anything needs correction.</p><h1>What is the maximum duration of the scholarship?</h1><p>The Ministry's FAQ states that a student can receive the scholarship for a <strong>total duration not exceeding five years</strong>, subject to the applicable course and renewal conditions.</p><p>The actual period depends on the student's course.</p><p>For example, B.Tech/BE students have a specific four-year scholarship structure described in the Ministry's FAQ.</p><p>Therefore, students should not assume that every undergraduate course automatically receives five years of scholarship.</p><h1>A simple example</h1><p>Suppose a student qualifies for the PM-USP CSSS and receives ₹12,000 per year during the eligible first three years of graduation.</p><p>The calculation would be:</p><p><strong>Year 1:</strong> ₹12,000<br><strong>Year 2:</strong> ₹12,000<br><strong>Year 3:</strong> ₹12,000</p><p>Total over three years:</p><p><strong>₹36,000</strong></p><p>If the student later becomes eligible for the ₹20,000 rate applicable to their course and year of study, the amount can be different.</p><p>This example is only to explain how the annual scholarship amounts work. The actual amount received depends on the student's course, year and continued eligibility.</p><h1>Can this scholarship pay my entire college fees?</h1><p>No.</p><p>Students should not think of PM-USP CSSS as a full replacement for college fees.</p><p>The scholarship is financial assistance.</p><p>For example, if your annual college expenses are ₹1,00,000 and your scholarship is ₹12,000, you still have to arrange the remaining amount through your family resources, education loan, other eligible support or other permitted sources.</p><p>This is why it is better to treat the scholarship as <strong>help with education expenses</strong>, rather than assuming that the scholarship will cover the complete cost of studying.</p><h1>What should parents and students check before applying?</h1><p>Before submitting an application, take a few minutes to check the basics.</p><h3>Check 1: Family income</h3><p>Make sure the income information and certificate meet the scheme requirements.</p><h3>Check 2: College</h3><p>Confirm that your college/institution is eligible and correctly listed.</p><h3>Check 3: Course</h3><p>Make sure your course is an eligible regular degree course.</p><h3>Check 4: Other scholarships</h3><p>Check whether you are already receiving another scholarship, fee waiver or reimbursement that could affect your eligibility.</p><h3>Check 5: Bank account</h3><p>Make sure your bank details are correct and that the account can receive DBT.</p><h3>Check 6: Aadhaar</h3><p>Check the Aadhaar-related requirements and bank seeding information applicable to your application.</p><h3>Check 7: Marks and attendance</h3><p>Renewal students should keep an eye on the minimum academic and attendance requirements.</p><h3>Check 8: Deadline</h3><p>Do not wait until the final day.</p><p>A technical problem, document problem or verification issue can take time to resolve.</p><h1>Common mistakes students should avoid</h1><p>Many scholarship problems are not caused by complicated rules. They happen because small details are ignored.</p><h3>Mistake 1: Using an old deadline</h3><p>Scholarship dates change.</p><p>A website published last year may show a deadline that no longer applies.</p><h3>Mistake 2: Entering incorrect bank details</h3><p>Even a small mistake in the account number or other banking information can create payment problems.</p><h3>Mistake 3: Assuming selection is automatic</h3><p>Good marks alone do not guarantee the scholarship.</p><p>The student must satisfy all applicable conditions and go through the prescribed application and verification process.</p><h3>Mistake 4: Forgetting renewal</h3><p>Existing beneficiaries must follow the renewal process.</p><p>Do not assume that last year's approval automatically continues.</p><h3>Mistake 5: Ignoring attendance</h3><p>For renewal, the Ministry's guidelines specify at least 75% attendance.</p><h3>Mistake 6: Applying for multiple scholarships without checking the rules</h3><p>Receiving another scholarship or fee benefit can affect eligibility.</p><p>Check the rules before accepting another benefit.</p><h3>Mistake 7: Waiting for the last day</h3><p>If your application has an error, you may need your college or another authority to correct or verify information.</p><p>Starting early gives you more time to deal with problems.</p><h1>What if my application is rejected?</h1><p>Do not immediately assume that the rejection means you can never receive the scholarship.</p><p>First, check the reason shown in the application or verification status.</p><p>Possible problems can relate to:</p><ul><li><p>Eligibility</p></li><li><p>Academic information</p></li><li><p>Income information</p></li><li><p>Bank details</p></li><li><p>Aadhaar-related information</p></li><li><p>Institution verification</p></li><li><p>Missing or incorrect information</p></li><li><p>Other scheme conditions</p></li></ul><p>If the issue involves your college or institution, contact the appropriate scholarship/nodal officer.</p><p>For technical or portal-related issues, use the official NSP support and grievance mechanisms.</p><p>Do not pay an unknown person who promises to \"approve\" your scholarship.</p><h1>Is there a fee to apply?</h1><p>The scholarship itself is a government benefit, and students should be cautious about people demanding large amounts of money to submit or \"guarantee\" a scholarship.</p><p>NSP currently states that scholarship-related services are also available through Common Service Centres (CSCs), with a displayed total charge of <strong>₹30 including applicable taxes</strong> for the listed CSC activity.</p><p>If somebody asks you for a large amount claiming that they can guarantee selection, be careful.</p><p>No private person can legitimately guarantee that a student will be selected merely because money is paid to them.</p><h1>PM-USP CSSS: Quick summary</h1><table><thead><tr><th>Detail</th><th>Information</th></tr></thead><tbody><tr><td>Scheme</td><td>PM-USP Central Sector Scheme of Scholarship for College and University Students</td></tr><tr><td>Ministry</td><td>Ministry of Education</td></tr><tr><td>Department</td><td>Department of Higher Education</td></tr><tr><td>Type</td><td>Merit-based scholarship</td></tr><tr><td>Portal</td><td>National Scholarship Portal</td></tr><tr><td>Academic year covered here</td><td>2026–27</td></tr><tr><td>Family income ceiling in published guidelines</td><td>₹4.5 lakh per year</td></tr><tr><td>Graduation scholarship</td><td>₹12,000 per year for first 3 years</td></tr><tr><td>Post-Graduation scholarship</td><td>₹20,000 per year</td></tr><tr><td>Technical-course later years</td><td>₹20,000 per year where applicable</td></tr><tr><td>Minimum renewal marks</td><td>50%</td></tr><tr><td>Minimum attendance for renewal</td><td>75%</td></tr><tr><td>Maximum duration</td><td>Up to 5 years, subject to course and scheme conditions</td></tr><tr><td>Payment method</td><td>Direct Benefit Transfer (DBT)</td></tr><tr><td>Fresh/renewal application</td><td>Through NSP</td></tr></tbody></table><p>The amounts and conditions above come from the Ministry of Education's published scheme guidelines/FAQ, while the 2026–27 application dates come from the current NSP listing.</p><h1>Frequently Asked Questions</h1><h2>Is PM-USP CSSS a Central Government scholarship?</h2><p>Yes. It is a Central Government scholarship administered through the Department of Higher Education, Ministry of Education.</p><h2>Is PM-USP CSSS active in 2026–27?</h2><p>Yes. The National Scholarship Portal currently lists the scheme for Academic Year 2026–27.</p><h2>What is the family income limit?</h2><p>The published PM-USP CSSS guidelines specify gross parental/family income of up to <strong>₹4.5 lakh per year</strong>.</p><h2>How much money does the scholarship provide?</h2><p>The Ministry's FAQ states ₹12,000 per year for the first three years of graduation and ₹20,000 per year at the post-graduation level, with specific provisions for technical courses.</p><h2>Do I have to apply again every year?</h2><p>Renewal is required for continuing beneficiaries. Renewal is subject to the applicable academic, attendance and other conditions.</p><h2>What marks are required for renewal?</h2><p>The published guidelines specify at least <strong>50% marks</strong> in the annual examination for renewal.</p><h2>How much attendance is required?</h2><p>The renewal condition specifies at least <strong>75% attendance</strong>.</p><h2>Can I receive another scholarship along with PM-USP CSSS?</h2><p>You should not assume that you can. The scheme has restrictions relating to other scholarships and fee benefits. Check the current eligibility conditions before accepting another scholarship.</p><h2>How is the scholarship paid?</h2><p>The scholarship is paid through Direct Benefit Transfer (DBT) to the beneficiary's bank account through the prescribed government payment system.</p><h2>Can I check my scholarship payment online?</h2><p>Yes. The Ministry's FAQ states that students can track payment through PFMS and check their application status through NSP.</p><h2>What is OTR?</h2><p>OTR means <strong>One Time Registration</strong>. NSP currently requires OTR for scholarship applications and describes it as a unique registration number for the student's academic career.</p><h2>What happens if I change my college?</h2><p>The scheme guidelines allow continuation/renewal after changing college when the course and new institution satisfy the applicable requirements.</p><h2>Can distance-learning students apply?</h2><p>The published guidelines specify regular degree courses and exclude correspondence/distance-mode study under the eligibility conditions.</p><h2>Can diploma students apply?</h2><p>The published guidelines specify degree courses and exclude diploma courses.</p><h2>Is selection guaranteed if I have high marks?</h2><p>No. High marks are important for a merit-based scheme, but students must also satisfy the other eligibility requirements and go through the prescribed selection and verification process.</p><h2>What should I do if my application has a problem?</h2><p>First identify the reason shown in NSP. If it concerns your college or institution, contact the appropriate scholarship/nodal officer. For portal-related problems, use the official NSP support or grievance mechanism.</p><h1>Important 2026–27 dates</h1><p>According to the current National Scholarship Portal listing for PM-USP CSSS renewal applications:</p><ul><li><p><strong>Portal opening:</strong> 1 June 2026</p></li><li><p><strong>Student application deadline:</strong> 30 September 2026</p></li><li><p><strong>Defective application verification:</strong> 15 October 2026</p></li><li><p><strong>Institute verification:</strong> 15 October 2026</p></li><li><p><strong>DNO/SNO/MNO verification:</strong> 30 October 2026</p></li></ul><p>These are the dates currently displayed by NSP and may be revised by the authorities. Check the official portal before relying on them.</p><h1>Final word for students and parents</h1><p>A government scholarship can make college expenses a little easier, but the most important thing is to understand the rules before applying.</p><p>For PM-USP CSSS, do not look only at the scholarship amount.</p><p>Check the complete picture:</p><p><strong>marks + family income + course + college + attendance + other scholarships + bank details + application deadline.</strong></p><p>If all of these are handled correctly, you reduce the chances of avoidable problems during application or renewal.</p><p>And remember one simple rule: <strong>do not rely on an old YouTube video, social-media post or third-party article for the final deadline.</strong></p><p>The National Scholarship Portal is the place to check the latest application status and dates for the current academic year.</p><h3>Official sources</h3><p><strong>National Scholarship Portal (NSP):</strong> <a href=\"https://scholarships.gov.in/?utm_source=chatgpt.com\">scholarships.gov.in</a></p><p><strong>Ministry of Education – PM-USP CSSS guidelines:</strong> <a href=\"https://www.education.gov.in/sites/upload_files/mhrd/files/upload_document/PM_USP_CSSS_guidelines_updated.pdf?utm_source=chatgpt.com\">Ministry of Education scheme guidelines</a></p><p><strong>Ministry of Education – PM-USP CSSS FAQ:</strong> <a href=\"https://www.education.gov.in/sites/upload_files/mhrd/files/upload_document/FAQs_PM_USP_CSSS_scheme_AY_2025_26.pdf?utm_source=chatgpt.com\">Ministry of Education PM-USP CSSS FAQ</a></p><p><strong>Disclaimer:</strong> This article is intended for general information and educational purposes. Government scholarship eligibility, dates, amounts, documentation requirements and other conditions can change. The information shown here is based on the official sources available at the time of writing. Always verify the latest information on the National Scholarship Portal and Ministry of Education before applying.</p>",
+    featuredImage: "https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?auto=format&fit=crop&w=1200&q=80",
+    category: "Education",
+    tags: ["Scholarship", "PM-USP", "NSP", "FY 2026-27"],
+    author: {
+      name: "CA Rajesh Sharma",
+      role: "Senior Tax Consultant",
+      avatar: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=200&q=80",
+      bio: "Practicing Chartered Accountant specializing in direct taxation."
+    },
+    status: "published",
+    publishedAt: "2026-09-30T08:09:32.367Z",
+    updatedAt: "2026-09-30T08:35:54.757Z",
+    readTimeMinutes: 5,
+    views: 12,
+    isFeatured: true,
+    seoTitle: "PM-USP Central Sector Scheme of Scholarship for College and University Students (CSSS)",
+    seoDescription: "Complete guide on PM-USP CSSS scholarship eligibility, amounts, renewal guidelines, and NSP application process for 2026–27.",
+    seoKeywords: ["pm-usp", "csss", "nsp scholarship", "higher education scholarship"],
+    embeddedCalculators: []
+  }
+];
+
 function getInitialDb(): DatabaseSchema {
   return {
     categories: [],
     subcategories: [],
     calculators: [],
+    posts: defaultPosts,
     settings: defaultSettings,
   };
 }
@@ -46,6 +107,9 @@ let memoryDb: DatabaseSchema | null = null;
 // Database helper with safe atomic writing & retry logic
 function readDb(): DatabaseSchema {
   if (memoryDb) {
+    if (!memoryDb.posts || memoryDb.posts.length === 0) {
+      memoryDb.posts = defaultPosts;
+    }
     return memoryDb;
   }
 
@@ -64,11 +128,12 @@ function readDb(): DatabaseSchema {
         throw new Error('Database file is empty during read');
       }
       const parsed = JSON.parse(raw);
+      const parsedPosts = Array.isArray(parsed.posts) && parsed.posts.length > 0 ? parsed.posts : defaultPosts;
       memoryDb = {
         categories: Array.isArray(parsed.categories) ? parsed.categories : [],
         subcategories: Array.isArray(parsed.subcategories) ? parsed.subcategories : [],
         calculators: Array.isArray(parsed.calculators) ? parsed.calculators : [],
-        posts: Array.isArray(parsed.posts) ? parsed.posts : [],
+        posts: parsedPosts,
         blogCategories: Array.isArray(parsed.blogCategories) ? parsed.blogCategories : [],
         blogSubcategories: Array.isArray(parsed.blogSubcategories) ? parsed.blogSubcategories : [],
         settings: { ...defaultSettings, ...(parsed.settings || {}) },
@@ -89,6 +154,15 @@ function readDb(): DatabaseSchema {
 }
 
 function writeDb(data: DatabaseSchema, source: string = 'unknown'): boolean {
+  // SAFETY GUARD FOR POSTS: Prevent accidental wipe of posts array
+  if (memoryDb && memoryDb.posts && memoryDb.posts.length > 0 && (!data.posts || data.posts.length === 0) && source !== 'delete_blog_post' && source !== 'admin_bulk_delete_blog_post') {
+    console.warn(`[POSTS SAFETY GUARD] Preserving ${memoryDb.posts.length} blog posts from accidental wipe during source '${source}'`);
+    data.posts = memoryDb.posts;
+  }
+  if (!data.posts || data.posts.length === 0) {
+    data.posts = defaultPosts;
+  }
+
   memoryDb = data;
   try {
     let prevCalcCount = 0;
@@ -284,6 +358,47 @@ async function startServer() {
     return res.json(stats);
   });
 
+function getJsonLd(route: any, settings: any) {
+  if (route.type === 'calculator') {
+    return {
+      "@context": "https://schema.org",
+      "@type": "SoftwareApplication",
+      "name": route.calculator?.name || "Calculator",
+      "operatingSystem": "All",
+      "applicationCategory": "FinanceApplication",
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "INR"
+      }
+    };
+  }
+  if (route.type === 'blog') {
+    return {
+      "@context": "https://schema.org",
+      "@type": "Blog",
+      "name": settings.siteTitle,
+      "url": settings.canonicalBaseUrl
+    };
+  }
+  return null;
+}
+
+function getArticleFromFiles(slug: string) {
+  const filePath = path.join(__dirname, 'content', 'articles', `${slug}.md`);
+  if (!fs.existsSync(filePath)) return null;
+  const fileContents = fs.readFileSync(filePath, 'utf-8');
+  const { data, content } = matter(fileContents);
+  return {
+    ...data,
+    content: marked.parse(content),
+    seoTitle: data.seoTitle || data.title,
+    seoDescription: data.seoDescription || data.excerpt,
+    slug,
+    type: 'blog'
+  };
+}
+
   // ==========================================
   // PUBLIC ROUTE & CATEGORY HELPERS
   // ==========================================
@@ -364,6 +479,14 @@ async function startServer() {
     }
 
     let parts = cleanPath.split('/').filter(Boolean);
+
+    if (parts.length > 0 && parts[0] === 'blog') {
+      if (parts.length > 1) {
+        const article = getArticleFromFiles(parts[1]) || (db.posts || []).find((p) => p.slug === parts[1]);
+        if (article) return { type: 'blog', post: article };
+      }
+      return { type: 'blog' };
+    }
 
     // Strip generic path prefixes if present, e.g. /category/tax, /calculators/income-tax-calculator
     const genericPrefixes = ['category', 'categories', 'subcategory', 'subcategories', 'calculator', 'calculators', 'calc', 'calcs', 'tools', 'tool', 'app', 'apps'];
@@ -897,8 +1020,23 @@ async function startServer() {
 
   app.get('/api/public/blogs/:slug', (req: Request, res: Response) => {
     const db = readDb();
-    const slug = req.params.slug;
-    const postIndex = (db.posts || []).findIndex((p) => p.slug.toLowerCase() === slug.toLowerCase() && p.status === 'published');
+    const targetParam = (req.params.slug || '').trim().toLowerCase();
+    const cleanTarget = cleanSlug(targetParam);
+
+    const posts = db.posts || [];
+    let postIndex = posts.findIndex(
+      (p) =>
+        p.slug.toLowerCase() === targetParam ||
+        p.id.toLowerCase() === targetParam ||
+        cleanSlug(p.slug) === cleanTarget
+    );
+
+    // Fallback: If exact match fails, check partial slug match
+    if (postIndex === -1 && cleanTarget.length > 3) {
+      postIndex = posts.findIndex(
+        (p) => cleanSlug(p.slug).includes(cleanTarget) || cleanTarget.includes(cleanSlug(p.slug))
+      );
+    }
 
     if (postIndex === -1) {
       return res.status(404).json({ error: 'Blog post not found' });
@@ -908,8 +1046,8 @@ async function startServer() {
     writeDb(db, 'increment_blog_views');
 
     const post = db.posts![postIndex];
-    const related = (db.posts || [])
-      .filter((p) => p.status === 'published' && p.id !== post.id && p.category === post.category)
+    const related = posts
+      .filter((p) => p.id !== post.id && (p.category === post.category || p.status === 'published'))
       .slice(0, 3);
 
     return res.json({ post, related });
@@ -1727,7 +1865,12 @@ async function startServer() {
 
     if (!db.posts) db.posts = [];
     db.posts.unshift(newPost);
-    writeDb(db, 'create_blog_post');
+    try {
+        writeDb(db, 'create_blog_post');
+    } catch (err: any) {
+        console.error('Error writing blog post:', err);
+        return res.status(500).json({ error: 'Database write error' });
+    }
 
     return res.json(newPost);
   });
@@ -1749,7 +1892,12 @@ async function startServer() {
       updatedAt: new Date().toISOString(),
     };
 
-    writeDb(db, 'update_blog_post');
+    try {
+        writeDb(db, 'update_blog_post');
+    } catch (err: any) {
+        console.error('Error updating blog post:', err);
+        return res.status(500).json({ error: 'Database write error' });
+    }
     return res.json(db.posts![index]);
   });
 
@@ -1765,6 +1913,69 @@ async function startServer() {
 
     writeDb(db, 'delete_blog_post');
     return res.json({ success: true });
+  });
+
+  app.patch('/api/admin/blogs/:id/toggle', requireAdmin, (req: Request, res: Response) => {
+    const db = readDb();
+    const id = req.params.id;
+    if (!db.posts) db.posts = [];
+    const index = db.posts.findIndex((p) => p.id === id);
+
+    if (index === -1) {
+      return res.status(404).json({ error: 'Blog post not found' });
+    }
+
+    const currentStatus = db.posts[index].status || 'draft';
+    const newStatus = currentStatus === 'published' ? 'draft' : 'published';
+
+    db.posts[index] = {
+      ...db.posts[index],
+      status: newStatus,
+      updatedAt: new Date().toISOString(),
+    };
+
+    writeDb(db, 'toggle_blog_post_status');
+    return res.json({ success: true, status: newStatus, post: db.posts[index] });
+  });
+
+  app.post('/api/admin/blogs/bulk-status', requireAdmin, (req: Request, res: Response) => {
+    const db = readDb();
+    const { ids, status } = req.body;
+    if (!Array.isArray(ids)) {
+      return res.status(400).json({ error: 'ids must be an array' });
+    }
+    const targetStatus = status === 'published' ? 'published' : 'draft';
+
+    if (!db.posts) db.posts = [];
+    db.posts = db.posts.map((p) => {
+      if (ids.includes(p.id)) {
+        return {
+          ...p,
+          status: targetStatus,
+          updatedAt: new Date().toISOString(),
+        };
+      }
+      return p;
+    });
+
+    writeDb(db, 'admin_bulk_status_blogs');
+    return res.json({ success: true, count: ids.length, status: targetStatus });
+  });
+
+  app.post('/api/admin/blogs/bulk-delete', requireAdmin, (req: Request, res: Response) => {
+    const db = readDb();
+    const { ids } = req.body;
+    if (!Array.isArray(ids)) {
+      return res.status(400).json({ error: 'ids must be an array' });
+    }
+
+    if (!db.posts) db.posts = [];
+    const initialCount = db.posts.length;
+    db.posts = db.posts.filter((p) => !ids.includes(p.id));
+    const deletedCount = initialCount - db.posts.length;
+
+    writeDb(db, 'admin_bulk_delete_blogs');
+    return res.json({ success: true, count: deletedCount });
   });
 
   // ==========================================
@@ -2131,10 +2342,46 @@ async function startServer() {
     return res.json({ success: true, message: 'Database restored successfully' });
   });
 
+  app.get('/sitemap.xml', (req: Request, res: Response) => {
+    const db = readDb();
+    const baseUrl = db.settings.canonicalBaseUrl || 'https://calcplatform.org';
+    
+    const urls = [
+      { loc: `${baseUrl}/`, changefreq: 'daily', priority: '1.0' },
+      { loc: `${baseUrl}/blog`, changefreq: 'daily', priority: '0.8' },
+    ];
+
+    // Add blog posts
+    (db.posts || []).filter(p => p.status === 'published').forEach(p => {
+      urls.push({ loc: `${baseUrl}/blog/${p.slug}`, changefreq: 'weekly', priority: '0.7' });
+    });
+
+    // Add calculators
+    (db.calculators || []).filter(c => c.isActive).forEach(c => {
+      urls.push({ loc: `${baseUrl}/${c.slug}`, changefreq: 'weekly', priority: '0.9' });
+    });
+
+    const xml = `<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  ${urls.map(u => `
+  <url>
+    <loc>${u.loc}</loc>
+    <changefreq>${u.changefreq}</changefreq>
+    <priority>${u.priority}</priority>
+  </url>`).join('')}
+</urlset>`;
+
+    res.header('Content-Type', 'application/xml');
+    res.send(xml);
+  });
+
   // ==========================================
   // VITE / STATIC SERVING WITH SSR INITIAL DATA
   // ==========================================
-  if (isDev) {
+  const distPath = path.join(__dirname, 'dist');
+  const hasDist = fs.existsSync(path.join(distPath, 'index.html'));
+
+  if (isDev || !hasDist) {
     const vite = await createViteServer({
       server: { middlewareMode: true },
       appType: 'custom',
@@ -2159,17 +2406,39 @@ async function startServer() {
 
         const db = readDb();
         const initialRoute = resolveRouteData(url.split('?')[0], db);
+
+        // Strict 404 handling
+        if (!initialRoute || initialRoute.type === undefined) {
+          return res.status(404).send('Page not found');
+        }
+
         const categories = getPublicCategoriesData(db);
         const { adminPasswordHash, ...safeSettings } = db.settings;
 
+        // Extract metadata
+        const title = initialRoute.calculator?.seoTitle || initialRoute.post?.seoTitle || db.settings.siteTitle;
+        const description = initialRoute.calculator?.seoDescription || initialRoute.post?.seoDescription || db.settings.siteDescription;
+
+        // SSR Render: Inject rendered HTML if blog post
+        let renderedContent = '';
+        if (initialRoute.type === 'blog' && initialRoute.post?.content) {
+            renderedContent = `<div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-12 space-y-12 blog-content">${initialRoute.post.content}</div>`;
+        }
+        
+        const jsonLd = getJsonLd(initialRoute, db.settings);
         const ssrScript = `
+    <title>${title}</title>
+    <meta name="description" content="${description}">
     <script id="__SSR_DATA__">
       window.__INITIAL_ROUTE_DATA__ = ${JSON.stringify(initialRoute)};
       window.__INITIAL_CATEGORIES__ = ${JSON.stringify(categories)};
       window.__SITE_SETTINGS__ = ${JSON.stringify(safeSettings)};
     </script>
+    ${jsonLd ? `<script type="application/ld+json">${JSON.stringify(jsonLd)}</script>` : ''}
 `;
-        const html = template.replace('</head>', `${ssrScript}</head>`);
+        const html = template
+            .replace('</head>', `${ssrScript}</head>`)
+            .replace('<div id="root"></div>', `<div id="root">${renderedContent}</div>`);
         return res.status(200).set({ 'Content-Type': 'text/html' }).end(html);
       } catch (err: any) {
         vite.ssrFixStacktrace(err);
@@ -2177,25 +2446,49 @@ async function startServer() {
       }
     });
   } else {
-    const distPath = path.join(__dirname, 'dist');
     app.use(express.static(distPath, { index: false }));
-    app.get('*', (req: Request, res: Response) => {
+    app.get('*', (req: Request, res: Response, next) => {
+      if (req.originalUrl.startsWith('/api')) {
+        return next();
+      }
       try {
         const url = req.originalUrl;
         let template = fs.readFileSync(path.join(distPath, 'index.html'), 'utf-8');
         const db = readDb();
         const initialRoute = resolveRouteData(url.split('?')[0], db);
+
+        // Strict 404 handling
+        if (!initialRoute || initialRoute.type === undefined) {
+          return res.status(404).send('Page not found');
+        }
+
         const categories = getPublicCategoriesData(db);
         const { adminPasswordHash, ...safeSettings } = db.settings;
 
+        // Extract metadata
+        const title = initialRoute.calculator?.seoTitle || initialRoute.post?.seoTitle || db.settings.siteTitle;
+        const description = initialRoute.calculator?.seoDescription || initialRoute.post?.seoDescription || db.settings.siteDescription;
+
+        // SSR Render: Inject rendered HTML if blog post
+        let renderedContent = '';
+        if (initialRoute.type === 'blog' && initialRoute.post?.content) {
+            renderedContent = `<div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-12 space-y-12 blog-content">${initialRoute.post.content}</div>`;
+        }
+        
+        const jsonLd = getJsonLd(initialRoute, db.settings);
         const ssrScript = `
+    <title>${title}</title>
+    <meta name="description" content="${description}">
     <script id="__SSR_DATA__">
       window.__INITIAL_ROUTE_DATA__ = ${JSON.stringify(initialRoute)};
       window.__INITIAL_CATEGORIES__ = ${JSON.stringify(categories)};
       window.__SITE_SETTINGS__ = ${JSON.stringify(safeSettings)};
     </script>
+    ${jsonLd ? `<script type="application/ld+json">${JSON.stringify(jsonLd)}</script>` : ''}
 `;
-        const html = template.replace('</head>', `${ssrScript}</head>`);
+        const html = template
+            .replace('</head>', `${ssrScript}</head>`)
+            .replace('<div id="root"></div>', `<div id="root">${renderedContent}</div>`);
         return res.status(200).set({ 'Content-Type': 'text/html' }).end(html);
       } catch {
         res.sendFile(path.join(distPath, 'index.html'));
