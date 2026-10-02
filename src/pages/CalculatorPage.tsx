@@ -28,6 +28,8 @@ import { EmiCalculatorGuideContent } from '../components/calculator/EmiCalculato
 import { LoanEligibilityGuideContent } from '../components/calculator/LoanEligibilityGuideContent.tsx';
 import { LoanPrepaymentGuideContent } from '../components/calculator/LoanPrepaymentGuideContent.tsx';
 import { LoanAffordabilityGuideContent } from '../components/calculator/LoanAffordabilityGuideContent.tsx';
+import { LoanCostAprCalculatorApp } from '../components/calculator/LoanCostAprCalculatorApp.tsx';
+import { LoanCostAprGuideContent } from '../components/calculator/LoanCostAprGuideContent.tsx';
 import { getAdminToken } from '../services/api.ts';
 
 interface CalculatorPageProps {
@@ -282,6 +284,11 @@ export const CalculatorPage: React.FC<CalculatorPageProps> = ({
         <div className="space-y-12">
           <LoansCalculatorApp calculator={calculator} />
           <LoanAffordabilityGuideContent />
+        </div>
+      ) : calculator.slug === 'loan-cost-apr-comparison-calculator' ? (
+        <div className="space-y-12">
+          <LoanCostAprCalculatorApp calculator={calculator} />
+          <LoanCostAprGuideContent />
         </div>
       ) : category.slug === 'loans-emi' || calculator.engineType === 'loans_emi' || calculator.slug.includes('loan') || calculator.slug.includes('emi') ? (
         <LoansCalculatorApp calculator={calculator} />

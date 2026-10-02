@@ -21,9 +21,10 @@ import { Calculator } from '../../types/schema.ts';
 
 interface LoansCalculatorAppProps {
   calculator: Calculator;
+  hideHeader?: boolean;
 }
 
-export const LoansCalculatorApp: React.FC<LoansCalculatorAppProps> = ({ calculator }) => {
+export const LoansCalculatorApp: React.FC<LoansCalculatorAppProps> = ({ calculator, hideHeader = false }) => {
   const slug = calculator.slug.toLowerCase();
 
   // Common State Defaults
@@ -196,39 +197,41 @@ export const LoansCalculatorApp: React.FC<LoansCalculatorAppProps> = ({ calculat
   return (
     <div className="w-full space-y-8 font-sans">
       {/* Top Banner */}
-      <div className="bg-gradient-to-br from-[#0f172a] via-[#1e293b] to-[#0f172a] text-white p-6 sm:p-10 rounded-3xl shadow-xl flex flex-col md:flex-row items-center justify-between gap-6">
-        <div className="space-y-3 max-w-2xl">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#1dbf73]/20 text-[#1dbf73] text-xs font-bold uppercase tracking-wider border border-[#1dbf73]/30">
-            <CreditCard className="w-4 h-4" />
-            <span>India Loan Engine &bull; FY 2026-27</span>
+      {!hideHeader && (
+        <div className="bg-gradient-to-br from-[#0f172a] via-[#1e293b] to-[#0f172a] text-white p-6 sm:p-10 rounded-3xl shadow-xl flex flex-col md:flex-row items-center justify-between gap-6">
+          <div className="space-y-3 max-w-2xl">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#1dbf73]/20 text-[#1dbf73] text-xs font-bold uppercase tracking-wider border border-[#1dbf73]/30">
+              <CreditCard className="w-4 h-4" />
+              <span>India Loan Engine &bull; FY 2026-27</span>
+            </div>
+            <h1 className="text-2xl sm:text-3xl font-black tracking-tight">
+              {calculator.name}
+            </h1>
+            <p className="text-xs sm:text-sm text-slate-300 leading-relaxed">
+              {calculator.shortDescription}
+            </p>
           </div>
-          <h1 className="text-2xl sm:text-3xl font-black tracking-tight">
-            {calculator.name}
-          </h1>
-          <p className="text-xs sm:text-sm text-slate-300 leading-relaxed">
-            {calculator.shortDescription}
-          </p>
-        </div>
 
-        <div className="flex items-center gap-3 shrink-0">
-          <button
-            type="button"
-            onClick={handleExportJson}
-            className="px-4 py-2.5 bg-white/10 hover:bg-white/20 text-white rounded-xl text-xs font-bold flex items-center gap-2 transition-colors border border-white/20 cursor-pointer"
-          >
-            <Download className="w-4 h-4 text-[#1dbf73]" />
-            <span>Export JSON</span>
-          </button>
-          <button
-            type="button"
-            onClick={handlePrint}
-            className="px-4 py-2.5 bg-[#1dbf73] hover:bg-[#19a463] text-white rounded-xl text-xs font-bold flex items-center gap-2 transition-colors shadow-lg cursor-pointer"
-          >
-            <Printer className="w-4 h-4" />
-            <span>Print Report</span>
-          </button>
+          <div className="flex items-center gap-3 shrink-0">
+            <button
+              type="button"
+              onClick={handleExportJson}
+              className="px-4 py-2.5 bg-white/10 hover:bg-white/20 text-white rounded-xl text-xs font-bold flex items-center gap-2 transition-colors border border-white/20 cursor-pointer"
+            >
+              <Download className="w-4 h-4 text-[#1dbf73]" />
+              <span>Export JSON</span>
+            </button>
+            <button
+              type="button"
+              onClick={handlePrint}
+              className="px-4 py-2.5 bg-[#1dbf73] hover:bg-[#19a463] text-white rounded-xl text-xs font-bold flex items-center gap-2 transition-colors shadow-lg cursor-pointer"
+            >
+              <Printer className="w-4 h-4" />
+              <span>Print Report</span>
+            </button>
+          </div>
         </div>
-      </div>
+      )}
 
       {/* Main Workspace */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">

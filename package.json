@@ -31,6 +31,7 @@
     "decimal.js": "^10.6.0",
     "dotenv": "^17.2.3",
     "express": "^4.21.2",
+    "firebase": "^12.19.0",
     "gray-matter": "^4.0.3",
     "lucide-react": "^0.546.0",
     "marked": "^18.0.14",
