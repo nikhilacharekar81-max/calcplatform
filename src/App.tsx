@@ -14,6 +14,7 @@ import { Category, Subcategory, Calculator, SiteSettings, BlogPost } from './typ
 import { BlogIndexPage } from './pages/BlogIndexPage.tsx';
 import { BlogPostPage } from './pages/BlogPostPage.tsx';
 import { AdminBlogCategories } from './pages/admin/AdminBlogCategories.tsx';
+import { ScenarioStudioPage } from './pages/ScenarioStudioPage.tsx';
 
 // Code-split admin pages so public visitors never load heavy admin bundles on hard refresh
 const AdminLoginPage = React.lazy(() =>
@@ -60,7 +61,7 @@ const AdminBlogDashboard = React.lazy(() =>
 );
 
 const isSubpagePath = (path: string) => {
-  return path !== '/' && path !== '' && !path.startsWith('/admin') && path !== '/search' && !path.startsWith('/blog');
+  return path !== '/' && path !== '' && !path.startsWith('/admin') && path !== '/search' && !path.startsWith('/blog') && path !== '/scenario-studio' && path !== '/studio';
 };
 
 const getInitialRouteData = () => {
@@ -395,6 +396,8 @@ export default function App() {
       <div className="flex-1 w-full">
         {currentPath === '/search' ? (
           <SearchPage />
+        ) : (currentPath === '/scenario-studio' || currentPath === '/studio') ? (
+          <ScenarioStudioPage />
         ) : currentPath === '/blog' ? (
           <BlogIndexPage />
         ) : currentPath.startsWith('/blog/') ? (

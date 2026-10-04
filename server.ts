@@ -17,6 +17,8 @@ import {
   setDoc as firestoreSetDoc, 
   deleteDoc as firestoreDeleteDoc 
 } from 'firebase/firestore';
+import { GoogleGenAI, Type } from '@google/genai';
+import { calculateDeterministicScenario } from './src/engines/scenarioEngine.ts';
 
 dotenv.config();
 
@@ -905,6 +907,10 @@ function getArticleFromFiles(slug: string) {
     }
 
     let parts = cleanPath.split('/').filter(Boolean);
+
+    if (parts.length > 0 && (parts[0] === 'scenario-studio' || parts[0] === 'studio')) {
+      return { type: 'scenario-studio' };
+    }
 
     if (parts.length > 0 && parts[0] === 'blog') {
       if (parts.length > 1) {
@@ -2440,6 +2446,259 @@ function getArticleFromFiles(slug: string) {
   });
 
   // ==========================================
+  // HYBRID ARCHITECTURE: AI SCENARIO ADVISORY & DYNAMIC LAYOUT
+  // ==========================================
+  app.post('/api/ai/advisory-layout', async (req: Request, res: Response) => {
+    try {
+      const {
+        annualIncome,
+        homeLoanAmount,
+        homeLoanInterestRate,
+        homeLoanTenureYears,
+        monthlyInvestment,
+        sipReturnRate,
+        sipHorizonYears,
+        section80C,
+        section80D,
+        userQuery,
+      } = req.body || {};
+
+      // 1. Core Deterministic Mathematical Engine (Zero hallucination on numbers)
+      const mathResult = calculateDeterministicScenario({
+        annualIncome: Number(annualIncome) || 1800000,
+        homeLoanAmount: Number(homeLoanAmount) || 4500000,
+        homeLoanInterestRate: Number(homeLoanInterestRate) || 8.75,
+        homeLoanTenureYears: Number(homeLoanTenureYears) || 20,
+        monthlyInvestment: Number(monthlyInvestment) || 25000,
+        sipReturnRate: Number(sipReturnRate) || 12.0,
+        sipHorizonYears: Number(sipHorizonYears) || 20,
+        section80C: Number(section80C) || 150000,
+        section80D: Number(section80D) || 25000,
+      });
+
+      // Default deterministic layout baseline
+      let structuredLayout: any = {
+        calculatorType: 'hybrid_advisory',
+        scenarioTitle: 'Holistic Home Loan, Tax & SIP Compounding Analysis',
+        executiveSummary: `Based on your ₹${(mathResult.rawInputs.loanAmount / 100000).toFixed(1)} Lakh home loan and ₹${(mathResult.rawInputs.monthlySip).toLocaleString('en-IN')}/mo SIP allocation, your monthly debt service is ₹${mathResult.summary.monthlyEmi.toLocaleString('en-IN')}. For tax planning, ${mathResult.summary.recommendedRegime} saves you ₹${mathResult.summary.taxDifference.toLocaleString('en-IN')} annually. Over ${mathResult.rawInputs.loanYears} years, your ₹${(mathResult.summary.totalSipInvested / 100000).toFixed(1)} Lakh SIP is projected to accumulate into ₹${(mathResult.summary.finalSipCorpus / 10000000).toFixed(2)} Crore.`,
+        verdict: mathResult.summary.sipWealthGain > mathResult.summary.totalLoanInterest
+          ? 'Wealth Maximization: Direct surplus cash flow into disciplined Equity SIP rather than aggressive loan prepayments because the compounding rate exceeds borrowing costs.'
+          : 'Debt Mitigation: Prepay home loan principal early to compress the interest burden before expanding equity investments.',
+        actionPoints: [
+          `Opt for ${mathResult.summary.recommendedRegime} to minimize your immediate tax liability by ₹${mathResult.summary.taxDifference.toLocaleString('en-IN')}.`,
+          `Maintain your ₹${mathResult.summary.monthlyEmi.toLocaleString('en-IN')}/mo EMI while scheduling automated ₹${(mathResult.rawInputs.monthlySip).toLocaleString('en-IN')}/mo SIP contributions.`,
+          `Review amortisation progress annually to assess whether bonus prepayments or higher SIP step-ups match your liquidity cushion.`
+        ],
+        recommendedCharts: [
+          {
+            chartId: 'amortization_composed',
+            componentName: 'ComposedChart',
+            title: 'Principal Repaid vs. Outstanding Balance Curve',
+            description: 'Visualizes amortization progress and the diminishing debt balance over time.',
+            priority: 1,
+            dataKey: 'amortization',
+            parameters: {
+              showBrush: true,
+              primaryMetric: 'principal',
+              secondaryMetric: 'balance',
+              xAxisKey: 'year'
+            }
+          },
+          {
+            chartId: 'sip_compounding_area',
+            componentName: 'GradientAreaChart',
+            title: 'Long-Term Compounding Wealth Accumulation',
+            description: 'Contrasts raw capital contributions against exponential compounding returns.',
+            priority: 2,
+            dataKey: 'compounding',
+            parameters: {
+              xAxisKey: 'year',
+              primaryMetric: 'invested',
+              secondaryMetric: 'wealth'
+            }
+          },
+          {
+            chartId: 'regime_comparison_bars',
+            componentName: 'GroupedBarChart',
+            title: 'Old vs. New Tax Regime Net In-Hand Comparison',
+            description: 'Direct side-by-side assessment of deductions and final tax obligations.',
+            priority: 3,
+            dataKey: 'regimeComparison',
+            parameters: {
+              xAxisKey: 'label'
+            }
+          },
+          {
+            chartId: 'cashflow_distribution_donut',
+            componentName: 'DonutChart',
+            title: 'Annual Income Allocation Breakdown',
+            description: 'Proportion of annual income allocated to Take-Home, Taxes, Debt Service, and Savings.',
+            priority: 4,
+            dataKey: 'slabs',
+            parameters: {
+              currencySymbol: '₹'
+            }
+          }
+        ],
+        keyMetrics: [
+          {
+            label: 'Monthly EMI',
+            value: `₹${mathResult.summary.monthlyEmi.toLocaleString('en-IN')}`,
+            subtext: `At ${mathResult.rawInputs.loanRate}% for ${mathResult.rawInputs.loanYears} yrs`,
+            status: 'neutral'
+          },
+          {
+            label: 'Optimal Tax Choice',
+            value: mathResult.summary.recommendedRegime,
+            subtext: `Saves ₹${mathResult.summary.taxDifference.toLocaleString('en-IN')} annually`,
+            status: 'positive'
+          },
+          {
+            label: 'Projected SIP Corpus',
+            value: `₹${(mathResult.summary.finalSipCorpus / 10000000).toFixed(2)} Cr`,
+            subtext: `From ₹${(mathResult.summary.totalSipInvested / 100000).toFixed(1)} L invested`,
+            status: 'positive'
+          },
+          {
+            label: 'Net Wealth Arbitrage',
+            value: `+₹${((mathResult.summary.sipWealthGain - mathResult.summary.totalLoanInterest) / 100000).toFixed(1)} L`,
+            subtext: 'SIP gains vs loan interest paid',
+            status: mathResult.summary.sipWealthGain > mathResult.summary.totalLoanInterest ? 'positive' : 'warning'
+          }
+        ]
+      };
+
+      // 2. Attempt Gemini Structured Output layout orchestration
+      if (process.env.GEMINI_API_KEY) {
+        try {
+          const ai = new GoogleGenAI();
+          const prompt = `You are a Senior Financial Architect designing a hybrid financial advisory dashboard.
+User Question / Scenario: "${userQuery || 'Analyze optimal asset allocation between home loan repayment, tax regimes, and equity SIP'}"
+Deterministic Pre-Computed Math Data:
+- Home Loan: ₹${mathResult.rawInputs.loanAmount} at ${mathResult.rawInputs.loanRate}% for ${mathResult.rawInputs.loanYears} years (EMI: ₹${mathResult.summary.monthlyEmi}, Total Interest: ₹${mathResult.summary.totalLoanInterest})
+- SIP Investment: ₹${mathResult.rawInputs.monthlySip}/mo at ${mathResult.rawInputs.sipRate}% for ${mathResult.rawInputs.sipYears} years (Invested: ₹${mathResult.summary.totalSipInvested}, Final Corpus: ₹${mathResult.summary.finalSipCorpus})
+- Income Tax: Old Regime Tax = ₹${mathResult.summary.oldRegimeTax}, New Regime Tax = ₹${mathResult.summary.newRegimeTax}, Better = ${mathResult.summary.recommendedRegime} (Saves ₹${mathResult.summary.taxDifference})
+
+Select which Recharts components from the available registry should be rendered on the client dashboard:
+Available component names: "ComposedChart", "GroupedBarChart", "StackedBarChart", "GradientAreaChart", "DonutChart", "LineChart".
+Available dataKeys: "amortization", "regimeComparison", "compounding", "slabs".
+
+Return a structured JSON schema ordering the most impactful charts for this user's question, along with an executive summary, verdict, action points, and key metrics.`;
+
+          const modelsToTry = ['gemini-3.1-flash-lite', 'gemini-3.8-flash'];
+          let aiResponseText: string | null = null;
+
+          for (const modelName of modelsToTry) {
+            try {
+              const timeoutPromise = new Promise((_, reject) => 
+                setTimeout(() => reject(new Error('AI model timeout after 4.5s')), 4500)
+              );
+
+              const response: any = await Promise.race([
+                ai.models.generateContent({
+                  model: modelName,
+                  contents: prompt,
+                  config: {
+                    responseMimeType: 'application/json',
+                    responseSchema: {
+                      type: Type.OBJECT,
+                      properties: {
+                        calculatorType: { type: Type.STRING },
+                        scenarioTitle: { type: Type.STRING },
+                        executiveSummary: { type: Type.STRING },
+                        verdict: { type: Type.STRING },
+                        actionPoints: {
+                          type: Type.ARRAY,
+                          items: { type: Type.STRING }
+                        },
+                        recommendedCharts: {
+                          type: Type.ARRAY,
+                          items: {
+                            type: Type.OBJECT,
+                            properties: {
+                              chartId: { type: Type.STRING },
+                              componentName: { type: Type.STRING },
+                              title: { type: Type.STRING },
+                              description: { type: Type.STRING },
+                              priority: { type: Type.INTEGER },
+                              dataKey: { type: Type.STRING },
+                              parameters: {
+                                type: Type.OBJECT,
+                                properties: {
+                                  showBrush: { type: Type.BOOLEAN },
+                                  primaryMetric: { type: Type.STRING },
+                                  secondaryMetric: { type: Type.STRING },
+                                  xAxisKey: { type: Type.STRING }
+                                }
+                              }
+                            },
+                            required: ['chartId', 'componentName', 'title', 'priority', 'dataKey']
+                          }
+                        },
+                        keyMetrics: {
+                          type: Type.ARRAY,
+                          items: {
+                            type: Type.OBJECT,
+                            properties: {
+                              label: { type: Type.STRING },
+                              value: { type: Type.STRING },
+                              subtext: { type: Type.STRING },
+                              status: { type: Type.STRING }
+                            },
+                            required: ['label', 'value']
+                          }
+                        }
+                      },
+                      required: ['calculatorType', 'scenarioTitle', 'executiveSummary', 'verdict', 'actionPoints', 'recommendedCharts', 'keyMetrics']
+                    }
+                  }
+                }),
+                timeoutPromise
+              ]);
+
+              if (response && response.text) {
+                aiResponseText = response.text;
+                break;
+              }
+            } catch (err: any) {
+              console.warn(`[AI ADVISORY] Model ${modelName} error, trying fallback:`, err.message);
+            }
+          }
+
+          if (aiResponseText) {
+            const parsed = JSON.parse(aiResponseText);
+            structuredLayout = {
+              ...structuredLayout,
+              ...parsed,
+              // Guarantee dataKeys are valid
+              recommendedCharts: (parsed.recommendedCharts || []).map((c: any) => ({
+                ...c,
+                dataKey: ['amortization', 'regimeComparison', 'compounding', 'slabs'].includes(c.dataKey)
+                  ? c.dataKey
+                  : 'amortization'
+              }))
+            };
+            console.log('[AI ADVISORY] Successfully generated dynamic layout via Gemini Structured Outputs!');
+          }
+        } catch (e: any) {
+          console.warn('[AI ADVISORY] AI call bypassed, using deterministic baseline:', e.message);
+        }
+      }
+
+      // Return both the structured layout schema AND the pre-computed mathematical datasets
+      return res.json({
+        ...structuredLayout,
+        chartDataSets: mathResult.chartDataSets,
+        mathSummary: mathResult.summary,
+        rawInputs: mathResult.rawInputs,
+      });
+    } catch (err: any) {
+      console.error('[AI ADVISORY FATAL ERROR]:', err);
+      return res.status(500).json({ error: 'Failed to generate advisory layout' });
+    }
+  });
+
+  // ==========================================
   // ADMIN BLOG CATEGORIES & SUBCATEGORIES API
   // ==========================================
   app.get('/api/admin/blog-categories', requireAdmin, (_req: Request, res: Response) => {
@@ -2877,8 +3136,12 @@ function getArticleFromFiles(slug: string) {
         const { adminPasswordHash, ...safeSettings } = db.settings;
 
         // Extract metadata
-        const title = initialRoute.calculator?.seoTitle || initialRoute.post?.seoTitle || db.settings.siteTitle;
-        const description = initialRoute.calculator?.seoDescription || initialRoute.post?.seoDescription || db.settings.siteDescription;
+        const title = initialRoute.type === 'scenario-studio'
+          ? 'AI Scenario Studio - Hybrid Financial Architecture & Visualization Engine'
+          : (initialRoute.calculator?.seoTitle || initialRoute.post?.seoTitle || db.settings.siteTitle);
+        const description = initialRoute.type === 'scenario-studio'
+          ? 'Experience the Hybrid Architectural Pattern: deterministic financial calculator routing combined with Google AI Studio structured output schema layout orchestration.'
+          : (initialRoute.calculator?.seoDescription || initialRoute.post?.seoDescription || db.settings.siteDescription);
 
         // SSR Render: Inject rendered HTML if blog post
         let renderedContent = '';
@@ -2927,8 +3190,12 @@ function getArticleFromFiles(slug: string) {
         const { adminPasswordHash, ...safeSettings } = db.settings;
 
         // Extract metadata
-        const title = initialRoute.calculator?.seoTitle || initialRoute.post?.seoTitle || db.settings.siteTitle;
-        const description = initialRoute.calculator?.seoDescription || initialRoute.post?.seoDescription || db.settings.siteDescription;
+        const title = initialRoute.type === 'scenario-studio'
+          ? 'AI Scenario Studio - Hybrid Financial Architecture & Visualization Engine'
+          : (initialRoute.calculator?.seoTitle || initialRoute.post?.seoTitle || db.settings.siteTitle);
+        const description = initialRoute.type === 'scenario-studio'
+          ? 'Experience the Hybrid Architectural Pattern: deterministic financial calculator routing combined with Google AI Studio structured output schema layout orchestration.'
+          : (initialRoute.calculator?.seoDescription || initialRoute.post?.seoDescription || db.settings.siteDescription);
 
         // SSR Render: Inject rendered HTML if blog post
         let renderedContent = '';

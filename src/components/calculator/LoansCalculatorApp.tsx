@@ -18,6 +18,7 @@ import {
   AlertTriangle
 } from 'lucide-react';
 import { Calculator } from '../../types/schema.ts';
+import { StackedBarChartComponent, ComposedChartComponent } from '../charts/index.tsx';
 
 interface LoansCalculatorAppProps {
   calculator: Calculator;
@@ -619,6 +620,44 @@ export const LoansCalculatorApp: React.FC<LoansCalculatorAppProps> = ({ calculat
           </div>
         </div>
       </div>
+
+      {/* Route-Based Deterministic Visualization Mapping */}
+      {!slug.includes('eligibility') && schedule && schedule.length > 0 && (
+        <div className="space-y-6">
+          <div className="flex items-center justify-between">
+            <h3 className="text-lg font-bold text-slate-900 flex items-center gap-2">
+              <TrendingUp className="w-5 h-5 text-blue-600" />
+              Deterministic Amortization Visualizations
+            </h3>
+            <span className="text-xs px-2.5 py-1 rounded-md bg-blue-50 text-blue-700 font-semibold border border-blue-200">
+              Route-Based Recharts Layout
+            </span>
+          </div>
+
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <StackedBarChartComponent
+              data={schedule.map(r => ({
+                year: r.year,
+                principal: r.principalPaid,
+                interest: r.interestPaid,
+              }))}
+              title="Stacked Amortization Bars (Principal + Interest)"
+              parameters={{ xAxisKey: 'year', currencySymbol: '₹' }}
+            />
+
+            <ComposedChartComponent
+              data={schedule.map(r => ({
+                year: r.year,
+                principal: r.principalPaid,
+                interest: r.interestPaid,
+                balance: r.closingBalance,
+              }))}
+              title="Principal vs. Outstanding Debt Curve"
+              parameters={{ showBrush: true, xAxisKey: 'year', currencySymbol: '₹' }}
+            />
+          </div>
+        </div>
+      )}
 
       {/* Amortization Schedule Table */}
       {!slug.includes('eligibility') && (

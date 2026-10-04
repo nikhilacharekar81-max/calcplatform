@@ -714,4 +714,17 @@ export const api = {
     if (!res.ok) throw new Error(data.error || 'Failed to bulk delete subcategories');
     return data;
   },
+
+  // AI Scenario Advisory & Dynamic Layout API
+  async getAdvisoryLayout(params: any): Promise<any> {
+    const res = await fetch('/api/ai/advisory-layout', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(params),
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || 'Failed to generate advisory layout');
+    return data;
+  },
 };
+

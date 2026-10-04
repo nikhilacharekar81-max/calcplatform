@@ -114,6 +114,13 @@ export const Header: React.FC<HeaderProps> = ({ onOpenSearch, brandName = 'calcp
       <nav className="w-full bg-white border-b border-[#e4e5e7] hidden md:block overflow-x-auto">
         <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-start gap-6 lg:gap-8">
           <a
+            href="/scenario-studio"
+            className="py-2.5 text-xs font-bold text-slate-800 hover:text-[#1dbf73] transition-colors flex items-center gap-1.5 shrink-0"
+          >
+            <Sparkles className="w-3.5 h-3.5 text-emerald-600" />
+            <span>AI Scenario Studio</span>
+          </a>
+          <a
             href="/blog"
             className="py-2.5 text-xs font-bold text-[#1dbf73] hover:text-[#19a463] transition-colors flex items-center gap-1.5 shrink-0"
           >
@@ -170,6 +177,21 @@ export const Header: React.FC<HeaderProps> = ({ onOpenSearch, brandName = 'calcp
       {/* Mobile Drawer */}
       {mobileMenuOpen && (
         <div className="md:hidden bg-white border-b border-[#e4e5e7] px-4 pt-3 pb-6 space-y-4">
+          <div className="space-y-2 pb-2 border-b border-slate-100">
+            <a
+              href="/scenario-studio"
+              className="flex items-center gap-2 py-1 text-sm font-bold text-emerald-600 hover:text-emerald-700"
+            >
+              <Sparkles className="w-4 h-4 text-emerald-600" />
+              <span>AI Scenario Studio (Hybrid Architecture)</span>
+            </a>
+            <a
+              href="/blog"
+              className="block py-1 text-sm font-bold text-slate-800 hover:text-emerald-600"
+            >
+              <span>Tax Blog & Guides</span>
+            </a>
+          </div>
           <div className="text-xs font-bold text-[#74767e] uppercase tracking-wider">
             All Categories
           </div>

@@ -27,6 +27,7 @@ import {
   Share2,
   HelpCircle,
 } from 'lucide-react';
+import { GroupedBarChartComponent, DonutChartComponent } from '../charts/index.tsx';
 
 const STORAGE_KEY = 'old_vs_new_tax_regime_state_v1';
 
@@ -1113,6 +1114,42 @@ export const OldVsNewRegimeCalculatorApp: React.FC = () => {
               </button>
             </div>
           </div>
+        </div>
+      </div>
+
+      {/* Route-Based Deterministic Visualization Mapping for Income Tax */}
+      <div className="space-y-6">
+        <div className="flex items-center justify-between">
+          <h3 className="text-lg font-bold text-slate-900 flex items-center gap-2">
+            <TrendingDown className="w-5 h-5 text-emerald-600" />
+            Deterministic Tax Regime Visualizations
+          </h3>
+          <span className="text-xs px-2.5 py-1 rounded-md bg-emerald-50 text-emerald-700 font-semibold border border-emerald-200">
+            Route-Based Recharts Layout
+          </span>
+        </div>
+
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <GroupedBarChartComponent
+            data={[
+              { label: 'Gross Salary', oldRegime: result.oldRegime.grossIncome, newRegime: result.newRegime.grossIncome },
+              { label: 'Deductions', oldRegime: result.oldRegime.totalDeductionsAndExemptions, newRegime: result.newRegime.totalDeductionsAndExemptions },
+              { label: 'Taxable Income', oldRegime: result.oldRegime.netTaxableIncome, newRegime: result.newRegime.netTaxableIncome },
+              { label: 'Total Tax Due', oldRegime: result.oldRegime.totalTaxPayable, newRegime: result.newRegime.totalTaxPayable },
+              { label: 'Net Take-Home', oldRegime: result.oldRegime.grossIncome - result.oldRegime.totalTaxPayable, newRegime: result.newRegime.grossIncome - result.newRegime.totalTaxPayable },
+            ]}
+            title="Old vs. New Regime Grouped Bar Comparison"
+            parameters={{ xAxisKey: 'label', currencySymbol: '₹' }}
+          />
+
+          <DonutChartComponent
+            data={result.newRegime.slabBreakdown.filter(s => s.taxAmount > 0).map(s => ({
+              name: `${s.label} (${s.rateLabel})`,
+              value: s.taxAmount,
+            }))}
+            title="Tax Slabs Contribution Donut Breakdown"
+            parameters={{ currencySymbol: '₹' }}
+          />
         </div>
       </div>
 
