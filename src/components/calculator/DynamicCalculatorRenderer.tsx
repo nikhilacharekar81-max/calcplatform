@@ -151,7 +151,9 @@ export const DynamicCalculatorRenderer: React.FC<DynamicCalculatorRendererProps>
           existingLifeCover: Number(v.existingLifeCover || 0),
           existingSavings: Number(v.existingSavings || 0),
           futureFinancialGoals: Number(v.futureFinancialGoals || v.futureGoals || 0),
+          goalYears: Number(v.goalYears || v.yearsUntilGoal || 0),
           inflationRate: Number(v.inflationRate || 6),
+          investmentReturn: Number(v.investmentReturn || v.expectedReturnPercent || 8.5),
           incomeMultipleYears: Number(v.incomeMultipleYears || 15),
           estimatedAnnualPremium: Number(v.estimatedAnnualPremium || 0),
           isGroupPolicy: Boolean(v.isGroupPolicy || false),
@@ -171,6 +173,8 @@ export const DynamicCalculatorRenderer: React.FC<DynamicCalculatorRendererProps>
           futureGoals: Number(v.futureGoals || 0),
           childrenEducationCostToday: Number(v.childrenEducationCostToday || 0),
           childrenMarriageCostToday: Number(v.childrenMarriageCostToday || 0),
+          goalYears: Number(v.goalYears || v.yearsUntilGoal || 0),
+          yearsUntilGoal: Number(v.goalYears || v.yearsUntilGoal || 0),
           inflationRate: Number(v.inflationRate || v.inflationRatePercent || 6),
           investmentReturn: Number(v.investmentReturn || v.expectedReturnRatePercent || 8.5),
         });

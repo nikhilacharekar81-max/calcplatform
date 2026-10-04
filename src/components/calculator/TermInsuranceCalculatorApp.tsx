@@ -29,7 +29,7 @@ interface TermInsuranceCalculatorAppProps {
 }
 
 export const TermInsuranceCalculatorApp: React.FC<TermInsuranceCalculatorAppProps> = () => {
-  // 10 Inputs requested by the user
+  // 12 Inputs explicitly controlled by the user
   const [age, setAge] = useState<number>(30);
   const [annualIncome, setAnnualIncome] = useState<number>(1200000); // ₹12 Lakh
   const [monthlyExpenses, setMonthlyExpenses] = useState<number>(50000); // ₹50,000 / mo
@@ -39,7 +39,9 @@ export const TermInsuranceCalculatorApp: React.FC<TermInsuranceCalculatorAppProp
   const [existingLifeCover, setExistingLifeCover] = useState<number>(2000000); // ₹20 Lakh
   const [savingsInvestments, setSavingsInvestments] = useState<number>(1500000); // ₹15 Lakh
   const [futureFinancialGoals, setFutureFinancialGoals] = useState<number>(3000000); // ₹30 Lakh
-  const [inflationRate, setInflationRate] = useState<number>(6.0); // 6%
+  const [goalYears, setGoalYears] = useState<number>(10); // 10 Years horizon
+  const [inflationRate, setInflationRate] = useState<number>(6.0); // 6% p.a.
+  const [investmentReturn, setInvestmentReturn] = useState<number>(8.5); // 8.5% p.a.
 
   // Execute mathematical engine
   const result = calculateTermLifeInsurance({
@@ -52,7 +54,9 @@ export const TermInsuranceCalculatorApp: React.FC<TermInsuranceCalculatorAppProp
     existingLifeCover,
     existingSavings: savingsInvestments,
     futureFinancialGoals,
+    goalYears,
     inflationRate,
+    investmentReturn,
   });
 
   const formatINR = (val: number) => {
@@ -402,7 +406,39 @@ export const TermInsuranceCalculatorApp: React.FC<TermInsuranceCalculatorAppProp
               </div>
             </div>
 
-            {/* 10. Inflation Rate */}
+            {/* 10. Years Until Goal */}
+            <div className="space-y-1.5">
+              <div className="flex items-center justify-between">
+                <label className="text-xs sm:text-sm font-bold text-slate-700">Years Until Goal</label>
+                <div className="flex items-center bg-slate-50 rounded-lg px-2.5 py-1 border border-slate-200 focus-within:border-[#1dbf73] focus-within:bg-white transition-all">
+                  <input
+                    type="number"
+                    min={0}
+                    max={30}
+                    step={1}
+                    value={goalYears}
+                    onChange={(e) => setGoalYears(e.target.value === '' ? 0 : Math.min(30, Math.max(0, Number(e.target.value))))}
+                    className="w-16 text-right text-xs sm:text-sm font-bold text-slate-800 bg-transparent focus:outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                  />
+                  <span className="text-xs font-semibold text-slate-500 ml-1 select-none">Yrs</span>
+                </div>
+              </div>
+              <input
+                type="range"
+                min={0}
+                max={30}
+                step={1}
+                value={goalYears}
+                onChange={(e) => setGoalYears(Number(e.target.value))}
+                className="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-[#1dbf73]"
+              />
+              <div className="flex justify-between text-[11px] text-slate-400 font-medium">
+                <span>0 Yrs (Today)</span>
+                <span>30 Yrs</span>
+              </div>
+            </div>
+
+            {/* 11. Inflation Rate */}
             <div className="space-y-1.5">
               <div className="flex items-center justify-between">
                 <label className="text-xs sm:text-sm font-bold text-slate-700">Expected Inflation Rate</label>
@@ -431,6 +467,38 @@ export const TermInsuranceCalculatorApp: React.FC<TermInsuranceCalculatorAppProp
               <div className="flex justify-between text-[11px] text-slate-400 font-medium">
                 <span>3.0% (Low)</span>
                 <span>12.0% (High)</span>
+              </div>
+            </div>
+
+            {/* 12. Expected Investment Return */}
+            <div className="space-y-1.5">
+              <div className="flex items-center justify-between">
+                <label className="text-xs sm:text-sm font-bold text-slate-700">Expected Investment Return</label>
+                <div className="flex items-center bg-slate-50 rounded-lg px-2.5 py-1 border border-slate-200 focus-within:border-[#1dbf73] focus-within:bg-white transition-all">
+                  <input
+                    type="number"
+                    min={3}
+                    max={15}
+                    step={0.5}
+                    value={investmentReturn || ''}
+                    onChange={(e) => setInvestmentReturn(e.target.value === '' ? 8.5 : Math.min(15, Math.max(3, Number(e.target.value))))}
+                    className="w-16 text-right text-xs sm:text-sm font-bold text-slate-800 bg-transparent focus:outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                  />
+                  <span className="text-xs font-semibold text-slate-500 ml-1 select-none">%</span>
+                </div>
+              </div>
+              <input
+                type="range"
+                min={3}
+                max={15}
+                step={0.5}
+                value={investmentReturn}
+                onChange={(e) => setInvestmentReturn(Number(e.target.value))}
+                className="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-[#1dbf73]"
+              />
+              <div className="flex justify-between text-[11px] text-slate-400 font-medium">
+                <span>3.0% (Conservative)</span>
+                <span>15.0% (Aggressive)</span>
               </div>
             </div>
           </div>
