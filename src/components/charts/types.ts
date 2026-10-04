@@ -7,11 +7,14 @@ export interface ChartParameters {
   height?: number;
   currencySymbol?: string;
   unit?: string;
+  badge?: string;
+  description?: string;
   dataSeries?: Array<{
     key: string;
     label: string;
     color?: string;
     type?: 'bar' | 'line' | 'area';
+    stackId?: string;
   }>;
 }
 

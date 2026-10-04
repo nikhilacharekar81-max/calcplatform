@@ -88,15 +88,16 @@ export const FlatVsReducingCalculatorApp: React.FC = () => {
           <div className="space-y-3">
             <div className="flex items-center justify-between">
               <label className="text-xs font-extrabold text-slate-300">Loan Amount</label>
-              <div className="flex items-center gap-1 bg-slate-900 px-3 py-1.5 rounded-xl border border-slate-700">
+              <div className="flex items-center gap-1 bg-slate-900 px-3 py-1.5 rounded-xl border border-slate-700 focus-within:border-[#1dbf73]">
                 <span className="text-xs font-bold text-[#1dbf73]">₹</span>
                 <input
                   type="number"
                   min={50000}
                   max={5000000}
                   step={10000}
-                  value={loanAmount}
-                  onChange={(e) => setLoanAmount(Math.max(50000, Math.min(5000000, Number(e.target.value) || 50000)))}
+                  value={loanAmount || ''}
+                  onChange={(e) => setLoanAmount(Number(e.target.value) || 0)}
+                  onBlur={() => setLoanAmount((prev) => Math.max(50000, Math.min(5000000, prev || 50000)))}
                   className="w-28 text-right bg-transparent text-sm font-black text-white focus:outline-none"
                 />
               </div>
@@ -106,7 +107,7 @@ export const FlatVsReducingCalculatorApp: React.FC = () => {
               min={50000}
               max={5000000}
               step={10000}
-              value={loanAmount}
+              value={Math.max(50000, Math.min(5000000, loanAmount || 50000))}
               onChange={(e) => setLoanAmount(Number(e.target.value))}
               className="w-full accent-[#1dbf73] cursor-pointer"
             />
@@ -139,14 +140,15 @@ export const FlatVsReducingCalculatorApp: React.FC = () => {
           <div className="space-y-3">
             <div className="flex items-center justify-between">
               <label className="text-xs font-extrabold text-slate-300">Interest Rate (% p.a.)</label>
-              <div className="flex items-center gap-1 bg-slate-900 px-3 py-1.5 rounded-xl border border-slate-700">
+              <div className="flex items-center gap-1 bg-slate-900 px-3 py-1.5 rounded-xl border border-slate-700 focus-within:border-[#1dbf73]">
                 <input
                   type="number"
                   min={5}
                   max={25}
                   step={0.5}
-                  value={interestRate}
-                  onChange={(e) => setInterestRate(Math.max(5, Math.min(25, Number(e.target.value) || 5)))}
+                  value={interestRate || ''}
+                  onChange={(e) => setInterestRate(Number(e.target.value) || 0)}
+                  onBlur={() => setInterestRate((prev) => Math.max(5, Math.min(25, prev || 5)))}
                   className="w-16 text-right bg-transparent text-sm font-black text-white focus:outline-none"
                 />
                 <span className="text-xs font-bold text-[#1dbf73]">%</span>
@@ -157,7 +159,7 @@ export const FlatVsReducingCalculatorApp: React.FC = () => {
               min={5}
               max={25}
               step={0.5}
-              value={interestRate}
+              value={Math.max(5, Math.min(25, interestRate || 5))}
               onChange={(e) => setInterestRate(Number(e.target.value))}
               className="w-full accent-[#1dbf73] cursor-pointer"
             />
@@ -172,8 +174,17 @@ export const FlatVsReducingCalculatorApp: React.FC = () => {
           <div className="space-y-3">
             <div className="flex items-center justify-between">
               <label className="text-xs font-extrabold text-slate-300">Loan Tenure</label>
-              <div className="flex items-center gap-1 bg-slate-900 px-3 py-1.5 rounded-xl border border-slate-700">
-                <span className="text-sm font-black text-white">{tenureYears}</span>
+              <div className="flex items-center gap-1 bg-slate-900 px-3 py-1.5 rounded-xl border border-slate-700 focus-within:border-[#1dbf73]">
+                <input
+                  type="number"
+                  min={1}
+                  max={7}
+                  step={0.5}
+                  value={tenureYears || ''}
+                  onChange={(e) => setTenureYears(Number(e.target.value) || 0)}
+                  onBlur={() => setTenureYears((prev) => Math.max(1, Math.min(7, prev || 1)))}
+                  className="w-16 text-right bg-transparent text-sm font-black text-white focus:outline-none"
+                />
                 <span className="text-xs font-bold text-slate-400">Years</span>
               </div>
             </div>
@@ -182,7 +193,7 @@ export const FlatVsReducingCalculatorApp: React.FC = () => {
               min={1}
               max={7}
               step={0.5}
-              value={tenureYears}
+              value={Math.max(1, Math.min(7, tenureYears || 1))}
               onChange={(e) => setTenureYears(Number(e.target.value))}
               className="w-full accent-[#1dbf73] cursor-pointer"
             />

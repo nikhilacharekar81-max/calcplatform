@@ -264,7 +264,7 @@ export const AdminBlogCategories: React.FC = () => {
     if (selectedCatIds.length === 0) return;
     try {
       setLoading(true);
-      await api.adminBulkCategoryStatus(selectedCatIds, isActive);
+      await api.adminBulkBlogCategoryStatus(selectedCatIds, isActive);
       showNotification(`Successfully updated status for ${selectedCatIds.length} categories`);
       loadData();
     } catch (err: any) {
@@ -278,7 +278,7 @@ export const AdminBlogCategories: React.FC = () => {
     if (selectedCatIds.length === 0) return;
     try {
       setLoading(true);
-      await api.adminBulkCategoryDelete(selectedCatIds);
+      await api.adminBulkBlogCategoryDelete(selectedCatIds);
       showNotification(`Successfully deleted ${selectedCatIds.length} categories and their subcategories`);
       loadData();
     } catch (err: any) {
@@ -292,7 +292,7 @@ export const AdminBlogCategories: React.FC = () => {
     if (selectedSubIds.length === 0) return;
     try {
       setLoading(true);
-      await api.adminBulkSubcategoryStatus(selectedSubIds, isActive);
+      await api.adminBulkBlogSubcategoryStatus(selectedSubIds, isActive);
       showNotification(`Successfully updated status for ${selectedSubIds.length} subcategories`);
       loadData();
     } catch (err: any) {
@@ -306,7 +306,7 @@ export const AdminBlogCategories: React.FC = () => {
     if (selectedSubIds.length === 0) return;
     try {
       setLoading(true);
-      await api.adminBulkSubcategoryDelete(selectedSubIds);
+      await api.adminBulkBlogSubcategoryDelete(selectedSubIds);
       showNotification(`Successfully deleted ${selectedSubIds.length} subcategories`);
       loadData();
     } catch (err: any) {

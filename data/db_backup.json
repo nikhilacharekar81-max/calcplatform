@@ -27,6 +27,85 @@
       "isActive": true,
       "createdAt": "2026-09-29T16:55:49.825Z",
       "updatedAt": "2026-09-29T16:55:49.825Z"
+    },
+    {
+      "id": "cat_1791092573880_j3of9",
+      "name": "Insurance Calculators",
+      "slug": "insurance-calculators",
+      "description": "",
+      "seoTitle": "Insurance Calculators",
+      "seoDescription": "",
+      "seoKeywords": "",
+      "icon": "Folder",
+      "order": 3,
+      "isActive": true,
+      "createdAt": "2026-10-04T05:42:53.880Z",
+      "updatedAt": "2026-10-04T05:42:53.881Z"
+    },
+    {
+      "id": "cat_core_maths",
+      "name": "Core Mathematics",
+      "slug": "core-mathematics",
+      "description": "Solve common arithmetic, ratios, fractions, and general mathematical proportion problems with step-by-step clarity.",
+      "seoTitle": "Core Mathematics Calculators — Ratios, Percentages & Fractions",
+      "seoDescription": "Accurately solve percentages, percentage changes, ratios, averages, and LCM/GCD with safe and secure sandboxed calculation tools.",
+      "seoKeywords": "maths calculators, ratio calculator, percentage calculator, average solver, lcm and hcf",
+      "order": 4,
+      "isActive": true,
+      "createdAt": "2026-10-04T06:57:33.965Z",
+      "updatedAt": "2026-10-04T06:57:33.965Z"
+    },
+    {
+      "id": "cat_investments",
+      "name": "Investments & Wealth",
+      "slug": "investments-wealth",
+      "description": "Grow your savings with precise compound interest projections, Step-Up SIP planners, and CAGR investment metrics.",
+      "seoTitle": "Investments & Wealth Calculators — Compound Interest & SIP Planners",
+      "seoDescription": "Calculate compound growth, SIP performance, Step-Up increases, SWP payouts, and CAGR return rates with zero latency.",
+      "seoKeywords": "sip calculator, step up sip, compound interest, swp calculator, cagr calculator, compound growth",
+      "order": 5,
+      "isActive": true,
+      "createdAt": "2026-10-04T06:57:33.965Z",
+      "updatedAt": "2026-10-04T06:57:33.965Z"
+    },
+    {
+      "id": "cat_retirement",
+      "name": "Retirement & Pension",
+      "slug": "retirement-pension",
+      "description": "Plan your long-term financial security with Gratuity estimators, EPF contributions, and inflation-aware retirement corpus sizing.",
+      "seoTitle": "Retirement & Pension Calculators — Gratuity & Corpus Planners",
+      "seoDescription": "Project statutory Gratuity payouts, EPF pension contributions, and calculate retirement corpus sizes under changing inflation scales.",
+      "seoKeywords": "retirement corpus calculator, gratuity calculation act, epf contribution, nps planning, retirement corpus sizer",
+      "order": 6,
+      "isActive": true,
+      "createdAt": "2026-10-04T06:57:33.965Z",
+      "updatedAt": "2026-10-04T06:57:33.965Z"
+    },
+    {
+      "id": "cat_health_fitness",
+      "name": "Health & Fitness",
+      "slug": "health-fitness",
+      "description": "Monitor your vital physical metrics with BMI, BMR, and daily calorie/TDEE energy expenditure models.",
+      "seoTitle": "Health & Fitness Calculators — BMI, BMR & Calorie Sizers",
+      "seoDescription": "Calculate your Body Mass Index (BMI), Basal Metabolic Rate (BMR), and Total Daily Energy Expenditure (TDEE) with safe estimation models.",
+      "seoKeywords": "bmi calculator, bmr calculator, tdee estimator, calorie needs calculator, physical metrics estimation",
+      "order": 7,
+      "isActive": true,
+      "createdAt": "2026-10-04T06:57:33.965Z",
+      "updatedAt": "2026-10-04T06:57:33.966Z"
+    },
+    {
+      "id": "cat_business",
+      "name": "Business & Corporate",
+      "slug": "business-corporate",
+      "description": "Optimize corporate planning with margin, markup, ROI, break-even thresholds, and professional CTC estimations.",
+      "seoTitle": "Business & Corporate Calculators — Margin, Break-Even & ROI Planners",
+      "seoDescription": "Optimize corporate operations and evaluate ROI, profit margins, markups, and break-even unit sales with robust dynamic widgets.",
+      "seoKeywords": "profit margin calculator, markup estimator, break even calculator, roi calculator, corporate finance metrics",
+      "order": 8,
+      "isActive": true,
+      "createdAt": "2026-10-04T06:57:33.966Z",
+      "updatedAt": "2026-10-04T06:57:33.966Z"
     }
   ],
   "subcategories": [
@@ -337,6 +416,138 @@
       "isActive": true,
       "createdAt": "2026-10-01T16:42:01.201Z",
       "updatedAt": "2026-10-01T16:42:01.201Z"
+    },
+    {
+      "id": "sub_ins_life",
+      "name": "Life Insurance",
+      "slug": "life-insurance",
+      "description": "Determine comprehensive term protection gaps, human life valuation (HLV), and family financial longevity sizing.",
+      "categoryId": "cat_1791092573880_j3of9",
+      "order": 1,
+      "isActive": true,
+      "createdAt": "2026-10-04T06:48:55.584Z",
+      "updatedAt": "2026-10-04T06:48:55.584Z"
+    },
+    {
+      "id": "sub_ins_health",
+      "name": "Health Insurance",
+      "slug": "health-insurance",
+      "description": "Calculate medical inflation-adjusted sum insured needs, Section 80D tax deductions, and floater adequacy.",
+      "categoryId": "cat_1791092573880_j3of9",
+      "order": 2,
+      "isActive": true,
+      "createdAt": "2026-10-04T06:48:55.584Z",
+      "updatedAt": "2026-10-04T06:48:55.584Z"
+    },
+    {
+      "id": "sub_ins_vehicle",
+      "name": "Vehicle Insurance",
+      "slug": "vehicle-insurance",
+      "description": "Estimate motor Insured Declared Value (IDV), depreciation schedules, and NCB discounts.",
+      "categoryId": "cat_1791092573880_j3of9",
+      "order": 3,
+      "isActive": true,
+      "createdAt": "2026-10-04T06:48:55.584Z",
+      "updatedAt": "2026-10-04T06:48:55.584Z"
+    },
+    {
+      "id": "sub_ins_travel",
+      "name": "Travel Insurance",
+      "slug": "travel-insurance",
+      "description": "Check international medical cover requirements, hazard ratios, and duration-aware premium sizing.",
+      "categoryId": "cat_1791092573880_j3of9",
+      "order": 4,
+      "isActive": true,
+      "createdAt": "2026-10-04T06:48:55.584Z",
+      "updatedAt": "2026-10-04T06:48:55.584Z"
+    },
+    {
+      "id": "sub_ins_protection",
+      "name": "Personal Protection",
+      "slug": "personal-protection",
+      "description": "Sizing tool for accidental death, temporary or permanent disability income, and critical illness treatments.",
+      "categoryId": "cat_1791092573880_j3of9",
+      "order": 5,
+      "isActive": true,
+      "createdAt": "2026-10-04T06:48:55.584Z",
+      "updatedAt": "2026-10-04T06:48:55.584Z"
+    },
+    {
+      "id": "sub_ins_property_business",
+      "name": "Property & Business Insurance",
+      "slug": "property-business-insurance",
+      "description": "Assess structure reconstruction values, contents, material damage, and business interruption margins.",
+      "categoryId": "cat_1791092573880_j3of9",
+      "order": 6,
+      "isActive": true,
+      "createdAt": "2026-10-04T06:48:55.584Z",
+      "updatedAt": "2026-10-04T06:48:55.584Z"
+    },
+    {
+      "id": "sub_maths_basic",
+      "name": "Basic Mathematics",
+      "slug": "basic-mathematics",
+      "categoryId": "cat_core_maths",
+      "order": 1,
+      "isActive": true,
+      "description": "Precise dynamic calculation tools for Basic Mathematics.",
+      "createdAt": "2026-10-04T06:57:33.966Z",
+      "updatedAt": "2026-10-04T06:57:33.966Z"
+    },
+    {
+      "id": "sub_investments_savings",
+      "name": "Savings & Deposits",
+      "slug": "savings-deposits",
+      "categoryId": "cat_investments",
+      "order": 1,
+      "isActive": true,
+      "description": "Precise dynamic calculation tools for Savings & Deposits.",
+      "createdAt": "2026-10-04T06:57:33.966Z",
+      "updatedAt": "2026-10-04T06:57:33.966Z"
+    },
+    {
+      "id": "sub_investments_sip",
+      "name": "SIP & Wealth Planners",
+      "slug": "sip-wealth-planners",
+      "categoryId": "cat_investments",
+      "order": 2,
+      "isActive": true,
+      "description": "Precise dynamic calculation tools for SIP & Wealth Planners.",
+      "createdAt": "2026-10-04T06:57:33.966Z",
+      "updatedAt": "2026-10-04T06:57:33.966Z"
+    },
+    {
+      "id": "sub_retirement_planning",
+      "name": "Retirement Sizing",
+      "slug": "retirement-sizing",
+      "categoryId": "cat_retirement",
+      "order": 1,
+      "isActive": true,
+      "description": "Precise dynamic calculation tools for Retirement Sizing.",
+      "createdAt": "2026-10-04T06:57:33.966Z",
+      "updatedAt": "2026-10-04T06:57:33.966Z"
+    },
+    {
+      "id": "sub_health_metrics",
+      "name": "Body Metrics",
+      "slug": "body-metrics",
+      "categoryId": "cat_health_fitness",
+      "order": 1,
+      "isActive": true,
+      "description": "Precise dynamic calculation tools for Body Metrics.",
+      "createdAt": "2026-10-04T06:57:33.966Z",
+      "updatedAt": "2026-10-04T06:57:33.966Z"
+    },
+    {
+      "id": "sub_business_finance",
+      "name": "Business Finance",
+      "slug": "business-finance",
+      "categoryId": "cat_business",
+      "order": 1,
+      "isActive": true,
+      "description": "Precise dynamic calculation tools for Business Finance.",
+      "createdAt": "2026-10-04T06:57:33.966Z",
+      "updatedAt": "2026-10-04T06:57:33.966Z"
     }
   ],
   "calculators": [
@@ -589,7 +800,7 @@
       "isPopular": true,
       "createdAt": "2026-09-28T19:31:21.994Z",
       "updatedAt": "2026-09-29T15:14:06.345Z",
-      "viewsCount": 26,
+      "viewsCount": 28,
       "content": {
         "formulaExplanation": "",
         "usageInstructions": "",
@@ -1026,7 +1237,7 @@
           }
         ]
       },
-      "viewsCount": 2
+      "viewsCount": 3
     },
     {
       "id": "calc_tds_2026",
@@ -1175,7 +1386,7 @@
       "seoDescription": "Calculate monthly EMI, interest payable, total payment, and tax benefits under Sec 24(b) & Sec 80C.",
       "createdAt": "2026-09-29T16:55:49.825Z",
       "updatedAt": "2026-09-29T16:55:49.825Z",
-      "viewsCount": 4
+      "viewsCount": 6
     },
     {
       "id": "calc_personal_loan_emi_calculator",
@@ -1193,7 +1404,7 @@
       "seoDescription": "Calculate personal loan EMI, total interest, and processing fee breakdowns for amounts up to ₹40 Lakhs.",
       "createdAt": "2026-09-29T16:55:49.825Z",
       "updatedAt": "2026-09-29T16:55:49.825Z",
-      "viewsCount": 2
+      "viewsCount": 3
     },
     {
       "id": "calc_car_loan_emi_calculator",
@@ -2055,7 +2266,4884 @@
       "seoTitle": "Loan Cost & APR Comparison Calculator - True Borrowing Cost",
       "seoDescription": "Calculate net cash disbursed, total interest, total borrowing cost, and effective APR factoring in upfront fee deductions.",
       "createdAt": "2026-10-01T16:42:01.201Z",
-      "updatedAt": "2026-10-01T16:42:01.201Z"
+      "updatedAt": "2026-10-01T16:42:01.201Z",
+      "viewsCount": 1
+    },
+    {
+      "id": "calc_term_life_insurance",
+      "name": "Term Insurance Calculator",
+      "slug": "term-insurance-calculator",
+      "subcategoryId": "sub_ins_life",
+      "categoryId": "cat_1791092573880_j3of9",
+      "shortDescription": "Saves tax under Sec 80C, checks Sec 10(10D) compliance, and evaluates optimal sum assured needs based on outstanding debts and income multiple methodology with 0% GST.",
+      "seoTitle": "Term Life Insurance Calculator — Tax-Free Sizing Tool",
+      "seoDescription": "Calculate optimal term insurance requirements based on outstanding liabilities, savings, and income multiples with 0% GST and Section 10(10D) verification.",
+      "seoKeywords": "term insurance calculator, life cover sizing, 80c tax benefit, 10 10d eligibility, 0 gst life policy",
+      "isActive": true,
+      "isFeatured": true,
+      "isPopular": true,
+      "viewsCount": 15,
+      "fields": [
+        {
+          "id": "annualIncome",
+          "label": "Annual Income (₹)",
+          "type": "number",
+          "defaultValue": 1200000,
+          "min": 100000,
+          "max": 100000000,
+          "step": 50000,
+          "prefix": "₹"
+        },
+        {
+          "id": "currentAge",
+          "label": "Current Age",
+          "type": "slider",
+          "defaultValue": 30,
+          "min": 18,
+          "max": 65,
+          "step": 1,
+          "suffix": "yrs"
+        },
+        {
+          "id": "retirementAge",
+          "label": "Retirement Age",
+          "type": "slider",
+          "defaultValue": 60,
+          "min": 25,
+          "max": 75,
+          "step": 1,
+          "suffix": "yrs"
+        },
+        {
+          "id": "outstandingDebts",
+          "label": "Outstanding Debts (₹)",
+          "type": "number",
+          "defaultValue": 2000000,
+          "min": 0,
+          "max": 500000000,
+          "step": 50000,
+          "prefix": "₹"
+        },
+        {
+          "id": "existingLifeCover",
+          "label": "Existing Life Cover (₹)",
+          "type": "number",
+          "defaultValue": 1000000,
+          "min": 0,
+          "max": 200000000,
+          "step": 50000,
+          "prefix": "₹"
+        },
+        {
+          "id": "existingSavings",
+          "label": "Existing Savings & Assets (₹)",
+          "type": "number",
+          "defaultValue": 500000,
+          "min": 0,
+          "max": 200000000,
+          "step": 50000,
+          "prefix": "₹"
+        },
+        {
+          "id": "incomeMultipleYears",
+          "label": "Income Multiple Sizing (Years)",
+          "type": "slider",
+          "defaultValue": 15,
+          "min": 5,
+          "max": 30,
+          "step": 1,
+          "suffix": "yrs"
+        },
+        {
+          "id": "estimatedAnnualPremium",
+          "label": "Estimated Annual Premium (₹)",
+          "type": "number",
+          "defaultValue": 15000,
+          "min": 1000,
+          "max": 500000,
+          "step": 500,
+          "prefix": "₹"
+        },
+        {
+          "id": "isGroupPolicy",
+          "label": "Group Policy? (18% GST applies)",
+          "type": "checkbox",
+          "defaultValue": false
+        }
+      ],
+      "outputs": [
+        {
+          "id": "recommendedSumAssured",
+          "label": "Recommended Sum Assured",
+          "formula": "recommendedSumAssured",
+          "format": "currency_inr",
+          "highlight": true
+        },
+        {
+          "id": "netProtectionGap",
+          "label": "Net Protection Gap",
+          "formula": "netProtectionGap",
+          "format": "currency_inr"
+        },
+        {
+          "id": "applicableGstPercent",
+          "label": "Applicable GST Rate (%)",
+          "formula": "applicableGstPercent",
+          "format": "percent"
+        },
+        {
+          "id": "section80cTaxBenefit",
+          "label": "Sec 80C Deduction Limit",
+          "formula": "section80cTaxBenefit",
+          "format": "currency_inr"
+        }
+      ],
+      "faqs": [
+        {
+          "id": "faq_term_gst",
+          "question": "Are individual term insurance policies exempt from GST in India?",
+          "answer": "<p>Yes. Effective post September 22, 2025, individual life insurance policies are exempt from GST (0% rate). Group life plans remain subject to the standard 18% GST.</p>",
+          "isEnabled": true,
+          "order": 1
+        },
+        {
+          "id": "faq_term_10d",
+          "question": "How does Section 10(10D) affect term insurance proceeds?",
+          "answer": "<p>Under Section 10(10D) of the Income Tax Act, maturity or death benefit proceeds of a life insurance policy are tax-free only if the annual premium in any year does not exceed 10% of the sum assured. For term plans, the premium is typically under 1% of the sum assured, making them fully tax-exempt.</p>",
+          "isEnabled": true,
+          "order": 2
+        }
+      ],
+      "modules": [
+        {
+          "id": "mod_term-insurance-calculator_inputs",
+          "moduleId": "calculator-inputs",
+          "name": "Interactive Inputs & Controls",
+          "isEnabled": true,
+          "order": 1,
+          "settings": {
+            "title": "Coverage & Risk Inputs",
+            "layout": "grid_2_col",
+            "showResetButton": true
+          }
+        },
+        {
+          "id": "mod_term-insurance-calculator_results",
+          "moduleId": "result-cards",
+          "name": "Results & Sizing Summary",
+          "isEnabled": true,
+          "order": 2,
+          "settings": {
+            "title": "Recommended Sizing & Key Benefits",
+            "highlightCardStyle": "hero_primary",
+            "showShareActions": true
+          }
+        },
+        {
+          "id": "mod_term-insurance-calculator_chart",
+          "moduleId": "chart-visualizer",
+          "name": "Visual Distribution & Projections",
+          "isEnabled": true,
+          "order": 3,
+          "settings": {
+            "chartType": "donut",
+            "chartTitle": "Recommended Coverage Split",
+            "showLegend": true
+          }
+        },
+        {
+          "id": "mod_term-insurance-calculator_faqs",
+          "moduleId": "faq-accordion",
+          "name": "Frequently Asked Questions (FAQs)",
+          "isEnabled": true,
+          "order": 4,
+          "settings": {
+            "title": "Statutory & Planning FAQs"
+          }
+        }
+      ],
+      "contentSections": [
+        {
+          "id": "sec_term-insurance-calculator_overview",
+          "title": "Term Insurance Calculator Methodology & Planning Guide",
+          "htmlContent": "<p>All calculations are structured strictly in compliance with statutory Indian guidelines, insurance risk underwriting methodologies, and Section 80D or Section 80C parameters where applicable.</p><p>Use this tool to simulate coverage splits, determine maximum liabilities, and discover critical shortfalls due to high healthcare inflation or motor depreciation rates. Individual plans are presented with 0% GST reform adjustments for maximum pricing transparency.</p>",
+          "isEnabled": true,
+          "order": 1,
+          "sectionType": "overview"
+        }
+      ]
+    },
+    {
+      "id": "calc_life_needs_calculator",
+      "name": "Life Insurance Needs Calculator",
+      "slug": "life-insurance-needs-calculator",
+      "subcategoryId": "sub_ins_life",
+      "categoryId": "cat_1791092573880_j3of9",
+      "shortDescription": "Calculate your true life insurance needs by discounting future family living expenses and mapping children education and marriage goals.",
+      "seoTitle": "Life Insurance Needs Calculator — Goal-Based Cover Sizing",
+      "seoDescription": "Find your net life cover needs using a comprehensive goal-discounting approach, factoring in inflation, family support, and liabilities.",
+      "seoKeywords": "life needs calculator, financial goal protection, family protection planning, child education protection, inflation adjusted life insurance",
+      "isActive": true,
+      "isFeatured": false,
+      "isPopular": true,
+      "viewsCount": 11,
+      "fields": [
+        {
+          "id": "annualFamilyExpenses",
+          "label": "Annual Family Expenses today (₹)",
+          "type": "number",
+          "defaultValue": 600000,
+          "prefix": "₹"
+        },
+        {
+          "id": "yearsOfSupportNeeded",
+          "label": "Years of Support Needed",
+          "type": "slider",
+          "defaultValue": 20,
+          "min": 1,
+          "max": 50,
+          "suffix": "yrs"
+        },
+        {
+          "id": "childrenEducationCostToday",
+          "label": "Children Education Cost Today (₹)",
+          "type": "number",
+          "defaultValue": 2000000,
+          "prefix": "₹"
+        },
+        {
+          "id": "childrenMarriageCostToday",
+          "label": "Children Marriage Cost Today (₹)",
+          "type": "number",
+          "defaultValue": 1500000,
+          "prefix": "₹"
+        },
+        {
+          "id": "inflationRatePercent",
+          "label": "Expected Inflation Rate (% p.a.)",
+          "type": "slider",
+          "defaultValue": 6,
+          "min": 1,
+          "max": 15,
+          "suffix": "%"
+        },
+        {
+          "id": "expectedReturnRatePercent",
+          "label": "Expected Safe Investment Return (% p.a.)",
+          "type": "slider",
+          "defaultValue": 8,
+          "min": 1,
+          "max": 20,
+          "suffix": "%"
+        },
+        {
+          "id": "totalDebts",
+          "label": "Total Outstanding Debts (₹)",
+          "type": "number",
+          "defaultValue": 2500000,
+          "prefix": "₹"
+        },
+        {
+          "id": "currentAssets",
+          "label": "Current Assets & Savings (₹)",
+          "type": "number",
+          "defaultValue": 1000000,
+          "prefix": "₹"
+        },
+        {
+          "id": "existingLifeInsurance",
+          "label": "Existing Life Insurance Cover (₹)",
+          "type": "number",
+          "defaultValue": 2000000,
+          "prefix": "₹"
+        }
+      ],
+      "outputs": [
+        {
+          "id": "netInsuranceRequired",
+          "label": "Net Insurance Needed",
+          "formula": "netInsuranceRequired",
+          "format": "currency_inr",
+          "highlight": true
+        },
+        {
+          "id": "totalFinancialNeedToday",
+          "label": "Total Financial Need Today",
+          "formula": "totalFinancialNeedToday",
+          "format": "currency_inr"
+        },
+        {
+          "id": "futureInflationAdjustedGoals",
+          "label": "Education & Marriage Goals Sizing",
+          "formula": "futureInflationAdjustedGoals",
+          "format": "currency_inr"
+        },
+        {
+          "id": "existingResources",
+          "label": "Total Existing Financial Assets",
+          "formula": "existingResources",
+          "format": "currency_inr"
+        }
+      ],
+      "faqs": [
+        {
+          "id": "faq_needs_real",
+          "question": "Why does this calculator use a Real Rate of Return?",
+          "answer": "<p>To ensure your family is not vulnerable to price increases, we discount future family support using the \"real rate of return\" (inflation-adjusted return), compounding protection against purchasing-power erosion over decades.</p>",
+          "isEnabled": true,
+          "order": 1
+        }
+      ],
+      "modules": [
+        {
+          "id": "mod_life-insurance-needs-calculator_inputs",
+          "moduleId": "calculator-inputs",
+          "name": "Interactive Inputs & Controls",
+          "isEnabled": true,
+          "order": 1,
+          "settings": {
+            "title": "Coverage & Risk Inputs",
+            "layout": "grid_2_col",
+            "showResetButton": true
+          }
+        },
+        {
+          "id": "mod_life-insurance-needs-calculator_results",
+          "moduleId": "result-cards",
+          "name": "Results & Sizing Summary",
+          "isEnabled": true,
+          "order": 2,
+          "settings": {
+            "title": "Recommended Sizing & Key Benefits",
+            "highlightCardStyle": "hero_primary",
+            "showShareActions": true
+          }
+        },
+        {
+          "id": "mod_life-insurance-needs-calculator_chart",
+          "moduleId": "chart-visualizer",
+          "name": "Visual Distribution & Projections",
+          "isEnabled": true,
+          "order": 3,
+          "settings": {
+            "chartType": "donut",
+            "chartTitle": "Recommended Coverage Split",
+            "showLegend": true
+          }
+        },
+        {
+          "id": "mod_life-insurance-needs-calculator_faqs",
+          "moduleId": "faq-accordion",
+          "name": "Frequently Asked Questions (FAQs)",
+          "isEnabled": true,
+          "order": 4,
+          "settings": {
+            "title": "Statutory & Planning FAQs"
+          }
+        }
+      ],
+      "contentSections": [
+        {
+          "id": "sec_life-insurance-needs-calculator_overview",
+          "title": "Life Insurance Needs Calculator Methodology & Planning Guide",
+          "htmlContent": "<p>All calculations are structured strictly in compliance with statutory Indian guidelines, insurance risk underwriting methodologies, and Section 80D or Section 80C parameters where applicable.</p><p>Use this tool to simulate coverage splits, determine maximum liabilities, and discover critical shortfalls due to high healthcare inflation or motor depreciation rates. Individual plans are presented with 0% GST reform adjustments for maximum pricing transparency.</p>",
+          "isEnabled": true,
+          "order": 1,
+          "sectionType": "overview"
+        }
+      ]
+    },
+    {
+      "id": "calc_human_life_value",
+      "name": "Human Life Value (HLV) Calculator",
+      "slug": "human-life-value-calculator",
+      "subcategoryId": "sub_ins_life",
+      "categoryId": "cat_1791092573880_j3of9",
+      "shortDescription": "Examines the economic worth of human life by computing the present value of future lifetime earned income available to support dependents.",
+      "seoTitle": "Human Life Value (HLV) Calculator — Economic Sizing Tool",
+      "seoDescription": "Calculate your Human Life Value (HLV) in India using the present value of future earnings discount method to protect family income.",
+      "seoKeywords": "hlv calculator, human life value calculation, economic life value, present value of future income, discount rate lifetime earnings",
+      "isActive": true,
+      "isFeatured": false,
+      "isPopular": false,
+      "viewsCount": 8,
+      "fields": [
+        {
+          "id": "currentAge",
+          "label": "Current Age",
+          "type": "slider",
+          "defaultValue": 30,
+          "min": 18,
+          "max": 65,
+          "suffix": "yrs"
+        },
+        {
+          "id": "retirementAge",
+          "label": "Planned Retirement Age",
+          "type": "slider",
+          "defaultValue": 60,
+          "min": 25,
+          "max": 75,
+          "suffix": "yrs"
+        },
+        {
+          "id": "annualIncome",
+          "label": "Annual Earned Income (₹)",
+          "type": "number",
+          "defaultValue": 1500000,
+          "prefix": "₹"
+        },
+        {
+          "id": "personalExpensesPercent",
+          "label": "Personal Expenses & Taxes (%)",
+          "type": "slider",
+          "defaultValue": 30,
+          "min": 10,
+          "max": 80,
+          "suffix": "%"
+        },
+        {
+          "id": "expectedAnnualIncomeGrowthPercent",
+          "label": "Expected Salary Growth Rate (%)",
+          "type": "slider",
+          "defaultValue": 8,
+          "min": 0,
+          "max": 20,
+          "suffix": "%"
+        },
+        {
+          "id": "discountRatePercent",
+          "label": "Discount Rate (%)",
+          "type": "slider",
+          "defaultValue": 7,
+          "min": 1,
+          "max": 20,
+          "suffix": "%"
+        }
+      ],
+      "outputs": [
+        {
+          "id": "humanLifeValue",
+          "label": "Human Life Value (HLV)",
+          "formula": "humanLifeValue",
+          "format": "currency_inr",
+          "highlight": true
+        },
+        {
+          "id": "totalLifetimeNetEarningsPV",
+          "label": "Lifetime Net Personal Earnings PV",
+          "formula": "totalLifetimeNetEarningsPV",
+          "format": "currency_inr"
+        },
+        {
+          "id": "effectiveWorkingYears",
+          "label": "Remaining Career Span",
+          "formula": "effectiveWorkingYears",
+          "format": "integer",
+          "suffix": "years"
+        }
+      ],
+      "faqs": [
+        {
+          "id": "faq_hlv_def",
+          "question": "What is Human Life Value (HLV) and why is it important?",
+          "answer": "<p>Human Life Value measures the economic loss your dependents would face if your earning capacity ceased. It forms the strict mathematical ceiling or benchmark used by professional underwriters to issue maximum term life cover.</p>",
+          "isEnabled": true,
+          "order": 1
+        }
+      ],
+      "modules": [
+        {
+          "id": "mod_human-life-value-calculator_inputs",
+          "moduleId": "calculator-inputs",
+          "name": "Interactive Inputs & Controls",
+          "isEnabled": true,
+          "order": 1,
+          "settings": {
+            "title": "Coverage & Risk Inputs",
+            "layout": "grid_2_col",
+            "showResetButton": true
+          }
+        },
+        {
+          "id": "mod_human-life-value-calculator_results",
+          "moduleId": "result-cards",
+          "name": "Results & Sizing Summary",
+          "isEnabled": true,
+          "order": 2,
+          "settings": {
+            "title": "Recommended Sizing & Key Benefits",
+            "highlightCardStyle": "hero_primary",
+            "showShareActions": true
+          }
+        },
+        {
+          "id": "mod_human-life-value-calculator_chart",
+          "moduleId": "chart-visualizer",
+          "name": "Visual Distribution & Projections",
+          "isEnabled": true,
+          "order": 3,
+          "settings": {
+            "chartType": "donut",
+            "chartTitle": "Recommended Coverage Split",
+            "showLegend": true
+          }
+        },
+        {
+          "id": "mod_human-life-value-calculator_faqs",
+          "moduleId": "faq-accordion",
+          "name": "Frequently Asked Questions (FAQs)",
+          "isEnabled": true,
+          "order": 4,
+          "settings": {
+            "title": "Statutory & Planning FAQs"
+          }
+        }
+      ],
+      "contentSections": [
+        {
+          "id": "sec_human-life-value-calculator_overview",
+          "title": "Human Life Value (HLV) Calculator Methodology & Planning Guide",
+          "htmlContent": "<p>All calculations are structured strictly in compliance with statutory Indian guidelines, insurance risk underwriting methodologies, and Section 80D or Section 80C parameters where applicable.</p><p>Use this tool to simulate coverage splits, determine maximum liabilities, and discover critical shortfalls due to high healthcare inflation or motor depreciation rates. Individual plans are presented with 0% GST reform adjustments for maximum pricing transparency.</p>",
+          "isEnabled": true,
+          "order": 1,
+          "sectionType": "overview"
+        }
+      ]
+    },
+    {
+      "id": "calc_health_insurance",
+      "name": "Health Insurance Premium & Sizing Calculator",
+      "slug": "health-insurance-calculator",
+      "subcategoryId": "sub_ins_health",
+      "categoryId": "cat_1791092573880_j3of9",
+      "shortDescription": "Calculate optimal health insurance cover sizing and estimate premium ranges while calculating tax savings across separate Section 80D limits.",
+      "seoTitle": "Health Insurance Calculator — Premium & Sec 80D Sizer",
+      "seoDescription": "Estimate optimal health cover requirements and separate Section 80D tax deductions for self and senior parents in India with 0% GST.",
+      "seoKeywords": "health insurance calculator, section 80d tax benefit, family floater cover, metro room category, parent health 80d limit",
+      "isActive": true,
+      "isFeatured": true,
+      "isPopular": true,
+      "viewsCount": 22,
+      "fields": [
+        {
+          "id": "ageOfEldestMember",
+          "label": "Age of Eldest Family Member",
+          "type": "slider",
+          "defaultValue": 35,
+          "min": 18,
+          "max": 85,
+          "suffix": "yrs"
+        },
+        {
+          "id": "cityTier",
+          "label": "City Tier / Residence",
+          "type": "select",
+          "defaultValue": "TIER_1",
+          "options": [
+            {
+              "label": "Tier 1 Metro (Mumbai, Delhi, etc.)",
+              "value": "TIER_1"
+            },
+            {
+              "label": "Tier 2 / Non-Metro",
+              "value": "TIER_2"
+            }
+          ]
+        },
+        {
+          "id": "familyMembersCount",
+          "label": "Family Members to Cover",
+          "type": "slider",
+          "defaultValue": 4,
+          "min": 1,
+          "max": 10,
+          "suffix": "members"
+        },
+        {
+          "id": "preferredRoomCategory",
+          "label": "Hospital Room Type Preference",
+          "type": "select",
+          "defaultValue": "SINGLE_PRIVATE",
+          "options": [
+            {
+              "label": "Single Private A/C Room",
+              "value": "SINGLE_PRIVATE"
+            },
+            {
+              "label": "Shared / Twin Room",
+              "value": "SHARED"
+            },
+            {
+              "label": "Suite / Luxury Room",
+              "value": "SUITE"
+            }
+          ]
+        },
+        {
+          "id": "includeParents80D",
+          "label": "Include Parents in Section 80D Sizing?",
+          "type": "checkbox",
+          "defaultValue": true
+        },
+        {
+          "id": "parentsAgeAbove60",
+          "label": "Are Parents Senior Citizens (Age 60+)?",
+          "type": "checkbox",
+          "defaultValue": true
+        },
+        {
+          "id": "isGroupPolicy",
+          "label": "Is Group Health Policy? (18% GST applies)",
+          "type": "checkbox",
+          "defaultValue": false
+        }
+      ],
+      "outputs": [
+        {
+          "id": "recommendedSumInsured",
+          "label": "Recommended Sum Insured",
+          "formula": "recommendedSumInsured",
+          "format": "currency_inr",
+          "highlight": true
+        },
+        {
+          "id": "estimatedBasePremium",
+          "label": "Estimated Annual Premium (₹)",
+          "formula": "estimatedBasePremium",
+          "format": "currency_inr"
+        },
+        {
+          "id": "totalSection80dTaxDeductionLimit",
+          "label": "Total Section 80D Deduction Limit",
+          "formula": "totalSection80dTaxDeductionLimit",
+          "format": "currency_inr"
+        },
+        {
+          "id": "selfFamily80dBucket",
+          "label": "Self/Family Deduction Limit",
+          "formula": "selfFamily80dBucket",
+          "format": "currency_inr"
+        },
+        {
+          "id": "parents80dBucket",
+          "label": "Parents Deduction Limit",
+          "formula": "parents80dBucket",
+          "format": "currency_inr"
+        },
+        {
+          "id": "applicableGstPercent",
+          "label": "Applicable GST Rate (%)",
+          "formula": "applicableGstPercent",
+          "format": "percent"
+        }
+      ],
+      "faqs": [
+        {
+          "id": "faq_health_80d_limit",
+          "question": "How is the Section 80D health insurance deduction calculated?",
+          "answer": "<p>Deduction is split into separate buckets: Self/Family (under 60 is ₹25,000; over 60 senior citizen is ₹50,000) and Parents (under 60 is ₹25,000; over 60 is ₹50,000). Total possible deduction reaches ₹1,00,000 if both are senior citizens.</p>",
+          "isEnabled": true,
+          "order": 1
+        },
+        {
+          "id": "faq_health_gst",
+          "question": "What is the GST rate on health insurance policies in India?",
+          "answer": "<p>Effective post Sept 22, 2025, individual and family floater health policies are exempt from GST (0%). Group and business health policies remain taxed at 18% GST.</p>",
+          "isEnabled": true,
+          "order": 2
+        }
+      ],
+      "modules": [
+        {
+          "id": "mod_health-insurance-calculator_inputs",
+          "moduleId": "calculator-inputs",
+          "name": "Interactive Inputs & Controls",
+          "isEnabled": true,
+          "order": 1,
+          "settings": {
+            "title": "Coverage & Risk Inputs",
+            "layout": "grid_2_col",
+            "showResetButton": true
+          }
+        },
+        {
+          "id": "mod_health-insurance-calculator_results",
+          "moduleId": "result-cards",
+          "name": "Results & Sizing Summary",
+          "isEnabled": true,
+          "order": 2,
+          "settings": {
+            "title": "Recommended Sizing & Key Benefits",
+            "highlightCardStyle": "hero_primary",
+            "showShareActions": true
+          }
+        },
+        {
+          "id": "mod_health-insurance-calculator_chart",
+          "moduleId": "chart-visualizer",
+          "name": "Visual Distribution & Projections",
+          "isEnabled": true,
+          "order": 3,
+          "settings": {
+            "chartType": "donut",
+            "chartTitle": "Recommended Coverage Split",
+            "showLegend": true
+          }
+        },
+        {
+          "id": "mod_health-insurance-calculator_faqs",
+          "moduleId": "faq-accordion",
+          "name": "Frequently Asked Questions (FAQs)",
+          "isEnabled": true,
+          "order": 4,
+          "settings": {
+            "title": "Statutory & Planning FAQs"
+          }
+        }
+      ],
+      "contentSections": [
+        {
+          "id": "sec_health-insurance-calculator_overview",
+          "title": "Health Insurance Premium & Sizing Calculator Methodology & Planning Guide",
+          "htmlContent": "<p>All calculations are structured strictly in compliance with statutory Indian guidelines, insurance risk underwriting methodologies, and Section 80D or Section 80C parameters where applicable.</p><p>Use this tool to simulate coverage splits, determine maximum liabilities, and discover critical shortfalls due to high healthcare inflation or motor depreciation rates. Individual plans are presented with 0% GST reform adjustments for maximum pricing transparency.</p>",
+          "isEnabled": true,
+          "order": 1,
+          "sectionType": "overview"
+        }
+      ]
+    },
+    {
+      "id": "calc_health_coverage",
+      "name": "Health Insurance Adequacy & Coverage Calculator",
+      "slug": "health-insurance-coverage-calculator",
+      "subcategoryId": "sub_ins_health",
+      "categoryId": "cat_1791092573880_j3of9",
+      "shortDescription": "Compound your current coverage against medical inflation to discover treatment cost shortfalls and optimal top-up recommendations.",
+      "seoTitle": "Health Insurance Adequacy Calculator — Medical Inflation Sizer",
+      "seoDescription": "Ensure your medical coverage is adequate in the future by compounding treatment costs against high double-digit medical inflation.",
+      "seoKeywords": "medical inflation calculator, healthcare top-up estimator, sum insured adequacy, buffer protection, health cover shortfall",
+      "isActive": true,
+      "isFeatured": false,
+      "isPopular": false,
+      "viewsCount": 14,
+      "fields": [
+        {
+          "id": "currentCoverageAmount",
+          "label": "Current Coverage Amount (₹)",
+          "type": "number",
+          "defaultValue": 500000,
+          "prefix": "₹"
+        },
+        {
+          "id": "medicalInflationRatePercent",
+          "label": "Annual Medical Inflation Rate (%)",
+          "type": "slider",
+          "defaultValue": 12,
+          "min": 5,
+          "max": 25,
+          "suffix": "%"
+        },
+        {
+          "id": "yearsInFuture",
+          "label": "Years in Future",
+          "type": "slider",
+          "defaultValue": 10,
+          "min": 1,
+          "max": 30,
+          "suffix": "yrs"
+        },
+        {
+          "id": "selfAgeAbove60",
+          "label": "Are you a Senior Citizen (Age 60+)?",
+          "type": "checkbox",
+          "defaultValue": false
+        },
+        {
+          "id": "includeParentCover80D",
+          "label": "Include parents in tax sizing?",
+          "type": "checkbox",
+          "defaultValue": true
+        },
+        {
+          "id": "parentsAgeAbove60",
+          "label": "Are Parents Senior Citizens?",
+          "type": "checkbox",
+          "defaultValue": true
+        },
+        {
+          "id": "isGroupPolicy",
+          "label": "Group Policy? (18% GST)",
+          "type": "checkbox",
+          "defaultValue": false
+        }
+      ],
+      "outputs": [
+        {
+          "id": "projectedFutureTreatmentCost",
+          "label": "Future Treatment Cost (Inflation-Adjusted)",
+          "formula": "projectedFutureTreatmentCost",
+          "format": "currency_inr",
+          "highlight": true
+        },
+        {
+          "id": "coverageShortfall",
+          "label": "Estimated Coverage Shortfall",
+          "formula": "coverageShortfall",
+          "format": "currency_inr"
+        },
+        {
+          "id": "totalSection80dTaxBenefitAvailable",
+          "label": "Section 80D Tax Deduction limit",
+          "formula": "totalSection80dTaxBenefitAvailable",
+          "format": "currency_inr"
+        }
+      ],
+      "faqs": [
+        {
+          "id": "faq_med_inflation",
+          "question": "What is medical inflation, and why is it so high in India?",
+          "answer": "<p>Medical inflation in India is typically around 12% to 15% per annum, double the rate of standard retail inflation. This quickly renders flat, standard ₹5 Lakh health covers highly inadequate over a 5 to 10 year timeline.</p>",
+          "isEnabled": true,
+          "order": 1
+        }
+      ],
+      "modules": [
+        {
+          "id": "mod_health-insurance-coverage-calculator_inputs",
+          "moduleId": "calculator-inputs",
+          "name": "Interactive Inputs & Controls",
+          "isEnabled": true,
+          "order": 1,
+          "settings": {
+            "title": "Coverage & Risk Inputs",
+            "layout": "grid_2_col",
+            "showResetButton": true
+          }
+        },
+        {
+          "id": "mod_health-insurance-coverage-calculator_results",
+          "moduleId": "result-cards",
+          "name": "Results & Sizing Summary",
+          "isEnabled": true,
+          "order": 2,
+          "settings": {
+            "title": "Recommended Sizing & Key Benefits",
+            "highlightCardStyle": "hero_primary",
+            "showShareActions": true
+          }
+        },
+        {
+          "id": "mod_health-insurance-coverage-calculator_chart",
+          "moduleId": "chart-visualizer",
+          "name": "Visual Distribution & Projections",
+          "isEnabled": true,
+          "order": 3,
+          "settings": {
+            "chartType": "donut",
+            "chartTitle": "Recommended Coverage Split",
+            "showLegend": true
+          }
+        },
+        {
+          "id": "mod_health-insurance-coverage-calculator_faqs",
+          "moduleId": "faq-accordion",
+          "name": "Frequently Asked Questions (FAQs)",
+          "isEnabled": true,
+          "order": 4,
+          "settings": {
+            "title": "Statutory & Planning FAQs"
+          }
+        }
+      ],
+      "contentSections": [
+        {
+          "id": "sec_health-insurance-coverage-calculator_overview",
+          "title": "Health Insurance Adequacy & Coverage Calculator Methodology & Planning Guide",
+          "htmlContent": "<p>All calculations are structured strictly in compliance with statutory Indian guidelines, insurance risk underwriting methodologies, and Section 80D or Section 80C parameters where applicable.</p><p>Use this tool to simulate coverage splits, determine maximum liabilities, and discover critical shortfalls due to high healthcare inflation or motor depreciation rates. Individual plans are presented with 0% GST reform adjustments for maximum pricing transparency.</p>",
+          "isEnabled": true,
+          "order": 1,
+          "sectionType": "overview"
+        }
+      ]
+    },
+    {
+      "id": "calc_car_insurance",
+      "name": "Car Insurance IDV & Premium Estimator",
+      "slug": "car-insurance-calculator",
+      "subcategoryId": "sub_ins_vehicle",
+      "categoryId": "cat_1791092573880_j3of9",
+      "shortDescription": "Calculate your car Insured Declared Value (IDV) using IRDAI age-based depreciation schedules and calculate No Claim Bonus (NCB) discount ladders.",
+      "seoTitle": "Car Insurance IDV & Premium Calculator — IRDAI Rules",
+      "seoDescription": "Estimate your car’s Insured Declared Value (IDV) using the statutory age-based depreciation rates and calculate NCB premium discounts.",
+      "seoKeywords": "car idv calculator, car depreciation schedule, irdai motor rules, car insurance premium, no claim bonus discount",
+      "isActive": true,
+      "isFeatured": true,
+      "isPopular": true,
+      "viewsCount": 30,
+      "fields": [
+        {
+          "id": "manufacturerListedExShowroomPrice",
+          "label": "Manufacturer Ex-Showroom Price (₹)",
+          "type": "number",
+          "defaultValue": 1000000,
+          "prefix": "₹"
+        },
+        {
+          "id": "vehicleAgeMonths",
+          "label": "Vehicle Age (Months)",
+          "type": "slider",
+          "defaultValue": 18,
+          "min": 0,
+          "max": 120,
+          "suffix": "months"
+        },
+        {
+          "id": "claimFreeYearsNCB",
+          "label": "Claim-Free Years (for NCB Discount)",
+          "type": "slider",
+          "defaultValue": 2,
+          "min": 0,
+          "max": 5,
+          "suffix": "yrs"
+        },
+        {
+          "id": "engineCapacityCC",
+          "label": "Engine Capacity (CC)",
+          "type": "slider",
+          "defaultValue": 1200,
+          "min": 600,
+          "max": 5000,
+          "suffix": "cc"
+        }
+      ],
+      "outputs": [
+        {
+          "id": "insuredDeclaredValueIDV",
+          "label": "Insured Declared Value (IDV)",
+          "formula": "insuredDeclaredValueIDV",
+          "format": "currency_inr",
+          "highlight": true
+        },
+        {
+          "id": "estimatedTotalPremium",
+          "label": "Estimated Annual Premium (₹)",
+          "formula": "estimatedTotalPremium",
+          "format": "currency_inr"
+        },
+        {
+          "id": "appliedDepreciationPercent",
+          "label": "IDV Depreciation Rate (%)",
+          "formula": "appliedDepreciationPercent",
+          "format": "percent"
+        },
+        {
+          "id": "noClaimBonusPercent",
+          "label": "No Claim Bonus (NCB) Discount (%)",
+          "formula": "noClaimBonusPercent",
+          "format": "percent"
+        }
+      ],
+      "faqs": [
+        {
+          "id": "faq_motor_idv",
+          "question": "How is Insured Declared Value (IDV) calculated according to IRDAI rules?",
+          "answer": "<p>IDV represents the maximum sum insured of your vehicle. It is calculated by depreciating the manufacturer ex-showroom price based on vehicle age: ≤ 6 months is 5% depreciation, 6-12 months is 15%, 1-2 years is 20%, 2-3 years is 30%, 3-4 years is 40%, 4-5 years is 50%.</p>",
+          "isEnabled": true,
+          "order": 1
+        },
+        {
+          "id": "faq_ncb_ladder",
+          "question": "What is the No Claim Bonus (NCB) slab structure?",
+          "answer": "<p>NCB is a discount on the Own Damage premium awarded for claim-free years: 1 year claim-free is 20% discount, 2 years is 25%, 3 years is 35%, 4 years is 45%, 5 years is 50% discount. NCB resets to 0% if any claim is filed.</p>",
+          "isEnabled": true,
+          "order": 2
+        }
+      ],
+      "modules": [
+        {
+          "id": "mod_car-insurance-calculator_inputs",
+          "moduleId": "calculator-inputs",
+          "name": "Interactive Inputs & Controls",
+          "isEnabled": true,
+          "order": 1,
+          "settings": {
+            "title": "Coverage & Risk Inputs",
+            "layout": "grid_2_col",
+            "showResetButton": true
+          }
+        },
+        {
+          "id": "mod_car-insurance-calculator_results",
+          "moduleId": "result-cards",
+          "name": "Results & Sizing Summary",
+          "isEnabled": true,
+          "order": 2,
+          "settings": {
+            "title": "Recommended Sizing & Key Benefits",
+            "highlightCardStyle": "hero_primary",
+            "showShareActions": true
+          }
+        },
+        {
+          "id": "mod_car-insurance-calculator_chart",
+          "moduleId": "chart-visualizer",
+          "name": "Visual Distribution & Projections",
+          "isEnabled": true,
+          "order": 3,
+          "settings": {
+            "chartType": "donut",
+            "chartTitle": "Recommended Coverage Split",
+            "showLegend": true
+          }
+        },
+        {
+          "id": "mod_car-insurance-calculator_faqs",
+          "moduleId": "faq-accordion",
+          "name": "Frequently Asked Questions (FAQs)",
+          "isEnabled": true,
+          "order": 4,
+          "settings": {
+            "title": "Statutory & Planning FAQs"
+          }
+        }
+      ],
+      "contentSections": [
+        {
+          "id": "sec_car-insurance-calculator_overview",
+          "title": "Car Insurance IDV & Premium Estimator Methodology & Planning Guide",
+          "htmlContent": "<p>All calculations are structured strictly in compliance with statutory Indian guidelines, insurance risk underwriting methodologies, and Section 80D or Section 80C parameters where applicable.</p><p>Use this tool to simulate coverage splits, determine maximum liabilities, and discover critical shortfalls due to high healthcare inflation or motor depreciation rates. Individual plans are presented with 0% GST reform adjustments for maximum pricing transparency.</p>",
+          "isEnabled": true,
+          "order": 1,
+          "sectionType": "overview"
+        }
+      ]
+    },
+    {
+      "id": "calc_bike_insurance",
+      "name": "Two-Wheeler Insurance IDV & Premium Estimator",
+      "slug": "bike-insurance-calculator",
+      "subcategoryId": "sub_ins_vehicle",
+      "categoryId": "cat_1791092573880_j3of9",
+      "shortDescription": "Calculate your bike or scooter IDV according to IRDAI schedules and check No Claim Bonus discounts with third-party engine slabs.",
+      "seoTitle": "Two-Wheeler Insurance IDV & Premium Calculator",
+      "seoDescription": "Estimate your bike’s Insured Declared Value (IDV) and annual insurance premiums under statutory IRDAI motor guidelines.",
+      "seoKeywords": "bike idv calculator, scooter insurance premium, two wheeler ncb discount, bike depreciation scale, third party liability cc",
+      "isActive": true,
+      "isFeatured": false,
+      "isPopular": false,
+      "viewsCount": 16,
+      "fields": [
+        {
+          "id": "manufacturerListedExShowroomPrice",
+          "label": "Manufacturer Ex-Showroom Price (₹)",
+          "type": "number",
+          "defaultValue": 150000,
+          "prefix": "₹"
+        },
+        {
+          "id": "bikeAgeMonths",
+          "label": "Vehicle Age (Months)",
+          "type": "slider",
+          "defaultValue": 8,
+          "min": 0,
+          "max": 120,
+          "suffix": "months"
+        },
+        {
+          "id": "claimFreeYearsNCB",
+          "label": "Claim-Free Years (NCB)",
+          "type": "slider",
+          "defaultValue": 1,
+          "min": 0,
+          "max": 5,
+          "suffix": "yrs"
+        },
+        {
+          "id": "engineCapacityCC",
+          "label": "Engine Capacity (CC)",
+          "type": "slider",
+          "defaultValue": 125,
+          "min": 50,
+          "max": 2000,
+          "suffix": "cc"
+        }
+      ],
+      "outputs": [
+        {
+          "id": "insuredDeclaredValueIDV",
+          "label": "Insured Declared Value (IDV)",
+          "formula": "insuredDeclaredValueIDV",
+          "format": "currency_inr",
+          "highlight": true
+        },
+        {
+          "id": "estimatedTotalPremium",
+          "label": "Estimated Annual Premium (₹)",
+          "formula": "estimatedTotalPremium",
+          "format": "currency_inr"
+        },
+        {
+          "id": "appliedDepreciationPercent",
+          "label": "IDV Depreciation Rate (%)",
+          "formula": "appliedDepreciationPercent",
+          "format": "percent"
+        },
+        {
+          "id": "noClaimBonusPercent",
+          "label": "No Claim Bonus (NCB) Discount (%)",
+          "formula": "noClaimBonusPercent",
+          "format": "percent"
+        }
+      ],
+      "faqs": [
+        {
+          "id": "faq_bike_dep",
+          "question": "How is a two-wheeler IDV calculated?",
+          "answer": "<p>The exact same age-depreciation schedules defined by IRDAI apply to two-wheelers, starting from 5% for brand-new bikes up to 50% for 5-year-old vehicles.</p>",
+          "isEnabled": true,
+          "order": 1
+        }
+      ],
+      "modules": [
+        {
+          "id": "mod_bike-insurance-calculator_inputs",
+          "moduleId": "calculator-inputs",
+          "name": "Interactive Inputs & Controls",
+          "isEnabled": true,
+          "order": 1,
+          "settings": {
+            "title": "Coverage & Risk Inputs",
+            "layout": "grid_2_col",
+            "showResetButton": true
+          }
+        },
+        {
+          "id": "mod_bike-insurance-calculator_results",
+          "moduleId": "result-cards",
+          "name": "Results & Sizing Summary",
+          "isEnabled": true,
+          "order": 2,
+          "settings": {
+            "title": "Recommended Sizing & Key Benefits",
+            "highlightCardStyle": "hero_primary",
+            "showShareActions": true
+          }
+        },
+        {
+          "id": "mod_bike-insurance-calculator_chart",
+          "moduleId": "chart-visualizer",
+          "name": "Visual Distribution & Projections",
+          "isEnabled": true,
+          "order": 3,
+          "settings": {
+            "chartType": "donut",
+            "chartTitle": "Recommended Coverage Split",
+            "showLegend": true
+          }
+        },
+        {
+          "id": "mod_bike-insurance-calculator_faqs",
+          "moduleId": "faq-accordion",
+          "name": "Frequently Asked Questions (FAQs)",
+          "isEnabled": true,
+          "order": 4,
+          "settings": {
+            "title": "Statutory & Planning FAQs"
+          }
+        }
+      ],
+      "contentSections": [
+        {
+          "id": "sec_bike-insurance-calculator_overview",
+          "title": "Two-Wheeler Insurance IDV & Premium Estimator Methodology & Planning Guide",
+          "htmlContent": "<p>All calculations are structured strictly in compliance with statutory Indian guidelines, insurance risk underwriting methodologies, and Section 80D or Section 80C parameters where applicable.</p><p>Use this tool to simulate coverage splits, determine maximum liabilities, and discover critical shortfalls due to high healthcare inflation or motor depreciation rates. Individual plans are presented with 0% GST reform adjustments for maximum pricing transparency.</p>",
+          "isEnabled": true,
+          "order": 1,
+          "sectionType": "overview"
+        }
+      ]
+    },
+    {
+      "id": "calc_travel_insurance",
+      "name": "Travel Insurance Coverage & Premium Calculator",
+      "slug": "travel-insurance-calculator",
+      "subcategoryId": "sub_ins_travel",
+      "categoryId": "cat_1791092573880_j3of9",
+      "shortDescription": "Calculate optimal medical coverage sizes and estimate international travel insurance premiums based on destination risk coefficients.",
+      "seoTitle": "Travel Insurance Calculator — Premium & Coverage Sizer",
+      "seoDescription": "Sizing tool for international medical travel insurance with destination-risk coefficients and age-duration curves.",
+      "seoKeywords": "travel insurance premium, schengen visa medical cover, us canada trip cover, baggage delay delay indemnity, travel hazard risk factor",
+      "isActive": true,
+      "isFeatured": false,
+      "isPopular": false,
+      "viewsCount": 10,
+      "fields": [
+        {
+          "id": "destinationRegion",
+          "label": "Travel Destination",
+          "type": "select",
+          "defaultValue": "USA_CANADA",
+          "options": [
+            {
+              "label": "USA & Canada (High Risk/Cost)",
+              "value": "USA_CANADA"
+            },
+            {
+              "label": "Schengen Area / Europe (Medium Cost)",
+              "value": "SCHENGEN"
+            },
+            {
+              "label": "Asia & Other Regions (Standard Risk)",
+              "value": "ASIA_OTHER"
+            }
+          ]
+        },
+        {
+          "id": "tripDurationDays",
+          "label": "Trip Duration (Days)",
+          "type": "slider",
+          "defaultValue": 15,
+          "min": 1,
+          "max": 180,
+          "suffix": "days"
+        },
+        {
+          "id": "travelerAge",
+          "label": "Traveler Age",
+          "type": "slider",
+          "defaultValue": 35,
+          "min": 1,
+          "max": 85,
+          "suffix": "yrs"
+        }
+      ],
+      "outputs": [
+        {
+          "id": "estimatedTotalPremiumInr",
+          "label": "Estimated Total Premium (₹)",
+          "formula": "estimatedTotalPremiumInr",
+          "format": "currency_inr",
+          "highlight": true
+        },
+        {
+          "id": "recommendedMedicalSumInsuredUsd",
+          "label": "Recommended Medical Cover (USD)",
+          "formula": "recommendedMedicalSumInsuredUsd",
+          "format": "integer",
+          "prefix": "$"
+        },
+        {
+          "id": "baggageDelayCoverUsd",
+          "label": "Baggage / Delay Coverage (USD)",
+          "formula": "baggageDelayCoverUsd",
+          "format": "integer",
+          "prefix": "$"
+        }
+      ],
+      "faqs": [
+        {
+          "id": "faq_travel_req",
+          "question": "Is medical insurance mandatory for a Schengen Visa?",
+          "answer": "<p>Yes. Schengen Visa rules mandate international travel insurance with a minimum medical coverage of €30,000 or $50,000, including repatriation of remains. USA/Canada trips don’t have visa mandates but healthcare costs make $250,000+ highly recommended.</p>",
+          "isEnabled": true,
+          "order": 1
+        }
+      ],
+      "modules": [
+        {
+          "id": "mod_travel-insurance-calculator_inputs",
+          "moduleId": "calculator-inputs",
+          "name": "Interactive Inputs & Controls",
+          "isEnabled": true,
+          "order": 1,
+          "settings": {
+            "title": "Coverage & Risk Inputs",
+            "layout": "grid_2_col",
+            "showResetButton": true
+          }
+        },
+        {
+          "id": "mod_travel-insurance-calculator_results",
+          "moduleId": "result-cards",
+          "name": "Results & Sizing Summary",
+          "isEnabled": true,
+          "order": 2,
+          "settings": {
+            "title": "Recommended Sizing & Key Benefits",
+            "highlightCardStyle": "hero_primary",
+            "showShareActions": true
+          }
+        },
+        {
+          "id": "mod_travel-insurance-calculator_chart",
+          "moduleId": "chart-visualizer",
+          "name": "Visual Distribution & Projections",
+          "isEnabled": true,
+          "order": 3,
+          "settings": {
+            "chartType": "donut",
+            "chartTitle": "Recommended Coverage Split",
+            "showLegend": true
+          }
+        },
+        {
+          "id": "mod_travel-insurance-calculator_faqs",
+          "moduleId": "faq-accordion",
+          "name": "Frequently Asked Questions (FAQs)",
+          "isEnabled": true,
+          "order": 4,
+          "settings": {
+            "title": "Statutory & Planning FAQs"
+          }
+        }
+      ],
+      "contentSections": [
+        {
+          "id": "sec_travel-insurance-calculator_overview",
+          "title": "Travel Insurance Coverage & Premium Calculator Methodology & Planning Guide",
+          "htmlContent": "<p>All calculations are structured strictly in compliance with statutory Indian guidelines, insurance risk underwriting methodologies, and Section 80D or Section 80C parameters where applicable.</p><p>Use this tool to simulate coverage splits, determine maximum liabilities, and discover critical shortfalls due to high healthcare inflation or motor depreciation rates. Individual plans are presented with 0% GST reform adjustments for maximum pricing transparency.</p>",
+          "isEnabled": true,
+          "order": 1,
+          "sectionType": "overview"
+        }
+      ]
+    },
+    {
+      "id": "calc_personal_accident_cover",
+      "name": "Personal Accident Coverage Calculator",
+      "slug": "personal-accident-cover-calculator",
+      "subcategoryId": "sub_ins_protection",
+      "categoryId": "cat_1791092573880_j3of9",
+      "shortDescription": "Size recommended covers for accidental death, permanent disablement, and weekly temporary total disability (TTD) replacement benefits.",
+      "seoTitle": "Personal Accident Insurance Calculator — Disability Sizing",
+      "seoDescription": "Calculate accidental death cover requirements and temporary disability weekly benefits based on your annual earned income in India.",
+      "seoKeywords": "personal accident cover, accidental death sum insured, temporary total disability benefit, ttd weekly payout, disability cover scale",
+      "isActive": true,
+      "isFeatured": true,
+      "isPopular": false,
+      "viewsCount": 13,
+      "fields": [
+        {
+          "id": "annualEarnedIncome",
+          "label": "Annual Earned Income (₹)",
+          "type": "number",
+          "defaultValue": 1000000,
+          "prefix": "₹"
+        },
+        {
+          "id": "outstandingDebts",
+          "label": "Outstanding Financial Debts (₹)",
+          "type": "number",
+          "defaultValue": 1500000,
+          "prefix": "₹"
+        }
+      ],
+      "outputs": [
+        {
+          "id": "recommendedAccidentalDeathCover",
+          "label": "Accidental Death Sizing",
+          "formula": "recommendedAccidentalDeathCover",
+          "format": "currency_inr",
+          "highlight": true
+        },
+        {
+          "id": "permanentDisabilityCover",
+          "label": "Permanent Disablement Cover",
+          "formula": "permanentDisabilityCover",
+          "format": "currency_inr"
+        },
+        {
+          "id": "temporaryTotalDisabilityWeeklyBenefit",
+          "label": "Weekly Temporary Disability (TTD) Benefit",
+          "formula": "temporaryTotalDisabilityWeeklyBenefit",
+          "format": "currency_inr"
+        }
+      ],
+      "faqs": [
+        {
+          "id": "faq_accident_ttd",
+          "question": "What is Temporary Total Disability (TTD) and how is it sized?",
+          "answer": "<p>TTD cover pays a weekly cash benefit if an accident temporarily prevents you from working. It is typically sized at 1% of the total sum insured per week, capped at ₹50,000 or your actual weekly net salary to replace lost cash flow during recovery.</p>",
+          "isEnabled": true,
+          "order": 1
+        }
+      ],
+      "modules": [
+        {
+          "id": "mod_personal-accident-cover-calculator_inputs",
+          "moduleId": "calculator-inputs",
+          "name": "Interactive Inputs & Controls",
+          "isEnabled": true,
+          "order": 1,
+          "settings": {
+            "title": "Coverage & Risk Inputs",
+            "layout": "grid_2_col",
+            "showResetButton": true
+          }
+        },
+        {
+          "id": "mod_personal-accident-cover-calculator_results",
+          "moduleId": "result-cards",
+          "name": "Results & Sizing Summary",
+          "isEnabled": true,
+          "order": 2,
+          "settings": {
+            "title": "Recommended Sizing & Key Benefits",
+            "highlightCardStyle": "hero_primary",
+            "showShareActions": true
+          }
+        },
+        {
+          "id": "mod_personal-accident-cover-calculator_chart",
+          "moduleId": "chart-visualizer",
+          "name": "Visual Distribution & Projections",
+          "isEnabled": true,
+          "order": 3,
+          "settings": {
+            "chartType": "donut",
+            "chartTitle": "Recommended Coverage Split",
+            "showLegend": true
+          }
+        },
+        {
+          "id": "mod_personal-accident-cover-calculator_faqs",
+          "moduleId": "faq-accordion",
+          "name": "Frequently Asked Questions (FAQs)",
+          "isEnabled": true,
+          "order": 4,
+          "settings": {
+            "title": "Statutory & Planning FAQs"
+          }
+        }
+      ],
+      "contentSections": [
+        {
+          "id": "sec_personal-accident-cover-calculator_overview",
+          "title": "Personal Accident Coverage Calculator Methodology & Planning Guide",
+          "htmlContent": "<p>All calculations are structured strictly in compliance with statutory Indian guidelines, insurance risk underwriting methodologies, and Section 80D or Section 80C parameters where applicable.</p><p>Use this tool to simulate coverage splits, determine maximum liabilities, and discover critical shortfalls due to high healthcare inflation or motor depreciation rates. Individual plans are presented with 0% GST reform adjustments for maximum pricing transparency.</p>",
+          "isEnabled": true,
+          "order": 1,
+          "sectionType": "overview"
+        }
+      ]
+    },
+    {
+      "id": "calc_critical_illness_cover",
+      "name": "Critical Illness Coverage Sizing Calculator",
+      "slug": "critical-illness-cover-calculator",
+      "subcategoryId": "sub_ins_protection",
+      "categoryId": "cat_1791092573880_j3of9",
+      "shortDescription": "Size optimal lump-sum protection to replace multiple years of family living expenses and fund specialized treatments for serious diagnoses.",
+      "seoTitle": "Critical Illness Insurance Sizer Calculator",
+      "seoDescription": "Find your critical illness coverage needs based on living expenses, treatment costs, and income replacement requirements in India.",
+      "seoKeywords": "critical illness cover, disease list coverage, specialized treatment costs, living expenses multiplier, lump sum recovery pool",
+      "isActive": true,
+      "isFeatured": false,
+      "isPopular": false,
+      "viewsCount": 11,
+      "fields": [
+        {
+          "id": "annualLivingExpenses",
+          "label": "Annual Living Expenses (₹)",
+          "type": "number",
+          "defaultValue": 600000,
+          "prefix": "₹"
+        },
+        {
+          "id": "yearsOfIncomeReplacementNeeded",
+          "label": "Income Replacement Duration (Years)",
+          "type": "slider",
+          "defaultValue": 3,
+          "min": 1,
+          "max": 10,
+          "suffix": "yrs"
+        },
+        {
+          "id": "expectedSpecializedTreatmentCost",
+          "label": "Expected Specialized Treatment Cost today (₹)",
+          "type": "number",
+          "defaultValue": 1500000,
+          "prefix": "₹"
+        }
+      ],
+      "outputs": [
+        {
+          "id": "recommendedCriticalIllnessLumpSum",
+          "label": "Recommended Sum Insured",
+          "formula": "recommendedCriticalIllnessLumpSum",
+          "format": "currency_inr",
+          "highlight": true
+        },
+        {
+          "id": "incomeReplacementSizing",
+          "label": "Living Expenses Replacement Sizing",
+          "formula": "incomeReplacementSizing",
+          "format": "currency_inr"
+        },
+        {
+          "id": "estimatedBaseAnnualPremium",
+          "label": "Estimated Annual Premium (₹)",
+          "formula": "estimatedBaseAnnualPremium",
+          "format": "currency_inr"
+        }
+      ],
+      "faqs": [
+        {
+          "id": "faq_critical_lump",
+          "question": "How is critical illness insurance different from health insurance?",
+          "answer": "<p>Standard health insurance reimburses actual hospitalisation bills. Critical illness insurance is a benefit policy that pays out a pre-agreed 100% lump sum immediately upon diagnosis of a covered illness (like cancer or stroke), allowing you to replace income or pay for out-of-hospital recovery costs.</p>",
+          "isEnabled": true,
+          "order": 1
+        }
+      ],
+      "modules": [
+        {
+          "id": "mod_critical-illness-cover-calculator_inputs",
+          "moduleId": "calculator-inputs",
+          "name": "Interactive Inputs & Controls",
+          "isEnabled": true,
+          "order": 1,
+          "settings": {
+            "title": "Coverage & Risk Inputs",
+            "layout": "grid_2_col",
+            "showResetButton": true
+          }
+        },
+        {
+          "id": "mod_critical-illness-cover-calculator_results",
+          "moduleId": "result-cards",
+          "name": "Results & Sizing Summary",
+          "isEnabled": true,
+          "order": 2,
+          "settings": {
+            "title": "Recommended Sizing & Key Benefits",
+            "highlightCardStyle": "hero_primary",
+            "showShareActions": true
+          }
+        },
+        {
+          "id": "mod_critical-illness-cover-calculator_chart",
+          "moduleId": "chart-visualizer",
+          "name": "Visual Distribution & Projections",
+          "isEnabled": true,
+          "order": 3,
+          "settings": {
+            "chartType": "donut",
+            "chartTitle": "Recommended Coverage Split",
+            "showLegend": true
+          }
+        },
+        {
+          "id": "mod_critical-illness-cover-calculator_faqs",
+          "moduleId": "faq-accordion",
+          "name": "Frequently Asked Questions (FAQs)",
+          "isEnabled": true,
+          "order": 4,
+          "settings": {
+            "title": "Statutory & Planning FAQs"
+          }
+        }
+      ],
+      "contentSections": [
+        {
+          "id": "sec_critical-illness-cover-calculator_overview",
+          "title": "Critical Illness Coverage Sizing Calculator Methodology & Planning Guide",
+          "htmlContent": "<p>All calculations are structured strictly in compliance with statutory Indian guidelines, insurance risk underwriting methodologies, and Section 80D or Section 80C parameters where applicable.</p><p>Use this tool to simulate coverage splits, determine maximum liabilities, and discover critical shortfalls due to high healthcare inflation or motor depreciation rates. Individual plans are presented with 0% GST reform adjustments for maximum pricing transparency.</p>",
+          "isEnabled": true,
+          "order": 1,
+          "sectionType": "overview"
+        }
+      ]
+    },
+    {
+      "id": "calc_home_insurance",
+      "name": "Home Structure & Contents Insurance Calculator",
+      "slug": "home-insurance-calculator",
+      "subcategoryId": "sub_ins_property_business",
+      "categoryId": "cat_1791092573880_j3of9",
+      "shortDescription": "Protect your home structure using real-world reconstruction costs per square foot and estimate comprehensive contents valuations.",
+      "seoTitle": "Home Structure & Contents Insurance Calculator",
+      "seoDescription": "Sizing tool for home structure and contents insurance based on built-up area, average reconstruction rates, and household valuations.",
+      "seoKeywords": "home insurance calculator, structure reconstruction cover, property cost per sq ft, household contents valuation, home fire policy",
+      "isActive": true,
+      "isFeatured": false,
+      "isPopular": false,
+      "viewsCount": 9,
+      "fields": [
+        {
+          "id": "builtUpAreaSqFt",
+          "label": "Built-Up Area (Sq Ft)",
+          "type": "number",
+          "defaultValue": 1200,
+          "prefix": "sqft"
+        },
+        {
+          "id": "constructionCostPerSqFt",
+          "label": "Construction Cost Rate (₹ per Sq Ft)",
+          "type": "slider",
+          "defaultValue": 2500,
+          "min": 1000,
+          "max": 10000,
+          "step": 100,
+          "prefix": "₹"
+        },
+        {
+          "id": "contentsValuationToday",
+          "label": "Value of Household Contents & Appliances (₹)",
+          "type": "number",
+          "defaultValue": 500000,
+          "prefix": "₹"
+        }
+      ],
+      "outputs": [
+        {
+          "id": "totalHomeInsuranceSumInsured",
+          "label": "Total Recommended Sum Insured",
+          "formula": "totalHomeInsuranceSumInsured",
+          "format": "currency_inr",
+          "highlight": true
+        },
+        {
+          "id": "structureReconstructionSumInsured",
+          "label": "Structure Reconstruction Cover Sizing",
+          "formula": "structureReconstructionSumInsured",
+          "format": "currency_inr"
+        },
+        {
+          "id": "estimatedAnnualPremium",
+          "label": "Estimated Annual Premium (₹)",
+          "formula": "estimatedAnnualPremium",
+          "format": "currency_inr"
+        }
+      ],
+      "faqs": [
+        {
+          "id": "faq_home_reconstruct",
+          "question": "Why is home insurance calculated based on construction cost rather than market value?",
+          "answer": "<p>Home insurance pays to reconstruct the damaged building. The market value of property includes the land value, which never burns or gets destroyed. Thus, coverage is sized as Built-up Area × Reconstruction Cost per sq ft, completely independent of land pricing.</p>",
+          "isEnabled": true,
+          "order": 1
+        }
+      ],
+      "modules": [
+        {
+          "id": "mod_home-insurance-calculator_inputs",
+          "moduleId": "calculator-inputs",
+          "name": "Interactive Inputs & Controls",
+          "isEnabled": true,
+          "order": 1,
+          "settings": {
+            "title": "Coverage & Risk Inputs",
+            "layout": "grid_2_col",
+            "showResetButton": true
+          }
+        },
+        {
+          "id": "mod_home-insurance-calculator_results",
+          "moduleId": "result-cards",
+          "name": "Results & Sizing Summary",
+          "isEnabled": true,
+          "order": 2,
+          "settings": {
+            "title": "Recommended Sizing & Key Benefits",
+            "highlightCardStyle": "hero_primary",
+            "showShareActions": true
+          }
+        },
+        {
+          "id": "mod_home-insurance-calculator_chart",
+          "moduleId": "chart-visualizer",
+          "name": "Visual Distribution & Projections",
+          "isEnabled": true,
+          "order": 3,
+          "settings": {
+            "chartType": "donut",
+            "chartTitle": "Recommended Coverage Split",
+            "showLegend": true
+          }
+        },
+        {
+          "id": "mod_home-insurance-calculator_faqs",
+          "moduleId": "faq-accordion",
+          "name": "Frequently Asked Questions (FAQs)",
+          "isEnabled": true,
+          "order": 4,
+          "settings": {
+            "title": "Statutory & Planning FAQs"
+          }
+        }
+      ],
+      "contentSections": [
+        {
+          "id": "sec_home-insurance-calculator_overview",
+          "title": "Home Structure & Contents Insurance Calculator Methodology & Planning Guide",
+          "htmlContent": "<p>All calculations are structured strictly in compliance with statutory Indian guidelines, insurance risk underwriting methodologies, and Section 80D or Section 80C parameters where applicable.</p><p>Use this tool to simulate coverage splits, determine maximum liabilities, and discover critical shortfalls due to high healthcare inflation or motor depreciation rates. Individual plans are presented with 0% GST reform adjustments for maximum pricing transparency.</p>",
+          "isEnabled": true,
+          "order": 1,
+          "sectionType": "overview"
+        }
+      ]
+    },
+    {
+      "id": "calc_business_insurance",
+      "name": "Business Property & Interruption Sizing Calculator",
+      "slug": "business-insurance-calculator",
+      "subcategoryId": "sub_ins_property_business",
+      "categoryId": "cat_1791092573880_j3of9",
+      "shortDescription": "Assess material damage requirements for commercial buildings and machinery alongside business interruption coverages for lost gross profits.",
+      "seoTitle": "Business Property & Interruption Insurance Calculator",
+      "seoDescription": "Accurately size commercial building structure, machinery assets, and Business Interruption (FLOP) gross profit covers with specified indemnity timelines.",
+      "seoKeywords": "business property cover, material damage sizing, business interruption insurance, loss of profit cover, commercial building reconstruction",
+      "isActive": true,
+      "isFeatured": true,
+      "isPopular": false,
+      "viewsCount": 15,
+      "fields": [
+        {
+          "id": "buildingReconstructionValue",
+          "label": "Building Structure Reconstruction Value (₹)",
+          "type": "number",
+          "defaultValue": 5000000,
+          "prefix": "₹"
+        },
+        {
+          "id": "plantMachineryStockValue",
+          "label": "Plant, Machinery, Fixtures & Stock Value (₹)",
+          "type": "number",
+          "defaultValue": 10000000,
+          "prefix": "₹"
+        },
+        {
+          "id": "annualGrossProfit",
+          "label": "Annual Gross Profit (₹)",
+          "type": "number",
+          "defaultValue": 3000000,
+          "prefix": "₹"
+        },
+        {
+          "id": "indemnityPeriodMonths",
+          "label": "Business Interruption Indemnity Period",
+          "type": "slider",
+          "defaultValue": 12,
+          "min": 3,
+          "max": 36,
+          "suffix": "months"
+        }
+      ],
+      "outputs": [
+        {
+          "id": "totalBusinessSumInsured",
+          "label": "Total Recommended Sum Insured",
+          "formula": "totalBusinessSumInsured",
+          "format": "currency_inr",
+          "highlight": true
+        },
+        {
+          "id": "propertyMaterialDamageSumInsured",
+          "label": "Material Damage (Property) Sum Insured",
+          "formula": "propertyMaterialDamageSumInsured",
+          "format": "currency_inr"
+        },
+        {
+          "id": "businessInterruptionGrossProfitSumInsured",
+          "label": "Business Interruption (Loss of Profit) Cover",
+          "formula": "businessInterruptionGrossProfitSumInsured",
+          "format": "currency_inr"
+        },
+        {
+          "id": "estimatedAnnualPremium",
+          "label": "Estimated Annual Premium (₹)",
+          "formula": "estimatedAnnualPremium",
+          "format": "currency_inr"
+        }
+      ],
+      "faqs": [
+        {
+          "id": "faq_biz_interrupt",
+          "question": "What is Business Interruption insurance and why does it require gross profit calculations?",
+          "answer": "<p>If a fire or disaster stops your business, material damage cover pays to rebuild, but does not cover lost revenue. Business Interruption insurance pays for the lost Gross Profit and ongoing fixed expenses during the \"indemnity period\" required to restore full business operations.</p>",
+          "isEnabled": true,
+          "order": 1
+        }
+      ],
+      "modules": [
+        {
+          "id": "mod_business-insurance-calculator_inputs",
+          "moduleId": "calculator-inputs",
+          "name": "Interactive Inputs & Controls",
+          "isEnabled": true,
+          "order": 1,
+          "settings": {
+            "title": "Coverage & Risk Inputs",
+            "layout": "grid_2_col",
+            "showResetButton": true
+          }
+        },
+        {
+          "id": "mod_business-insurance-calculator_results",
+          "moduleId": "result-cards",
+          "name": "Results & Sizing Summary",
+          "isEnabled": true,
+          "order": 2,
+          "settings": {
+            "title": "Recommended Sizing & Key Benefits",
+            "highlightCardStyle": "hero_primary",
+            "showShareActions": true
+          }
+        },
+        {
+          "id": "mod_business-insurance-calculator_chart",
+          "moduleId": "chart-visualizer",
+          "name": "Visual Distribution & Projections",
+          "isEnabled": true,
+          "order": 3,
+          "settings": {
+            "chartType": "donut",
+            "chartTitle": "Recommended Coverage Split",
+            "showLegend": true
+          }
+        },
+        {
+          "id": "mod_business-insurance-calculator_faqs",
+          "moduleId": "faq-accordion",
+          "name": "Frequently Asked Questions (FAQs)",
+          "isEnabled": true,
+          "order": 4,
+          "settings": {
+            "title": "Statutory & Planning FAQs"
+          }
+        }
+      ],
+      "contentSections": [
+        {
+          "id": "sec_business-insurance-calculator_overview",
+          "title": "Business Property & Interruption Sizing Calculator Methodology & Planning Guide",
+          "htmlContent": "<p>All calculations are structured strictly in compliance with statutory Indian guidelines, insurance risk underwriting methodologies, and Section 80D or Section 80C parameters where applicable.</p><p>Use this tool to simulate coverage splits, determine maximum liabilities, and discover critical shortfalls due to high healthcare inflation or motor depreciation rates. Individual plans are presented with 0% GST reform adjustments for maximum pricing transparency.</p>",
+          "isEnabled": true,
+          "order": 1,
+          "sectionType": "overview"
+        }
+      ]
+    },
+    {
+      "id": "calc_percentage",
+      "name": "Percentage Calculator",
+      "slug": "percentage-calculator",
+      "subcategoryId": "sub_maths_basic",
+      "categoryId": "cat_core_maths",
+      "shortDescription": "Solve general percentage problems instantly, such as finding a given percentage of a number.",
+      "seoTitle": "Percentage Calculator — Find Percent of a Value",
+      "seoDescription": "An online math utility to calculate the exact percentage value from any given number instantly.",
+      "seoKeywords": "percentage calculator, find percent of value, calculate percentage ratio",
+      "isActive": true,
+      "fields": [
+        {
+          "id": "percent",
+          "label": "Percent (%)",
+          "type": "number",
+          "defaultValue": 15,
+          "min": 0,
+          "max": 1000,
+          "prefix": "%"
+        },
+        {
+          "id": "value",
+          "label": "Of Number",
+          "type": "number",
+          "defaultValue": 500,
+          "min": 0,
+          "max": 1000000000
+        }
+      ],
+      "outputs": [
+        {
+          "id": "result",
+          "label": "Calculated Percentage Value",
+          "formula": "result",
+          "format": "decimal_2",
+          "highlight": true
+        }
+      ],
+      "faqs": [
+        {
+          "id": "faq_pct_1",
+          "question": "How is a percentage calculated?",
+          "answer": "<p>A percentage is calculated by multiplying the base value by the percent rate, then dividing by 100: (Value × Percent) / 100.</p>",
+          "isEnabled": true,
+          "order": 1
+        }
+      ],
+      "modules": [
+        {
+          "id": "mod_percentage-calculator_inputs",
+          "moduleId": "calculator-inputs",
+          "name": "Interactive Inputs & Controls",
+          "isEnabled": true,
+          "order": 1,
+          "settings": {
+            "title": "Parameters & Options",
+            "layout": "grid_2_col",
+            "showResetButton": true
+          }
+        },
+        {
+          "id": "mod_percentage-calculator_results",
+          "moduleId": "result-cards",
+          "name": "Results & Sizing Summary",
+          "isEnabled": true,
+          "order": 2,
+          "settings": {
+            "title": "Computed Results",
+            "highlightCardStyle": "hero_primary",
+            "showShareActions": true
+          }
+        },
+        {
+          "id": "mod_percentage-calculator_chart",
+          "moduleId": "chart-visualizer",
+          "name": "Visual Distribution & Projections",
+          "isEnabled": true,
+          "order": 3,
+          "settings": {
+            "chartType": "bar",
+            "chartTitle": "Result Breakdown Graph",
+            "showLegend": true
+          }
+        },
+        {
+          "id": "mod_percentage-calculator_faqs",
+          "moduleId": "faq-accordion",
+          "name": "Frequently Asked Questions (FAQs)",
+          "isEnabled": true,
+          "order": 4,
+          "settings": {
+            "title": "Statutory & Planning FAQs"
+          }
+        }
+      ],
+      "contentSections": [
+        {
+          "id": "sec_percentage-calculator_overview",
+          "title": "Percentage Calculator Methodology & Planning Guide",
+          "htmlContent": "<p>All calculations are structured strictly using high-precision, sandboxed deterministic math execution frameworks.</p><p>Use this tool to simulate various scenarios, configure variable inputs, and evaluate outcomes immediately. Results are calculated with zero latency and styled using highly accessible, responsive visualization pipelines.</p>",
+          "isEnabled": true,
+          "order": 1,
+          "sectionType": "overview"
+        }
+      ]
+    },
+    {
+      "id": "calc_percentage_change",
+      "name": "Percentage Increase/Decrease Calculator",
+      "slug": "percentage-increase-decrease",
+      "subcategoryId": "sub_maths_basic",
+      "categoryId": "cat_core_maths",
+      "shortDescription": "Compute the percentage change from an initial value to a final value, showing absolute difference and change direction.",
+      "seoTitle": "Percentage Increase/Decrease Calculator — Change Rate",
+      "seoDescription": "Find the percentage rate of change (increase or decrease) between two numeric values with step-by-step clarity.",
+      "seoKeywords": "percentage change calculator, percent increase, percent decrease, growth rate calculator",
+      "isActive": true,
+      "fields": [
+        {
+          "id": "initialValue",
+          "label": "Initial Value",
+          "type": "number",
+          "defaultValue": 200
+        },
+        {
+          "id": "finalValue",
+          "label": "Final Value",
+          "type": "number",
+          "defaultValue": 250
+        }
+      ],
+      "outputs": [
+        {
+          "id": "percentChange",
+          "label": "Percentage Change",
+          "formula": "percentChange",
+          "format": "percent",
+          "highlight": true
+        },
+        {
+          "id": "difference",
+          "label": "Absolute Difference",
+          "formula": "difference",
+          "format": "number"
+        }
+      ],
+      "faqs": [
+        {
+          "id": "faq_pct_change_1",
+          "question": "What is the percentage change formula?",
+          "answer": "<p>The percentage change formula is: ((Final Value - Initial Value) / |Initial Value|) × 100.</p>",
+          "isEnabled": true,
+          "order": 1
+        }
+      ],
+      "modules": [
+        {
+          "id": "mod_percentage-increase-decrease_inputs",
+          "moduleId": "calculator-inputs",
+          "name": "Interactive Inputs & Controls",
+          "isEnabled": true,
+          "order": 1,
+          "settings": {
+            "title": "Parameters & Options",
+            "layout": "grid_2_col",
+            "showResetButton": true
+          }
+        },
+        {
+          "id": "mod_percentage-increase-decrease_results",
+          "moduleId": "result-cards",
+          "name": "Results & Sizing Summary",
+          "isEnabled": true,
+          "order": 2,
+          "settings": {
+            "title": "Computed Results",
+            "highlightCardStyle": "hero_primary",
+            "showShareActions": true
+          }
+        },
+        {
+          "id": "mod_percentage-increase-decrease_chart",
+          "moduleId": "chart-visualizer",
+          "name": "Visual Distribution & Projections",
+          "isEnabled": true,
+          "order": 3,
+          "settings": {
+            "chartType": "bar",
+            "chartTitle": "Result Breakdown Graph",
+            "showLegend": true
+          }
+        },
+        {
+          "id": "mod_percentage-increase-decrease_faqs",
+          "moduleId": "faq-accordion",
+          "name": "Frequently Asked Questions (FAQs)",
+          "isEnabled": true,
+          "order": 4,
+          "settings": {
+            "title": "Statutory & Planning FAQs"
+          }
+        }
+      ],
+      "contentSections": [
+        {
+          "id": "sec_percentage-increase-decrease_overview",
+          "title": "Percentage Increase/Decrease Calculator Methodology & Planning Guide",
+          "htmlContent": "<p>All calculations are structured strictly using high-precision, sandboxed deterministic math execution frameworks.</p><p>Use this tool to simulate various scenarios, configure variable inputs, and evaluate outcomes immediately. Results are calculated with zero latency and styled using highly accessible, responsive visualization pipelines.</p>",
+          "isEnabled": true,
+          "order": 1,
+          "sectionType": "overview"
+        }
+      ]
+    },
+    {
+      "id": "calc_ratio",
+      "name": "Ratio Calculator",
+      "slug": "ratio-calculator",
+      "subcategoryId": "sub_maths_basic",
+      "categoryId": "cat_core_maths",
+      "shortDescription": "Simplify ratios and calculate proportional shares or division ratios instantly.",
+      "seoTitle": "Ratio Simplifier & Division Calculator",
+      "seoDescription": "Simplify any given ratio into its lowest terms and compute percentage-based proportional shares.",
+      "seoKeywords": "ratio calculator, simplify ratios, proportional division, ratio scale",
+      "isActive": true,
+      "fields": [
+        {
+          "id": "valueA",
+          "label": "Value A",
+          "type": "number",
+          "defaultValue": 15
+        },
+        {
+          "id": "valueB",
+          "label": "Value B",
+          "type": "number",
+          "defaultValue": 25
+        }
+      ],
+      "outputs": [
+        {
+          "id": "ratioString",
+          "label": "Simplified Ratio",
+          "formula": "ratioString",
+          "format": "text",
+          "highlight": true
+        },
+        {
+          "id": "shareAPercent",
+          "label": "Share A of Total (%)",
+          "formula": "shareAPercent",
+          "format": "percent"
+        },
+        {
+          "id": "shareBPercent",
+          "label": "Share B of Total (%)",
+          "formula": "shareBPercent",
+          "format": "percent"
+        }
+      ],
+      "faqs": [
+        {
+          "id": "faq_ratio_1",
+          "question": "How does the ratio simplifier work?",
+          "answer": "<p>It computes the Greatest Common Divisor (GCD) of both terms and divides both terms by this factor to find the most simplified integer ratio.</p>",
+          "isEnabled": true,
+          "order": 1
+        }
+      ],
+      "modules": [
+        {
+          "id": "mod_ratio-calculator_inputs",
+          "moduleId": "calculator-inputs",
+          "name": "Interactive Inputs & Controls",
+          "isEnabled": true,
+          "order": 1,
+          "settings": {
+            "title": "Parameters & Options",
+            "layout": "grid_2_col",
+            "showResetButton": true
+          }
+        },
+        {
+          "id": "mod_ratio-calculator_results",
+          "moduleId": "result-cards",
+          "name": "Results & Sizing Summary",
+          "isEnabled": true,
+          "order": 2,
+          "settings": {
+            "title": "Computed Results",
+            "highlightCardStyle": "hero_primary",
+            "showShareActions": true
+          }
+        },
+        {
+          "id": "mod_ratio-calculator_chart",
+          "moduleId": "chart-visualizer",
+          "name": "Visual Distribution & Projections",
+          "isEnabled": true,
+          "order": 3,
+          "settings": {
+            "chartType": "bar",
+            "chartTitle": "Result Breakdown Graph",
+            "showLegend": true
+          }
+        },
+        {
+          "id": "mod_ratio-calculator_faqs",
+          "moduleId": "faq-accordion",
+          "name": "Frequently Asked Questions (FAQs)",
+          "isEnabled": true,
+          "order": 4,
+          "settings": {
+            "title": "Statutory & Planning FAQs"
+          }
+        }
+      ],
+      "contentSections": [
+        {
+          "id": "sec_ratio-calculator_overview",
+          "title": "Ratio Calculator Methodology & Planning Guide",
+          "htmlContent": "<p>All calculations are structured strictly using high-precision, sandboxed deterministic math execution frameworks.</p><p>Use this tool to simulate various scenarios, configure variable inputs, and evaluate outcomes immediately. Results are calculated with zero latency and styled using highly accessible, responsive visualization pipelines.</p>",
+          "isEnabled": true,
+          "order": 1,
+          "sectionType": "overview"
+        }
+      ]
+    },
+    {
+      "id": "calc_average",
+      "name": "Average Calculator",
+      "slug": "average-calculator",
+      "subcategoryId": "sub_maths_basic",
+      "categoryId": "cat_core_maths",
+      "shortDescription": "Calculate the mathematical average (arithmetic mean), count, sum, min, and max for any list of numbers.",
+      "seoTitle": "Average Calculator — Arithmetic Mean Solver",
+      "seoDescription": "Enter comma-separated values to solve the mathematical arithmetic average, sum, and numeric range instantly.",
+      "seoKeywords": "average calculator, arithmetic mean, average solver, numbers sum average",
+      "isActive": true,
+      "fields": [
+        {
+          "id": "valuesString",
+          "label": "Enter Numbers (comma-separated)",
+          "type": "radio",
+          "defaultValue": "10, 20, 30, 40, 50",
+          "options": [
+            {
+              "label": "Set A: 10, 20, 30, 40, 50",
+              "value": "10, 20, 30, 40, 50"
+            },
+            {
+              "label": "Set B: 100, 250, 450, 600",
+              "value": "100, 250, 450, 600"
+            }
+          ]
+        }
+      ],
+      "outputs": [
+        {
+          "id": "average",
+          "label": "Calculated Average (Mean)",
+          "formula": "average",
+          "format": "decimal_2",
+          "highlight": true
+        },
+        {
+          "id": "sum",
+          "label": "Sum Total",
+          "formula": "sum",
+          "format": "number"
+        },
+        {
+          "id": "count",
+          "label": "Total Count of Values",
+          "formula": "count",
+          "format": "integer"
+        }
+      ],
+      "faqs": [
+        {
+          "id": "faq_avg_1",
+          "question": "How is the arithmetic mean calculated?",
+          "answer": "<p>The arithmetic mean is calculated by summing all the values in a dataset, and then dividing this sum by the total number of items: Sum / Count.</p>",
+          "isEnabled": true,
+          "order": 1
+        }
+      ],
+      "modules": [
+        {
+          "id": "mod_average-calculator_inputs",
+          "moduleId": "calculator-inputs",
+          "name": "Interactive Inputs & Controls",
+          "isEnabled": true,
+          "order": 1,
+          "settings": {
+            "title": "Parameters & Options",
+            "layout": "grid_2_col",
+            "showResetButton": true
+          }
+        },
+        {
+          "id": "mod_average-calculator_results",
+          "moduleId": "result-cards",
+          "name": "Results & Sizing Summary",
+          "isEnabled": true,
+          "order": 2,
+          "settings": {
+            "title": "Computed Results",
+            "highlightCardStyle": "hero_primary",
+            "showShareActions": true
+          }
+        },
+        {
+          "id": "mod_average-calculator_chart",
+          "moduleId": "chart-visualizer",
+          "name": "Visual Distribution & Projections",
+          "isEnabled": true,
+          "order": 3,
+          "settings": {
+            "chartType": "bar",
+            "chartTitle": "Result Breakdown Graph",
+            "showLegend": true
+          }
+        },
+        {
+          "id": "mod_average-calculator_faqs",
+          "moduleId": "faq-accordion",
+          "name": "Frequently Asked Questions (FAQs)",
+          "isEnabled": true,
+          "order": 4,
+          "settings": {
+            "title": "Statutory & Planning FAQs"
+          }
+        }
+      ],
+      "contentSections": [
+        {
+          "id": "sec_average-calculator_overview",
+          "title": "Average Calculator Methodology & Planning Guide",
+          "htmlContent": "<p>All calculations are structured strictly using high-precision, sandboxed deterministic math execution frameworks.</p><p>Use this tool to simulate various scenarios, configure variable inputs, and evaluate outcomes immediately. Results are calculated with zero latency and styled using highly accessible, responsive visualization pipelines.</p>",
+          "isEnabled": true,
+          "order": 1,
+          "sectionType": "overview"
+        }
+      ]
+    },
+    {
+      "id": "calc_lcm",
+      "name": "LCM Calculator",
+      "slug": "lcm-calculator",
+      "subcategoryId": "sub_maths_basic",
+      "categoryId": "cat_core_maths",
+      "shortDescription": "Determine the Least Common Multiple (LCM) of two positive integers.",
+      "seoTitle": "LCM Calculator — Least Common Multiple Solver",
+      "seoDescription": "Find the lowest common multiple of two integers using secure sandboxed greatest common divisor algorithms.",
+      "seoKeywords": "lcm calculator, least common multiple, lowest common multiple, integer factors",
+      "isActive": true,
+      "fields": [
+        {
+          "id": "valueA",
+          "label": "Integer A",
+          "type": "number",
+          "defaultValue": 12,
+          "min": 1,
+          "max": 1000000
+        },
+        {
+          "id": "valueB",
+          "label": "Integer B",
+          "type": "number",
+          "defaultValue": 18,
+          "min": 1,
+          "max": 1000000
+        }
+      ],
+      "outputs": [
+        {
+          "id": "lcm",
+          "label": "Least Common Multiple (LCM)",
+          "formula": "lcm",
+          "format": "integer",
+          "highlight": true
+        },
+        {
+          "id": "gcd",
+          "label": "Greatest Common Divisor (GCD/HCF)",
+          "formula": "gcd",
+          "format": "integer"
+        }
+      ],
+      "faqs": [
+        {
+          "id": "faq_lcm_1",
+          "question": "What is a Least Common Multiple?",
+          "answer": "<p>The Least Common Multiple (LCM) of two integers is the smallest positive integer that is perfectly divisible by both numbers without any remainder.</p>",
+          "isEnabled": true,
+          "order": 1
+        }
+      ],
+      "modules": [
+        {
+          "id": "mod_lcm-calculator_inputs",
+          "moduleId": "calculator-inputs",
+          "name": "Interactive Inputs & Controls",
+          "isEnabled": true,
+          "order": 1,
+          "settings": {
+            "title": "Parameters & Options",
+            "layout": "grid_2_col",
+            "showResetButton": true
+          }
+        },
+        {
+          "id": "mod_lcm-calculator_results",
+          "moduleId": "result-cards",
+          "name": "Results & Sizing Summary",
+          "isEnabled": true,
+          "order": 2,
+          "settings": {
+            "title": "Computed Results",
+            "highlightCardStyle": "hero_primary",
+            "showShareActions": true
+          }
+        },
+        {
+          "id": "mod_lcm-calculator_chart",
+          "moduleId": "chart-visualizer",
+          "name": "Visual Distribution & Projections",
+          "isEnabled": true,
+          "order": 3,
+          "settings": {
+            "chartType": "bar",
+            "chartTitle": "Result Breakdown Graph",
+            "showLegend": true
+          }
+        },
+        {
+          "id": "mod_lcm-calculator_faqs",
+          "moduleId": "faq-accordion",
+          "name": "Frequently Asked Questions (FAQs)",
+          "isEnabled": true,
+          "order": 4,
+          "settings": {
+            "title": "Statutory & Planning FAQs"
+          }
+        }
+      ],
+      "contentSections": [
+        {
+          "id": "sec_lcm-calculator_overview",
+          "title": "LCM Calculator Methodology & Planning Guide",
+          "htmlContent": "<p>All calculations are structured strictly using high-precision, sandboxed deterministic math execution frameworks.</p><p>Use this tool to simulate various scenarios, configure variable inputs, and evaluate outcomes immediately. Results are calculated with zero latency and styled using highly accessible, responsive visualization pipelines.</p>",
+          "isEnabled": true,
+          "order": 1,
+          "sectionType": "overview"
+        }
+      ]
+    },
+    {
+      "id": "calc_hcf_gcd",
+      "name": "HCF/GCD Calculator",
+      "slug": "hcf-gcd-calculator",
+      "subcategoryId": "sub_maths_basic",
+      "categoryId": "cat_core_maths",
+      "shortDescription": "Calculate the Highest Common Factor (HCF) or Greatest Common Divisor (GCD) of two integers.",
+      "seoTitle": "HCF/GCD Calculator — Highest Common Factor Solver",
+      "seoDescription": "Find the highest common factor or greatest common divisor of two integers instantly.",
+      "seoKeywords": "hcf calculator, gcd calculator, highest common factor, greatest common divisor",
+      "isActive": true,
+      "fields": [
+        {
+          "id": "valueA",
+          "label": "Integer A",
+          "type": "number",
+          "defaultValue": 24,
+          "min": 1,
+          "max": 1000000
+        },
+        {
+          "id": "valueB",
+          "label": "Integer B",
+          "type": "number",
+          "defaultValue": 36,
+          "min": 1,
+          "max": 1000000
+        }
+      ],
+      "outputs": [
+        {
+          "id": "gcd",
+          "label": "Greatest Common Divisor (GCD/HCF)",
+          "formula": "gcd",
+          "format": "integer",
+          "highlight": true
+        },
+        {
+          "id": "lcm",
+          "label": "Least Common Multiple (LCM)",
+          "formula": "lcm",
+          "format": "integer"
+        }
+      ],
+      "faqs": [
+        {
+          "id": "faq_gcd_1",
+          "question": "What is a Highest Common Factor (HCF)?",
+          "answer": "<p>The Highest Common Factor (HCF), also known as Greatest Common Divisor (GCD), is the largest positive integer that divides both numbers perfectly without a remainder.</p>",
+          "isEnabled": true,
+          "order": 1
+        }
+      ],
+      "modules": [
+        {
+          "id": "mod_hcf-gcd-calculator_inputs",
+          "moduleId": "calculator-inputs",
+          "name": "Interactive Inputs & Controls",
+          "isEnabled": true,
+          "order": 1,
+          "settings": {
+            "title": "Parameters & Options",
+            "layout": "grid_2_col",
+            "showResetButton": true
+          }
+        },
+        {
+          "id": "mod_hcf-gcd-calculator_results",
+          "moduleId": "result-cards",
+          "name": "Results & Sizing Summary",
+          "isEnabled": true,
+          "order": 2,
+          "settings": {
+            "title": "Computed Results",
+            "highlightCardStyle": "hero_primary",
+            "showShareActions": true
+          }
+        },
+        {
+          "id": "mod_hcf-gcd-calculator_chart",
+          "moduleId": "chart-visualizer",
+          "name": "Visual Distribution & Projections",
+          "isEnabled": true,
+          "order": 3,
+          "settings": {
+            "chartType": "bar",
+            "chartTitle": "Result Breakdown Graph",
+            "showLegend": true
+          }
+        },
+        {
+          "id": "mod_hcf-gcd-calculator_faqs",
+          "moduleId": "faq-accordion",
+          "name": "Frequently Asked Questions (FAQs)",
+          "isEnabled": true,
+          "order": 4,
+          "settings": {
+            "title": "Statutory & Planning FAQs"
+          }
+        }
+      ],
+      "contentSections": [
+        {
+          "id": "sec_hcf-gcd-calculator_overview",
+          "title": "HCF/GCD Calculator Methodology & Planning Guide",
+          "htmlContent": "<p>All calculations are structured strictly using high-precision, sandboxed deterministic math execution frameworks.</p><p>Use this tool to simulate various scenarios, configure variable inputs, and evaluate outcomes immediately. Results are calculated with zero latency and styled using highly accessible, responsive visualization pipelines.</p>",
+          "isEnabled": true,
+          "order": 1,
+          "sectionType": "overview"
+        }
+      ]
+    },
+    {
+      "id": "calc_simple_interest",
+      "name": "Simple Interest Calculator",
+      "slug": "simple-interest-calculator",
+      "subcategoryId": "sub_investments_savings",
+      "categoryId": "cat_investments",
+      "shortDescription": "Project flat interest earnings on principal deposits without exponential compounding variables.",
+      "seoTitle": "Simple Interest Calculator — Flat Interest Solver",
+      "seoDescription": "Compute flat simple interest rates over principal sums and track total accumulated assets with ease.",
+      "seoKeywords": "simple interest calculator, flat interest rate, interest on principal, principal interest total",
+      "isActive": true,
+      "fields": [
+        {
+          "id": "principal",
+          "label": "Principal Sum (₹)",
+          "type": "number",
+          "defaultValue": 100000,
+          "prefix": "₹"
+        },
+        {
+          "id": "rate",
+          "label": "Annual Interest Rate (%)",
+          "type": "slider",
+          "defaultValue": 7.5,
+          "min": 1,
+          "max": 30,
+          "step": 0.1,
+          "suffix": "%"
+        },
+        {
+          "id": "years",
+          "label": "Duration (Years)",
+          "type": "slider",
+          "defaultValue": 5,
+          "min": 1,
+          "max": 40,
+          "step": 1,
+          "suffix": "yrs"
+        }
+      ],
+      "outputs": [
+        {
+          "id": "totalValue",
+          "label": "Accumulated Total Value",
+          "formula": "totalValue",
+          "format": "currency_inr",
+          "highlight": true
+        },
+        {
+          "id": "interestEarned",
+          "label": "Total Simple Interest Earned",
+          "formula": "interestEarned",
+          "format": "currency_inr"
+        }
+      ],
+      "faqs": [
+        {
+          "id": "faq_si_1",
+          "question": "What is simple interest formula?",
+          "answer": "<p>The simple interest formula is: Interest = Principal × Rate × Time. No compounding is applied to the earned interest.</p>",
+          "isEnabled": true,
+          "order": 1
+        }
+      ],
+      "modules": [
+        {
+          "id": "mod_simple-interest-calculator_inputs",
+          "moduleId": "calculator-inputs",
+          "name": "Interactive Inputs & Controls",
+          "isEnabled": true,
+          "order": 1,
+          "settings": {
+            "title": "Parameters & Options",
+            "layout": "grid_2_col",
+            "showResetButton": true
+          }
+        },
+        {
+          "id": "mod_simple-interest-calculator_results",
+          "moduleId": "result-cards",
+          "name": "Results & Sizing Summary",
+          "isEnabled": true,
+          "order": 2,
+          "settings": {
+            "title": "Computed Results",
+            "highlightCardStyle": "hero_primary",
+            "showShareActions": true
+          }
+        },
+        {
+          "id": "mod_simple-interest-calculator_chart",
+          "moduleId": "chart-visualizer",
+          "name": "Visual Distribution & Projections",
+          "isEnabled": true,
+          "order": 3,
+          "settings": {
+            "chartType": "bar",
+            "chartTitle": "Result Breakdown Graph",
+            "showLegend": true
+          }
+        },
+        {
+          "id": "mod_simple-interest-calculator_faqs",
+          "moduleId": "faq-accordion",
+          "name": "Frequently Asked Questions (FAQs)",
+          "isEnabled": true,
+          "order": 4,
+          "settings": {
+            "title": "Statutory & Planning FAQs"
+          }
+        }
+      ],
+      "contentSections": [
+        {
+          "id": "sec_simple-interest-calculator_overview",
+          "title": "Simple Interest Calculator Methodology & Planning Guide",
+          "htmlContent": "<p>All calculations are structured strictly using high-precision, sandboxed deterministic math execution frameworks.</p><p>Use this tool to simulate various scenarios, configure variable inputs, and evaluate outcomes immediately. Results are calculated with zero latency and styled using highly accessible, responsive visualization pipelines.</p>",
+          "isEnabled": true,
+          "order": 1,
+          "sectionType": "overview"
+        }
+      ]
+    },
+    {
+      "id": "calc_compound_interest",
+      "name": "Compound Interest Calculator",
+      "slug": "compound-interest-calculator",
+      "subcategoryId": "sub_investments_savings",
+      "categoryId": "cat_investments",
+      "shortDescription": "Project exponential compounding growth on your savings and deposits with adjustable compounding frequencies.",
+      "seoTitle": "Compound Interest Calculator — Exponential Wealth Solver",
+      "seoDescription": "Calculate compound interest growth curves with customizable monthly, quarterly, or annual frequency structures.",
+      "seoKeywords": "compound interest calculator, compound growth, compounding frequency, compound wealth planner",
+      "isActive": true,
+      "fields": [
+        {
+          "id": "principal",
+          "label": "Initial Principal (₹)",
+          "type": "number",
+          "defaultValue": 100000,
+          "prefix": "₹"
+        },
+        {
+          "id": "rate",
+          "label": "Annual Compound Rate (%)",
+          "type": "slider",
+          "defaultValue": 10,
+          "min": 1,
+          "max": 30,
+          "step": 0.1,
+          "suffix": "%"
+        },
+        {
+          "id": "years",
+          "label": "Duration (Years)",
+          "type": "slider",
+          "defaultValue": 10,
+          "min": 1,
+          "max": 50,
+          "step": 1,
+          "suffix": "yrs"
+        },
+        {
+          "id": "compoundingFrequency",
+          "label": "Compounding Frequency",
+          "type": "select",
+          "defaultValue": "annually",
+          "options": [
+            {
+              "label": "Annually",
+              "value": "annually"
+            },
+            {
+              "label": "Half-Yearly",
+              "value": "half-yearly"
+            },
+            {
+              "label": "Quarterly",
+              "value": "quarterly"
+            },
+            {
+              "label": "Monthly",
+              "value": "monthly"
+            }
+          ]
+        }
+      ],
+      "outputs": [
+        {
+          "id": "totalValue",
+          "label": "Compounded Future Value",
+          "formula": "totalValue",
+          "format": "currency_inr",
+          "highlight": true
+        },
+        {
+          "id": "interestEarned",
+          "label": "Total Interest Accrued",
+          "formula": "interestEarned",
+          "format": "currency_inr"
+        }
+      ],
+      "faqs": [
+        {
+          "id": "faq_ci_1",
+          "question": "Why does compounding frequency matter?",
+          "answer": "<p>More frequent compounding (e.g. monthly vs annually) increases the speed of wealth generation because interest is reinvested and begins generating additional interest sooner.</p>",
+          "isEnabled": true,
+          "order": 1
+        }
+      ],
+      "modules": [
+        {
+          "id": "mod_compound-interest-calculator_inputs",
+          "moduleId": "calculator-inputs",
+          "name": "Interactive Inputs & Controls",
+          "isEnabled": true,
+          "order": 1,
+          "settings": {
+            "title": "Parameters & Options",
+            "layout": "grid_2_col",
+            "showResetButton": true
+          }
+        },
+        {
+          "id": "mod_compound-interest-calculator_results",
+          "moduleId": "result-cards",
+          "name": "Results & Sizing Summary",
+          "isEnabled": true,
+          "order": 2,
+          "settings": {
+            "title": "Computed Results",
+            "highlightCardStyle": "hero_primary",
+            "showShareActions": true
+          }
+        },
+        {
+          "id": "mod_compound-interest-calculator_chart",
+          "moduleId": "chart-visualizer",
+          "name": "Visual Distribution & Projections",
+          "isEnabled": true,
+          "order": 3,
+          "settings": {
+            "chartType": "bar",
+            "chartTitle": "Result Breakdown Graph",
+            "showLegend": true
+          }
+        },
+        {
+          "id": "mod_compound-interest-calculator_faqs",
+          "moduleId": "faq-accordion",
+          "name": "Frequently Asked Questions (FAQs)",
+          "isEnabled": true,
+          "order": 4,
+          "settings": {
+            "title": "Statutory & Planning FAQs"
+          }
+        }
+      ],
+      "contentSections": [
+        {
+          "id": "sec_compound-interest-calculator_overview",
+          "title": "Compound Interest Calculator Methodology & Planning Guide",
+          "htmlContent": "<p>All calculations are structured strictly using high-precision, sandboxed deterministic math execution frameworks.</p><p>Use this tool to simulate various scenarios, configure variable inputs, and evaluate outcomes immediately. Results are calculated with zero latency and styled using highly accessible, responsive visualization pipelines.</p>",
+          "isEnabled": true,
+          "order": 1,
+          "sectionType": "overview"
+        }
+      ]
+    },
+    {
+      "id": "calc_sip",
+      "name": "SIP Calculator",
+      "slug": "sip-calculator",
+      "subcategoryId": "sub_investments_sip",
+      "categoryId": "cat_investments",
+      "shortDescription": "Determine your future mutual fund corpus and estimated earnings through Systematic Investment Plans (SIP).",
+      "seoTitle": "SIP Calculator — Systematic Mutual Fund Growth Planner",
+      "seoDescription": "Calculate future portfolio values and interest returns for systematic monthly investments (SIP) with standard charts.",
+      "seoKeywords": "sip calculator, systematic investment plan, mutual fund return, monthly sip planner",
+      "isActive": true,
+      "fields": [
+        {
+          "id": "monthlyInvestment",
+          "label": "Monthly Investment (₹)",
+          "type": "number",
+          "defaultValue": 5000,
+          "prefix": "₹"
+        },
+        {
+          "id": "rate",
+          "label": "Expected Return Rate (% p.a.)",
+          "type": "slider",
+          "defaultValue": 12,
+          "min": 1,
+          "max": 30,
+          "step": 0.5,
+          "suffix": "%"
+        },
+        {
+          "id": "years",
+          "label": "Duration (Years)",
+          "type": "slider",
+          "defaultValue": 15,
+          "min": 1,
+          "max": 40,
+          "step": 1,
+          "suffix": "yrs"
+        }
+      ],
+      "outputs": [
+        {
+          "id": "totalValue",
+          "label": "Future Value of SIP Corpus",
+          "formula": "totalValue",
+          "format": "currency_inr",
+          "highlight": true
+        },
+        {
+          "id": "estimatedReturns",
+          "label": "Estimated Wealth Gains",
+          "formula": "estimatedReturns",
+          "format": "currency_inr"
+        },
+        {
+          "id": "totalInvested",
+          "label": "Total Capital Outlay",
+          "formula": "totalInvested",
+          "format": "currency_inr"
+        }
+      ],
+      "faqs": [
+        {
+          "id": "faq_sip_1",
+          "question": "How does a mutual fund SIP calculate returns?",
+          "answer": "<p>A standard SIP formula assumes monthly compounding to match monthly contributions: FV = P × [ (1 + i)^n - 1 ] / i × (1 + i), where P is monthly payment, i is monthly return rate, and n is number of months.</p>",
+          "isEnabled": true,
+          "order": 1
+        }
+      ],
+      "modules": [
+        {
+          "id": "mod_sip-calculator_inputs",
+          "moduleId": "calculator-inputs",
+          "name": "Interactive Inputs & Controls",
+          "isEnabled": true,
+          "order": 1,
+          "settings": {
+            "title": "Parameters & Options",
+            "layout": "grid_2_col",
+            "showResetButton": true
+          }
+        },
+        {
+          "id": "mod_sip-calculator_results",
+          "moduleId": "result-cards",
+          "name": "Results & Sizing Summary",
+          "isEnabled": true,
+          "order": 2,
+          "settings": {
+            "title": "Computed Results",
+            "highlightCardStyle": "hero_primary",
+            "showShareActions": true
+          }
+        },
+        {
+          "id": "mod_sip-calculator_chart",
+          "moduleId": "chart-visualizer",
+          "name": "Visual Distribution & Projections",
+          "isEnabled": true,
+          "order": 3,
+          "settings": {
+            "chartType": "bar",
+            "chartTitle": "Result Breakdown Graph",
+            "showLegend": true
+          }
+        },
+        {
+          "id": "mod_sip-calculator_faqs",
+          "moduleId": "faq-accordion",
+          "name": "Frequently Asked Questions (FAQs)",
+          "isEnabled": true,
+          "order": 4,
+          "settings": {
+            "title": "Statutory & Planning FAQs"
+          }
+        }
+      ],
+      "contentSections": [
+        {
+          "id": "sec_sip-calculator_overview",
+          "title": "SIP Calculator Methodology & Planning Guide",
+          "htmlContent": "<p>All calculations are structured strictly using high-precision, sandboxed deterministic math execution frameworks.</p><p>Use this tool to simulate various scenarios, configure variable inputs, and evaluate outcomes immediately. Results are calculated with zero latency and styled using highly accessible, responsive visualization pipelines.</p>",
+          "isEnabled": true,
+          "order": 1,
+          "sectionType": "overview"
+        }
+      ]
+    },
+    {
+      "id": "calc_step_up_sip",
+      "name": "Step-Up SIP Calculator",
+      "slug": "step-up-sip-calculator",
+      "subcategoryId": "sub_investments_sip",
+      "categoryId": "cat_investments",
+      "shortDescription": "Plan your mutual fund wealth growth by systematically increasing your monthly SIP contributions by a fixed percentage each year.",
+      "seoTitle": "Step-Up SIP Calculator — Dynamic Contribution Sizer",
+      "seoDescription": "Calculate Step-Up SIP growth rates where contributions increase systematically by 5%, 10%, or 20% annually to match salary increases.",
+      "seoKeywords": "step up sip, dynamic sip planner, annual step up calculator, mutual fund step up",
+      "isActive": true,
+      "fields": [
+        {
+          "id": "monthlyInvestment",
+          "label": "Initial Monthly Investment (₹)",
+          "type": "number",
+          "defaultValue": 10000,
+          "prefix": "₹"
+        },
+        {
+          "id": "stepUpPercent",
+          "label": "Annual Step-Up Rate (%)",
+          "type": "slider",
+          "defaultValue": 10,
+          "min": 0,
+          "max": 50,
+          "step": 1,
+          "suffix": "%"
+        },
+        {
+          "id": "rate",
+          "label": "Expected Return Rate (% p.a.)",
+          "type": "slider",
+          "defaultValue": 12,
+          "min": 1,
+          "max": 30,
+          "step": 0.5,
+          "suffix": "%"
+        },
+        {
+          "id": "years",
+          "label": "Duration (Years)",
+          "type": "slider",
+          "defaultValue": 15,
+          "min": 1,
+          "max": 40,
+          "step": 1,
+          "suffix": "yrs"
+        }
+      ],
+      "outputs": [
+        {
+          "id": "totalValue",
+          "label": "Future Value of Step-Up Corpus",
+          "formula": "totalValue",
+          "format": "currency_inr",
+          "highlight": true
+        },
+        {
+          "id": "estimatedReturns",
+          "label": "Wealth Gains component",
+          "formula": "estimatedReturns",
+          "format": "currency_inr"
+        },
+        {
+          "id": "totalInvested",
+          "label": "Total Invested Outlay",
+          "formula": "totalInvested",
+          "format": "currency_inr"
+        }
+      ],
+      "faqs": [
+        {
+          "id": "faq_stepup_1",
+          "question": "Why is Step-Up SIP superior to standard flat SIP?",
+          "answer": "<p>A Step-Up SIP coordinates your mutual fund investments with your professional career growth. Even a conservative 10% annual increase in contributions can generate up to double the total future corpus of a standard flat SIP over 15 to 20 years.</p>",
+          "isEnabled": true,
+          "order": 1
+        }
+      ],
+      "modules": [
+        {
+          "id": "mod_step-up-sip-calculator_inputs",
+          "moduleId": "calculator-inputs",
+          "name": "Interactive Inputs & Controls",
+          "isEnabled": true,
+          "order": 1,
+          "settings": {
+            "title": "Parameters & Options",
+            "layout": "grid_2_col",
+            "showResetButton": true
+          }
+        },
+        {
+          "id": "mod_step-up-sip-calculator_results",
+          "moduleId": "result-cards",
+          "name": "Results & Sizing Summary",
+          "isEnabled": true,
+          "order": 2,
+          "settings": {
+            "title": "Computed Results",
+            "highlightCardStyle": "hero_primary",
+            "showShareActions": true
+          }
+        },
+        {
+          "id": "mod_step-up-sip-calculator_chart",
+          "moduleId": "chart-visualizer",
+          "name": "Visual Distribution & Projections",
+          "isEnabled": true,
+          "order": 3,
+          "settings": {
+            "chartType": "bar",
+            "chartTitle": "Result Breakdown Graph",
+            "showLegend": true
+          }
+        },
+        {
+          "id": "mod_step-up-sip-calculator_faqs",
+          "moduleId": "faq-accordion",
+          "name": "Frequently Asked Questions (FAQs)",
+          "isEnabled": true,
+          "order": 4,
+          "settings": {
+            "title": "Statutory & Planning FAQs"
+          }
+        }
+      ],
+      "contentSections": [
+        {
+          "id": "sec_step-up-sip-calculator_overview",
+          "title": "Step-Up SIP Calculator Methodology & Planning Guide",
+          "htmlContent": "<p>All calculations are structured strictly using high-precision, sandboxed deterministic math execution frameworks.</p><p>Use this tool to simulate various scenarios, configure variable inputs, and evaluate outcomes immediately. Results are calculated with zero latency and styled using highly accessible, responsive visualization pipelines.</p>",
+          "isEnabled": true,
+          "order": 1,
+          "sectionType": "overview"
+        }
+      ]
+    },
+    {
+      "id": "calc_lump_sum_investment",
+      "name": "Lump Sum Investment Calculator",
+      "slug": "lump-sum-investment-calculator",
+      "subcategoryId": "sub_investments_sip",
+      "categoryId": "cat_investments",
+      "shortDescription": "Project the compounded growth on a single, one-time mutual fund or equity investment over long timelines.",
+      "seoTitle": "Lump Sum Calculator — One-Time Mutual Fund Sizer",
+      "seoDescription": "Track compound growth for one-time capital investments under long-term equity or debt mutual fund return scales.",
+      "seoKeywords": "lump sum calculator, one-time investment, compound returns mutual fund",
+      "isActive": true,
+      "fields": [
+        {
+          "id": "principal",
+          "label": "One-Time Investment Sum (₹)",
+          "type": "number",
+          "defaultValue": 100000,
+          "prefix": "₹"
+        },
+        {
+          "id": "rate",
+          "label": "Expected Annual Return (% p.a.)",
+          "type": "slider",
+          "defaultValue": 12,
+          "min": 1,
+          "max": 30,
+          "step": 0.5,
+          "suffix": "%"
+        },
+        {
+          "id": "years",
+          "label": "Duration (Years)",
+          "type": "slider",
+          "defaultValue": 15,
+          "min": 1,
+          "max": 40,
+          "step": 1,
+          "suffix": "yrs"
+        }
+      ],
+      "outputs": [
+        {
+          "id": "totalValue",
+          "label": "Compounded Future Value",
+          "formula": "totalValue",
+          "format": "currency_inr",
+          "highlight": true
+        },
+        {
+          "id": "interestEarned",
+          "label": "Estimated Wealth Gain",
+          "formula": "interestEarned",
+          "format": "currency_inr"
+        }
+      ],
+      "faqs": [
+        {
+          "id": "faq_lump_1",
+          "question": "How is a lump sum calculation done?",
+          "answer": "<p>A lump sum mutual fund calculation utilizes standard annual compounding interest logic: Future Value = Principal × (1 + Return Rate)^Years.</p>",
+          "isEnabled": true,
+          "order": 1
+        }
+      ],
+      "modules": [
+        {
+          "id": "mod_lump-sum-investment-calculator_inputs",
+          "moduleId": "calculator-inputs",
+          "name": "Interactive Inputs & Controls",
+          "isEnabled": true,
+          "order": 1,
+          "settings": {
+            "title": "Parameters & Options",
+            "layout": "grid_2_col",
+            "showResetButton": true
+          }
+        },
+        {
+          "id": "mod_lump-sum-investment-calculator_results",
+          "moduleId": "result-cards",
+          "name": "Results & Sizing Summary",
+          "isEnabled": true,
+          "order": 2,
+          "settings": {
+            "title": "Computed Results",
+            "highlightCardStyle": "hero_primary",
+            "showShareActions": true
+          }
+        },
+        {
+          "id": "mod_lump-sum-investment-calculator_chart",
+          "moduleId": "chart-visualizer",
+          "name": "Visual Distribution & Projections",
+          "isEnabled": true,
+          "order": 3,
+          "settings": {
+            "chartType": "bar",
+            "chartTitle": "Result Breakdown Graph",
+            "showLegend": true
+          }
+        },
+        {
+          "id": "mod_lump-sum-investment-calculator_faqs",
+          "moduleId": "faq-accordion",
+          "name": "Frequently Asked Questions (FAQs)",
+          "isEnabled": true,
+          "order": 4,
+          "settings": {
+            "title": "Statutory & Planning FAQs"
+          }
+        }
+      ],
+      "contentSections": [
+        {
+          "id": "sec_lump-sum-investment-calculator_overview",
+          "title": "Lump Sum Investment Calculator Methodology & Planning Guide",
+          "htmlContent": "<p>All calculations are structured strictly using high-precision, sandboxed deterministic math execution frameworks.</p><p>Use this tool to simulate various scenarios, configure variable inputs, and evaluate outcomes immediately. Results are calculated with zero latency and styled using highly accessible, responsive visualization pipelines.</p>",
+          "isEnabled": true,
+          "order": 1,
+          "sectionType": "overview"
+        }
+      ]
+    },
+    {
+      "id": "calc_swp",
+      "name": "SWP Calculator",
+      "slug": "swp-calculator",
+      "subcategoryId": "sub_investments_sip",
+      "categoryId": "cat_investments",
+      "shortDescription": "Plan your monthly systematic withdrawals from an accumulated mutual fund corpus while compounding the remaining balance.",
+      "seoTitle": "SWP Calculator — Systematic Withdrawal Plan Planner",
+      "seoDescription": "Calculate monthly cash flows and project remaining portfolio value for systematic withdrawals (SWP) with safe return curves.",
+      "seoKeywords": "swp calculator, systematic withdrawal plan, retirement monthly payout, corpus remaining balance",
+      "isActive": true,
+      "fields": [
+        {
+          "id": "totalInvestment",
+          "label": "Accumulated Initial Corpus (₹)",
+          "type": "number",
+          "defaultValue": 5000000,
+          "prefix": "₹"
+        },
+        {
+          "id": "withdrawalAmount",
+          "label": "Monthly Withdrawal Payout (₹)",
+          "type": "number",
+          "defaultValue": 30000,
+          "prefix": "₹"
+        },
+        {
+          "id": "rate",
+          "label": "Expected Return Rate (% p.a.)",
+          "type": "slider",
+          "defaultValue": 8.5,
+          "min": 1,
+          "max": 25,
+          "step": 0.1,
+          "suffix": "%"
+        },
+        {
+          "id": "years",
+          "label": "Duration of Withdrawals (Years)",
+          "type": "slider",
+          "defaultValue": 15,
+          "min": 1,
+          "max": 40,
+          "step": 1,
+          "suffix": "yrs"
+        }
+      ],
+      "outputs": [
+        {
+          "id": "remainingBalance",
+          "label": "Remaining Portfolio Balance",
+          "formula": "remainingBalance",
+          "format": "currency_inr",
+          "highlight": true
+        },
+        {
+          "id": "totalWithdrawn",
+          "label": "Total Cash Payouts Withdrawn",
+          "formula": "totalWithdrawn",
+          "format": "currency_inr"
+        },
+        {
+          "id": "totalInvested",
+          "label": "Initial Outlay Corpus",
+          "formula": "totalInvested",
+          "format": "currency_inr"
+        }
+      ],
+      "faqs": [
+        {
+          "id": "faq_swp_1",
+          "question": "Is SWP tax-efficient for retirement payouts?",
+          "answer": "<p>Yes. SWP withdrawals are subject to capital gains tax rather than ordinary slab income tax rates, making SWP highly tax-efficient compared to bank FD interest payouts or annuity plans.</p>",
+          "isEnabled": true,
+          "order": 1
+        }
+      ],
+      "modules": [
+        {
+          "id": "mod_swp-calculator_inputs",
+          "moduleId": "calculator-inputs",
+          "name": "Interactive Inputs & Controls",
+          "isEnabled": true,
+          "order": 1,
+          "settings": {
+            "title": "Parameters & Options",
+            "layout": "grid_2_col",
+            "showResetButton": true
+          }
+        },
+        {
+          "id": "mod_swp-calculator_results",
+          "moduleId": "result-cards",
+          "name": "Results & Sizing Summary",
+          "isEnabled": true,
+          "order": 2,
+          "settings": {
+            "title": "Computed Results",
+            "highlightCardStyle": "hero_primary",
+            "showShareActions": true
+          }
+        },
+        {
+          "id": "mod_swp-calculator_chart",
+          "moduleId": "chart-visualizer",
+          "name": "Visual Distribution & Projections",
+          "isEnabled": true,
+          "order": 3,
+          "settings": {
+            "chartType": "bar",
+            "chartTitle": "Result Breakdown Graph",
+            "showLegend": true
+          }
+        },
+        {
+          "id": "mod_swp-calculator_faqs",
+          "moduleId": "faq-accordion",
+          "name": "Frequently Asked Questions (FAQs)",
+          "isEnabled": true,
+          "order": 4,
+          "settings": {
+            "title": "Statutory & Planning FAQs"
+          }
+        }
+      ],
+      "contentSections": [
+        {
+          "id": "sec_swp-calculator_overview",
+          "title": "SWP Calculator Methodology & Planning Guide",
+          "htmlContent": "<p>All calculations are structured strictly using high-precision, sandboxed deterministic math execution frameworks.</p><p>Use this tool to simulate various scenarios, configure variable inputs, and evaluate outcomes immediately. Results are calculated with zero latency and styled using highly accessible, responsive visualization pipelines.</p>",
+          "isEnabled": true,
+          "order": 1,
+          "sectionType": "overview"
+        }
+      ]
+    },
+    {
+      "id": "calc_cagr",
+      "name": "CAGR Return Calculator",
+      "slug": "cagr-calculator",
+      "subcategoryId": "sub_investments_sip",
+      "categoryId": "cat_investments",
+      "shortDescription": "Determine the Compound Annual Growth Rate (CAGR) of any asset or investment portfolio over multiple years.",
+      "seoTitle": "CAGR Calculator — Compound Annual Growth Rate Solver",
+      "seoDescription": "Find the annualized compound growth rate (CAGR) and absolute returns from any investment’s initial and final balances.",
+      "seoKeywords": "cagr calculator, compound annual growth rate, portfolio annualized return, absolute return rate",
+      "isActive": true,
+      "fields": [
+        {
+          "id": "initialValue",
+          "label": "Initial Capital (₹)",
+          "type": "number",
+          "defaultValue": 100000,
+          "prefix": "₹"
+        },
+        {
+          "id": "finalValue",
+          "label": "Final Portfolio Value (₹)",
+          "type": "number",
+          "defaultValue": 250000,
+          "prefix": "₹"
+        },
+        {
+          "id": "years",
+          "label": "Investment Span (Years)",
+          "type": "slider",
+          "defaultValue": 5,
+          "min": 0.5,
+          "max": 30,
+          "step": 0.5,
+          "suffix": "yrs"
+        }
+      ],
+      "outputs": [
+        {
+          "id": "cagrFormatted",
+          "label": "Compound Annual Growth Rate",
+          "formula": "cagrFormatted",
+          "format": "text",
+          "highlight": true
+        },
+        {
+          "id": "absoluteReturnPercent",
+          "label": "Absolute Return (%)",
+          "formula": "absoluteReturnPercent",
+          "format": "percent"
+        }
+      ],
+      "faqs": [
+        {
+          "id": "faq_cagr_1",
+          "question": "What is CAGR and how does it differ from absolute returns?",
+          "answer": "<p>Absolute return only measures total percentage profit: ((Final - Initial) / Initial) × 100. CAGR factors in the time variable, telling you the steady annualized rate at which the investment grew each year.</p>",
+          "isEnabled": true,
+          "order": 1
+        }
+      ],
+      "modules": [
+        {
+          "id": "mod_cagr-calculator_inputs",
+          "moduleId": "calculator-inputs",
+          "name": "Interactive Inputs & Controls",
+          "isEnabled": true,
+          "order": 1,
+          "settings": {
+            "title": "Parameters & Options",
+            "layout": "grid_2_col",
+            "showResetButton": true
+          }
+        },
+        {
+          "id": "mod_cagr-calculator_results",
+          "moduleId": "result-cards",
+          "name": "Results & Sizing Summary",
+          "isEnabled": true,
+          "order": 2,
+          "settings": {
+            "title": "Computed Results",
+            "highlightCardStyle": "hero_primary",
+            "showShareActions": true
+          }
+        },
+        {
+          "id": "mod_cagr-calculator_chart",
+          "moduleId": "chart-visualizer",
+          "name": "Visual Distribution & Projections",
+          "isEnabled": true,
+          "order": 3,
+          "settings": {
+            "chartType": "bar",
+            "chartTitle": "Result Breakdown Graph",
+            "showLegend": true
+          }
+        },
+        {
+          "id": "mod_cagr-calculator_faqs",
+          "moduleId": "faq-accordion",
+          "name": "Frequently Asked Questions (FAQs)",
+          "isEnabled": true,
+          "order": 4,
+          "settings": {
+            "title": "Statutory & Planning FAQs"
+          }
+        }
+      ],
+      "contentSections": [
+        {
+          "id": "sec_cagr-calculator_overview",
+          "title": "CAGR Return Calculator Methodology & Planning Guide",
+          "htmlContent": "<p>All calculations are structured strictly using high-precision, sandboxed deterministic math execution frameworks.</p><p>Use this tool to simulate various scenarios, configure variable inputs, and evaluate outcomes immediately. Results are calculated with zero latency and styled using highly accessible, responsive visualization pipelines.</p>",
+          "isEnabled": true,
+          "order": 1,
+          "sectionType": "overview"
+        }
+      ]
+    },
+    {
+      "id": "calc_epf",
+      "name": "EPF Contribution Calculator",
+      "slug": "epf-calculator",
+      "subcategoryId": "sub_retirement_planning",
+      "categoryId": "cat_retirement",
+      "shortDescription": "Calculate the statutory monthly EPF contribution limits for both employees and employers based on basic salary components.",
+      "seoTitle": "EPF Contribution Calculator — Statutory Salary Sizer",
+      "seoDescription": "Calculate employee and employer statutory EPF contributions (12%) based on the latest Indian EPFO guidelines.",
+      "seoKeywords": "epf contribution, employee provident fund, epfo statutory rate, monthly epf deduction",
+      "isActive": true,
+      "fields": [
+        {
+          "id": "base",
+          "label": "Monthly Basic Salary + DA (₹)",
+          "type": "number",
+          "defaultValue": 50000,
+          "prefix": "₹"
+        },
+        {
+          "id": "employeeRate",
+          "label": "Employee Statutory Rate (%)",
+          "type": "slider",
+          "defaultValue": 12,
+          "min": 10,
+          "max": 20,
+          "suffix": "%"
+        },
+        {
+          "id": "employerRate",
+          "label": "Employer Statutory Rate (%)",
+          "type": "slider",
+          "defaultValue": 12,
+          "min": 10,
+          "max": 20,
+          "suffix": "%"
+        }
+      ],
+      "outputs": [
+        {
+          "id": "total",
+          "label": "Total Monthly EPF Contribution",
+          "formula": "total",
+          "format": "currency_inr",
+          "highlight": true
+        },
+        {
+          "id": "employee",
+          "label": "Employee Monthly Share",
+          "formula": "employee",
+          "format": "currency_inr"
+        },
+        {
+          "id": "employer",
+          "label": "Employer Monthly Share (EPF + EPS)",
+          "formula": "employer",
+          "format": "currency_inr"
+        }
+      ],
+      "faqs": [
+        {
+          "id": "faq_epf_1",
+          "question": "What is the statutory EPF contribution rate?",
+          "answer": "<p>The standard statutory rate is 12% of your Basic Salary + Dearness Allowance (DA) contributed by the employee, and an equal 12% contributed by the employer (which is split between EPF and EPS schemes).</p>",
+          "isEnabled": true,
+          "order": 1
+        }
+      ],
+      "modules": [
+        {
+          "id": "mod_epf-calculator_inputs",
+          "moduleId": "calculator-inputs",
+          "name": "Interactive Inputs & Controls",
+          "isEnabled": true,
+          "order": 1,
+          "settings": {
+            "title": "Parameters & Options",
+            "layout": "grid_2_col",
+            "showResetButton": true
+          }
+        },
+        {
+          "id": "mod_epf-calculator_results",
+          "moduleId": "result-cards",
+          "name": "Results & Sizing Summary",
+          "isEnabled": true,
+          "order": 2,
+          "settings": {
+            "title": "Computed Results",
+            "highlightCardStyle": "hero_primary",
+            "showShareActions": true
+          }
+        },
+        {
+          "id": "mod_epf-calculator_chart",
+          "moduleId": "chart-visualizer",
+          "name": "Visual Distribution & Projections",
+          "isEnabled": true,
+          "order": 3,
+          "settings": {
+            "chartType": "bar",
+            "chartTitle": "Result Breakdown Graph",
+            "showLegend": true
+          }
+        },
+        {
+          "id": "mod_epf-calculator_faqs",
+          "moduleId": "faq-accordion",
+          "name": "Frequently Asked Questions (FAQs)",
+          "isEnabled": true,
+          "order": 4,
+          "settings": {
+            "title": "Statutory & Planning FAQs"
+          }
+        }
+      ],
+      "contentSections": [
+        {
+          "id": "sec_epf-calculator_overview",
+          "title": "EPF Contribution Calculator Methodology & Planning Guide",
+          "htmlContent": "<p>All calculations are structured strictly using high-precision, sandboxed deterministic math execution frameworks.</p><p>Use this tool to simulate various scenarios, configure variable inputs, and evaluate outcomes immediately. Results are calculated with zero latency and styled using highly accessible, responsive visualization pipelines.</p>",
+          "isEnabled": true,
+          "order": 1,
+          "sectionType": "overview"
+        }
+      ]
+    },
+    {
+      "id": "calc_stamp_duty",
+      "name": "Stamp Duty & Registration Calculator",
+      "slug": "stamp-duty-calculator",
+      "subcategoryId": "sub_retirement_planning",
+      "categoryId": "cat_retirement",
+      "shortDescription": "Calculate property stamp duty rates and government registration charges based on local transaction scales.",
+      "seoTitle": "Stamp Duty & Registration Charges Calculator",
+      "seoDescription": "Calculate government stamp duty and statutory registration fees for commercial or residential property transactions in India.",
+      "seoKeywords": "stamp duty calculator, registration charges, property purchase taxes, government stamp duty scale",
+      "isActive": true,
+      "fields": [
+        {
+          "id": "propertyValue",
+          "label": "Agreement / Market Property Value (₹)",
+          "type": "number",
+          "defaultValue": 5000000,
+          "prefix": "₹"
+        },
+        {
+          "id": "rate",
+          "label": "Local Stamp Duty Rate (%)",
+          "type": "slider",
+          "defaultValue": 5,
+          "min": 1,
+          "max": 15,
+          "step": 0.1,
+          "suffix": "%"
+        },
+        {
+          "id": "registrationRate",
+          "label": "Registration Charge Rate (%)",
+          "type": "slider",
+          "defaultValue": 1,
+          "min": 0.1,
+          "max": 5,
+          "step": 0.1,
+          "suffix": "%"
+        }
+      ],
+      "outputs": [
+        {
+          "id": "totalGovernmentCharges",
+          "label": "Total Statutory Charges",
+          "formula": "totalGovernmentCharges",
+          "format": "currency_inr",
+          "highlight": true
+        },
+        {
+          "id": "stampDuty",
+          "label": "Stamp Duty Payable",
+          "formula": "stampDuty",
+          "format": "currency_inr"
+        },
+        {
+          "id": "registration",
+          "label": "Registration Charges Payable",
+          "formula": "registration",
+          "format": "currency_inr"
+        }
+      ],
+      "faqs": [
+        {
+          "id": "faq_sd_1",
+          "question": "What is stamp duty on property?",
+          "answer": "<p>Stamp duty is a statutory tax collected by the State Government for legalising property sale agreements and documents, calculated as a percentage of the transaction or circle rate value.</p>",
+          "isEnabled": true,
+          "order": 1
+        }
+      ],
+      "modules": [
+        {
+          "id": "mod_stamp-duty-calculator_inputs",
+          "moduleId": "calculator-inputs",
+          "name": "Interactive Inputs & Controls",
+          "isEnabled": true,
+          "order": 1,
+          "settings": {
+            "title": "Parameters & Options",
+            "layout": "grid_2_col",
+            "showResetButton": true
+          }
+        },
+        {
+          "id": "mod_stamp-duty-calculator_results",
+          "moduleId": "result-cards",
+          "name": "Results & Sizing Summary",
+          "isEnabled": true,
+          "order": 2,
+          "settings": {
+            "title": "Computed Results",
+            "highlightCardStyle": "hero_primary",
+            "showShareActions": true
+          }
+        },
+        {
+          "id": "mod_stamp-duty-calculator_chart",
+          "moduleId": "chart-visualizer",
+          "name": "Visual Distribution & Projections",
+          "isEnabled": true,
+          "order": 3,
+          "settings": {
+            "chartType": "bar",
+            "chartTitle": "Result Breakdown Graph",
+            "showLegend": true
+          }
+        },
+        {
+          "id": "mod_stamp-duty-calculator_faqs",
+          "moduleId": "faq-accordion",
+          "name": "Frequently Asked Questions (FAQs)",
+          "isEnabled": true,
+          "order": 4,
+          "settings": {
+            "title": "Statutory & Planning FAQs"
+          }
+        }
+      ],
+      "contentSections": [
+        {
+          "id": "sec_stamp-duty-calculator_overview",
+          "title": "Stamp Duty & Registration Calculator Methodology & Planning Guide",
+          "htmlContent": "<p>All calculations are structured strictly using high-precision, sandboxed deterministic math execution frameworks.</p><p>Use this tool to simulate various scenarios, configure variable inputs, and evaluate outcomes immediately. Results are calculated with zero latency and styled using highly accessible, responsive visualization pipelines.</p>",
+          "isEnabled": true,
+          "order": 1,
+          "sectionType": "overview"
+        }
+      ]
+    },
+    {
+      "id": "calc_gratuity",
+      "name": "Gratuity Calculator",
+      "slug": "gratuity-calculator",
+      "subcategoryId": "sub_retirement_planning",
+      "categoryId": "cat_retirement",
+      "shortDescription": "Calculate your statutory Gratuity eligibility and payout sum upon completing 5 or more years of continuous corporate service.",
+      "seoTitle": "Gratuity Calculator — Payment of Gratuity Act Sizer",
+      "seoDescription": "Calculate your tax-exempt and total Gratuity eligibility sum under the Payment of Gratuity Act 1972 guidelines.",
+      "seoKeywords": "gratuity calculator, payment of gratuity act, tax exempt gratuity, continuous corporate service",
+      "isActive": true,
+      "fields": [
+        {
+          "id": "lastDrawnSalary",
+          "label": "Monthly Last Drawn Basic + DA (₹)",
+          "type": "number",
+          "defaultValue": 100000,
+          "prefix": "₹"
+        },
+        {
+          "id": "completedYearsOfService",
+          "label": "Completed Years of Service",
+          "type": "slider",
+          "defaultValue": 8,
+          "min": 5,
+          "max": 40,
+          "step": 1,
+          "suffix": "yrs"
+        },
+        {
+          "id": "isCoveredUnderGratuityAct",
+          "label": "Covered Under Gratuity Act? (Yes/No)",
+          "type": "checkbox",
+          "defaultValue": true
+        }
+      ],
+      "outputs": [
+        {
+          "id": "gratuityAmount",
+          "label": "Estimated Gratuity Amount",
+          "formula": "gratuityAmount",
+          "format": "currency_inr",
+          "highlight": true
+        },
+        {
+          "id": "taxFreeLimit",
+          "label": "Statutory Tax-Free Ceiling",
+          "formula": "taxFreeLimit",
+          "format": "currency_inr"
+        },
+        {
+          "id": "taxableGratuity",
+          "label": "Taxable Gratuity Component",
+          "formula": "taxableGratuity",
+          "format": "currency_inr"
+        }
+      ],
+      "faqs": [
+        {
+          "id": "faq_gratuity_rule",
+          "question": "Are gratuity payouts tax-free?",
+          "answer": "<p>Under statutory guidelines, Gratuity is tax-free up to a lifetime cumulative ceiling of ₹20,00,000 for private-sector employees. Any excess received is added to taxable salary.</p>",
+          "isEnabled": true,
+          "order": 1
+        }
+      ],
+      "modules": [
+        {
+          "id": "mod_gratuity-calculator_inputs",
+          "moduleId": "calculator-inputs",
+          "name": "Interactive Inputs & Controls",
+          "isEnabled": true,
+          "order": 1,
+          "settings": {
+            "title": "Parameters & Options",
+            "layout": "grid_2_col",
+            "showResetButton": true
+          }
+        },
+        {
+          "id": "mod_gratuity-calculator_results",
+          "moduleId": "result-cards",
+          "name": "Results & Sizing Summary",
+          "isEnabled": true,
+          "order": 2,
+          "settings": {
+            "title": "Computed Results",
+            "highlightCardStyle": "hero_primary",
+            "showShareActions": true
+          }
+        },
+        {
+          "id": "mod_gratuity-calculator_chart",
+          "moduleId": "chart-visualizer",
+          "name": "Visual Distribution & Projections",
+          "isEnabled": true,
+          "order": 3,
+          "settings": {
+            "chartType": "bar",
+            "chartTitle": "Result Breakdown Graph",
+            "showLegend": true
+          }
+        },
+        {
+          "id": "mod_gratuity-calculator_faqs",
+          "moduleId": "faq-accordion",
+          "name": "Frequently Asked Questions (FAQs)",
+          "isEnabled": true,
+          "order": 4,
+          "settings": {
+            "title": "Statutory & Planning FAQs"
+          }
+        }
+      ],
+      "contentSections": [
+        {
+          "id": "sec_gratuity-calculator_overview",
+          "title": "Gratuity Calculator Methodology & Planning Guide",
+          "htmlContent": "<p>All calculations are structured strictly using high-precision, sandboxed deterministic math execution frameworks.</p><p>Use this tool to simulate various scenarios, configure variable inputs, and evaluate outcomes immediately. Results are calculated with zero latency and styled using highly accessible, responsive visualization pipelines.</p>",
+          "isEnabled": true,
+          "order": 1,
+          "sectionType": "overview"
+        }
+      ]
+    },
+    {
+      "id": "calc_retirement_corpus",
+      "name": "Retirement Corpus Sizer Calculator",
+      "slug": "retirement-corpus-calculator",
+      "subcategoryId": "sub_retirement_planning",
+      "categoryId": "cat_retirement",
+      "shortDescription": "Determine the retirement target corpus and monthly savings rate required to sustain your family lifestyle across your golden years.",
+      "seoTitle": "Retirement Corpus Calculator — Pension Sizer Tool",
+      "seoDescription": "Determine your future retirement target corpus and monthly savings requirements compounded with multi-rate inflation scales.",
+      "seoKeywords": "retirement planning calculator, pension corpus sizer, inflation adjusted pension, post retirement returns",
+      "isActive": true,
+      "fields": [
+        {
+          "id": "monthlyExpensesToday",
+          "label": "Current Monthly Expenses today (₹)",
+          "type": "number",
+          "defaultValue": 50000,
+          "prefix": "₹"
+        },
+        {
+          "id": "currentAge",
+          "label": "Your Current Age",
+          "type": "slider",
+          "defaultValue": 30,
+          "min": 18,
+          "max": 65,
+          "suffix": "yrs"
+        },
+        {
+          "id": "retirementAge",
+          "label": "Target Retirement Age",
+          "type": "slider",
+          "defaultValue": 60,
+          "min": 25,
+          "max": 75,
+          "suffix": "yrs"
+        },
+        {
+          "id": "lifeExpectancy",
+          "label": "Expected Life Expectancy",
+          "type": "slider",
+          "defaultValue": 85,
+          "min": 50,
+          "max": 100,
+          "suffix": "yrs"
+        },
+        {
+          "id": "inflationPercent",
+          "label": "Expected Annual Inflation (% p.a.)",
+          "type": "slider",
+          "defaultValue": 6,
+          "min": 1,
+          "max": 15,
+          "suffix": "%"
+        },
+        {
+          "id": "preRetirementReturnPercent",
+          "label": "Pre-Retirement Asset Return (% p.a.)",
+          "type": "slider",
+          "defaultValue": 12,
+          "min": 1,
+          "max": 25,
+          "suffix": "%"
+        },
+        {
+          "id": "postRetirementReturnPercent",
+          "label": "Post-Retirement Safe Return (% p.a.)",
+          "type": "slider",
+          "defaultValue": 8,
+          "min": 1,
+          "max": 20,
+          "suffix": "%"
+        }
+      ],
+      "outputs": [
+        {
+          "id": "targetCorpus",
+          "label": "Required Target Corpus at Retirement",
+          "formula": "targetCorpus",
+          "format": "currency_inr",
+          "highlight": true
+        },
+        {
+          "id": "monthlyExpensesAtRetirement",
+          "label": "Inflated Expenses at Year 1 of Retirement",
+          "formula": "monthlyExpensesAtRetirement",
+          "format": "currency_inr"
+        },
+        {
+          "id": "requiredMonthlySavings",
+          "label": "Required Monthly Savings starting Today",
+          "formula": "requiredMonthlySavings",
+          "format": "currency_inr"
+        }
+      ],
+      "faqs": [
+        {
+          "id": "faq_corpus_size",
+          "question": "How is the required retirement corpus determined?",
+          "answer": "<p>The calculator inflates your current monthly expenses to your planned retirement age. It then uses annuity-due formulas discounted at a post-retirement real rate of return to sustain these payouts over your entire retirement timeline.</p>",
+          "isEnabled": true,
+          "order": 1
+        }
+      ],
+      "modules": [
+        {
+          "id": "mod_retirement-corpus-calculator_inputs",
+          "moduleId": "calculator-inputs",
+          "name": "Interactive Inputs & Controls",
+          "isEnabled": true,
+          "order": 1,
+          "settings": {
+            "title": "Parameters & Options",
+            "layout": "grid_2_col",
+            "showResetButton": true
+          }
+        },
+        {
+          "id": "mod_retirement-corpus-calculator_results",
+          "moduleId": "result-cards",
+          "name": "Results & Sizing Summary",
+          "isEnabled": true,
+          "order": 2,
+          "settings": {
+            "title": "Computed Results",
+            "highlightCardStyle": "hero_primary",
+            "showShareActions": true
+          }
+        },
+        {
+          "id": "mod_retirement-corpus-calculator_chart",
+          "moduleId": "chart-visualizer",
+          "name": "Visual Distribution & Projections",
+          "isEnabled": true,
+          "order": 3,
+          "settings": {
+            "chartType": "bar",
+            "chartTitle": "Result Breakdown Graph",
+            "showLegend": true
+          }
+        },
+        {
+          "id": "mod_retirement-corpus-calculator_faqs",
+          "moduleId": "faq-accordion",
+          "name": "Frequently Asked Questions (FAQs)",
+          "isEnabled": true,
+          "order": 4,
+          "settings": {
+            "title": "Statutory & Planning FAQs"
+          }
+        }
+      ],
+      "contentSections": [
+        {
+          "id": "sec_retirement-corpus-calculator_overview",
+          "title": "Retirement Corpus Sizer Calculator Methodology & Planning Guide",
+          "htmlContent": "<p>All calculations are structured strictly using high-precision, sandboxed deterministic math execution frameworks.</p><p>Use this tool to simulate various scenarios, configure variable inputs, and evaluate outcomes immediately. Results are calculated with zero latency and styled using highly accessible, responsive visualization pipelines.</p>",
+          "isEnabled": true,
+          "order": 1,
+          "sectionType": "overview"
+        }
+      ]
+    },
+    {
+      "id": "calc_bmi",
+      "name": "BMI Calculator",
+      "slug": "bmi-calculator",
+      "subcategoryId": "sub_health_metrics",
+      "categoryId": "cat_health_fitness",
+      "shortDescription": "Calculate your Body Mass Index (BMI) and discover your safe weight ranges based on global healthcare scales.",
+      "seoTitle": "BMI Calculator — Body Mass Index Sizer",
+      "seoDescription": "Find your Body Mass Index (BMI) and compute ideal physical weight limits safely based on standard height ratios.",
+      "seoKeywords": "bmi calculator, body mass index, healthy weight range, weight to height ratio",
+      "isActive": true,
+      "fields": [
+        {
+          "id": "weightKg",
+          "label": "Current Weight (kg)",
+          "type": "number",
+          "defaultValue": 70,
+          "min": 10,
+          "max": 300,
+          "suffix": "kg"
+        },
+        {
+          "id": "heightCm",
+          "label": "Height (cm)",
+          "type": "number",
+          "defaultValue": 170,
+          "min": 50,
+          "max": 250,
+          "suffix": "cm"
+        }
+      ],
+      "outputs": [
+        {
+          "id": "bmi",
+          "label": "Your Body Mass Index (BMI)",
+          "formula": "bmi",
+          "format": "decimal_2",
+          "highlight": true
+        },
+        {
+          "id": "bmiCategory",
+          "label": "Weight Classification",
+          "formula": "bmiCategory",
+          "format": "text"
+        },
+        {
+          "id": "idealWeightMin",
+          "label": "Minimum Ideal Weight (kg)",
+          "formula": "idealWeightMin",
+          "format": "decimal_2",
+          "suffix": "kg"
+        },
+        {
+          "id": "idealWeightMax",
+          "label": "Maximum Ideal Weight (kg)",
+          "formula": "idealWeightMax",
+          "format": "decimal_2",
+          "suffix": "kg"
+        }
+      ],
+      "faqs": [
+        {
+          "id": "faq_bmi_1",
+          "question": "What is a healthy BMI classification?",
+          "answer": "<p>According to the WHO guidelines, a BMI under 18.5 is Underweight, 18.5 to 24.9 is Normal Weight, 25 to 29.9 is Overweight, and 30 or above is Obese.</p>",
+          "isEnabled": true,
+          "order": 1
+        }
+      ],
+      "modules": [
+        {
+          "id": "mod_bmi-calculator_inputs",
+          "moduleId": "calculator-inputs",
+          "name": "Interactive Inputs & Controls",
+          "isEnabled": true,
+          "order": 1,
+          "settings": {
+            "title": "Parameters & Options",
+            "layout": "grid_2_col",
+            "showResetButton": true
+          }
+        },
+        {
+          "id": "mod_bmi-calculator_results",
+          "moduleId": "result-cards",
+          "name": "Results & Sizing Summary",
+          "isEnabled": true,
+          "order": 2,
+          "settings": {
+            "title": "Computed Results",
+            "highlightCardStyle": "hero_primary",
+            "showShareActions": true
+          }
+        },
+        {
+          "id": "mod_bmi-calculator_chart",
+          "moduleId": "chart-visualizer",
+          "name": "Visual Distribution & Projections",
+          "isEnabled": true,
+          "order": 3,
+          "settings": {
+            "chartType": "bar",
+            "chartTitle": "Result Breakdown Graph",
+            "showLegend": true
+          }
+        },
+        {
+          "id": "mod_bmi-calculator_faqs",
+          "moduleId": "faq-accordion",
+          "name": "Frequently Asked Questions (FAQs)",
+          "isEnabled": true,
+          "order": 4,
+          "settings": {
+            "title": "Statutory & Planning FAQs"
+          }
+        }
+      ],
+      "contentSections": [
+        {
+          "id": "sec_bmi-calculator_overview",
+          "title": "BMI Calculator Methodology & Planning Guide",
+          "htmlContent": "<p>All calculations are structured strictly using high-precision, sandboxed deterministic math execution frameworks.</p><p>Use this tool to simulate various scenarios, configure variable inputs, and evaluate outcomes immediately. Results are calculated with zero latency and styled using highly accessible, responsive visualization pipelines.</p>",
+          "isEnabled": true,
+          "order": 1,
+          "sectionType": "overview"
+        }
+      ]
+    },
+    {
+      "id": "calc_bmr",
+      "name": "BMR Calculator",
+      "slug": "bmr-calculator",
+      "subcategoryId": "sub_health_metrics",
+      "categoryId": "cat_health_fitness",
+      "shortDescription": "Determine your Basal Metabolic Rate (BMR) representing daily energy requirements at complete rest.",
+      "seoTitle": "BMR Calculator — Basal Metabolic Rate Sizer",
+      "seoDescription": "Find your Basal Metabolic Rate (BMR) using Mifflin-St Jeor metabolic physical calculation formulas.",
+      "seoKeywords": "bmr calculator, basal metabolic rate, resting calorie burn, Mifflin St Jeor formula",
+      "isActive": true,
+      "fields": [
+        {
+          "id": "weightKg",
+          "label": "Weight (kg)",
+          "type": "number",
+          "defaultValue": 70,
+          "suffix": "kg"
+        },
+        {
+          "id": "heightCm",
+          "label": "Height (cm)",
+          "type": "number",
+          "defaultValue": 170,
+          "suffix": "cm"
+        },
+        {
+          "id": "ageYears",
+          "label": "Age (Years)",
+          "type": "slider",
+          "defaultValue": 30,
+          "min": 1,
+          "max": 100,
+          "suffix": "yrs"
+        },
+        {
+          "id": "gender",
+          "label": "Biological Gender",
+          "type": "select",
+          "defaultValue": "male",
+          "options": [
+            {
+              "label": "Male",
+              "value": "male"
+            },
+            {
+              "label": "Female",
+              "value": "female"
+            }
+          ]
+        }
+      ],
+      "outputs": [
+        {
+          "id": "bmr",
+          "label": "Basal Metabolic Rate (BMR)",
+          "formula": "bmr",
+          "format": "integer",
+          "suffix": "kcal/day",
+          "highlight": true
+        }
+      ],
+      "faqs": [
+        {
+          "id": "faq_bmr_1",
+          "question": "What does BMR measure?",
+          "answer": "<p>Your BMR represents the total calories required to maintain primary biological life-support functions (breathing, circulation, cellular repair) at complete rest over a 24-hour timeline.</p>",
+          "isEnabled": true,
+          "order": 1
+        }
+      ],
+      "modules": [
+        {
+          "id": "mod_bmr-calculator_inputs",
+          "moduleId": "calculator-inputs",
+          "name": "Interactive Inputs & Controls",
+          "isEnabled": true,
+          "order": 1,
+          "settings": {
+            "title": "Parameters & Options",
+            "layout": "grid_2_col",
+            "showResetButton": true
+          }
+        },
+        {
+          "id": "mod_bmr-calculator_results",
+          "moduleId": "result-cards",
+          "name": "Results & Sizing Summary",
+          "isEnabled": true,
+          "order": 2,
+          "settings": {
+            "title": "Computed Results",
+            "highlightCardStyle": "hero_primary",
+            "showShareActions": true
+          }
+        },
+        {
+          "id": "mod_bmr-calculator_chart",
+          "moduleId": "chart-visualizer",
+          "name": "Visual Distribution & Projections",
+          "isEnabled": true,
+          "order": 3,
+          "settings": {
+            "chartType": "bar",
+            "chartTitle": "Result Breakdown Graph",
+            "showLegend": true
+          }
+        },
+        {
+          "id": "mod_bmr-calculator_faqs",
+          "moduleId": "faq-accordion",
+          "name": "Frequently Asked Questions (FAQs)",
+          "isEnabled": true,
+          "order": 4,
+          "settings": {
+            "title": "Statutory & Planning FAQs"
+          }
+        }
+      ],
+      "contentSections": [
+        {
+          "id": "sec_bmr-calculator_overview",
+          "title": "BMR Calculator Methodology & Planning Guide",
+          "htmlContent": "<p>All calculations are structured strictly using high-precision, sandboxed deterministic math execution frameworks.</p><p>Use this tool to simulate various scenarios, configure variable inputs, and evaluate outcomes immediately. Results are calculated with zero latency and styled using highly accessible, responsive visualization pipelines.</p>",
+          "isEnabled": true,
+          "order": 1,
+          "sectionType": "overview"
+        }
+      ]
+    },
+    {
+      "id": "calc_calorie_needs",
+      "name": "Calorie & TDEE Calculator",
+      "slug": "calorie-needs-calculator",
+      "subcategoryId": "sub_health_metrics",
+      "categoryId": "cat_health_fitness",
+      "shortDescription": "Calculate your Total Daily Energy Expenditure (TDEE) and find calorie limits required to lose, maintain, or gain weight.",
+      "seoTitle": "Calorie & TDEE Calculator — Daily Energy Sizer",
+      "seoDescription": "Calculate your daily Caloric needs (TDEE) and target intake deficits safely to reach optimal physical weight goals.",
+      "seoKeywords": "tdee calculator, daily calorie needs, weight loss calorie deficit, calorie intake surrender",
+      "isActive": true,
+      "fields": [
+        {
+          "id": "weightKg",
+          "label": "Weight (kg)",
+          "type": "number",
+          "defaultValue": 70,
+          "suffix": "kg"
+        },
+        {
+          "id": "heightCm",
+          "label": "Height (cm)",
+          "type": "number",
+          "defaultValue": 170,
+          "suffix": "cm"
+        },
+        {
+          "id": "ageYears",
+          "label": "Age (Years)",
+          "type": "slider",
+          "defaultValue": 30,
+          "min": 1,
+          "max": 100,
+          "suffix": "yrs"
+        },
+        {
+          "id": "gender",
+          "label": "Biological Gender",
+          "type": "select",
+          "defaultValue": "male",
+          "options": [
+            {
+              "label": "Male",
+              "value": "male"
+            },
+            {
+              "label": "Female",
+              "value": "female"
+            }
+          ]
+        },
+        {
+          "id": "activityLevel",
+          "label": "Daily Activity Level",
+          "type": "select",
+          "defaultValue": "sedentary",
+          "options": [
+            {
+              "label": "Sedentary (Office job / little exercise)",
+              "value": "sedentary"
+            },
+            {
+              "label": "Lightly Active (Light exercise 1-3 days/wk)",
+              "value": "lightly_active"
+            },
+            {
+              "label": "Moderately Active (Moderate exercise 3-5 days/wk)",
+              "value": "moderately_active"
+            },
+            {
+              "label": "Very Active (Heavy exercise 6-7 days/wk)",
+              "value": "very_active"
+            },
+            {
+              "label": "Extremely Active (Athletic physical training)",
+              "value": "extremely_active"
+            }
+          ]
+        }
+      ],
+      "outputs": [
+        {
+          "id": "tdee",
+          "label": "Total Daily Energy Expenditure (TDEE)",
+          "formula": "tdee",
+          "format": "integer",
+          "suffix": "kcal/day",
+          "highlight": true
+        },
+        {
+          "id": "bmr",
+          "label": "Basal Metabolic Rate (BMR)",
+          "formula": "bmr",
+          "format": "integer",
+          "suffix": "kcal/day"
+        },
+        {
+          "id": "weightLossCalories",
+          "label": "Weight Loss Target (-500 kcal)",
+          "formula": "weightLossCalories",
+          "format": "integer",
+          "suffix": "kcal/day"
+        },
+        {
+          "id": "weightGainCalories",
+          "label": "Weight Gain Target (+500 kcal)",
+          "formula": "weightGainCalories",
+          "format": "integer",
+          "suffix": "kcal/day"
+        }
+      ],
+      "faqs": [
+        {
+          "id": "faq_tdee_1",
+          "question": "How is TDEE calculated?",
+          "answer": "<p>TDEE is calculated by first determining your resting BMR, and then multiplying this by an activity factor representing daily physical movement scaling.</p>",
+          "isEnabled": true,
+          "order": 1
+        }
+      ],
+      "modules": [
+        {
+          "id": "mod_calorie-needs-calculator_inputs",
+          "moduleId": "calculator-inputs",
+          "name": "Interactive Inputs & Controls",
+          "isEnabled": true,
+          "order": 1,
+          "settings": {
+            "title": "Parameters & Options",
+            "layout": "grid_2_col",
+            "showResetButton": true
+          }
+        },
+        {
+          "id": "mod_calorie-needs-calculator_results",
+          "moduleId": "result-cards",
+          "name": "Results & Sizing Summary",
+          "isEnabled": true,
+          "order": 2,
+          "settings": {
+            "title": "Computed Results",
+            "highlightCardStyle": "hero_primary",
+            "showShareActions": true
+          }
+        },
+        {
+          "id": "mod_calorie-needs-calculator_chart",
+          "moduleId": "chart-visualizer",
+          "name": "Visual Distribution & Projections",
+          "isEnabled": true,
+          "order": 3,
+          "settings": {
+            "chartType": "bar",
+            "chartTitle": "Result Breakdown Graph",
+            "showLegend": true
+          }
+        },
+        {
+          "id": "mod_calorie-needs-calculator_faqs",
+          "moduleId": "faq-accordion",
+          "name": "Frequently Asked Questions (FAQs)",
+          "isEnabled": true,
+          "order": 4,
+          "settings": {
+            "title": "Statutory & Planning FAQs"
+          }
+        }
+      ],
+      "contentSections": [
+        {
+          "id": "sec_calorie-needs-calculator_overview",
+          "title": "Calorie & TDEE Calculator Methodology & Planning Guide",
+          "htmlContent": "<p>All calculations are structured strictly using high-precision, sandboxed deterministic math execution frameworks.</p><p>Use this tool to simulate various scenarios, configure variable inputs, and evaluate outcomes immediately. Results are calculated with zero latency and styled using highly accessible, responsive visualization pipelines.</p>",
+          "isEnabled": true,
+          "order": 1,
+          "sectionType": "overview"
+        }
+      ]
+    },
+    {
+      "id": "calc_profit_margin",
+      "name": "Profit Margin Calculator",
+      "slug": "profit-margin-calculator",
+      "subcategoryId": "sub_business_finance",
+      "categoryId": "cat_business",
+      "shortDescription": "Calculate gross profit totals and profit margins based on revenue receipts and cost ratios.",
+      "seoTitle": "Profit Margin Calculator — Corporate Gross Profit Solver",
+      "seoDescription": "Compute gross profit margins and business profitability scales safely based on revenue and cost sales.",
+      "seoKeywords": "profit margin calculator, gross profit solver, margin percentage, revenue cost calculation",
+      "isActive": true,
+      "fields": [
+        {
+          "id": "revenue",
+          "label": "Gross Revenue / Sales (₹)",
+          "type": "number",
+          "defaultValue": 1000000,
+          "prefix": "₹"
+        },
+        {
+          "id": "cost",
+          "label": "Total Cost of Goods Sold (COGS) (₹)",
+          "type": "number",
+          "defaultValue": 600000,
+          "prefix": "₹"
+        }
+      ],
+      "outputs": [
+        {
+          "id": "marginPercent",
+          "label": "Gross Profit Margin (%)",
+          "formula": "marginPercent",
+          "format": "percent",
+          "highlight": true
+        },
+        {
+          "id": "grossProfit",
+          "label": "Gross Profit (₹)",
+          "formula": "grossProfit",
+          "format": "currency_inr"
+        }
+      ],
+      "faqs": [
+        {
+          "id": "faq_margin_1",
+          "question": "What is the profit margin formula?",
+          "answer": "<p>The gross profit margin formula is: Margin % = ((Revenue - Cost) / Revenue) × 100.</p>",
+          "isEnabled": true,
+          "order": 1
+        }
+      ],
+      "modules": [
+        {
+          "id": "mod_profit-margin-calculator_inputs",
+          "moduleId": "calculator-inputs",
+          "name": "Interactive Inputs & Controls",
+          "isEnabled": true,
+          "order": 1,
+          "settings": {
+            "title": "Parameters & Options",
+            "layout": "grid_2_col",
+            "showResetButton": true
+          }
+        },
+        {
+          "id": "mod_profit-margin-calculator_results",
+          "moduleId": "result-cards",
+          "name": "Results & Sizing Summary",
+          "isEnabled": true,
+          "order": 2,
+          "settings": {
+            "title": "Computed Results",
+            "highlightCardStyle": "hero_primary",
+            "showShareActions": true
+          }
+        },
+        {
+          "id": "mod_profit-margin-calculator_chart",
+          "moduleId": "chart-visualizer",
+          "name": "Visual Distribution & Projections",
+          "isEnabled": true,
+          "order": 3,
+          "settings": {
+            "chartType": "bar",
+            "chartTitle": "Result Breakdown Graph",
+            "showLegend": true
+          }
+        },
+        {
+          "id": "mod_profit-margin-calculator_faqs",
+          "moduleId": "faq-accordion",
+          "name": "Frequently Asked Questions (FAQs)",
+          "isEnabled": true,
+          "order": 4,
+          "settings": {
+            "title": "Statutory & Planning FAQs"
+          }
+        }
+      ],
+      "contentSections": [
+        {
+          "id": "sec_profit-margin-calculator_overview",
+          "title": "Profit Margin Calculator Methodology & Planning Guide",
+          "htmlContent": "<p>All calculations are structured strictly using high-precision, sandboxed deterministic math execution frameworks.</p><p>Use this tool to simulate various scenarios, configure variable inputs, and evaluate outcomes immediately. Results are calculated with zero latency and styled using highly accessible, responsive visualization pipelines.</p>",
+          "isEnabled": true,
+          "order": 1,
+          "sectionType": "overview"
+        }
+      ]
+    },
+    {
+      "id": "calc_markup",
+      "name": "Markup Calculator",
+      "slug": "markup-calculator",
+      "subcategoryId": "sub_business_finance",
+      "categoryId": "cat_business",
+      "shortDescription": "Determine target selling prices by applying markup rates directly over wholesale cost pricing.",
+      "seoTitle": "Markup Calculator — Selling Price Solver",
+      "seoDescription": "Find the target retail selling price by applying markup percentage rates directly over wholesale costs.",
+      "seoKeywords": "markup calculator, retail selling price, wholesale cost markup, corporate profit margin",
+      "isActive": true,
+      "fields": [
+        {
+          "id": "cost",
+          "label": "Wholesale Unit Cost (₹)",
+          "type": "number",
+          "defaultValue": 500,
+          "prefix": "₹"
+        },
+        {
+          "id": "markupPercent",
+          "label": "Markup Rate (%)",
+          "type": "slider",
+          "defaultValue": 40,
+          "min": 0,
+          "max": 200,
+          "step": 1,
+          "suffix": "%"
+        }
+      ],
+      "outputs": [
+        {
+          "id": "sellingPrice",
+          "label": "Target Retail Selling Price",
+          "formula": "sellingPrice",
+          "format": "currency_inr",
+          "highlight": true
+        },
+        {
+          "id": "grossProfit",
+          "label": "Markup Profit Component",
+          "formula": "grossProfit",
+          "format": "currency_inr"
+        }
+      ],
+      "faqs": [
+        {
+          "id": "faq_markup_1",
+          "question": "What is the markup formula?",
+          "answer": "<p>Markup applies profit percentage directly over cost: Selling Price = Cost × (1 + Markup %). This differs from margin, which represents profit divided by selling price.</p>",
+          "isEnabled": true,
+          "order": 1
+        }
+      ],
+      "modules": [
+        {
+          "id": "mod_markup-calculator_inputs",
+          "moduleId": "calculator-inputs",
+          "name": "Interactive Inputs & Controls",
+          "isEnabled": true,
+          "order": 1,
+          "settings": {
+            "title": "Parameters & Options",
+            "layout": "grid_2_col",
+            "showResetButton": true
+          }
+        },
+        {
+          "id": "mod_markup-calculator_results",
+          "moduleId": "result-cards",
+          "name": "Results & Sizing Summary",
+          "isEnabled": true,
+          "order": 2,
+          "settings": {
+            "title": "Computed Results",
+            "highlightCardStyle": "hero_primary",
+            "showShareActions": true
+          }
+        },
+        {
+          "id": "mod_markup-calculator_chart",
+          "moduleId": "chart-visualizer",
+          "name": "Visual Distribution & Projections",
+          "isEnabled": true,
+          "order": 3,
+          "settings": {
+            "chartType": "bar",
+            "chartTitle": "Result Breakdown Graph",
+            "showLegend": true
+          }
+        },
+        {
+          "id": "mod_markup-calculator_faqs",
+          "moduleId": "faq-accordion",
+          "name": "Frequently Asked Questions (FAQs)",
+          "isEnabled": true,
+          "order": 4,
+          "settings": {
+            "title": "Statutory & Planning FAQs"
+          }
+        }
+      ],
+      "contentSections": [
+        {
+          "id": "sec_markup-calculator_overview",
+          "title": "Markup Calculator Methodology & Planning Guide",
+          "htmlContent": "<p>All calculations are structured strictly using high-precision, sandboxed deterministic math execution frameworks.</p><p>Use this tool to simulate various scenarios, configure variable inputs, and evaluate outcomes immediately. Results are calculated with zero latency and styled using highly accessible, responsive visualization pipelines.</p>",
+          "isEnabled": true,
+          "order": 1,
+          "sectionType": "overview"
+        }
+      ]
+    },
+    {
+      "id": "calc_break_even",
+      "name": "Break-Even Calculator",
+      "slug": "break-even-calculator",
+      "subcategoryId": "sub_business_finance",
+      "categoryId": "cat_business",
+      "shortDescription": "Calculate the minimum unit sales volume required to recover fixed operational overheads and achieve zero-loss operations.",
+      "seoTitle": "Break-Even Calculator — Unit Sales Solver",
+      "seoDescription": "Find your break-even operational thresholds in unit sales and revenue based on fixed and variable COGS overheads.",
+      "seoKeywords": "break even calculator, corporate finance pivot, cost recovery units, fixed variable overheads",
+      "isActive": true,
+      "fields": [
+        {
+          "id": "fixedCosts",
+          "label": "Annual Fixed Overhead Costs (₹)",
+          "type": "number",
+          "defaultValue": 1000000,
+          "prefix": "₹"
+        },
+        {
+          "id": "sellingPricePerUnit",
+          "label": "Selling Price per Unit (₹)",
+          "type": "number",
+          "defaultValue": 500,
+          "prefix": "₹"
+        },
+        {
+          "id": "variableCostPerUnit",
+          "label": "Variable Cost per Unit (₹)",
+          "type": "number",
+          "defaultValue": 300,
+          "prefix": "₹"
+        }
+      ],
+      "outputs": [
+        {
+          "id": "breakEvenUnits",
+          "label": "Required Break-Even Units",
+          "formula": "breakEvenUnits",
+          "format": "integer",
+          "highlight": true
+        },
+        {
+          "id": "breakEvenSales",
+          "label": "Required Break-Even Sales Revenue",
+          "formula": "breakEvenSales",
+          "format": "currency_inr"
+        }
+      ],
+      "faqs": [
+        {
+          "id": "faq_be_1",
+          "question": "What is a break-even point?",
+          "answer": "<p>The break-even point is the sales volume where your gross revenue perfectly balances your fixed and variable operational costs, resulting in exactly zero profit or loss.</p>",
+          "isEnabled": true,
+          "order": 1
+        }
+      ],
+      "modules": [
+        {
+          "id": "mod_break-even-calculator_inputs",
+          "moduleId": "calculator-inputs",
+          "name": "Interactive Inputs & Controls",
+          "isEnabled": true,
+          "order": 1,
+          "settings": {
+            "title": "Parameters & Options",
+            "layout": "grid_2_col",
+            "showResetButton": true
+          }
+        },
+        {
+          "id": "mod_break-even-calculator_results",
+          "moduleId": "result-cards",
+          "name": "Results & Sizing Summary",
+          "isEnabled": true,
+          "order": 2,
+          "settings": {
+            "title": "Computed Results",
+            "highlightCardStyle": "hero_primary",
+            "showShareActions": true
+          }
+        },
+        {
+          "id": "mod_break-even-calculator_chart",
+          "moduleId": "chart-visualizer",
+          "name": "Visual Distribution & Projections",
+          "isEnabled": true,
+          "order": 3,
+          "settings": {
+            "chartType": "bar",
+            "chartTitle": "Result Breakdown Graph",
+            "showLegend": true
+          }
+        },
+        {
+          "id": "mod_break-even-calculator_faqs",
+          "moduleId": "faq-accordion",
+          "name": "Frequently Asked Questions (FAQs)",
+          "isEnabled": true,
+          "order": 4,
+          "settings": {
+            "title": "Statutory & Planning FAQs"
+          }
+        }
+      ],
+      "contentSections": [
+        {
+          "id": "sec_break-even-calculator_overview",
+          "title": "Break-Even Calculator Methodology & Planning Guide",
+          "htmlContent": "<p>All calculations are structured strictly using high-precision, sandboxed deterministic math execution frameworks.</p><p>Use this tool to simulate various scenarios, configure variable inputs, and evaluate outcomes immediately. Results are calculated with zero latency and styled using highly accessible, responsive visualization pipelines.</p>",
+          "isEnabled": true,
+          "order": 1,
+          "sectionType": "overview"
+        }
+      ]
+    },
+    {
+      "id": "calc_roi",
+      "name": "ROI Calculator",
+      "slug": "roi-calculator",
+      "subcategoryId": "sub_business_finance",
+      "categoryId": "cat_business",
+      "shortDescription": "Evaluate Return on Investment (ROI) percentages and net gains from corporate investment projects.",
+      "seoTitle": "ROI Calculator — Return on Investment Sizer",
+      "seoDescription": "Find Return on Investment (ROI) and net capital gains based on initial and final returned valuations.",
+      "seoKeywords": "roi calculator, return on investment, net corporate gains, project profitability scale",
+      "isActive": true,
+      "fields": [
+        {
+          "id": "amountInvested",
+          "label": "Capital Invested Outlay (₹)",
+          "type": "number",
+          "defaultValue": 500000,
+          "prefix": "₹"
+        },
+        {
+          "id": "amountReturned",
+          "label": "Total Returned Value (₹)",
+          "type": "number",
+          "defaultValue": 750000,
+          "prefix": "₹"
+        }
+      ],
+      "outputs": [
+        {
+          "id": "roiPercent",
+          "label": "Return on Investment (ROI)",
+          "formula": "roiPercent",
+          "format": "percent",
+          "highlight": true
+        },
+        {
+          "id": "gain",
+          "label": "Net Capital Gain (₹)",
+          "formula": "gain",
+          "format": "currency_inr"
+        }
+      ],
+      "faqs": [
+        {
+          "id": "faq_roi_1",
+          "question": "How is standard ROI calculated?",
+          "answer": "<p>The standard Return on Investment (ROI) is calculated by dividing the net profit gain by the initial capital invested outlay, expressed as a percentage: ROI = ((Returned - Invested) / Invested) × 100.</p>",
+          "isEnabled": true,
+          "order": 1
+        }
+      ],
+      "modules": [
+        {
+          "id": "mod_roi-calculator_inputs",
+          "moduleId": "calculator-inputs",
+          "name": "Interactive Inputs & Controls",
+          "isEnabled": true,
+          "order": 1,
+          "settings": {
+            "title": "Parameters & Options",
+            "layout": "grid_2_col",
+            "showResetButton": true
+          }
+        },
+        {
+          "id": "mod_roi-calculator_results",
+          "moduleId": "result-cards",
+          "name": "Results & Sizing Summary",
+          "isEnabled": true,
+          "order": 2,
+          "settings": {
+            "title": "Computed Results",
+            "highlightCardStyle": "hero_primary",
+            "showShareActions": true
+          }
+        },
+        {
+          "id": "mod_roi-calculator_chart",
+          "moduleId": "chart-visualizer",
+          "name": "Visual Distribution & Projections",
+          "isEnabled": true,
+          "order": 3,
+          "settings": {
+            "chartType": "bar",
+            "chartTitle": "Result Breakdown Graph",
+            "showLegend": true
+          }
+        },
+        {
+          "id": "mod_roi-calculator_faqs",
+          "moduleId": "faq-accordion",
+          "name": "Frequently Asked Questions (FAQs)",
+          "isEnabled": true,
+          "order": 4,
+          "settings": {
+            "title": "Statutory & Planning FAQs"
+          }
+        }
+      ],
+      "contentSections": [
+        {
+          "id": "sec_roi-calculator_overview",
+          "title": "ROI Calculator Methodology & Planning Guide",
+          "htmlContent": "<p>All calculations are structured strictly using high-precision, sandboxed deterministic math execution frameworks.</p><p>Use this tool to simulate various scenarios, configure variable inputs, and evaluate outcomes immediately. Results are calculated with zero latency and styled using highly accessible, responsive visualization pipelines.</p>",
+          "isEnabled": true,
+          "order": 1,
+          "sectionType": "overview"
+        }
+      ]
     }
   ],
   "posts": [
@@ -2361,7 +7449,7 @@
       "featuredImage": "https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?auto=format&fit=crop&w=1200&q=80",
       "publishedAt": "2026-10-02T11:52:39.526Z",
       "id": "post_1790941959526",
-      "views": 1,
+      "views": 3,
       "status": "published",
       "embeddedCalculators": [],
       "excerpt": "",

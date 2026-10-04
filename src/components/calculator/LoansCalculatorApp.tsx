@@ -404,23 +404,51 @@ export const LoansCalculatorApp: React.FC<LoansCalculatorAppProps> = ({ calculat
           {/* Common Interest Rate & Tenure Controls */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label className="block text-xs font-bold text-slate-700 mb-1.5">Interest Rate (% p.a.)</label>
+              <div className="flex justify-between items-center mb-1.5">
+                <label className="block text-xs font-bold text-slate-700">Interest Rate (% p.a.)</label>
+                <span className="text-xs font-bold text-[#1dbf73]">{interestRate}%</span>
+              </div>
               <input
                 type="number"
                 step="0.1"
+                min="1"
+                max="30"
                 value={interestRate}
                 onChange={(e) => setInterestRate(parseFloat(e.target.value) || 0)}
                 className="w-full p-3.5 bg-slate-50 border border-slate-300 rounded-xl text-xs font-bold text-[#222325]"
               />
+              <input
+                type="range"
+                min={5}
+                max={25}
+                step={0.1}
+                value={Math.min(25, Math.max(5, interestRate || 5))}
+                onChange={(e) => setInterestRate(parseFloat(e.target.value) || 0)}
+                className="w-full mt-2 accent-[#1dbf73] cursor-pointer"
+              />
             </div>
 
             <div>
-              <label className="block text-xs font-bold text-slate-700 mb-1.5">Tenure (Years)</label>
+              <div className="flex justify-between items-center mb-1.5">
+                <label className="block text-xs font-bold text-slate-700">Tenure (Years)</label>
+                <span className="text-xs font-bold text-[#1dbf73]">{tenureYears} Yrs</span>
+              </div>
               <input
                 type="number"
+                min="1"
+                max="30"
                 value={tenureYears}
                 onChange={(e) => setTenureYears(parseInt(e.target.value) || 1)}
                 className="w-full p-3.5 bg-slate-50 border border-slate-300 rounded-xl text-xs font-bold text-[#222325]"
+              />
+              <input
+                type="range"
+                min={1}
+                max={30}
+                step={1}
+                value={Math.min(30, Math.max(1, tenureYears || 1))}
+                onChange={(e) => setTenureYears(parseInt(e.target.value) || 1)}
+                className="w-full mt-2 accent-[#1dbf73] cursor-pointer"
               />
             </div>
           </div>

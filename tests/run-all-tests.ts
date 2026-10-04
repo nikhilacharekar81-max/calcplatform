@@ -6,6 +6,7 @@ import { runArchitectureTests } from "./architecture/dag-worker.test.ts";
 import { runPropertyBasedTests } from "./property/maths.property.test.ts";
 import { runIndiaRegistryExpansionTests } from "./rules/india/india-registry-expansion.test.ts";
 import { runInsuranceTests } from "./rules/india/insurance.test.ts";
+import { runNewDomainsTests } from "./calculators/new-domains.test.ts";
 
 async function main() {
   console.log("===============================================================");
@@ -20,6 +21,7 @@ async function main() {
     { name: "5. Calculation DAG & Worker Architecture", run: runArchitectureTests },
     { name: "6. Property-Based Invariants (fast-check)", run: runPropertyBasedTests },
     { name: "7. India Registry Expansion (Phase 5)", run: runIndiaRegistryExpansionTests },
+    { name: "8. Core Mathematics, Investments, Retirement, Health & Business", run: runNewDomainsTests },
   ];
 
   let totalPassed = 0;

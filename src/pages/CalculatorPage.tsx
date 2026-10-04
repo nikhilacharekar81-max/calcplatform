@@ -30,6 +30,12 @@ import { LoanPrepaymentGuideContent } from '../components/calculator/LoanPrepaym
 import { LoanAffordabilityGuideContent } from '../components/calculator/LoanAffordabilityGuideContent.tsx';
 import { LoanCostAprCalculatorApp } from '../components/calculator/LoanCostAprCalculatorApp.tsx';
 import { LoanCostAprGuideContent } from '../components/calculator/LoanCostAprGuideContent.tsx';
+import { TermInsuranceCalculatorApp } from '../components/calculator/TermInsuranceCalculatorApp.tsx';
+import { TermInsuranceGuideContent } from '../components/calculator/TermInsuranceGuideContent.tsx';
+import { LifeInsuranceNeedsCalculatorApp } from '../components/calculator/LifeInsuranceNeedsCalculatorApp.tsx';
+import { LifeInsuranceNeedsGuideContent } from '../components/calculator/LifeInsuranceNeedsGuideContent.tsx';
+import { HumanLifeValueCalculatorApp } from '../components/calculator/HumanLifeValueCalculatorApp.tsx';
+import { HumanLifeValueGuideContent } from '../components/calculator/HumanLifeValueGuideContent.tsx';
 import { getAdminToken } from '../services/api.ts';
 
 interface CalculatorPageProps {
@@ -213,7 +219,22 @@ export const CalculatorPage: React.FC<CalculatorPageProps> = ({
       </div>
 
       {/* Main Dynamic Calculator Engine Rendering */}
-      {calculator.slug === 'income-tax-calculator' ? (
+      {calculator.slug === 'term-insurance-calculator' || calculator.slug === 'term-insurance' ? (
+        <div className="space-y-12">
+          <TermInsuranceCalculatorApp calculator={calculator} />
+          <TermInsuranceGuideContent />
+        </div>
+      ) : calculator.slug === 'life-insurance-needs-calculator' || calculator.slug === 'life-insurance-needs' ? (
+        <div className="space-y-12">
+          <LifeInsuranceNeedsCalculatorApp calculator={calculator} />
+          <LifeInsuranceNeedsGuideContent />
+        </div>
+      ) : calculator.slug === 'human-life-value-calculator' || calculator.slug === 'human-life-value' || calculator.slug === 'hlv-calculator' ? (
+        <div className="space-y-12">
+          <HumanLifeValueCalculatorApp calculator={calculator} />
+          <HumanLifeValueGuideContent />
+        </div>
+      ) : calculator.slug === 'income-tax-calculator' ? (
         <EnterpriseTaxCalculatorApp calculator={calculator} />
       ) : calculator.slug === 'capital-gains-tax' ? (
         <div className="space-y-12">

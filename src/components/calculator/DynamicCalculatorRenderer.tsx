@@ -23,6 +23,38 @@ import {
   calculateHomeInsurance,
   calculateBusinessInsurance,
 } from '../../calculators/india/insurance/index.ts';
+import {
+  calculatePercentage,
+  calculatePercentageChange,
+  calculateRatio,
+  calculateAverage,
+  calculateLcmGcd,
+} from '../../calculators/maths/basic.ts';
+import {
+  calculateSimpleInterest,
+  calculateCompoundInterest,
+  calculateSip,
+  calculateStepUpSip,
+  calculateSwp,
+  calculateCagr,
+} from '../../calculators/investments/interest.ts';
+import {
+  calculateGratuity,
+  calculateRetirementCorpus,
+} from '../../calculators/india/retirement.ts';
+import {
+  calculateBmi,
+  calculateBmr,
+  calculateCalorieNeeds,
+} from '../../calculators/health/metrics.ts';
+import {
+  calculateMargin,
+  calculateMarkup,
+  calculateBreakEven,
+  calculateRoi,
+} from '../../calculators/business/planning.ts';
+import { calculateStampDuty } from '../../calculators/india/state/stampDuty.ts';
+import { calculateEpfContribution } from '../../calculators/india/salary/epf.ts';
 
 interface DynamicCalculatorRendererProps {
   calculator: Calculator;
@@ -110,36 +142,48 @@ export const DynamicCalculatorRenderer: React.FC<DynamicCalculatorRendererProps>
     switch (slug) {
       case 'term-insurance-calculator':
         return calculateTermLifeInsurance({
+          age: Number(v.age || v.currentAge || 30),
           annualIncome: Number(v.annualIncome || 0),
-          currentAge: Number(v.currentAge || 0),
+          monthlyExpenses: Number(v.monthlyExpenses || 0),
           retirementAge: Number(v.retirementAge || 60),
-          outstandingDebts: Number(v.outstandingDebts || 0),
+          dependents: Number(v.dependents || 0),
+          outstandingLoans: Number(v.outstandingLoans || v.outstandingDebts || 0),
           existingLifeCover: Number(v.existingLifeCover || 0),
           existingSavings: Number(v.existingSavings || 0),
+          futureFinancialGoals: Number(v.futureFinancialGoals || v.futureGoals || 0),
+          inflationRate: Number(v.inflationRate || 6),
           incomeMultipleYears: Number(v.incomeMultipleYears || 15),
           estimatedAnnualPremium: Number(v.estimatedAnnualPremium || 0),
           isGroupPolicy: Boolean(v.isGroupPolicy || false),
         });
       case 'life-insurance-needs-calculator':
         return calculateLifeInsuranceNeeds({
-          annualFamilyExpenses: Number(v.annualFamilyExpenses || 0),
-          yearsOfSupportNeeded: Number(v.yearsOfSupportNeeded || 20),
+          age: Number(v.age || v.currentAge || 32),
+          annualIncome: Number(v.annualIncome || 0),
+          monthlyExpenses: Number(v.monthlyExpenses || 0),
+          annualFamilyExpenses: Number(v.annualFamilyExpenses || (v.monthlyExpenses ? v.monthlyExpenses * 12 : 0)),
+          retirementAge: Number(v.retirementAge || 60),
+          dependents: Number(v.dependents || 0),
+          loans: Number(v.loans || v.totalDebts || 0),
+          existingLifeCover: Number(v.existingLifeCover || v.existingLifeInsurance || 0),
+          savings: Number(v.savings || 0),
+          investments: Number(v.investments || 0),
+          futureGoals: Number(v.futureGoals || 0),
           childrenEducationCostToday: Number(v.childrenEducationCostToday || 0),
           childrenMarriageCostToday: Number(v.childrenMarriageCostToday || 0),
-          inflationRatePercent: Number(v.inflationRatePercent || 6),
-          expectedReturnRatePercent: Number(v.expectedReturnRatePercent || 8),
-          totalDebts: Number(v.totalDebts || 0),
-          currentAssets: Number(v.currentAssets || 0),
-          existingLifeInsurance: Number(v.existingLifeInsurance || 0),
+          inflationRate: Number(v.inflationRate || v.inflationRatePercent || 6),
+          investmentReturn: Number(v.investmentReturn || v.expectedReturnRatePercent || 8.5),
         });
       case 'human-life-value-calculator':
         return calculateHumanLifeValue({
-          currentAge: Number(v.currentAge || 0),
-          retirementAge: Number(v.retirementAge || 60),
+          age: Number(v.age || v.currentAge || 30),
           annualIncome: Number(v.annualIncome || 0),
+          annualPersonalExpenses: v.annualPersonalExpenses !== undefined ? Number(v.annualPersonalExpenses) : undefined,
           personalExpensesPercent: Number(v.personalExpensesPercent || 30),
-          expectedAnnualIncomeGrowthPercent: Number(v.expectedAnnualIncomeGrowthPercent || 8),
-          discountRatePercent: Number(v.discountRatePercent || 7),
+          retirementAge: Number(v.retirementAge || 60),
+          expectedIncomeGrowth: Number(v.expectedIncomeGrowth || v.expectedAnnualIncomeGrowthPercent || 8),
+          inflationRate: Number(v.inflationRate || 6),
+          investmentReturn: Number(v.investmentReturn || v.discountRatePercent || 7.5),
         });
       case 'health-insurance-calculator':
         return calculateHealthInsurance({
@@ -203,6 +247,144 @@ export const DynamicCalculatorRenderer: React.FC<DynamicCalculatorRendererProps>
           plantMachineryStockValue: Number(v.plantMachineryStockValue || 0),
           annualGrossProfit: Number(v.annualGrossProfit || 0),
           indemnityPeriodMonths: Number(v.indemnityPeriodMonths || 12),
+        });
+      case 'percentage-calculator':
+        return calculatePercentage({
+          value: Number(v.value || 0),
+          percent: Number(v.percent || 0),
+        });
+      case 'percentage-increase-decrease':
+        return calculatePercentageChange({
+          initialValue: Number(v.initialValue || 0),
+          finalValue: Number(v.finalValue || 0),
+        });
+      case 'ratio-calculator':
+        return calculateRatio({
+          valueA: Number(v.valueA || 1),
+          valueB: Number(v.valueB || 1),
+        });
+      case 'average-calculator':
+        return calculateAverage({
+          valuesString: String(v.valuesString || ''),
+        });
+      case 'lcm-calculator':
+      case 'hcf-gcd-calculator':
+        return calculateLcmGcd({
+          valueA: Number(v.valueA || 1),
+          valueB: Number(v.valueB || 1),
+        });
+      case 'simple-interest-calculator':
+        return calculateSimpleInterest({
+          principal: Number(v.principal || 0),
+          rate: Number(v.rate || 0),
+          years: Number(v.years || 0),
+        });
+      case 'compound-interest-calculator':
+      case 'lump-sum-investment-calculator':
+        return calculateCompoundInterest({
+          principal: Number(v.principal || 0),
+          rate: Number(v.rate || 0),
+          years: Number(v.years || 0),
+          compoundingFrequency: v.compoundingFrequency || 'annually',
+        });
+      case 'sip-calculator':
+        return calculateSip({
+          monthlyInvestment: Number(v.monthlyInvestment || 0),
+          rate: Number(v.rate || 0),
+          years: Number(v.years || 0),
+        });
+      case 'step-up-sip-calculator':
+        return calculateStepUpSip({
+          monthlyInvestment: Number(v.monthlyInvestment || 0),
+          stepUpPercent: Number(v.stepUpPercent || 0),
+          rate: Number(v.rate || 0),
+          years: Number(v.years || 0),
+        });
+      case 'swp-calculator':
+        return calculateSwp({
+          totalInvestment: Number(v.totalInvestment || 0),
+          withdrawalAmount: Number(v.withdrawalAmount || 0),
+          rate: Number(v.rate || 0),
+          years: Number(v.years || 0),
+        });
+      case 'cagr-calculator':
+        return calculateCagr({
+          initialValue: Number(v.initialValue || 0),
+          finalValue: Number(v.finalValue || 0),
+          years: Number(v.years || 0),
+        });
+      case 'epf-calculator': {
+        const epfRes = calculateEpfContribution(Number(v.base || 0), Number(v.employeeRate || 12), Number(v.employerRate || 12));
+        return {
+          employee: epfRes.employee.toNumber(),
+          employer: epfRes.employer.toNumber(),
+          total: epfRes.total.toNumber(),
+        };
+      }
+      case 'stamp-duty-calculator': {
+        const sdRes = calculateStampDuty(Number(v.propertyValue || 0), Number(v.rate || 5), Number(v.registrationRate || 1));
+        return {
+          stampDuty: sdRes.stampDuty.toNumber(),
+          registration: sdRes.registration.toNumber(),
+          totalGovernmentCharges: sdRes.totalGovernmentCharges.toNumber(),
+        };
+      }
+      case 'gratuity-calculator':
+        return calculateGratuity({
+          lastDrawnSalary: Number(v.lastDrawnSalary || 0),
+          completedYearsOfService: Number(v.completedYearsOfService || 0),
+          isCoveredUnderGratuityAct: v.isCoveredUnderGratuityAct !== false,
+        });
+      case 'retirement-corpus-calculator':
+        return calculateRetirementCorpus({
+          monthlyExpensesToday: Number(v.monthlyExpensesToday || 0),
+          currentAge: Number(v.currentAge || 0),
+          retirementAge: Number(v.retirementAge || 60),
+          lifeExpectancy: Number(v.lifeExpectancy || 85),
+          inflationPercent: Number(v.inflationPercent || 6),
+          preRetirementReturnPercent: Number(v.preRetirementReturnPercent || 12),
+          postRetirementReturnPercent: Number(v.postRetirementReturnPercent || 8),
+        });
+      case 'bmi-calculator':
+        return calculateBmi({
+          weightKg: Number(v.weightKg || 70),
+          heightCm: Number(v.heightCm || 170),
+        });
+      case 'bmr-calculator':
+        return calculateBmr({
+          weightKg: Number(v.weightKg || 70),
+          heightCm: Number(v.heightCm || 170),
+          ageYears: Number(v.ageYears || 30),
+          gender: v.gender || 'male',
+        });
+      case 'calorie-needs-calculator':
+        return calculateCalorieNeeds({
+          weightKg: Number(v.weightKg || 70),
+          heightCm: Number(v.heightCm || 170),
+          ageYears: Number(v.ageYears || 30),
+          gender: v.gender || 'male',
+          activityLevel: v.activityLevel || 'sedentary',
+        });
+      case 'profit-margin-calculator':
+        return calculateMargin({
+          revenue: Number(v.revenue || 0),
+          cost: Number(v.cost || 0),
+        });
+      case 'markup-calculator':
+        return calculateMarkup({
+          cost: Number(v.cost || 0),
+          markupPercent: Number(v.markupPercent || 0),
+        });
+      case 'break-even-calculator':
+        return calculateBreakEven({
+          fixedCosts: Number(v.fixedCosts || 0),
+          sellingPricePerUnit: Number(v.sellingPricePerUnit || 0),
+          variableCostPerUnit: Number(v.variableCostPerUnit || 0),
+        });
+      case 'roi-calculator':
+        return calculateRoi({
+          amountInvested: Number(v.amountInvested || 0),
+          amountReturned: Number(v.amountReturned || 0),
         });
       default:
         return null;

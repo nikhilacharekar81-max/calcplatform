@@ -17,6 +17,8 @@ import {
   FolderInput,
   FolderOutput,
   Check,
+  CheckCircle2,
+  X,
 } from 'lucide-react';
 import { api } from '../../services/api.ts';
 import { Calculator, Category, Subcategory } from '../../types/schema.ts';
@@ -35,6 +37,12 @@ export const AdminCalculators: React.FC<AdminCalculatorsProps> = ({ onNavigate }
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState<'all' | 'active' | 'inactive'>('all');
   const [isLoading, setIsLoading] = useState(true);
+
+  // Bulk Selection and Actions State
+  const [selectedIds, setSelectedIds] = useState<string[]>([]);
+  const [isBulkProcessing, setIsBulkProcessing] = useState(false);
+  const [bulkDeleteModalOpen, setBulkDeleteModalOpen] = useState(false);
+  const [notification, setNotification] = useState<{ text: string; type: 'success' | 'error' } | null>(null);
 
   // Delete Target Modal
   const [deleteTarget, setDeleteTarget] = useState<Calculator | null>(null);
@@ -56,6 +64,13 @@ export const AdminCalculators: React.FC<AdminCalculatorsProps> = ({ onNavigate }
     loadCalculators();
   }, [selectedCategoryId, selectedSubcategoryId, search, statusFilter]);
 
+  const showNotification = (text: string, type: 'success' | 'error' = 'success') => {
+    setNotification({ text, type });
+    setTimeout(() => {
+      setNotification((curr) => (curr?.text === text ? null : curr));
+    }, 4500);
+  };
+
   const loadCalculators = async () => {
     setIsLoading(true);
     try {
@@ -66,10 +81,63 @@ export const AdminCalculators: React.FC<AdminCalculatorsProps> = ({ onNavigate }
         status: statusFilter === 'all' ? undefined : statusFilter,
       });
       setCalculators(data);
+      const existingIds = new Set(data.map((c) => c.id));
+      setSelectedIds((prev) => prev.filter((id) => existingIds.has(id)));
     } catch (err) {
       console.error('Failed to load calculators:', err);
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  const handleToggleSelectAll = () => {
+    if (selectedIds.length === calculators.length) {
+      setSelectedIds([]);
+    } else {
+      setSelectedIds(calculators.map((c) => c.id));
+    }
+  };
+
+  const handleToggleSelectOne = (id: string) => {
+    setSelectedIds((prev) =>
+      prev.includes(id) ? prev.filter((item) => item !== id) : [...prev, id]
+    );
+  };
+
+  const handleBulkStatus = async (isActive: boolean) => {
+    if (selectedIds.length === 0) return;
+    setIsBulkProcessing(true);
+    try {
+      await api.adminBulkCalculatorStatus(selectedIds, isActive);
+      setCalculators((prev) =>
+        prev.map((c) => (selectedIds.includes(c.id) ? { ...c, isActive } : c))
+      );
+      showNotification(
+        `Successfully turned ${isActive ? 'ON' : 'OFF'} ${selectedIds.length} calculators.`
+      );
+    } catch (err: any) {
+      showNotification(err.message || 'Failed to update calculator status', 'error');
+      loadCalculators();
+    } finally {
+      setIsBulkProcessing(false);
+    }
+  };
+
+  const handleBulkDeleteConfirm = async () => {
+    if (selectedIds.length === 0) return;
+    setIsBulkProcessing(true);
+    try {
+      const res = await api.adminBulkCalculatorDelete(selectedIds);
+      const count = res.count || selectedIds.length;
+      setCalculators((prev) => prev.filter((c) => !selectedIds.includes(c.id)));
+      setSelectedIds([]);
+      setBulkDeleteModalOpen(false);
+      showNotification(`Successfully deleted ${count} calculators.`);
+      await loadCalculators();
+    } catch (err: any) {
+      showNotification(err.message || 'Failed to bulk delete calculators', 'error');
+    } finally {
+      setIsBulkProcessing(false);
     }
   };
 
@@ -173,6 +241,34 @@ export const AdminCalculators: React.FC<AdminCalculatorsProps> = ({ onNavigate }
 
   return (
     <div className="space-y-6">
+      {/* Toast Notification Banner */}
+      {notification && (
+        <div
+          className={`p-3.5 rounded-lg text-xs font-bold flex items-center justify-between border shadow-xs animate-fadeIn ${
+            notification.type === 'success'
+              ? 'bg-emerald-50 border-emerald-200 text-emerald-800'
+              : 'bg-rose-50 border-rose-200 text-rose-800'
+          }`}
+        >
+          <div className="flex items-center gap-2">
+            {notification.type === 'success' ? (
+              <CheckCircle2 className="w-4 h-4 text-[#1dbf73] shrink-0" />
+            ) : (
+              <AlertTriangle className="w-4 h-4 text-rose-600 shrink-0" />
+            )}
+            <span>{notification.text}</span>
+          </div>
+          <button
+            type="button"
+            onClick={() => setNotification(null)}
+            className="p-1 hover:opacity-75 cursor-pointer text-[#74767e]"
+            title="Dismiss"
+          >
+            <X className="w-3.5 h-3.5" />
+          </button>
+        </div>
+      )}
+
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-[#e4e5e7]">
         <div>
@@ -271,6 +367,72 @@ export const AdminCalculators: React.FC<AdminCalculatorsProps> = ({ onNavigate }
         </div>
       </div>
 
+      {/* Bulk Action Toolbar */}
+      {selectedIds.length > 0 && (
+        <div className="flex flex-wrap items-center justify-between gap-3 p-3.5 bg-slate-900 text-white rounded-lg shadow-md border border-slate-800 animate-fadeIn">
+          <div className="flex items-center gap-3">
+            <div className="flex items-center gap-2">
+              <span className="w-2.5 h-2.5 rounded-full bg-[#1dbf73] animate-pulse" />
+              <span className="text-xs font-bold text-white">
+                {selectedIds.length} of {calculators.length} selected
+              </span>
+            </div>
+            <div className="h-4 w-[1px] bg-slate-700 hidden sm:block" />
+            <button
+              type="button"
+              onClick={handleToggleSelectAll}
+              className="text-xs text-slate-300 hover:text-white underline cursor-pointer"
+            >
+              {selectedIds.length === calculators.length ? 'Deselect All' : `Select All (${calculators.length})`}
+            </button>
+          </div>
+
+          <div className="flex items-center gap-2">
+            <button
+              type="button"
+              disabled={isBulkProcessing}
+              onClick={() => handleBulkStatus(true)}
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold text-white bg-[#1dbf73] hover:bg-[#19a463] rounded-md transition-colors cursor-pointer disabled:opacity-50 shadow-xs"
+              title="Turn ON (Activate) selected calculators"
+            >
+              <Eye className="w-3.5 h-3.5" />
+              <span>Turn ON</span>
+            </button>
+
+            <button
+              type="button"
+              disabled={isBulkProcessing}
+              onClick={() => handleBulkStatus(false)}
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold text-slate-200 bg-slate-800 hover:bg-slate-700 border border-slate-700 rounded-md transition-colors cursor-pointer disabled:opacity-50 shadow-xs"
+              title="Turn OFF (Deactivate) selected calculators"
+            >
+              <EyeOff className="w-3.5 h-3.5" />
+              <span>Turn OFF</span>
+            </button>
+
+            <button
+              type="button"
+              disabled={isBulkProcessing}
+              onClick={() => setBulkDeleteModalOpen(true)}
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold text-white bg-rose-600 hover:bg-rose-700 rounded-md transition-colors cursor-pointer disabled:opacity-50 shadow-xs"
+              title="Bulk delete selected calculators"
+            >
+              <Trash2 className="w-3.5 h-3.5" />
+              <span>Bulk Delete ({selectedIds.length})</span>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => setSelectedIds([])}
+              className="p-1.5 text-slate-400 hover:text-white rounded transition-colors cursor-pointer"
+              title="Clear selection"
+            >
+              <X className="w-4 h-4" />
+            </button>
+          </div>
+        </div>
+      )}
+
       {/* Calculators Table */}
       {isLoading ? (
         <div className="bg-white rounded-lg border border-[#e4e5e7] p-8 text-center text-xs text-[#74767e]">
@@ -282,6 +444,20 @@ export const AdminCalculators: React.FC<AdminCalculatorsProps> = ({ onNavigate }
             <table className="w-full text-left text-xs">
               <thead className="bg-[#fafafa] border-b border-[#e4e5e7] text-[#74767e] font-bold uppercase tracking-wider text-[11px]">
                 <tr>
+                  <th className="py-3.5 px-3 w-10 text-center">
+                    <input
+                      type="checkbox"
+                      checked={calculators.length > 0 && selectedIds.length === calculators.length}
+                      ref={(el) => {
+                        if (el) {
+                          el.indeterminate = selectedIds.length > 0 && selectedIds.length < calculators.length;
+                        }
+                      }}
+                      onChange={handleToggleSelectAll}
+                      className="w-4 h-4 rounded border-[#dadbdd] text-[#1dbf73] focus:ring-[#1dbf73] cursor-pointer accent-[#1dbf73]"
+                      title="Select / Deselect all"
+                    />
+                  </th>
                   <th className="py-3.5 px-4 w-12 text-center">Order</th>
                   <th className="py-3.5 px-4">Calculator Name</th>
                   <th className="py-3.5 px-4">Hierarchy</th>
@@ -292,102 +468,119 @@ export const AdminCalculators: React.FC<AdminCalculatorsProps> = ({ onNavigate }
                 </tr>
               </thead>
               <tbody className="divide-y divide-[#f5f5f5]">
-                {calculators.map((calc, index) => (
-                  <tr key={calc.id} className="hover:bg-[#fafafa] transition-colors">
-                    {/* Order buttons */}
-                    <td className="py-3.5 px-4 text-center">
-                      <div className="flex items-center justify-center gap-1">
+                {calculators.map((calc, index) => {
+                  const isSelected = selectedIds.includes(calc.id);
+                  return (
+                    <tr
+                      key={calc.id}
+                      className={`transition-colors ${
+                        isSelected ? 'bg-emerald-50/50 hover:bg-emerald-50/70' : 'hover:bg-[#fafafa]'
+                      }`}
+                    >
+                      {/* Checkbox column */}
+                      <td className="py-3.5 px-3 text-center" onClick={(e) => e.stopPropagation()}>
+                        <input
+                          type="checkbox"
+                          checked={isSelected}
+                          onChange={() => handleToggleSelectOne(calc.id)}
+                          className="w-4 h-4 rounded border-[#dadbdd] text-[#1dbf73] focus:ring-[#1dbf73] cursor-pointer accent-[#1dbf73]"
+                        />
+                      </td>
+
+                      {/* Order buttons */}
+                      <td className="py-3.5 px-4 text-center">
+                        <div className="flex items-center justify-center gap-1">
+                          <button
+                            type="button"
+                            disabled={index === 0}
+                            onClick={() => handleMoveOrder(index, 'up')}
+                            className="p-1 text-[#74767e] hover:text-[#222325] disabled:opacity-20 cursor-pointer"
+                            title="Move up"
+                          >
+                            <ArrowUp className="w-3.5 h-3.5" />
+                          </button>
+                          <button
+                            type="button"
+                            disabled={index === calculators.length - 1}
+                            onClick={() => handleMoveOrder(index, 'down')}
+                            className="p-1 text-[#74767e] hover:text-[#222325] disabled:opacity-20 cursor-pointer"
+                            title="Move down"
+                          >
+                            <ArrowDown className="w-3.5 h-3.5" />
+                          </button>
+                        </div>
+                      </td>
+
+                      {/* Name & Slug */}
+                      <td className="py-3.5 px-4">
+                        <div className="font-bold text-[#222325] text-sm">
+                          {calc.name}
+                        </div>
+                        <div className="text-[11px] font-mono text-[#74767e] mt-0.5">
+                          /{calc.category?.slug || 'cat'}/{calc.subcategory?.slug || 'sub'}/{calc.slug}
+                        </div>
+                      </td>
+
+                      {/* Hierarchy / Move Badge */}
+                      <td className="py-3.5 px-4 text-[#404145]">
                         <button
                           type="button"
-                          disabled={index === 0}
-                          onClick={() => handleMoveOrder(index, 'up')}
-                          className="p-1 text-[#74767e] hover:text-[#222325] disabled:opacity-20 cursor-pointer"
-                          title="Move up"
+                          onClick={() => handleOpenMoveModal(calc)}
+                          className="group flex flex-col text-left p-1.5 -m-1.5 rounded-md hover:bg-emerald-50/80 transition-colors cursor-pointer"
+                          title="Click to move calculator to another category or subcategory"
                         >
-                          <ArrowUp className="w-3.5 h-3.5" />
+                          <div className="font-bold text-[#1dbf73] flex items-center gap-1">
+                            <span>{calc.category?.name || 'Category'}</span>
+                            <FolderInput className="w-3 h-3 opacity-0 group-hover:opacity-100 transition-opacity text-[#1dbf73]" />
+                          </div>
+                          <div className="text-[11px] text-[#74767e] group-hover:text-[#222325]">
+                            {calc.subcategory?.name || 'Subcategory'}
+                          </div>
                         </button>
-                        <button
-                          type="button"
-                          disabled={index === calculators.length - 1}
-                          onClick={() => handleMoveOrder(index, 'down')}
-                          className="p-1 text-[#74767e] hover:text-[#222325] disabled:opacity-20 cursor-pointer"
-                          title="Move down"
-                        >
-                          <ArrowDown className="w-3.5 h-3.5" />
-                        </button>
-                      </div>
-                    </td>
+                      </td>
 
-                    {/* Name & Slug */}
-                    <td className="py-3.5 px-4">
-                      <div className="font-bold text-[#222325] text-sm">
-                        {calc.name}
-                      </div>
-                      <div className="text-[11px] font-mono text-[#74767e] mt-0.5">
-                        /{calc.category?.slug || 'cat'}/{calc.subcategory?.slug || 'sub'}/{calc.slug}
-                      </div>
-                    </td>
+                      {/* Inputs & Outputs counts */}
+                      <td className="py-3.5 px-4 text-center font-mono text-[#404145]">
+                        <span className="font-bold text-[#222325]">{calc.fields?.length || 0}</span> in / <span className="font-bold text-[#222325]">{calc.outputs?.length || 0}</span> out
+                      </td>
 
-                    {/* Hierarchy / Move Badge */}
-                    <td className="py-3.5 px-4 text-[#404145]">
-                      <button
-                        type="button"
-                        onClick={() => handleOpenMoveModal(calc)}
-                        className="group flex flex-col text-left p-1.5 -m-1.5 rounded-md hover:bg-emerald-50/80 transition-colors cursor-pointer"
-                        title="Click to move calculator to another category or subcategory"
-                      >
-                        <div className="font-bold text-[#1dbf73] flex items-center gap-1">
-                          <span>{calc.category?.name || 'Category'}</span>
-                          <FolderInput className="w-3 h-3 opacity-0 group-hover:opacity-100 transition-opacity text-[#1dbf73]" />
-                        </div>
-                        <div className="text-[11px] text-[#74767e] group-hover:text-[#222325]">
-                          {calc.subcategory?.name || 'Subcategory'}
-                        </div>
-                      </button>
-                    </td>
-
-                    {/* Inputs & Outputs counts */}
-                    <td className="py-3.5 px-4 text-center font-mono text-[#404145]">
-                      <span className="font-bold text-[#222325]">{calc.fields?.length || 0}</span> in / <span className="font-bold text-[#222325]">{calc.outputs?.length || 0}</span> out
-                    </td>
-
-                    {/* Featured toggle */}
-                    <td className="py-3.5 px-4 text-center">
-                      {calc.isFeatured ? (
-                        <span className="inline-flex items-center gap-1 text-[11px] text-amber-800 font-bold bg-amber-50 px-2 py-0.5 rounded">
-                          <Star className="w-3 h-3 fill-amber-500 text-amber-500" />
-                          <span>Featured</span>
-                        </span>
-                      ) : (
-                        <span className="text-[#dadbdd]">-</span>
-                      )}
-                    </td>
-
-                    {/* Status toggle */}
-                    <td className="py-3.5 px-4 text-center">
-                      <button
-                        type="button"
-                        onClick={() => handleToggleStatus(calc)}
-                        className={`inline-flex items-center gap-1 px-2.5 py-1 rounded text-[11px] font-bold transition-colors cursor-pointer ${
-                          calc.isActive
-                            ? 'bg-[#e8faf1] text-[#013a12] hover:bg-[#dcfce7]'
-                            : 'bg-[#f5f5f5] text-[#74767e] hover:bg-[#e4e5e7]'
-                        }`}
-                        title="Click to toggle status"
-                      >
-                        {calc.isActive ? (
-                          <>
-                            <Eye className="w-3 h-3 text-[#1dbf73]" />
-                            <span>Active</span>
-                          </>
+                      {/* Featured toggle */}
+                      <td className="py-3.5 px-4 text-center">
+                        {calc.isFeatured ? (
+                          <span className="inline-flex items-center gap-1 text-[11px] text-amber-800 font-bold bg-amber-50 px-2 py-0.5 rounded">
+                            <Star className="w-3 h-3 fill-amber-500 text-amber-500" />
+                            <span>Featured</span>
+                          </span>
                         ) : (
-                          <>
-                            <EyeOff className="w-3 h-3 text-[#74767e]" />
-                            <span>Inactive</span>
-                          </>
+                          <span className="text-[#dadbdd]">-</span>
                         )}
-                      </button>
-                    </td>
+                      </td>
+
+                      {/* Status toggle */}
+                      <td className="py-3.5 px-4 text-center">
+                        <button
+                          type="button"
+                          onClick={() => handleToggleStatus(calc)}
+                          className={`inline-flex items-center gap-1 px-2.5 py-1 rounded text-[11px] font-bold transition-colors cursor-pointer ${
+                            calc.isActive
+                              ? 'bg-[#e8faf1] text-[#013a12] hover:bg-[#dcfce7]'
+                              : 'bg-[#f5f5f5] text-[#74767e] hover:bg-[#e4e5e7]'
+                          }`}
+                          title="Click to toggle status (On / Off)"
+                        >
+                          {calc.isActive ? (
+                            <>
+                              <Eye className="w-3 h-3 text-[#1dbf73]" />
+                              <span>Active</span>
+                            </>
+                          ) : (
+                            <>
+                              <EyeOff className="w-3 h-3 text-[#74767e]" />
+                              <span>Inactive</span>
+                            </>
+                          )}
+                        </button>
+                      </td>
 
                     {/* Actions */}
                     <td className="py-3.5 px-4 text-right">
@@ -446,8 +639,9 @@ export const AdminCalculators: React.FC<AdminCalculatorsProps> = ({ onNavigate }
                       </div>
                     </td>
                   </tr>
-                ))}
-              </tbody>
+                );
+              })}
+            </tbody>
             </table>
           </div>
         </div>
@@ -605,6 +799,64 @@ export const AdminCalculators: React.FC<AdminCalculatorsProps> = ({ onNavigate }
                 className="px-5 py-2 text-xs font-bold text-white bg-rose-600 hover:bg-rose-700 rounded-md transition-colors cursor-pointer disabled:opacity-50"
               >
                 {isDeleting ? 'Deleting...' : 'Confirm Delete'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Bulk Delete Confirmation Modal */}
+      {bulkDeleteModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#222325]/50 backdrop-blur-xs">
+          <div
+            className="fixed inset-0"
+            onClick={() => !isBulkProcessing && setBulkDeleteModalOpen(false)}
+            aria-hidden="true"
+          />
+          <div className="relative w-full max-w-md bg-white rounded-xl shadow-2xl border border-[#dadbdd] p-6 z-10 space-y-4">
+            <div className="w-12 h-12 rounded-full bg-rose-50 text-rose-600 flex items-center justify-center mx-auto">
+              <AlertTriangle className="w-6 h-6" />
+            </div>
+
+            <div className="text-center">
+              <h3 className="text-base font-bold text-[#222325]">
+                Delete {selectedIds.length} Selected Calculators?
+              </h3>
+              <p className="text-xs text-[#74767e] mt-1">
+                Are you sure you want to permanently delete these {selectedIds.length} calculators? This action cannot be undone.
+              </p>
+
+              <div className="mt-4 p-3 bg-rose-50/70 border border-rose-200/80 rounded-lg text-left text-xs space-y-1.5 max-h-36 overflow-y-auto">
+                <div className="font-bold text-rose-800">
+                  Calculators to be deleted:
+                </div>
+                {calculators
+                  .filter((c) => selectedIds.includes(c.id))
+                  .map((c) => (
+                    <div key={c.id} className="text-[#404145] flex items-center gap-1.5 truncate">
+                      <span className="w-1.5 h-1.5 rounded-full bg-rose-500 shrink-0" />
+                      <span className="truncate">{c.name}</span>
+                    </div>
+                  ))}
+              </div>
+            </div>
+
+            <div className="flex items-center justify-center gap-3 pt-2">
+              <button
+                type="button"
+                disabled={isBulkProcessing}
+                onClick={() => setBulkDeleteModalOpen(false)}
+                className="px-4 py-2 text-xs font-bold text-[#404145] hover:bg-[#f5f5f5] rounded-md border border-[#dadbdd] transition-colors cursor-pointer disabled:opacity-50"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                disabled={isBulkProcessing}
+                onClick={handleBulkDeleteConfirm}
+                className="px-5 py-2 text-xs font-bold text-white bg-rose-600 hover:bg-rose-700 rounded-md transition-colors cursor-pointer disabled:opacity-50"
+              >
+                {isBulkProcessing ? 'Deleting...' : `Confirm Delete (${selectedIds.length})`}
               </button>
             </div>
           </div>

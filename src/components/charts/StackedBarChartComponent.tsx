@@ -34,7 +34,10 @@ export const StackedBarChartComponent: React.FC<StackedBarChartProps> = ({
     xAxisKey = 'year',
     height = 360,
     currencySymbol = '₹',
-  } = parameters;
+    dataSeries,
+    badge = 'Stacked Breakdown',
+    description,
+  } = parameters as any;
 
   const formatCurrency = (val: number) => {
     if (val === undefined || val === null || isNaN(val)) return '0';
@@ -53,7 +56,7 @@ export const StackedBarChartComponent: React.FC<StackedBarChartProps> = ({
             {title}
           </h4>
           <span className="text-xs px-2.5 py-1 rounded-md bg-indigo-50 text-indigo-700 font-medium">
-            Stacked Amortization Bars
+            {badge}
           </span>
         </div>
       )}
@@ -79,9 +82,15 @@ export const StackedBarChartComponent: React.FC<StackedBarChartProps> = ({
               formatter={(value: any, name: any) => [
                 formatCurrency(Number(value)),
                 name === 'principal' ? 'Principal Repaid' :
-                name === 'interest' ? 'Interest Paid' : name
+                name === 'interest' ? 'Interest Paid' :
+                name === 'incomeReplacement' ? 'Income Replacement' :
+                name === 'loanProtection' ? 'Outstanding Loans' :
+                name === 'goalProtection' ? 'Future Goals' :
+                name === 'existingCover' ? 'Existing Cover' :
+                name === 'existingSavings' ? 'Savings / Investments' :
+                name === 'protectionGap' ? 'Protection Gap' : name
               ]}
-              labelFormatter={(label) => `Year ${label}`}
+              labelFormatter={(label) => `${label}`}
               contentStyle={{
                 backgroundColor: 'rgba(255, 255, 255, 0.96)',
                 borderRadius: '12px',
@@ -96,28 +105,46 @@ export const StackedBarChartComponent: React.FC<StackedBarChartProps> = ({
               wrapperStyle={{ fontSize: '12px', color: '#475569' }}
             />
 
-            <Bar
-              dataKey="principal"
-              name="Principal Portion"
-              stackId="amortization"
-              fill="#3b82f6"
-              radius={[0, 0, 0, 0]}
-              maxBarSize={45}
-            />
-            <Bar
-              dataKey="interest"
-              name="Interest Portion"
-              stackId="amortization"
-              fill="#f97316"
-              radius={[4, 4, 0, 0]}
-              maxBarSize={45}
-            />
+            {Array.isArray(dataSeries) && dataSeries.length > 0 ? (
+              dataSeries.map((s: any, idx: number) => (
+                <Bar
+                  key={s.key}
+                  dataKey={s.key}
+                  name={s.label || s.key}
+                  stackId={s.stackId || 'stack1'}
+                  fill={s.color || '#3b82f6'}
+                  radius={idx === dataSeries.length - 1 ? [4, 4, 0, 0] : [0, 0, 0, 0]}
+                  maxBarSize={60}
+                />
+              ))
+            ) : (
+              <>
+                <Bar
+                  dataKey="principal"
+                  name="Principal Portion"
+                  stackId="amortization"
+                  fill="#3b82f6"
+                  radius={[0, 0, 0, 0]}
+                  maxBarSize={45}
+                />
+                <Bar
+                  dataKey="interest"
+                  name="Interest Portion"
+                  stackId="amortization"
+                  fill="#f97316"
+                  radius={[4, 4, 0, 0]}
+                  maxBarSize={45}
+                />
+              </>
+            )}
           </BarChart>
         </ResponsiveContainer>
       </div>
-      <p className="mt-2 text-xs text-slate-500 text-center">
-        Annual EMI composition illustrating how early payments are interest-heavy while late payments are principal-heavy.
-      </p>
+      {description && (
+        <p className="mt-2 text-xs text-slate-500 text-center">
+          {description}
+        </p>
+      )}
     </div>
   );
 };

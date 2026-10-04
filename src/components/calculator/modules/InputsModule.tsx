@@ -54,33 +54,76 @@ export const InputsModule: React.FC<InputsModuleProps> = ({
             const min = field.min ?? 0;
             const max = field.max ?? 100;
             const step = field.step ?? 1;
-            const currentNum = typeof val === 'number' ? val : parseFloat(val) || min;
+            const numericVal = typeof val === 'number' ? val : parseFloat(val);
+            const currentNum = isNaN(numericVal) ? min : numericVal;
+            const sliderVal = Math.min(max, Math.max(min, currentNum));
 
             return (
-              <div key={field.id} className="space-y-2">
-                <div className="flex items-center justify-between text-xs">
-                  <label htmlFor={field.id} className="font-bold text-[#222325] flex items-center gap-1">
-                    {field.label}
+              <div key={field.id} className="space-y-2.5 p-3.5 bg-[#fafbfc] rounded-xl border border-[#e4e5e7]/80 hover:border-[#1dbf73]/50 transition-colors">
+                <div className="flex flex-wrap items-center justify-between gap-2">
+                  <label htmlFor={field.id} className="text-xs font-bold text-[#222325] flex items-center gap-1.5">
+                    <span>{field.label}</span>
                     {field.helpText && (
-                      <span className="text-[#95979d]" title={field.helpText}>
+                      <span className="text-[#95979d] hover:text-[#222325] transition-colors" title={field.helpText}>
                         <HelpCircle className="w-3.5 h-3.5" />
                       </span>
                     )}
                   </label>
-                  <span className="font-mono font-bold text-[#1dbf73] bg-[#f4fdf8] px-2 py-0.5 rounded border border-[#d8f5e5]">
-                    {field.prefix || ''}{currentNum.toLocaleString()}{field.suffix || ''}
-                  </span>
+
+                  {/* Paired Interactive Numeric Input */}
+                  <div className="flex items-center bg-white border border-[#dadbdd] focus-within:border-[#1dbf73] focus-within:ring-2 focus-within:ring-[#1dbf73]/20 rounded-lg px-2.5 py-1 transition-all shadow-2xs">
+                    {field.prefix && (
+                      <span className="text-xs font-bold text-[#1dbf73] mr-1.5 select-none">
+                        {field.prefix}
+                      </span>
+                    )}
+                    <input
+                      type="number"
+                      id={`${field.id}-input`}
+                      min={min}
+                      max={max}
+                      step={step}
+                      value={val !== undefined && val !== null ? val : currentNum}
+                      onChange={(e) => {
+                        const raw = e.target.value;
+                        if (raw === '') {
+                          onValueChange(field.id, '');
+                        } else {
+                          const parsed = parseFloat(raw);
+                          onValueChange(field.id, isNaN(parsed) ? 0 : parsed);
+                        }
+                      }}
+                      onBlur={() => {
+                        if (val === '' || isNaN(Number(val))) {
+                          onValueChange(field.id, field.defaultValue ?? min);
+                        } else {
+                          const n = Number(val);
+                          if (n < min) onValueChange(field.id, min);
+                          else if (n > max) onValueChange(field.id, max);
+                        }
+                      }}
+                      className="w-24 sm:w-28 text-right font-mono font-bold text-xs sm:text-sm text-[#222325] bg-transparent outline-none"
+                    />
+                    {field.suffix && (
+                      <span className="text-xs font-bold text-[#1dbf73] ml-1.5 select-none">
+                        {field.suffix}
+                      </span>
+                    )}
+                  </div>
                 </div>
+
+                {/* Range Slider */}
                 <input
                   type="range"
                   id={field.id}
                   min={min}
                   max={max}
                   step={step}
-                  value={currentNum}
+                  value={sliderVal}
                   onChange={(e) => onValueChange(field.id, parseFloat(e.target.value))}
                   className="w-full accent-[#1dbf73] h-2 bg-[#e4e5e7] rounded-lg cursor-pointer"
                 />
+
                 <div className="flex justify-between text-[10px] text-[#95979d] font-mono">
                   <span>{field.prefix || ''}{min.toLocaleString()}{field.suffix || ''}</span>
                   <span>{field.prefix || ''}{max.toLocaleString()}{field.suffix || ''}</span>

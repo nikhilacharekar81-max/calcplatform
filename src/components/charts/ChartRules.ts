@@ -26,8 +26,73 @@ export class ChartRules {
     const slug = (context.calculatorSlug || '').toLowerCase();
     const cat = (context.category || '').toLowerCase();
 
-    // 1. INSURANCE CALCULATORS (Term Life, HLV, Health, Motor IDV, Travel, Accident)
-    if (context.hasInsuranceBreakdown || context.hasMotorDepreciation || cat.includes('insurance') || slug.includes('insurance') || slug.includes('hlv') || slug.includes('idv') || slug.includes('ncb')) {
+    // 1. SPECIFIC LIFE INSURANCE CALCULATORS
+    if (slug === 'term-insurance-calculator' || slug.includes('term-insurance')) {
+      recommendations.push({
+        chartId: 'term-insurance-stacked-breakdown',
+        componentName: 'StackedBarChart',
+        title: 'Total Needs Breakdown vs Existing Setup',
+        description: 'Bar 1 breaks down total financial requirements (Income Replacement + Loans + Goals). Bar 2 compares your Existing Setup against the Net Protection Gap.',
+        priority: 1,
+        dataKey: 'termStackedBars',
+        parameters: {
+          xAxisKey: 'category',
+          currencySymbol: '₹',
+          badge: 'Stacked Visual Breakdown',
+          dataSeries: [
+            { key: 'incomeReplacement', label: 'Income Replacement', color: '#3b82f6', stackId: 'breakdown' },
+            { key: 'loanProtection', label: 'Outstanding Loans', color: '#f59e0b', stackId: 'breakdown' },
+            { key: 'goalProtection', label: 'Future Goals', color: '#6366f1', stackId: 'breakdown' },
+            { key: 'existingCover', label: 'Existing Life Cover', color: '#10b981', stackId: 'breakdown' },
+            { key: 'existingSavings', label: 'Savings / Investments', color: '#06b6d4', stackId: 'breakdown' },
+            { key: 'protectionGap', label: 'Protection Gap', color: '#ef4444', stackId: 'breakdown' },
+          ],
+        },
+      });
+      return recommendations;
+    }
+
+    if (slug === 'life-insurance-needs-calculator' || slug.includes('insurance-needs')) {
+      recommendations.push({
+        chartId: 'life-needs-grouped-comparison',
+        componentName: 'GroupedBarChart',
+        title: 'Financial Need vs Available Resources Comparison',
+        description: 'Side-by-side comparative bars contrasting Total Financial Need against Available Resources, making the resulting Protection Gap instantly obvious at a glance.',
+        priority: 1,
+        dataKey: 'needsComparisonBars',
+        parameters: {
+          xAxisKey: 'category',
+          currencySymbol: '₹',
+          dataSeries: [
+            { key: 'totalNeed', label: 'Total Need', color: '#3b82f6' },
+            { key: 'availableResources', label: 'Available Resources', color: '#10b981' },
+            { key: 'protectionGap', label: 'Protection Gap', color: '#ef4444' },
+          ],
+        },
+      });
+      return recommendations;
+    }
+
+    if (slug === 'human-life-value-calculator' || slug.includes('human-life-value') || slug.includes('hlv')) {
+      recommendations.push({
+        chartId: 'hlv-discounted-earnings-trajectory',
+        componentName: 'GradientAreaChart',
+        title: 'Present Value of Future Financial Contributions up to Retirement',
+        description: 'Discounted curve plotting year-by-year present value of future financial contributions, illustrating how future earnings degrade in present-day value due to discount rates and inflation.',
+        priority: 1,
+        dataKey: 'hlvTrajectory',
+        parameters: {
+          xAxisKey: 'year',
+          primaryMetric: 'presentValue',
+          currencySymbol: '₹',
+          colors: ['#10b981'],
+        },
+      });
+      return recommendations;
+    }
+
+    // 2. GENERAL INSURANCE CALCULATORS (Health, Motor IDV, Travel, Accident)
+    if (context.hasInsuranceBreakdown || context.hasMotorDepreciation || cat.includes('insurance') || slug.includes('insurance') || slug.includes('idv') || slug.includes('ncb')) {
       if (slug.includes('car') || slug.includes('bike') || slug.includes('motor') || slug.includes('vehicle') || context.hasMotorDepreciation) {
         recommendations.push({
           chartId: 'motor-idv-depreciation-trajectory',

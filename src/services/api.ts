@@ -252,6 +252,30 @@ export const api = {
     clearPublicCache();
   },
 
+  async adminBulkCategoryStatus(ids: string[], isActive: boolean): Promise<{ success: boolean; count?: number }> {
+    const res = await fetch('/api/admin/categories/bulk-status', {
+      method: 'POST',
+      headers: getAuthHeaders(),
+      body: JSON.stringify({ ids, isActive }),
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || 'Failed to bulk update categories status');
+    clearPublicCache();
+    return data;
+  },
+
+  async adminBulkCategoryDelete(ids: string[]): Promise<{ success: boolean; count?: number; deletedSubcategories?: number; deletedCalculators?: number }> {
+    const res = await fetch('/api/admin/categories/bulk-delete', {
+      method: 'POST',
+      headers: getAuthHeaders(),
+      body: JSON.stringify({ ids }),
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || 'Failed to bulk delete categories');
+    clearPublicCache();
+    return data;
+  },
+
   // Admin Subcategories
   async adminGetSubcategories(params?: { categoryId?: string; search?: string; status?: 'active' | 'inactive' }): Promise<Array<Subcategory & { category?: Category; calculatorsCount: number }>> {
     const query = new URLSearchParams();
@@ -322,6 +346,30 @@ export const api = {
     });
     if (!res.ok) throw new Error('Failed to reorder subcategories');
     clearPublicCache();
+  },
+
+  async adminBulkSubcategoryStatus(ids: string[], isActive: boolean): Promise<{ success: boolean; count?: number }> {
+    const res = await fetch('/api/admin/subcategories/bulk-status', {
+      method: 'POST',
+      headers: getAuthHeaders(),
+      body: JSON.stringify({ ids, isActive }),
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || 'Failed to bulk update subcategories status');
+    clearPublicCache();
+    return data;
+  },
+
+  async adminBulkSubcategoryDelete(ids: string[]): Promise<{ success: boolean; count?: number; deletedCalculators?: number }> {
+    const res = await fetch('/api/admin/subcategories/bulk-delete', {
+      method: 'POST',
+      headers: getAuthHeaders(),
+      body: JSON.stringify({ ids }),
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || 'Failed to bulk delete subcategories');
+    clearPublicCache();
+    return data;
   },
 
   // Admin Calculators
@@ -412,6 +460,30 @@ export const api = {
     });
     if (!res.ok) throw new Error('Failed to reorder calculators');
     clearPublicCache();
+  },
+
+  async adminBulkCalculatorStatus(ids: string[], isActive: boolean): Promise<{ success: boolean; count?: number }> {
+    const res = await fetch('/api/admin/calculators/bulk-status', {
+      method: 'POST',
+      headers: getAuthHeaders(),
+      body: JSON.stringify({ ids, isActive }),
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || 'Failed to bulk update calculators status');
+    clearPublicCache();
+    return data;
+  },
+
+  async adminBulkCalculatorDelete(ids: string[]): Promise<{ success: boolean; count?: number }> {
+    const res = await fetch('/api/admin/calculators/bulk-delete', {
+      method: 'POST',
+      headers: getAuthHeaders(),
+      body: JSON.stringify({ ids }),
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || 'Failed to bulk delete calculators');
+    clearPublicCache();
+    return data;
   },
 
   async adminApplyModulesToAll(modules: any[]): Promise<{ success: boolean; count: number }> {
@@ -671,47 +743,47 @@ export const api = {
     return data;
   },
 
-  async adminBulkCategoryStatus(ids: string[], isActive: boolean): Promise<{ success: boolean }> {
+  async adminBulkBlogCategoryStatus(ids: string[], isActive: boolean): Promise<{ success: boolean }> {
     const res = await fetch('/api/admin/blog-categories/bulk-status', {
       method: 'POST',
       headers: getAuthHeaders(),
       body: JSON.stringify({ ids, isActive }),
     });
     const data = await res.json();
-    if (!res.ok) throw new Error(data.error || 'Failed to update categories bulk status');
+    if (!res.ok) throw new Error(data.error || 'Failed to update blog categories bulk status');
     return data;
   },
 
-  async adminBulkCategoryDelete(ids: string[]): Promise<{ success: boolean }> {
+  async adminBulkBlogCategoryDelete(ids: string[]): Promise<{ success: boolean }> {
     const res = await fetch('/api/admin/blog-categories/bulk-delete', {
       method: 'POST',
       headers: getAuthHeaders(),
       body: JSON.stringify({ ids }),
     });
     const data = await res.json();
-    if (!res.ok) throw new Error(data.error || 'Failed to bulk delete categories');
+    if (!res.ok) throw new Error(data.error || 'Failed to bulk delete blog categories');
     return data;
   },
 
-  async adminBulkSubcategoryStatus(ids: string[], isActive: boolean): Promise<{ success: boolean }> {
+  async adminBulkBlogSubcategoryStatus(ids: string[], isActive: boolean): Promise<{ success: boolean }> {
     const res = await fetch('/api/admin/blog-subcategories/bulk-status', {
       method: 'POST',
       headers: getAuthHeaders(),
       body: JSON.stringify({ ids, isActive }),
     });
     const data = await res.json();
-    if (!res.ok) throw new Error(data.error || 'Failed to update subcategories bulk status');
+    if (!res.ok) throw new Error(data.error || 'Failed to update blog subcategories bulk status');
     return data;
   },
 
-  async adminBulkSubcategoryDelete(ids: string[]): Promise<{ success: boolean }> {
+  async adminBulkBlogSubcategoryDelete(ids: string[]): Promise<{ success: boolean }> {
     const res = await fetch('/api/admin/blog-subcategories/bulk-delete', {
       method: 'POST',
       headers: getAuthHeaders(),
       body: JSON.stringify({ ids }),
     });
     const data = await res.json();
-    if (!res.ok) throw new Error(data.error || 'Failed to bulk delete subcategories');
+    if (!res.ok) throw new Error(data.error || 'Failed to bulk delete blog subcategories');
     return data;
   },
 

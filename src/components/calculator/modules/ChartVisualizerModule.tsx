@@ -124,6 +124,11 @@ export const ChartVisualizerModule: React.FC<ChartVisualizerModuleProps> = ({
     }
   }
 
+  // Specific life insurance datasets
+  const termStackedBars = calculatedResults?.termStackedBars || [];
+  const needsComparisonBars = calculatedResults?.needsComparisonBars || [];
+  const hlvTrajectory = calculatedResults?.hlvTrajectory || [];
+
   // Generic scalar output segments
   const segments = ChartDataAdapter.fromOutputsToSegments(outputs);
 
@@ -139,6 +144,9 @@ export const ChartVisualizerModule: React.FC<ChartVisualizerModuleProps> = ({
     regimeComparison: taxData.regimeComparison,
     insuranceBreakdown: insuranceData.insuranceBreakdown,
     motorDepreciationSeries: insuranceData.motorDepreciationSeries,
+    termStackedBars,
+    needsComparisonBars,
+    hlvTrajectory,
     customSeries: segments.map((s) => ({ name: s.name, value: s.value, formatted: s.formatted, fill: s.color })),
   };
 

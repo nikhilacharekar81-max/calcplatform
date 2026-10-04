@@ -152,6 +152,105 @@ export function cleanZero(value: number, epsilon = 1e-10): number {
   return Math.abs(value) < epsilon ? 0 : value;
 }
 
+/* ============================================================================
+ * CANONICAL RATE CONVENTIONS & BOUNDARY CONVERSION HELPERS
+ * Internal Engine Canonical Standard: 0.065 = 6.5%
+ * Core functions strictly accept and return decimal rates (0.065 for 6.5%).
+ * Automatic rate guessing (e.g. rate > 1 ? rate / 100 : rate) is forbidden.
+ * ========================================================================== */
+
+/**
+ * Converts a percentage representation to canonical decimal.
+ * E.g. 6.5 -> 0.065, 12 -> 0.12, 0.5 -> 0.005
+ */
+export function percentToDecimal(percent: number): number {
+  assertFinite(percent, "percent");
+  return percent / 100;
+}
+
+/**
+ * Converts a canonical decimal rate to percentage representation.
+ * E.g. 0.065 -> 6.5, 0.12 -> 12, 0.005 -> 0.5
+ */
+export function decimalToPercent(decimal: number): number {
+  assertFinite(decimal, "decimal");
+  return decimal * 100;
+}
+
+/**
+ * Converts a nominal annual rate to a periodic rate for compounding.
+ * r_periodic = r_nom / m
+ * @param nominalRate Nominal annual rate as decimal (e.g. 0.084 for 8.4%)
+ * @param frequency Compounding frequency
+ * @returns Periodic rate as decimal (e.g. 0.084 / 12 = 0.007)
+ */
+export function nominalToPeriodicRate(nominalRate: number, frequency: Frequency): number {
+  assertFinite(nominalRate, "nominalRate");
+  const m = periodsPerYear(frequency);
+  return nominalRate / m;
+}
+
+/**
+ * Converts an Effective Annual Rate (EAR) to an equivalent periodic rate.
+ * r_periodic = (1 + EAR)^(1/m) - 1
+ */
+export function effectiveToPeriodicRate(effectiveAnnualRate: number, frequency: Frequency): number {
+  assertFinite(effectiveAnnualRate, "effectiveAnnualRate");
+  if (effectiveAnnualRate <= -1) {
+    throw new CalculationError("INVALID_RATE", "effectiveAnnualRate must be > -1 (-100%).");
+  }
+  const m = periodsPerYear(frequency);
+  return Math.pow(1 + effectiveAnnualRate, 1 / m) - 1;
+}
+
+/**
+ * Converts a nominal annual rate to an Effective Annual Rate (EAR).
+ * EAR = (1 + r_nom / m)^m - 1
+ */
+export function nominalToEffectiveRate(nominalRate: number, frequency: Frequency): number {
+  assertFinite(nominalRate, "nominalRate");
+  const m = periodsPerYear(frequency);
+  const periodic = nominalRate / m;
+  if (periodic <= -1) {
+    throw new CalculationError("INVALID_RATE", "Periodic rate must be > -1 (-100%).");
+  }
+  return Math.pow(1 + periodic, m) - 1;
+}
+
+/**
+ * Converts an Effective Annual Rate (EAR) to a Nominal Annual Rate.
+ * r_nom = m * ((1 + EAR)^(1/m) - 1)
+ */
+export function effectiveToNominalRate(effectiveAnnualRate: number, frequency: Frequency): number {
+  assertFinite(effectiveAnnualRate, "effectiveAnnualRate");
+  if (effectiveAnnualRate <= -1) {
+    throw new CalculationError("INVALID_RATE", "effectiveAnnualRate must be > -1 (-100%).");
+  }
+  const m = periodsPerYear(frequency);
+  return m * (Math.pow(1 + effectiveAnnualRate, 1 / m) - 1);
+}
+
+/**
+ * Converts continuous compounding rate to Effective Annual Rate.
+ * EAR = exp(r_continuous) - 1
+ */
+export function continuousToEffectiveRate(continuousRate: number): number {
+  assertFinite(continuousRate, "continuousRate");
+  return Math.expm1(continuousRate);
+}
+
+/**
+ * Converts Effective Annual Rate to continuous compounding rate.
+ * r_continuous = ln(1 + EAR)
+ */
+export function effectiveToContinuousRate(effectiveAnnualRate: number): number {
+  assertFinite(effectiveAnnualRate, "effectiveAnnualRate");
+  if (effectiveAnnualRate <= -1) {
+    throw new CalculationError("INVALID_RATE", "effectiveAnnualRate must be > -1 (-100%).");
+  }
+  return Math.log1p(effectiveAnnualRate);
+}
+
 /**
  * Fixed-point settlement representation.
  * General calculations remain floating-point; this class is for exact
@@ -2702,39 +2801,271 @@ export function bondYieldToMaturity(
   });
 }
 
+/* ============================================================================
+ * CORE ANNUITY & TIME VALUE OF MONEY (TVM) FUNCTIONS
+ * Canonical Rate Convention: All rates are decimal (e.g. 0.065 = 6.5%).
+ * ========================================================================== */
+
+/**
+ * Present Value of an Ordinary Annuity or Annuity-Due
+ * @param payment Cash flow per period (positive number)
+ * @param periodicRate Periodic interest rate as decimal (e.g. 0.05 for 5%)
+ * @param periods Total number of compounding periods
+ * @param timing "END" for ordinary annuity, "BEGINNING" for annuity-due
+ */
+export function annuityPV(
+  payment: number,
+  periodicRate: number,
+  periods: number,
+  timing: PaymentTiming = "END"
+): number {
+  assertFinite(payment, "payment");
+  assertFinite(periodicRate, "periodicRate");
+  assertFinite(periods, "periods");
+
+  if (periods <= 0 || payment === 0) return 0;
+  if (periodicRate <= -1) {
+    throw new CalculationError("INVALID_RATE", "Periodic rate must be > -1 (-100%).");
+  }
+
+  const timingFactor = timing === "BEGINNING" ? (1 + periodicRate) : 1;
+
+  if (nearlyZero(periodicRate)) {
+    return roundMoney(payment * periods);
+  }
+
+  const discountFactor = Math.pow(1 + periodicRate, -periods);
+  const annuityFactor = (1 - discountFactor) / periodicRate;
+  return roundMoney(payment * annuityFactor * timingFactor);
+}
+
+/**
+ * Future Value of an Ordinary Annuity or Annuity-Due
+ * @param payment Cash flow per period (positive number)
+ * @param periodicRate Periodic interest rate as decimal
+ * @param periods Total number of compounding periods
+ * @param timing "END" for ordinary annuity, "BEGINNING" for annuity-due
+ */
+export function annuityFV(
+  payment: number,
+  periodicRate: number,
+  periods: number,
+  timing: PaymentTiming = "END"
+): number {
+  assertFinite(payment, "payment");
+  assertFinite(periodicRate, "periodicRate");
+  assertFinite(periods, "periods");
+
+  if (periods <= 0 || payment === 0) return 0;
+  if (periodicRate <= -1) {
+    throw new CalculationError("INVALID_RATE", "Periodic rate must be > -1 (-100%).");
+  }
+
+  const timingFactor = timing === "BEGINNING" ? (1 + periodicRate) : 1;
+
+  if (nearlyZero(periodicRate)) {
+    return roundMoney(payment * periods);
+  }
+
+  const compoundFactor = Math.pow(1 + periodicRate, periods);
+  const annuityFactor = (compoundFactor - 1) / periodicRate;
+  return roundMoney(payment * annuityFactor * timingFactor);
+}
+
+/**
+ * Present Value of an Annualized Annuity with explicit compounding frequency
+ * @param payment Periodic payment amount (positive number)
+ * @param annualRate Nominal annual interest rate as decimal (e.g. 0.08 for 8%)
+ * @param years Total duration in years
+ * @param frequency Payment & compounding frequency (defaults to "ANNUAL")
+ * @param timing Payment timing ("END" or "BEGINNING")
+ */
 export function annuityPresentValue(
   payment: number,
   annualRate: number,
   years: number,
-  frequency: Frequency = "MONTHLY",
+  frequency: Frequency = "ANNUAL",
   timing: PaymentTiming = "END"
 ): number {
-  const periods = periodsPerYear(frequency);
-  return pv(
-    annualRate / 100 / periods,
-    years * periods,
-    -payment,
-    0,
-    timing === "BEGINNING" ? 1 : 0
-  );
+  assertFinite(annualRate, "annualRate");
+  assertFinite(years, "years");
+  if (years <= 0 || payment === 0) return 0;
+  const m = periodsPerYear(frequency);
+  const periodicRate = annualRate / m;
+  const totalPeriods = years * m;
+  return annuityPV(payment, periodicRate, totalPeriods, timing);
 }
 
+/**
+ * Future Value of an Annualized Annuity with explicit compounding frequency
+ * @param payment Periodic payment amount (positive number)
+ * @param annualRate Nominal annual interest rate as decimal (e.g. 0.08 for 8%)
+ * @param years Total duration in years
+ * @param frequency Payment & compounding frequency (defaults to "ANNUAL")
+ * @param timing Payment timing ("END" or "BEGINNING")
+ */
 export function annuityFutureValue(
   payment: number,
   annualRate: number,
   years: number,
-  frequency: Frequency = "MONTHLY",
+  frequency: Frequency = "ANNUAL",
   timing: PaymentTiming = "END"
 ): number {
-  const periods = periodsPerYear(frequency);
+  assertFinite(annualRate, "annualRate");
+  assertFinite(years, "years");
+  if (years <= 0 || payment === 0) return 0;
+  const m = periodsPerYear(frequency);
+  const periodicRate = annualRate / m;
+  const totalPeriods = years * m;
+  return annuityFV(payment, periodicRate, totalPeriods, timing);
+}
 
-  return fv(
-    annualRate / 100 / periods,
-    years * periods,
-    -payment,
-    0,
-    timing === "BEGINNING" ? 1 : 0
-  );
+/**
+ * Present Value of a Growing Annuity
+ * Cash flows grow at rate g per period. First payment P1 occurs at period 1 (if END).
+ * @param firstPayment First payment amount P1
+ * @param periodicDiscountRate Periodic discount rate as decimal (r)
+ * @param periodicGrowthRate Periodic growth rate as decimal (g)
+ * @param periods Number of periods (n)
+ * @param timing "END" (P1 at t=1) or "BEGINNING" (P0 at t=0, growing thereafter)
+ */
+export function growingAnnuityPV(
+  firstPayment: number,
+  periodicDiscountRate: number,
+  periodicGrowthRate: number,
+  periods: number,
+  timing: PaymentTiming = "END"
+): number {
+  assertFinite(firstPayment, "firstPayment");
+  assertFinite(periodicDiscountRate, "periodicDiscountRate");
+  assertFinite(periodicGrowthRate, "periodicGrowthRate");
+  assertFinite(periods, "periods");
+
+  if (periods <= 0 || firstPayment === 0) return 0;
+  if (periodicDiscountRate <= -1) {
+    throw new CalculationError("INVALID_RATE", "Discount rate must be > -1 (-100%).");
+  }
+  if (periodicGrowthRate <= -1) {
+    throw new CalculationError("INVALID_RATE", "Growth rate must be > -1 (-100%).");
+  }
+
+  const timingFactor = timing === "BEGINNING" ? (1 + periodicDiscountRate) : 1;
+
+  // Case 1: Discount rate equals Growth rate (r = g)
+  if (nearlyZero(periodicDiscountRate - periodicGrowthRate, 1e-12)) {
+    const pv = (periods * firstPayment) / (1 + periodicDiscountRate);
+    return roundMoney(pv * timingFactor);
+  }
+
+  // Case 2: Discount rate != Growth rate
+  // PV = P1 / (r - g) * [1 - ((1 + g) / (1 + r))^n]
+  const ratio = (1 + periodicGrowthRate) / (1 + periodicDiscountRate);
+  const pv = (firstPayment / (periodicDiscountRate - periodicGrowthRate)) * (1 - Math.pow(ratio, periods));
+  return roundMoney(pv * timingFactor);
+}
+
+/**
+ * Future Value of a Growing Annuity
+ * @param firstPayment First payment amount P1 at period 1
+ * @param periodicDiscountRate Periodic discount rate as decimal (r)
+ * @param periodicGrowthRate Periodic growth rate as decimal (g)
+ * @param periods Number of periods (n)
+ * @param timing "END" or "BEGINNING"
+ */
+export function growingAnnuityFV(
+  firstPayment: number,
+  periodicDiscountRate: number,
+  periodicGrowthRate: number,
+  periods: number,
+  timing: PaymentTiming = "END"
+): number {
+  assertFinite(firstPayment, "firstPayment");
+  assertFinite(periodicDiscountRate, "periodicDiscountRate");
+  assertFinite(periodicGrowthRate, "periodicGrowthRate");
+  assertFinite(periods, "periods");
+
+  if (periods <= 0 || firstPayment === 0) return 0;
+  if (periodicDiscountRate <= -1) {
+    throw new CalculationError("INVALID_RATE", "Discount rate must be > -1 (-100%).");
+  }
+  if (periodicGrowthRate <= -1) {
+    throw new CalculationError("INVALID_RATE", "Growth rate must be > -1 (-100%).");
+  }
+
+  const timingFactor = timing === "BEGINNING" ? (1 + periodicDiscountRate) : 1;
+
+  // Case 1: r = g
+  if (nearlyZero(periodicDiscountRate - periodicGrowthRate, 1e-12)) {
+    const fv = periods * firstPayment * Math.pow(1 + periodicDiscountRate, periods - 1);
+    return roundMoney(fv * timingFactor);
+  }
+
+  // Case 2: r != g
+  // FV = P1 / (r - g) * [(1 + r)^n - (1 + g)^n]
+  const fv = (firstPayment / (periodicDiscountRate - periodicGrowthRate)) *
+    (Math.pow(1 + periodicDiscountRate, periods) - Math.pow(1 + periodicGrowthRate, periods));
+  return roundMoney(fv * timingFactor);
+}
+
+/**
+ * Discounted Cash Flow (DCF / Net Present Value)
+ * NPV = sum_{t=0}^n [ CF_t / (1 + r)^t ]
+ * @param cashFlows Array of cash flows starting at t=0
+ * @param periodicDiscountRate Discount rate per period as decimal (e.g. 0.08 for 8%)
+ */
+export function discountedCashFlow(
+  cashFlows: readonly number[],
+  periodicDiscountRate: number
+): number {
+  assertFinite(periodicDiscountRate, "periodicDiscountRate");
+  if (periodicDiscountRate <= -1) {
+    throw new CalculationError("INVALID_RATE", "Discount rate must be > -1 (-100%).");
+  }
+
+  let totalPV = 0;
+  for (let t = 0; t < cashFlows.length; t++) {
+    const cf = cashFlows[t];
+    assertFinite(cf, `cashFlows[${t}]`);
+    if (cf !== 0) {
+      totalPV += cf / Math.pow(1 + periodicDiscountRate, t);
+    }
+  }
+  return roundMoney(totalPV);
+}
+
+/**
+ * Calculates the exact real rate of return using the Fisher equation:
+ * r_real = (1 + r_nominal) / (1 + r_inflation) - 1
+ * @param nominalRateDecimal Nominal annual rate as decimal (e.g. 0.085 for 8.5%)
+ * @param inflationRateDecimal Inflation rate as decimal (e.g. 0.06 for 6%)
+ */
+export function calculateRealRate(nominalRateDecimal: number, inflationRateDecimal: number): number {
+  assertFinite(nominalRateDecimal, "nominalRateDecimal");
+  assertFinite(inflationRateDecimal, "inflationRateDecimal");
+  if (inflationRateDecimal <= -1) {
+    throw new CalculationError("INVALID_INFLATION", "Inflation rate must be > -1 (-100%).");
+  }
+  if (nominalRateDecimal <= -1) {
+    throw new CalculationError("INVALID_RATE", "Nominal rate must be > -1 (-100%).");
+  }
+  return (1 + nominalRateDecimal) / (1 + inflationRateDecimal) - 1;
+}
+
+/**
+ * Present Value of Inflation-Adjusted Future Cash Flows
+ * Computes PV of an annual expense starting at initialExpense growing with inflation rate i
+ * discounted at nominal rate r over n years.
+ * PV = sum_{t=1}^N [ Expense_0 * (1 + i)^t ] / (1 + r)^t
+ */
+export function calculateInflationAdjustedCashFlowsPV(
+  initialAnnualExpense: number,
+  nominalDiscountRateDecimal: number,
+  inflationRateDecimal: number,
+  years: number
+): number {
+  if (years <= 0 || initialAnnualExpense <= 0) return 0;
+  const realRate = calculateRealRate(nominalDiscountRateDecimal, inflationRateDecimal);
+  return annuityPresentValue(initialAnnualExpense, realRate, years, "ANNUAL", "END");
 }
 
 export type DepreciationMethod =
@@ -3221,50 +3552,84 @@ export function convertCurrency(
   return amount * exchangeRate;
 }
 
+/**
+ * Future value of a present amount adjusted for inflation.
+ * @param presentValue Base amount
+ * @param inflationRateDecimal Inflation rate as decimal (e.g. 0.06 for 6%)
+ * @param years Time horizon in years
+ */
 export function inflationAdjustedFutureValue(
   presentValue: number,
-  inflationRate: number,
+  inflationRateDecimal: number,
   years: number
 ): number {
-  return presentValue *
-    Math.pow(1 + inflationRate / 100, years);
+  assertFinite(presentValue, "presentValue");
+  assertFinite(inflationRateDecimal, "inflationRateDecimal");
+  assertFinite(years, "years");
+  if (inflationRateDecimal <= -1) {
+    throw new CalculationError("INVALID_INFLATION", "Inflation rate must be > -1 (-100%).");
+  }
+  return roundMoney(presentValue * Math.pow(1 + inflationRateDecimal, years));
 }
 
+/**
+ * Present value (purchasing power) of a future amount discounted by inflation.
+ * @param futureValue Future amount
+ * @param inflationRateDecimal Inflation rate as decimal (e.g. 0.06 for 6%)
+ * @param years Time horizon in years
+ */
 export function presentValueOfInflationAdjustedFuture(
   futureValue: number,
-  inflationRate: number,
+  inflationRateDecimal: number,
   years: number
 ): number {
-  return futureValue /
-    Math.pow(1 + inflationRate / 100, years);
+  assertFinite(futureValue, "futureValue");
+  assertFinite(inflationRateDecimal, "inflationRateDecimal");
+  assertFinite(years, "years");
+  if (inflationRateDecimal <= -1) {
+    throw new CalculationError("INVALID_INFLATION", "Inflation rate must be > -1 (-100%).");
+  }
+  return roundMoney(futureValue / Math.pow(1 + inflationRateDecimal, years));
 }
 
+/**
+ * Real return rate calculated using the Fisher equation:
+ * r_real = (1 + r_nominal) / (1 + r_inflation) - 1
+ * @param nominalRateDecimal Nominal annual rate as decimal (e.g. 0.085 for 8.5%)
+ * @param inflationRateDecimal Inflation rate as decimal (e.g. 0.06 for 6%)
+ */
 export function realReturn(
-  nominalRate: number,
-  inflationRate: number
+  nominalRateDecimal: number,
+  inflationRateDecimal: number
 ): number {
-  return (
-    (1 + nominalRate / 100) /
-    (1 + inflationRate / 100) -
-    1
-  );
+  return calculateRealRate(nominalRateDecimal, inflationRateDecimal);
 }
 
+/**
+ * Compound interest future value.
+ * FV = P * (1 + r / frequency)^(years * frequency)
+ * @param principal Initial principal
+ * @param annualRateDecimal Nominal annual interest rate as decimal (e.g. 0.08 for 8%)
+ * @param years Investment horizon in years
+ * @param frequency Compounding frequency per year (defaults to 12 for monthly)
+ */
 export function compoundInterest(
   principal: number,
-  annualRate: number,
+  annualRateDecimal: number,
   years: number,
   frequency = 12
 ): number {
+  assertFinite(principal, "principal");
+  assertFinite(annualRateDecimal, "annualRateDecimal");
+  assertFinite(years, "years");
   if (frequency <= 0) {
     throw new CalculationError("FREQUENCY", "frequency must be > 0.");
   }
-
-  return principal *
-    Math.pow(
-      1 + annualRate / 100 / frequency,
-      years * frequency
-    );
+  const periodicRate = annualRateDecimal / frequency;
+  if (periodicRate <= -1) {
+    throw new CalculationError("INVALID_RATE", "Periodic rate must be > -1 (-100%).");
+  }
+  return roundMoney(principal * Math.pow(1 + periodicRate, years * frequency));
 }
 
 export function percentChange(

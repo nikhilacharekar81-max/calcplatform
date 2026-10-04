@@ -1726,6 +1726,57 @@ function getArticleFromFiles(slug: string) {
     return res.json({ success: true });
   });
 
+  app.post('/api/admin/categories/bulk-status', requireAdmin, (req: Request, res: Response) => {
+    const db = readDb();
+    const { ids, isActive } = req.body;
+    if (!Array.isArray(ids)) {
+      return res.status(400).json({ error: 'ids must be an array' });
+    }
+    const targetStatus = Boolean(isActive);
+    let count = 0;
+    db.categories = db.categories.map((c) => {
+      if (ids.includes(c.id)) {
+        count++;
+        return { ...c, isActive: targetStatus, updatedAt: new Date().toISOString() };
+      }
+      return c;
+    });
+    writeDb(db, 'admin_bulk_status_categories');
+    return res.json({ success: true, count });
+  });
+
+  app.post('/api/admin/categories/bulk-delete', requireAdmin, (req: Request, res: Response) => {
+    try {
+      const db = readDb();
+      const { ids } = req.body;
+      if (!Array.isArray(ids)) {
+        return res.status(400).json({ error: 'ids must be an array' });
+      }
+      const initialCatCount = db.categories.length;
+      const initialSubCount = db.subcategories.length;
+      const initialCalcCount = db.calculators.length;
+
+      db.categories = db.categories.filter((c) => !ids.includes(c.id));
+      db.subcategories = db.subcategories.filter((s) => !ids.includes(s.categoryId));
+      db.calculators = db.calculators.filter((c) => !ids.includes(c.categoryId));
+
+      const deletedCategories = initialCatCount - db.categories.length;
+      const deletedSubcategories = initialSubCount - db.subcategories.length;
+      const deletedCalculators = initialCalcCount - db.calculators.length;
+
+      writeDb(db, 'admin_bulk_delete_categories');
+      return res.json({
+        success: true,
+        count: deletedCategories,
+        deletedSubcategories,
+        deletedCalculators,
+      });
+    } catch (err: any) {
+      console.error('Error in bulk delete categories:', err);
+      return res.status(500).json({ error: err.message || 'Failed to bulk delete categories' });
+    }
+  });
+
   // ==========================================
   // ADMIN SUBCATEGORIES API
   // ==========================================
@@ -1913,6 +1964,53 @@ function getArticleFromFiles(slug: string) {
 
     writeDb(db);
     return res.json({ success: true });
+  });
+
+  app.post('/api/admin/subcategories/bulk-status', requireAdmin, (req: Request, res: Response) => {
+    const db = readDb();
+    const { ids, isActive } = req.body;
+    if (!Array.isArray(ids)) {
+      return res.status(400).json({ error: 'ids must be an array' });
+    }
+    const targetStatus = Boolean(isActive);
+    let count = 0;
+    db.subcategories = db.subcategories.map((s) => {
+      if (ids.includes(s.id)) {
+        count++;
+        return { ...s, isActive: targetStatus, updatedAt: new Date().toISOString() };
+      }
+      return s;
+    });
+    writeDb(db, 'admin_bulk_status_subcategories');
+    return res.json({ success: true, count });
+  });
+
+  app.post('/api/admin/subcategories/bulk-delete', requireAdmin, (req: Request, res: Response) => {
+    try {
+      const db = readDb();
+      const { ids } = req.body;
+      if (!Array.isArray(ids)) {
+        return res.status(400).json({ error: 'ids must be an array' });
+      }
+      const initialSubCount = db.subcategories.length;
+      const initialCalcCount = db.calculators.length;
+
+      db.subcategories = db.subcategories.filter((s) => !ids.includes(s.id));
+      db.calculators = db.calculators.filter((c) => !ids.includes(c.subcategoryId));
+
+      const deletedSubcategories = initialSubCount - db.subcategories.length;
+      const deletedCalculators = initialCalcCount - db.calculators.length;
+
+      writeDb(db, 'admin_bulk_delete_subcategories');
+      return res.json({
+        success: true,
+        count: deletedSubcategories,
+        deletedCalculators,
+      });
+    } catch (err: any) {
+      console.error('Error in bulk delete subcategories:', err);
+      return res.status(500).json({ error: err.message || 'Failed to bulk delete subcategories' });
+    }
   });
 
   // ==========================================
@@ -2252,6 +2350,44 @@ function getArticleFromFiles(slug: string) {
 
     writeDb(db);
     return res.json({ success: true });
+  });
+
+  app.post('/api/admin/calculators/bulk-status', requireAdmin, (req: Request, res: Response) => {
+    const db = readDb();
+    const { ids, isActive } = req.body;
+    if (!Array.isArray(ids)) {
+      return res.status(400).json({ error: 'ids must be an array' });
+    }
+    const targetStatus = Boolean(isActive);
+    let count = 0;
+    db.calculators = db.calculators.map((c) => {
+      if (ids.includes(c.id)) {
+        count++;
+        return { ...c, isActive: targetStatus, updatedAt: new Date().toISOString() };
+      }
+      return c;
+    });
+    writeDb(db, 'admin_bulk_status_calculators');
+    return res.json({ success: true, count });
+  });
+
+  app.post('/api/admin/calculators/bulk-delete', requireAdmin, (req: Request, res: Response) => {
+    try {
+      const db = readDb();
+      const { ids } = req.body;
+      if (!Array.isArray(ids)) {
+        return res.status(400).json({ error: 'ids must be an array' });
+      }
+      const initialCount = db.calculators.length;
+      db.calculators = db.calculators.filter((c) => !ids.includes(c.id));
+      const deletedCount = initialCount - db.calculators.length;
+
+      writeDb(db, 'admin_bulk_delete_calculators');
+      return res.json({ success: true, count: deletedCount });
+    } catch (err: any) {
+      console.error('Error in bulk delete calculators:', err);
+      return res.status(500).json({ error: err.message || 'Failed to bulk delete calculators' });
+    }
   });
 
   // ==========================================

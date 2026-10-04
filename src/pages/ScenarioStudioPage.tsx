@@ -250,21 +250,33 @@ export const ScenarioStudioPage: React.FC = () => {
               {/* Sliders Grid */}
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-6">
                 {/* Annual Income */}
-                <div className="p-4 bg-slate-50 rounded-2xl border border-slate-100">
-                  <div className="flex justify-between items-center mb-1">
+                <div className="p-4 bg-slate-50 rounded-2xl border border-slate-100 space-y-2.5">
+                  <div className="flex justify-between items-center gap-2">
                     <label className="text-xs font-semibold text-slate-600 uppercase">Gross Annual Income</label>
-                    <span className="text-sm font-bold text-slate-900">{formatCurrency(annualIncome)}</span>
+                    <div className="flex items-center bg-white px-2.5 py-1 rounded-lg border border-slate-200 shadow-2xs focus-within:border-emerald-600 focus-within:ring-1 focus-within:ring-emerald-600">
+                      <span className="text-xs font-bold text-slate-400 mr-1 select-none">₹</span>
+                      <input
+                        type="number"
+                        min={600000}
+                        max={6000000}
+                        step={100000}
+                        value={annualIncome || ''}
+                        onChange={(e) => setAnnualIncome(Number(e.target.value) || 0)}
+                        onBlur={() => setAnnualIncome((prev) => Math.max(600000, Math.min(6000000, prev || 600000)))}
+                        className="w-24 text-right text-xs font-bold text-slate-900 bg-transparent outline-none"
+                      />
+                    </div>
                   </div>
                   <input
                     type="range"
                     min={600000}
                     max={6000000}
                     step={100000}
-                    value={annualIncome}
+                    value={Math.max(600000, Math.min(6000000, annualIncome || 600000))}
                     onChange={(e) => setAnnualIncome(Number(e.target.value))}
                     className="w-full accent-emerald-600 cursor-pointer"
                   />
-                  <div className="flex justify-between text-[10px] text-slate-400 mt-1">
+                  <div className="flex justify-between text-[10px] text-slate-400">
                     <span>₹6L</span>
                     <span>₹30L</span>
                     <span>₹60L</span>
@@ -272,21 +284,33 @@ export const ScenarioStudioPage: React.FC = () => {
                 </div>
 
                 {/* Home Loan Amount */}
-                <div className="p-4 bg-slate-50 rounded-2xl border border-slate-100">
-                  <div className="flex justify-between items-center mb-1">
+                <div className="p-4 bg-slate-50 rounded-2xl border border-slate-100 space-y-2.5">
+                  <div className="flex justify-between items-center gap-2">
                     <label className="text-xs font-semibold text-slate-600 uppercase">Home Loan Principal</label>
-                    <span className="text-sm font-bold text-slate-900">{formatCurrency(homeLoanAmount)}</span>
+                    <div className="flex items-center bg-white px-2.5 py-1 rounded-lg border border-slate-200 shadow-2xs focus-within:border-blue-600 focus-within:ring-1 focus-within:ring-blue-600">
+                      <span className="text-xs font-bold text-slate-400 mr-1 select-none">₹</span>
+                      <input
+                        type="number"
+                        min={1000000}
+                        max={15000000}
+                        step={250000}
+                        value={homeLoanAmount || ''}
+                        onChange={(e) => setHomeLoanAmount(Number(e.target.value) || 0)}
+                        onBlur={() => setHomeLoanAmount((prev) => Math.max(1000000, Math.min(15000000, prev || 1000000)))}
+                        className="w-28 text-right text-xs font-bold text-slate-900 bg-transparent outline-none"
+                      />
+                    </div>
                   </div>
                   <input
                     type="range"
                     min={1000000}
                     max={15000000}
                     step={250000}
-                    value={homeLoanAmount}
+                    value={Math.max(1000000, Math.min(15000000, homeLoanAmount || 1000000))}
                     onChange={(e) => setHomeLoanAmount(Number(e.target.value))}
                     className="w-full accent-blue-600 cursor-pointer"
                   />
-                  <div className="flex justify-between text-[10px] text-slate-400 mt-1">
+                  <div className="flex justify-between text-[10px] text-slate-400">
                     <span>₹10L</span>
                     <span>₹75L</span>
                     <span>₹1.5Cr</span>
@@ -294,21 +318,34 @@ export const ScenarioStudioPage: React.FC = () => {
                 </div>
 
                 {/* Monthly SIP */}
-                <div className="p-4 bg-slate-50 rounded-2xl border border-slate-100">
-                  <div className="flex justify-between items-center mb-1">
+                <div className="p-4 bg-slate-50 rounded-2xl border border-slate-100 space-y-2.5">
+                  <div className="flex justify-between items-center gap-2">
                     <label className="text-xs font-semibold text-slate-600 uppercase">Monthly SIP Investment</label>
-                    <span className="text-sm font-bold text-slate-900">{formatCurrency(monthlySip)}/mo</span>
+                    <div className="flex items-center bg-white px-2.5 py-1 rounded-lg border border-slate-200 shadow-2xs focus-within:border-emerald-600 focus-within:ring-1 focus-within:ring-emerald-600">
+                      <span className="text-xs font-bold text-slate-400 mr-1 select-none">₹</span>
+                      <input
+                        type="number"
+                        min={5000}
+                        max={150000}
+                        step={5000}
+                        value={monthlySip || ''}
+                        onChange={(e) => setMonthlySip(Number(e.target.value) || 0)}
+                        onBlur={() => setMonthlySip((prev) => Math.max(5000, Math.min(150000, prev || 5000)))}
+                        className="w-20 text-right text-xs font-bold text-slate-900 bg-transparent outline-none"
+                      />
+                      <span className="text-[10px] font-bold text-slate-400 ml-1 select-none">/mo</span>
+                    </div>
                   </div>
                   <input
                     type="range"
                     min={5000}
                     max={150000}
                     step={5000}
-                    value={monthlySip}
+                    value={Math.max(5000, Math.min(150000, monthlySip || 5000))}
                     onChange={(e) => setMonthlySip(Number(e.target.value))}
                     className="w-full accent-emerald-600 cursor-pointer"
                   />
-                  <div className="flex justify-between text-[10px] text-slate-400 mt-1">
+                  <div className="flex justify-between text-[10px] text-slate-400">
                     <span>₹5k</span>
                     <span>₹75k</span>
                     <span>₹1.5L</span>

@@ -104,7 +104,18 @@ export const GroupedBarChartComponent: React.FC<GroupedBarChartProps> = ({
               wrapperStyle={{ fontSize: '12px', color: '#475569' }}
             />
 
-            {hasRegime ? (
+            {Array.isArray(parameters.dataSeries) && parameters.dataSeries.length > 0 ? (
+              parameters.dataSeries.map((s: any) => (
+                <Bar
+                  key={s.key}
+                  dataKey={s.key}
+                  name={s.label || s.key}
+                  fill={s.color || '#3b82f6'}
+                  radius={[4, 4, 0, 0]}
+                  maxBarSize={50}
+                />
+              ))
+            ) : hasRegime ? (
               <>
                 <Bar
                   dataKey="oldRegime"
