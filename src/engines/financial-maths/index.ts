@@ -1887,7 +1887,9 @@ export function generateAmortizationSchedule(
   assertNonNegative(input.principal, "principal");
   const rateDecimal = input.annualRatePercent !== undefined
     ? percentToDecimal(input.annualRatePercent)
-    : (input.annualRate ?? 0);
+    : input.annualRate !== undefined
+    ? (input.annualRate > 1 ? percentToDecimal(input.annualRate) : input.annualRate)
+    : 0;
   assertFinite(rateDecimal, "annualRate");
 
   const frequency = input.frequency ?? "MONTHLY";
