@@ -9,6 +9,20 @@ import {
 } from './modules/ModuleRegistry';
 import { BookOpen, AlertCircle, FileText, CheckCircle2, Edit3, Sliders } from 'lucide-react';
 import { formatContentHtml } from '../../utils/formatters.ts';
+import {
+  calculateTermLifeInsurance,
+  calculateLifeInsuranceNeeds,
+  calculateHumanLifeValue,
+  calculateHealthInsurance,
+  calculateHealthCoverage,
+  calculateCarInsurance,
+  calculateBikeInsurance,
+  calculateTravelInsurance,
+  calculatePersonalAccidentCover,
+  calculateCriticalIllnessCover,
+  calculateHomeInsurance,
+  calculateBusinessInsurance,
+} from '../../calculators/india/insurance/index.ts';
 
 interface DynamicCalculatorRendererProps {
   calculator: Calculator;
@@ -89,13 +103,119 @@ export const DynamicCalculatorRenderer: React.FC<DynamicCalculatorRendererProps>
     setFormValues(initialValues);
   };
 
+  // Dynamically calculate robust insurance calculations on the fly
+  const calculatedResults = useMemo(() => {
+    const slug = calculator.slug;
+    const v = formValues;
+    switch (slug) {
+      case 'term-insurance-calculator':
+        return calculateTermLifeInsurance({
+          annualIncome: Number(v.annualIncome || 0),
+          currentAge: Number(v.currentAge || 0),
+          retirementAge: Number(v.retirementAge || 60),
+          outstandingDebts: Number(v.outstandingDebts || 0),
+          existingLifeCover: Number(v.existingLifeCover || 0),
+          existingSavings: Number(v.existingSavings || 0),
+          incomeMultipleYears: Number(v.incomeMultipleYears || 15),
+          estimatedAnnualPremium: Number(v.estimatedAnnualPremium || 0),
+          isGroupPolicy: Boolean(v.isGroupPolicy || false),
+        });
+      case 'life-insurance-needs-calculator':
+        return calculateLifeInsuranceNeeds({
+          annualFamilyExpenses: Number(v.annualFamilyExpenses || 0),
+          yearsOfSupportNeeded: Number(v.yearsOfSupportNeeded || 20),
+          childrenEducationCostToday: Number(v.childrenEducationCostToday || 0),
+          childrenMarriageCostToday: Number(v.childrenMarriageCostToday || 0),
+          inflationRatePercent: Number(v.inflationRatePercent || 6),
+          expectedReturnRatePercent: Number(v.expectedReturnRatePercent || 8),
+          totalDebts: Number(v.totalDebts || 0),
+          currentAssets: Number(v.currentAssets || 0),
+          existingLifeInsurance: Number(v.existingLifeInsurance || 0),
+        });
+      case 'human-life-value-calculator':
+        return calculateHumanLifeValue({
+          currentAge: Number(v.currentAge || 0),
+          retirementAge: Number(v.retirementAge || 60),
+          annualIncome: Number(v.annualIncome || 0),
+          personalExpensesPercent: Number(v.personalExpensesPercent || 30),
+          expectedAnnualIncomeGrowthPercent: Number(v.expectedAnnualIncomeGrowthPercent || 8),
+          discountRatePercent: Number(v.discountRatePercent || 7),
+        });
+      case 'health-insurance-calculator':
+        return calculateHealthInsurance({
+          ageOfEldestMember: Number(v.ageOfEldestMember || 35),
+          cityTier: v.cityTier || 'TIER_1',
+          familyMembersCount: Number(v.familyMembersCount || 4),
+          preferredRoomCategory: v.preferredRoomCategory || 'SINGLE_PRIVATE',
+          includeParents80D: Boolean(v.includeParents80D || false),
+          parentsAgeAbove60: Boolean(v.parentsAgeAbove60 || false),
+          isGroupPolicy: Boolean(v.isGroupPolicy || false),
+        });
+      case 'health-insurance-coverage-calculator':
+        return calculateHealthCoverage({
+          currentCoverageAmount: Number(v.currentCoverageAmount || 0),
+          medicalInflationRatePercent: Number(v.medicalInflationRatePercent || 12),
+          yearsInFuture: Number(v.yearsInFuture || 10),
+          selfAgeAbove60: Boolean(v.selfAgeAbove60 || false),
+          includeParentCover80D: Boolean(v.includeParentCover80D || false),
+          parentsAgeAbove60: Boolean(v.parentsAgeAbove60 || false),
+        });
+      case 'car-insurance-calculator':
+        return calculateCarInsurance({
+          manufacturerListedExShowroomPrice: Number(v.manufacturerListedExShowroomPrice || 0),
+          vehicleAgeMonths: Number(v.vehicleAgeMonths || 0),
+          claimFreeYearsNCB: Number(v.claimFreeYearsNCB || 0),
+          engineCapacityCC: Number(v.engineCapacityCC || 1200),
+        });
+      case 'bike-insurance-calculator':
+        return calculateBikeInsurance({
+          manufacturerListedExShowroomPrice: Number(v.manufacturerListedExShowroomPrice || 0),
+          bikeAgeMonths: Number(v.bikeAgeMonths || 0),
+          claimFreeYearsNCB: Number(v.claimFreeYearsNCB || 0),
+          engineCapacityCC: Number(v.engineCapacityCC || 150),
+        });
+      case 'travel-insurance-calculator':
+        return calculateTravelInsurance({
+          destinationRegion: v.destinationRegion || 'USA_CANADA',
+          tripDurationDays: Number(v.tripDurationDays || 15),
+          travelerAge: Number(v.travelerAge || 35),
+        });
+      case 'personal-accident-cover-calculator':
+        return calculatePersonalAccidentCover({
+          annualEarnedIncome: Number(v.annualEarnedIncome || 0),
+          outstandingDebts: Number(v.outstandingDebts || 0),
+        });
+      case 'critical-illness-cover-calculator':
+        return calculateCriticalIllnessCover({
+          annualLivingExpenses: Number(v.annualLivingExpenses || 0),
+          yearsOfIncomeReplacementNeeded: Number(v.yearsOfIncomeReplacementNeeded || 3),
+          expectedSpecializedTreatmentCost: Number(v.expectedSpecializedTreatmentCost || 0),
+        });
+      case 'home-insurance-calculator':
+        return calculateHomeInsurance({
+          builtUpAreaSqFt: Number(v.builtUpAreaSqFt || 0),
+          constructionCostPerSqFt: Number(v.constructionCostPerSqFt || 2000),
+          contentsValuationToday: Number(v.contentsValuationToday || 0),
+        });
+      case 'business-insurance-calculator':
+        return calculateBusinessInsurance({
+          buildingReconstructionValue: Number(v.buildingReconstructionValue || 0),
+          plantMachineryStockValue: Number(v.plantMachineryStockValue || 0),
+          annualGrossProfit: Number(v.annualGrossProfit || 0),
+          indemnityPeriodMonths: Number(v.indemnityPeriodMonths || 12),
+        });
+      default:
+        return null;
+    }
+  }, [calculator.slug, formValues]);
+
   // Evaluate all output formulas once centrally (Structured Calculator Result)
   const evaluatedOutputs = useMemo(() => {
     if (!calculator.outputs || !Array.isArray(calculator.outputs)) {
       return [];
     }
 
-    const context: Record<string, any> = { ...formValues };
+    const context: Record<string, any> = { ...formValues, ...(calculatedResults || {}) };
 
     return calculator.outputs.map((out) => {
       let rawVal: any = 0;
@@ -116,7 +236,7 @@ export const DynamicCalculatorRenderer: React.FC<DynamicCalculatorRendererProps>
         raw: rawVal,
       };
     });
-  }, [calculator.outputs, formValues]);
+  }, [calculator.outputs, formValues, calculatedResults]);
 
   // Retrieve modules configuration sorted strictly by admin order
   const activeModules = useMemo(() => {
@@ -213,6 +333,7 @@ export const DynamicCalculatorRenderer: React.FC<DynamicCalculatorRendererProps>
                 onInputChange={handleInputChange}
                 onReset={handleReset}
                 settings={modConfig.settings}
+                calculatedResults={calculatedResults}
               />
             </section>
           );

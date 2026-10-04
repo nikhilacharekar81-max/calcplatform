@@ -1,5 +1,4 @@
 import {
-  pv,
   annuityPresentValue,
   roundMoney,
 } from "../../../engines/financial-maths/index.ts";
@@ -14,6 +13,8 @@ export interface TermLifeInput {
   existingLifeCover?: number;
   existingSavings?: number;
   incomeMultipleYears?: number;
+  estimatedAnnualPremium?: number;
+  isGroupPolicy?: boolean;
 }
 
 export interface TermLifeResult {
@@ -23,6 +24,8 @@ export interface TermLifeResult {
   outstandingDebts: number;
   netProtectionGap: number;
   section80cTaxBenefit: number;
+  applicableGstPercent: number;
+  section10_10dStatusNote: string;
   disclaimer: string;
 }
 
@@ -44,16 +47,29 @@ export function calculateTermLifeInsurance(input: TermLifeInput): TermLifeResult
   const grossNeed = incomeReplacement + debts;
   const netProtectionGap = Math.max(0, grossNeed - existingCover - existingSavings);
 
-  // Round to nearest lakh for practical term cover sizing
   const recommendedSumAssured = Math.ceil(netProtectionGap / 100000) * 100000;
 
-  // Retrieve statutory Section 80C rule
+  // Retrieve statutory parameters
   const rule = indiaRuleRegistry.resolveActiveVerified<IndiaInsuranceParameters>({
     domain: "INSURANCE",
     ruleId: "INSURANCE-INDIA-2026",
     version: "2026-01",
   });
   const max80cLimit = rule.parameters.section80C.maxDeductionLimit;
+  const sec10_10D = rule.parameters.section10_10D;
+  const gstRules = rule.parameters.gstRatesPercent;
+
+  // Verified Section 10(10D) ratio check
+  const estPremium = input.estimatedAnnualPremium || (recommendedSumAssured * 0.001); // illustrative ~0.1% premium ratio for term cover
+  const premiumToSumRatio = recommendedSumAssured > 0 ? (estPremium / recommendedSumAssured) * 100 : 0;
+  const satisfies10_10DRatio = premiumToSumRatio <= sec10_10D.maxPremiumRatioOfSumAssuredPercent;
+
+  const section10_10dStatusNote = satisfies10_10DRatio
+    ? "Maturity proceed is modeled as tax-exempt under Sec 10(10D) (Annual premium ≤ 10% of sum assured)."
+    : "Warning: Premium ratio exceeds 10% of sum assured. Maturity proceeds may not qualify for Sec 10(10D) exemption.";
+
+  // GST 0% Exemption Reform (Eff. 22 Sept 2025) for Individual Life Policies
+  const gstPercent = input.isGroupPolicy ? gstRules.groupLifeHealthInsurance : gstRules.individualLifeInsurance;
 
   return {
     recommendedSumAssured,
@@ -62,7 +78,9 @@ export function calculateTermLifeInsurance(input: TermLifeInput): TermLifeResult
     outstandingDebts: roundMoney(debts),
     netProtectionGap: roundMoney(netProtectionGap),
     section80cTaxBenefit: max80cLimit,
-    disclaimer: "This calculation is a financial protection planning estimate based on income replacement and liability coverage. Premium quotes vary by insurer underwriting.",
+    applicableGstPercent: gstPercent,
+    section10_10dStatusNote,
+    disclaimer: "Income replacement multiples are CalcPlatform Planning Assumptions. Individual life policies are exempt from GST (0%) post Sept 22, 2025.",
   };
 }
 
@@ -95,7 +113,6 @@ export function calculateLifeInsuranceNeeds(input: LifeNeedsInput): LifeNeedsRes
   const infRate = (input.inflationRatePercent || 6) / 100;
   const returnRate = (input.expectedReturnRatePercent || 8) / 100;
 
-  // Discounted income replacement stream using Real Rate of Return
   const realRate = (1 + returnRate) / (1 + infRate) - 1;
   const expensesPV = annuityPresentValue(expenses, realRate, years);
 
@@ -150,7 +167,6 @@ export function calculateHumanLifeValue(input: HumanLifeValueInput): HumanLifeVa
   const growthRate = Math.max(0, input.expectedAnnualIncomeGrowthPercent) / 100;
   const discountRate = Math.max(0, input.discountRatePercent || 7) / 100;
 
-  // Net Discount Rate
   const netDiscountRate = (1 + discountRate) / (1 + growthRate) - 1;
   const hlv = annuityPresentValue(netAnnualContribution, netDiscountRate, workingYears);
 

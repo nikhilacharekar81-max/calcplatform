@@ -3,7 +3,7 @@ import { indiaRuleRegistry } from "../../../rules/india/registry.ts";
 import { IndiaInsuranceParameters } from "../../../rules/india/insurance/versions/2026.ts";
 
 export interface CarInsuranceInput {
-  showroomExShowroomPrice: number;
+  manufacturerListedExShowroomPrice: number;
   vehicleAgeMonths: number;
   claimFreeYearsNCB: number;
   engineCapacityCC?: number;
@@ -17,6 +17,7 @@ export interface CarInsuranceResult {
   appliedDepreciationPercent: number;
   noClaimBonusPercent: number;
   estimatedOwnDamagePremium: number;
+  estimatedOwnDamageLabel: string;
   statutoryThirdPartyTariffEstimate: number;
   gstAmount: number;
   totalEstimatedPremiumPayable: number;
@@ -27,11 +28,10 @@ export interface CarInsuranceResult {
  * 6. Car Insurance Calculator — IDV Schedule Depreciation & NCB Discount Engine
  */
 export function calculateCarInsurance(input: CarInsuranceInput): CarInsuranceResult {
-  const exShowroom = Math.max(0, input.showroomExShowroomPrice);
+  const exShowroom = Math.max(0, input.manufacturerListedExShowroomPrice);
   const ageMonths = Math.max(0, input.vehicleAgeMonths);
   const ncbYears = Math.min(5, Math.max(0, input.claimFreeYearsNCB));
 
-  // Retrieve statutory IRDAI Motor Tariff schedule
   const rule = indiaRuleRegistry.resolveActiveVerified<IndiaInsuranceParameters>({
     domain: "INSURANCE",
     ruleId: "INSURANCE-INDIA-2026",
@@ -41,21 +41,21 @@ export function calculateCarInsurance(input: CarInsuranceInput): CarInsuranceRes
   const ncbLadder = rule.parameters.motorNcbLadderPercent;
   const gstPercent = rule.parameters.gstRatesPercent.motorInsurance;
 
-  // Determine IDV Depreciation Percentage
+  // Determine IRDAI IDV Depreciation Percentage
   let depPct = 50; // fallback for vehicles > 5 years old
   const matchedDep = depSchedule.find((item) => ageMonths >= item.minAgeMonths && ageMonths < item.maxAgeMonths);
   if (matchedDep) {
     depPct = matchedDep.depreciationPercent;
   }
 
-  // Calculate Insured Declared Value (IDV)
+  // Calculate Insured Declared Value (IDV) based on Manufacturer Listed Ex-Showroom Price
   const idv = roundMoney(exShowroom * (1 - depPct / 100));
 
   // Determine NCB Percentage
   const matchedNcb = ncbLadder.find((item) => item.claimFreeYears === ncbYears);
   const ncbPct = matchedNcb ? matchedNcb.ncbPercent : 50;
 
-  // Base OD Premium Estimate (~2.5% to 3.2% of IDV)
+  // Illustrative OD Premium Calculation
   let baseOdRate = 0.028;
   if (input.isElectricVehicle) baseOdRate = 0.022;
 
@@ -79,15 +79,16 @@ export function calculateCarInsurance(input: CarInsuranceInput): CarInsuranceRes
     appliedDepreciationPercent: depPct,
     noClaimBonusPercent: ncbPct,
     estimatedOwnDamagePremium: roundMoney(netOdPremium),
+    estimatedOwnDamageLabel: "Estimated Own Damage Premium — Illustrative Only",
     statutoryThirdPartyTariffEstimate: tpTariff,
     gstAmount: gst,
     totalEstimatedPremiumPayable: totalPayable,
-    disclaimer: "IDV calculated per statutory IRDAI depreciation schedule. Final insurer premium varies by city zone and add-on covers.",
+    disclaimer: "Insured Declared Value (IDV) is calculated strictly per IRDAI statutory depreciation schedules based on manufacturer listed ex-showroom price. Own Damage premium calculations are illustrative estimates; actual quotes depend on insurer underwriting, zonal classification, and selected add-ons.",
   };
 }
 
 export interface BikeInsuranceInput {
-  bikeExShowroomPrice: number;
+  manufacturerListedExShowroomPrice: number;
   bikeAgeMonths: number;
   claimFreeYearsNCB: number;
   engineCapacityCC?: number;
@@ -99,6 +100,7 @@ export interface BikeInsuranceResult {
   appliedDepreciationPercent: number;
   noClaimBonusPercent: number;
   statutoryThirdPartyPremium: number;
+  estimatedOwnDamageLabel: string;
   gstAmount: number;
   totalEstimatedPremiumPayable: number;
 }
@@ -107,7 +109,7 @@ export interface BikeInsuranceResult {
  * 7. Bike / Two-Wheeler Insurance Calculator — Two-Wheeler IDV & Statutory TP Tariff
  */
 export function calculateBikeInsurance(input: BikeInsuranceInput): BikeInsuranceResult {
-  const exShowroom = Math.max(0, input.bikeExShowroomPrice);
+  const exShowroom = Math.max(0, input.manufacturerListedExShowroomPrice);
   const ageMonths = Math.max(0, input.bikeAgeMonths);
   const ncbYears = Math.min(5, Math.max(0, input.claimFreeYearsNCB));
 
@@ -129,11 +131,9 @@ export function calculateBikeInsurance(input: BikeInsuranceInput): BikeInsurance
   const matchedNcb = ncbLadder.find((item) => item.claimFreeYears === ncbYears);
   const ncbPct = matchedNcb ? matchedNcb.ncbPercent : 50;
 
-  // Base OD Premium Estimate (~1.7% of IDV)
   const grossOd = idv * 0.017;
   const netOd = Math.max(0, grossOd * (1 - ncbPct / 100));
 
-  // Two-Wheeler Statutory TP Tariff
   const cc = input.engineCapacityCC || 125;
   let tpTariff = 714;
   if (cc > 350) tpTariff = 2804;
@@ -149,6 +149,7 @@ export function calculateBikeInsurance(input: BikeInsuranceInput): BikeInsurance
     appliedDepreciationPercent: depPct,
     noClaimBonusPercent: ncbPct,
     statutoryThirdPartyPremium: tpTariff,
+    estimatedOwnDamageLabel: "Estimated Own Damage Premium — Illustrative Only",
     gstAmount: gst,
     totalEstimatedPremiumPayable: totalPayable,
   };

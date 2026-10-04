@@ -30,7 +30,7 @@ export function runInsuranceTests(): { passed: number; failed: number } {
 
   console.log("--- Running Suite: 8. India Insurance Domain Models ---");
 
-  // 1. Term Life Insurance
+  // 1. Term Life Insurance - GST 0% Exempt Reform & Sec 10(10D)
   const termRes = calculateTermLifeInsurance({
     annualIncome: 1200000,
     currentAge: 30,
@@ -39,8 +39,8 @@ export function runInsuranceTests(): { passed: number; failed: number } {
     existingLifeCover: 1000000,
   });
   assert(
-    termRes.recommendedSumAssured > 0 && termRes.netProtectionGap > 0,
-    "Term Insurance - Recommended Sum Assured & Gap Sizing"
+    termRes.recommendedSumAssured > 0 && termRes.applicableGstPercent === 0,
+    "Term Insurance - Recommended Sum Assured & GST 0% Exemption Reform"
   );
 
   // 2. Life Insurance Needs
@@ -72,16 +72,22 @@ export function runInsuranceTests(): { passed: number; failed: number } {
     "Human Life Value - PV Discounted Earnings Sizing"
   );
 
-  // 4. Health Insurance
+  // 4. Health Insurance - Separate Sec 80D Buckets (Self + Senior Parents)
   const healthRes = calculateHealthInsurance({
     ageOfEldestMember: 35,
     cityTier: "TIER_1",
     familyMembersCount: 4,
     preferredRoomCategory: "SINGLE_PRIVATE",
+    includeParents80D: true,
+    parentsAgeAbove60: true,
   });
   assert(
-    healthRes.recommendedSumInsured >= 750000 && healthRes.section80dTaxDeductionLimit === 25000,
-    "Health Insurance - Recommended Cover & Section 80D Tax Limit"
+    healthRes.recommendedSumInsured >= 750000 &&
+      healthRes.selfFamily80dBucket === 25000 &&
+      healthRes.parents80dBucket === 50000 &&
+      healthRes.totalSection80dTaxDeductionLimit === 75000 &&
+      healthRes.applicableGstPercent === 0,
+    "Health Insurance - Separate Sec 80D Buckets (₹25k Self + ₹50k Senior Parents) & 0% GST"
   );
 
   // 5. Health Insurance Coverage
@@ -89,37 +95,41 @@ export function runInsuranceTests(): { passed: number; failed: number } {
     currentCoverageAmount: 500000,
     medicalInflationRatePercent: 12,
     yearsInFuture: 10,
+    selfAgeAbove60: false,
     includeParentCover80D: true,
     parentsAgeAbove60: true,
   });
   assert(
     healthCovRes.projectedFutureTreatmentCost > healthCovRes.currentCoverageAmount &&
       healthCovRes.totalSection80dTaxBenefitAvailable === 75000,
-    "Health Coverage - Medical Inflation Compounding & Senior Section 80D Limit"
+    "Health Coverage - Medical Inflation Compounding & Combined Sec 80D Buckets"
   );
 
-  // 6. Car Insurance
+  // 6. Car Insurance - IDV Depreciation & Illustrative OD Label
   const carRes = calculateCarInsurance({
-    showroomExShowroomPrice: 1000000,
+    manufacturerListedExShowroomPrice: 1000000,
     vehicleAgeMonths: 18,
     claimFreeYearsNCB: 2,
     engineCapacityCC: 1200,
   });
   assert(
-    carRes.insuredDeclaredValueIDV === 800000 && carRes.appliedDepreciationPercent === 20 && carRes.noClaimBonusPercent === 25,
-    "Car Insurance - IDV Depreciation (20%) & NCB Discount (25%)"
+    carRes.insuredDeclaredValueIDV === 800000 &&
+      carRes.appliedDepreciationPercent === 20 &&
+      carRes.noClaimBonusPercent === 25 &&
+      carRes.estimatedOwnDamageLabel.includes("Illustrative Only"),
+    "Car Insurance - Manufacturer Price IDV (20%), NCB (25%) & Illustrative OD Label"
   );
 
   // 7. Bike Insurance
   const bikeRes = calculateBikeInsurance({
-    bikeExShowroomPrice: 150000,
+    manufacturerListedExShowroomPrice: 150000,
     bikeAgeMonths: 8,
     claimFreeYearsNCB: 1,
     engineCapacityCC: 125,
   });
   assert(
     bikeRes.insuredDeclaredValueIDV === 127500 && bikeRes.appliedDepreciationPercent === 15,
-    "Bike Insurance - Two-Wheeler IDV Depreciation & Premium"
+    "Bike Insurance - Two-Wheeler Manufacturer Price IDV & Premium"
   );
 
   // 8. Travel Insurance
