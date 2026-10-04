@@ -238,12 +238,14 @@ export function calculateLifeInsuranceNeeds(input: LifeNeedsInput): LifeNeedsRes
   const retAge = Math.max(age + 1, input.retirementAge || 60);
   const workingYears = Math.max(1, retAge - age);
 
-  const expenses = Math.max(
-    0,
-    input.annualFamilyExpenses ||
-    (input.monthlyExpenses ? input.monthlyExpenses * 12 : 0) ||
-    (input.annualIncome ? input.annualIncome * 0.6 : 600000)
-  );
+  let expenses = 0;
+  if (input.annualFamilyExpenses !== undefined && input.annualFamilyExpenses !== null) {
+    expenses = Math.max(0, input.annualFamilyExpenses);
+  } else if (input.monthlyExpenses !== undefined && input.monthlyExpenses !== null) {
+    expenses = Math.max(0, input.monthlyExpenses * 12);
+  } else if (input.annualIncome !== undefined && input.annualIncome !== null && input.annualIncome > 0) {
+    expenses = Math.max(0, input.annualIncome * 0.6);
+  }
 
   const years = Math.max(1, input.yearsOfSupportNeeded || workingYears);
   const infRate = input.inflationRate ?? input.inflationRatePercent ?? 6.0;
