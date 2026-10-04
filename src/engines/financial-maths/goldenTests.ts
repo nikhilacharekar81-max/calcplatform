@@ -36,6 +36,7 @@ import {
   vatFromGross,
   commission,
 } from './index.ts';
+import { calculatorEngineRegistry } from '../calculatorEngineRegistry.ts';
 
 export interface GoldenTestCase {
   id: string;
@@ -566,6 +567,21 @@ export function runGoldenTestSuite(): GoldenTestSuiteResult {
     { sales: 50000, ratePercent: 10 },
     5000.0,
     comm,
+    0.01
+  );
+
+  const regResult = calculatorEngineRegistry.executeEngine('calculateIndiaIncomeTax', {
+    grossIncome: 1200000,
+    regime: 'NEW',
+    age: 30,
+  });
+  evaluateTest(
+    'REGISTRY-01',
+    'Advanced Calculator Engine Registry Dispatch',
+    'Execute calculateIndiaIncomeTax via calculatorEngineRegistry -> success true',
+    { grossIncome: 1200000, regime: 'NEW' },
+    1,
+    regResult.success ? 1 : 0,
     0.01
   );
 
