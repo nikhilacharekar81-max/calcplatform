@@ -1,19 +1,16 @@
 import type { IndiaRuleEnvelope } from "../types.ts";
 
 export type IndianStateCode =
-  | "MH" // Maharashtra
-  | "GJ" // Gujarat
-  | "KA" // Karnataka
-  | "DL" // Delhi
-  | "TN" // Tamil Nadu
-  | "WB" // West Bengal
-  | "TS" // Telangana
-  | "UP" // Uttar Pradesh
+  | "AP" | "AR" | "AS" | "BR" | "CG" | "GA" | "GJ" | "HR" | "HP" | "JH"
+  | "KA" | "KL" | "MP" | "MH" | "MN" | "ML" | "MZ" | "NL" | "OD" | "PB"
+  | "RJ" | "SK" | "TN" | "TS" | "TR" | "UP" | "UK" | "WB"
+  | "AN" | "CH" | "DN" | "DL" | "JK" | "LA" | "LD" | "PY"
   | string;
 
 export interface StateTaxRuleParameters {
   stateCode: IndianStateCode;
   stateName: string;
+  professionalTaxLevied?: boolean;
   professionalTaxSchedule?: Array<{
     monthlySalaryAbove: number;
     monthlyTax: number;

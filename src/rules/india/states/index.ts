@@ -2,16 +2,26 @@ import type { StateTaxRule } from "./types.ts";
 
 export * from "./types.ts";
 
-// Maharashtra State Template / Specification (Draft / Unverified until state gazette verification)
+const UNVERIFIED_PROVENANCE = {
+  authority: "Government State Revenue & Commercial Tax Departments",
+  sourceUrl: "https://www.incometax.gov.in/",
+  effectiveFrom: "2025-04-01",
+  effectiveTo: null,
+  verifiedAt: null,
+  verifiedBy: null,
+};
+
+// 1. Maharashtra (MH)
 export const MAHARASHTRA_STATE_RULE: StateTaxRule = {
-  ruleId: "STATE-IN-MH-2026",
+  ruleId: "STATE-IN-MH-2025",
   domain: "PROFESSIONAL_TAX",
   jurisdiction: "IN",
-  version: "2026-v1",
+  version: "2025-v1",
   status: "UNVERIFIED",
   parameters: {
     stateCode: "MH",
     stateName: "Maharashtra",
+    professionalTaxLevied: true,
     professionalTaxSchedule: [
       { monthlySalaryAbove: 7500, monthlyTax: 175, specialMonthTax: { month: 2, tax: 300 } },
       { monthlySalaryAbove: 10000, monthlyTax: 200, specialMonthTax: { month: 2, tax: 300 } },
@@ -27,23 +37,24 @@ export const MAHARASHTRA_STATE_RULE: StateTaxRule = {
   provenance: {
     authority: "Government of Maharashtra Department of Goods and Services Tax",
     sourceUrl: "https://mahagst.gov.in/",
-    effectiveFrom: "2026-04-01",
+    effectiveFrom: "2025-04-01",
     effectiveTo: null,
     verifiedAt: null,
     verifiedBy: null,
   },
 };
 
-// Karnataka State Template
+// 2. Karnataka (KA)
 export const KARNATAKA_STATE_RULE: StateTaxRule = {
-  ruleId: "STATE-IN-KA-2026",
+  ruleId: "STATE-IN-KA-2025",
   domain: "PROFESSIONAL_TAX",
   jurisdiction: "IN",
-  version: "2026-v1",
+  version: "2025-v1",
   status: "UNVERIFIED",
   parameters: {
     stateCode: "KA",
     stateName: "Karnataka",
+    professionalTaxLevied: true,
     professionalTaxSchedule: [
       { monthlySalaryAbove: 25000, monthlyTax: 200 },
     ],
@@ -55,23 +66,24 @@ export const KARNATAKA_STATE_RULE: StateTaxRule = {
   provenance: {
     authority: "Government of Karnataka Commercial Taxes Department",
     sourceUrl: "https://karsgst.gov.in/",
-    effectiveFrom: "2026-04-01",
+    effectiveFrom: "2025-04-01",
     effectiveTo: null,
     verifiedAt: null,
     verifiedBy: null,
   },
 };
 
-// Delhi State Template
+// 3. Delhi (DL)
 export const DELHI_STATE_RULE: StateTaxRule = {
-  ruleId: "STATE-IN-DL-2026",
+  ruleId: "STATE-IN-DL-2025",
   domain: "STAMP_DUTY",
   jurisdiction: "IN",
-  version: "2026-v1",
+  version: "2025-v1",
   status: "UNVERIFIED",
   parameters: {
     stateCode: "DL",
     stateName: "Delhi",
+    professionalTaxLevied: false,
     stampDutySchedule: [
       { category: "female", ratePercent: 4 },
       { category: "male", ratePercent: 6 },
@@ -82,15 +94,148 @@ export const DELHI_STATE_RULE: StateTaxRule = {
   provenance: {
     authority: "Revenue Department, Government of NCT of Delhi",
     sourceUrl: "https://revenue.delhi.gov.in/",
-    effectiveFrom: "2026-04-01",
+    effectiveFrom: "2025-04-01",
     effectiveTo: null,
     verifiedAt: null,
     verifiedBy: null,
   },
 };
 
+// 4. Gujarat (GJ)
+export const GUJARAT_STATE_RULE: StateTaxRule = {
+  ruleId: "STATE-IN-GJ-2025",
+  domain: "PROFESSIONAL_TAX",
+  jurisdiction: "IN",
+  version: "2025-v1",
+  status: "UNVERIFIED",
+  parameters: {
+    stateCode: "GJ",
+    stateName: "Gujarat",
+    professionalTaxLevied: true,
+  },
+  provenance: UNVERIFIED_PROVENANCE,
+};
+
+// 5. Tamil Nadu (TN)
+export const TAMIL_NADU_STATE_RULE: StateTaxRule = {
+  ruleId: "STATE-IN-TN-2025",
+  domain: "PROFESSIONAL_TAX",
+  jurisdiction: "IN",
+  version: "2025-v1",
+  status: "UNVERIFIED",
+  parameters: {
+    stateCode: "TN",
+    stateName: "Tamil Nadu",
+    professionalTaxLevied: true,
+  },
+  provenance: UNVERIFIED_PROVENANCE,
+};
+
+// 6. West Bengal (WB)
+export const WEST_BENGAL_STATE_RULE: StateTaxRule = {
+  ruleId: "STATE-IN-WB-2025",
+  domain: "PROFESSIONAL_TAX",
+  jurisdiction: "IN",
+  version: "2025-v1",
+  status: "UNVERIFIED",
+  parameters: {
+    stateCode: "WB",
+    stateName: "West Bengal",
+    professionalTaxLevied: true,
+  },
+  provenance: UNVERIFIED_PROVENANCE,
+};
+
+// 7. Telangana (TS)
+export const TELANGANA_STATE_RULE: StateTaxRule = {
+  ruleId: "STATE-IN-TS-2025",
+  domain: "PROFESSIONAL_TAX",
+  jurisdiction: "IN",
+  version: "2025-v1",
+  status: "UNVERIFIED",
+  parameters: {
+    stateCode: "TS",
+    stateName: "Telangana",
+    professionalTaxLevied: true,
+  },
+  provenance: UNVERIFIED_PROVENANCE,
+};
+
+// 8. Uttar Pradesh (UP)
+export const UTTAR_PRADESH_STATE_RULE: StateTaxRule = {
+  ruleId: "STATE-IN-UP-2025",
+  domain: "STAMP_DUTY",
+  jurisdiction: "IN",
+  version: "2025-v1",
+  status: "UNVERIFIED",
+  parameters: {
+    stateCode: "UP",
+    stateName: "Uttar Pradesh",
+    professionalTaxLevied: false,
+  },
+  provenance: UNVERIFIED_PROVENANCE,
+};
+
+// Helper factory for remaining states & UTs (Minimal draft registration templates without invented schedules)
+function createDraftStateRule(code: string, name: string, authorityName = `Government of ${name}`): StateTaxRule {
+  return {
+    ruleId: `STATE-IN-${code}-2025`,
+    domain: "JURISDICTION_REGISTRATION",
+    jurisdiction: "IN",
+    version: "2025-v1",
+    status: "DRAFT",
+    parameters: {
+      stateCode: code,
+      stateName: name,
+    },
+    provenance: {
+      authority: authorityName,
+      sourceUrl: "https://www.incometax.gov.in/",
+      effectiveFrom: "2025-04-01",
+      effectiveTo: null,
+      verifiedAt: null,
+      verifiedBy: null,
+    },
+  };
+}
+
 export const STATE_RULE_REGISTRY: Record<string, StateTaxRule> = {
   MH: MAHARASHTRA_STATE_RULE,
   KA: KARNATAKA_STATE_RULE,
   DL: DELHI_STATE_RULE,
+  GJ: GUJARAT_STATE_RULE,
+  TN: TAMIL_NADU_STATE_RULE,
+  WB: WEST_BENGAL_STATE_RULE,
+  TS: TELANGANA_STATE_RULE,
+  UP: UTTAR_PRADESH_STATE_RULE,
+  // Remaining 20 States (28 total states)
+  AP: createDraftStateRule("AP", "Andhra Pradesh"),
+  AR: createDraftStateRule("AR", "Arunachal Pradesh"),
+  AS: createDraftStateRule("AS", "Assam"),
+  BR: createDraftStateRule("BR", "Bihar"),
+  CG: createDraftStateRule("CG", "Chhattisgarh"),
+  GA: createDraftStateRule("GA", "Goa"),
+  HR: createDraftStateRule("HR", "Haryana"),
+  HP: createDraftStateRule("HP", "Himachal Pradesh"),
+  JH: createDraftStateRule("JH", "Jharkhand"),
+  KL: createDraftStateRule("KL", "Kerala"),
+  MP: createDraftStateRule("MP", "Madhya Pradesh"),
+  MN: createDraftStateRule("MN", "Manipur"),
+  ML: createDraftStateRule("ML", "Meghalaya"),
+  MZ: createDraftStateRule("MZ", "Mizoram"),
+  NL: createDraftStateRule("NL", "Nagaland"),
+  OD: createDraftStateRule("OD", "Odisha"),
+  PB: createDraftStateRule("PB", "Punjab"),
+  RJ: createDraftStateRule("RJ", "Rajasthan"),
+  SK: createDraftStateRule("SK", "Sikkim"),
+  TR: createDraftStateRule("TR", "Tripura"),
+  UK: createDraftStateRule("UK", "Uttarakhand"),
+  // 8 Union Territories
+  AN: createDraftStateRule("AN", "Andaman and Nicobar Islands", "Andaman and Nicobar Administration"),
+  CH: createDraftStateRule("CH", "Chandigarh", "Chandigarh Administration"),
+  DN: createDraftStateRule("DN", "Dadra and Nagar Haveli and Daman and Diu", "Dadra and Nagar Haveli and Daman and Diu Administration"),
+  JK: createDraftStateRule("JK", "Jammu and Kashmir", "Government of Jammu and Kashmir"),
+  LA: createDraftStateRule("LA", "Ladakh", "Ladakh Administration"),
+  LD: createDraftStateRule("LD", "Lakshadweep", "Lakshadweep Administration"),
+  PY: createDraftStateRule("PY", "Puducherry", "Government of Puducherry"),
 };
