@@ -461,14 +461,14 @@
         {
           "id": "netTaxPayableNew",
           "label": "Net Tax Payable (New Regime)",
-          "formula": "tax_in(grossSalary, \"new\")",
+          "formula": "calculateIndiaIncomeTax(grossIncome, \"NEW\")",
           "format": "currency",
           "prefix": "₹"
         },
         {
           "id": "netTaxPayableOld",
           "label": "Net Tax Payable (Old Regime)",
-          "formula": "tax_in(grossSalary, \"old\")",
+          "formula": "calculateIndiaIncomeTax(grossIncome, \"OLD\")",
           "format": "currency",
           "prefix": "₹"
         }

@@ -32,7 +32,7 @@ export const FormulaMethodologyModule: React.FC<FormulaMethodologyModuleProps> =
 
   // Detect if this is an Indian Tax Calculator
   const isTaxCalculator = outputs.some(
-    (o) => o.formula?.includes('tax_in') || o.id.toLowerCase().includes('tax')
+    (o) => o.formula?.includes('calculateIndiaIncomeTax') || o.formula?.includes('tax_in') || o.id.toLowerCase().includes('tax')
   ) || fields.some((f) => f.id === 'grossSalary' || f.id === 'ageGroup' || f.id === 'sec80C');
 
   // Humanize raw JS formula strings into readable math notation
