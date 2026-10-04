@@ -15,6 +15,8 @@ export interface TermLifeInput {
   existingSavings?: number;
   futureFinancialGoals?: number;
   futureGoals?: number;
+  goalYears?: number;
+  yearsUntilGoal?: number;
   inflationRate?: number;
   expectedReturnPercent?: number;
   investmentReturn?: number;
@@ -91,14 +93,16 @@ export function calculateTermLifeInsurance(input: TermLifeInput): TermLifeResult
   const debts = Math.max(0, input.outstandingLoans ?? input.outstandingDebts ?? 0);
   const existingCover = Math.max(0, input.existingLifeCover ?? 0);
   const existingSavings = Math.max(0, input.existingSavings ?? 0);
-  const goals = Math.max(0, input.futureFinancialGoals ?? input.futureGoals ?? 0);
+  const goalToday = Math.max(0, input.futureFinancialGoals ?? input.futureGoals ?? 0);
+  const goalYears = Math.max(0, input.goalYears ?? input.yearsUntilGoal ?? 0);
   const inflationRate = input.inflationRate !== undefined ? input.inflationRate : 6.0;
   const returnRate = input.investmentReturn ?? input.expectedReturnPercent ?? 8.5;
+  const goals = roundMoney(goalToday * Math.pow(1 + inflationRate / 100, goalYears));
 
   // Income replacement need: calculated using monthly expenses or annual income multiple with dependents calibration
   let incomeReplacement: number;
-  if (input.monthlyExpenses && input.monthlyExpenses > 0) {
-    const annualExp = input.monthlyExpenses * 12;
+  if (input.monthlyExpenses !== undefined) {
+    const annualExp = Math.max(0, input.monthlyExpenses) * 12;
     incomeReplacement = calculateLivingExpensesPV(annualExp, inflationRate, returnRate, workingYears);
   } else {
     const multipleYears = input.incomeMultipleYears || Math.min(workingYears, Math.max(10, 10 + dependents * 2.5));

@@ -148,7 +148,7 @@ export const TermInsuranceCalculatorApp: React.FC<TermInsuranceCalculatorAppProp
             {/* 2. Annual Income */}
             <div className="space-y-1.5">
               <div className="flex items-center justify-between">
-                <label className="text-xs sm:text-sm font-bold text-slate-700">Gross Annual Income</label>
+                <label className="text-xs sm:text-sm font-bold text-slate-700">Gross Annual Income (Reference)</label>
                 <div className="flex items-center bg-slate-50 rounded-lg px-2.5 py-1 border border-slate-200 focus-within:border-[#1dbf73] focus-within:bg-white transition-all">
                   <span className="text-xs font-bold text-slate-500 mr-1 select-none">₹</span>
                   <input
@@ -445,7 +445,7 @@ export const TermInsuranceCalculatorApp: React.FC<TermInsuranceCalculatorAppProp
               <div className="flex items-center justify-between">
                 <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#1dbf73]/20 border border-[#1dbf73]/30 text-xs font-bold text-[#1dbf73]">
                   <ShieldCheck className="w-3.5 h-3.5" />
-                  Actuarial Protection Summary
+                  Life Insurance Needs Summary
                 </span>
                 <span className="text-xs text-emerald-300 font-medium">
                   {retirementAge - age} Working Yrs Remaining
