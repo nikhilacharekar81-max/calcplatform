@@ -28,6 +28,7 @@ export type CalculationEnvelope<T> = CalculationSuccess<T> | CalculationError;
 export interface CalculatorEngineAdapter<TInput = any, TResult = any> {
   engineKey: string;
   calculationVersion: string;
+  validate?: (input: TInput) => CalculationErrorItem[];
   execute(input: TInput): TResult;
 }
 
@@ -37,11 +38,14 @@ export type CalculationMiddleware = (
   next: () => any
 ) => any;
 
-export class AdvancedCalculatorEngineRegistry {
+export type CalculationEventType = 'calculate' | 'error' | 'cache_hit' | 'batch_complete';
+
+export class EliteCalculatorEngineRegistry {
   private readonly engines = new Map<string, CalculatorEngineAdapter>();
   private readonly cache = new Map<string, { data: any; expiry: number }>();
   private readonly middlewares: CalculationMiddleware[] = [];
-  private cacheTtlMs = 60000; // 1 min cache
+  private readonly listeners = new Map<CalculationEventType, Array<(payload: any) => void>>();
+  private cacheTtlMs = 60000;
 
   register(adapter: CalculatorEngineAdapter): void {
     this.engines.set(adapter.engineKey, adapter);
@@ -49,6 +53,20 @@ export class AdvancedCalculatorEngineRegistry {
 
   use(middleware: CalculationMiddleware): void {
     this.middlewares.push(middleware);
+  }
+
+  on(event: CalculationEventType, callback: (payload: any) => void): void {
+    if (!this.listeners.has(event)) {
+      this.listeners.set(event, []);
+    }
+    this.listeners.get(event)!.push(callback);
+  }
+
+  private emit(event: CalculationEventType, payload: any): void {
+    const callbacks = this.listeners.get(event);
+    if (callbacks) {
+      callbacks.forEach((cb) => cb(payload));
+    }
   }
 
   resolve(engineKey: string): CalculatorEngineAdapter | undefined {
@@ -66,16 +84,22 @@ export class AdvancedCalculatorEngineRegistry {
   ): CalculationEnvelope<TResult> {
     const adapter = this.resolve(engineKey);
     if (!adapter) {
-      return {
+      const errRes: CalculationError = {
         success: false,
-        errors: [
-          {
-            field: 'engineKey',
-            message: `Unknown calculation engine key: ${engineKey}`,
-            code: 'UNKNOWN_ENGINE',
-          },
-        ],
+        errors: [{ field: 'engineKey', message: `Unknown calculation engine key: ${engineKey}`, code: 'UNKNOWN_ENGINE' }],
       };
+      this.emit('error', { engineKey, input, errors: errRes.errors });
+      return errRes;
+    }
+
+    // Run optional adapter validation
+    if (adapter.validate) {
+      const validationErrors = adapter.validate(input);
+      if (validationErrors.length > 0) {
+        const errRes: CalculationError = { success: false, errors: validationErrors };
+        this.emit('error', { engineKey, input, errors: validationErrors });
+        return errRes;
+      }
     }
 
     const cacheKey = `${engineKey}:${adapter.calculationVersion}:${JSON.stringify(input)}`;
@@ -84,16 +108,13 @@ export class AdvancedCalculatorEngineRegistry {
     if (useCache && this.cache.has(cacheKey)) {
       const cached = this.cache.get(cacheKey)!;
       if (cached.expiry > now) {
-        return {
+        const successRes: CalculationSuccess<TResult> = {
           success: true,
           data: cached.data,
-          metadata: {
-            engineKey,
-            calculationVersion: adapter.calculationVersion,
-            computedAt: new Date(now).toISOString(),
-            cached: true,
-          },
+          metadata: { engineKey, calculationVersion: adapter.calculationVersion, computedAt: new Date(now).toISOString(), cached: true },
         };
+        this.emit('cache_hit', { engineKey, input });
+        return successRes;
       } else {
         this.cache.delete(cacheKey);
       }
@@ -102,7 +123,6 @@ export class AdvancedCalculatorEngineRegistry {
     const startTime = performance.now();
 
     try {
-      // Execute middleware chain
       let index = 0;
       const dispatch = (): any => {
         if (index < this.middlewares.length) {
@@ -120,60 +140,58 @@ export class AdvancedCalculatorEngineRegistry {
         this.cache.set(cacheKey, { data, expiry: now + this.cacheTtlMs });
       }
 
-      return {
+      const successRes: CalculationSuccess<TResult> = {
         success: true,
         data,
-        metadata: {
-          engineKey,
-          calculationVersion: adapter.calculationVersion,
-          computedAt: new Date().toISOString(),
-          executionTimeMs,
-          cached: false,
-        },
+        metadata: { engineKey, calculationVersion: adapter.calculationVersion, computedAt: new Date().toISOString(), executionTimeMs, cached: false },
       };
+
+      this.emit('calculate', { engineKey, input, metadata: successRes.metadata });
+      return successRes;
     } catch (error: any) {
-      return {
+      const errRes: CalculationError = {
         success: false,
-        errors: [
-          {
-            field: 'execution',
-            message: error.message || 'Calculation execution failed.',
-            code: 'CALCULATION_EXECUTION_ERROR',
-          },
-        ],
+        errors: [{ field: 'execution', message: error.message || 'Calculation execution failed.', code: 'CALCULATION_EXECUTION_ERROR' }],
       };
+      this.emit('error', { engineKey, input, errors: errRes.errors });
+      return errRes;
     }
   }
 
-  async executeEngineAsync<TInput, TResult>(
-    engineKey: string,
-    input: TInput,
-    useCache = true
-  ): Promise<CalculationEnvelope<TResult>> {
-    return new Promise((resolve) => {
-      setTimeout(() => {
-        resolve(this.executeEngine<TInput, TResult>(engineKey, input, useCache));
-      }, 0);
-    });
+  async executeBatch(
+    requests: Array<{ engineKey: string; input: any; useCache?: boolean }>
+  ): Promise<Array<CalculationEnvelope<any>>> {
+    const results = await Promise.all(
+      requests.map(async (req) => this.executeEngine(req.engineKey, req.input, req.useCache))
+    );
+    this.emit('batch_complete', { count: requests.length });
+    return results;
   }
 }
 
-export const calculatorEngineRegistry = new AdvancedCalculatorEngineRegistry();
+export const calculatorEngineRegistry = new EliteCalculatorEngineRegistry();
 
-// Add Audit / Telemetry Middleware
-calculatorEngineRegistry.use((engineKey, input, next) => {
-  const result = next();
-  return result;
+// Telemetry & Event Logging Middleware
+calculatorEngineRegistry.on('calculate', (payload) => {
+  // Event-driven telemetry hook
 });
 
-// Register official Income Tax Engine Adapter (AY 2026-27)
+calculatorEngineRegistry.on('error', (payload) => {
+  // Event-driven error reporting hook
+});
+
+// Register official Income Tax Engine Adapter (AY 2026-27) with runtime validation
 calculatorEngineRegistry.register({
   engineKey: 'calculateIndiaIncomeTax',
   calculationVersion: 'AY-2026-27',
-  execute(input: IndiaIncomeTaxInput): IndiaIncomeTaxResult {
+  validate(input: IndiaIncomeTaxInput) {
+    const errors: CalculationErrorItem[] = [];
     if (input.grossIncome === undefined || input.grossIncome < 0 || !Number.isFinite(input.grossIncome)) {
-      throw new Error('Gross income must be a valid non-negative number.');
+      errors.push({ field: 'grossIncome', message: 'Gross income must be a valid non-negative number.', code: 'INVALID_INPUT' });
     }
+    return errors;
+  },
+  execute(input: IndiaIncomeTaxInput): IndiaIncomeTaxResult {
     return calculateIndiaIncomeTax(input);
   },
 });
