@@ -375,7 +375,14 @@
       "shortDescription": "Enterprise White-Label Income Tax Calculator & Comparison Engine (FY 2025-26 & FY 2026-27) with side-by-side audit and custom white-label studio.",
       "categoryId": "cat_1790615570728_tax",
       "subcategoryId": "sub_1790615570728_0",
-      "engineType": "custom_formula",
+      "engineType": "income_tax",
+      "engineKey": "calculateIndiaIncomeTax",
+      "rendererKey": "EnterpriseTaxCalculator",
+      "calculationVersion": "AY-2026-27",
+      "jurisdiction": "IN",
+      "ruleId": "IT-INDIA-AY-2026-27-INDIVIDUAL",
+      "ruleVersion": "2026-27",
+      "ruleStatus": "ACTIVE_VERIFIED",
       "fields": [
         {
           "id": "grossSalary",

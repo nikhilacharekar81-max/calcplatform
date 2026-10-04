@@ -21,6 +21,7 @@ import {
 import { EmbedModal } from './EmbedModal.tsx';
 import { Calculator as CalculatorType, ContentSection } from '../../types/schema.ts';
 import { formatContentHtml } from '../../utils/formatters.ts';
+import { calculateIndiaIncomeTax } from '../../calculators/india/incomeTax.ts';
 
 interface EnterpriseTaxCalculatorAppProps {
   calculator?: CalculatorType;
@@ -78,73 +79,42 @@ export const EnterpriseTaxCalculatorApp: React.FC<EnterpriseTaxCalculatorAppProp
     sec80CCD: 50000,
   });
 
-  // Dynamic Tax Computation Logic (FY 2025-26 & FY 2026-27)
+  // Dynamic Tax Computation Logic via canonical calculateIndiaIncomeTax engine (AY 2026-27)
   const results = useMemo(() => {
-    const computeTaxForRegime = (regime: 'old' | 'new') => {
-      const stdDed = regime === 'new' ? 75000 : profile.employment === 'salaried' ? 50000 : 0;
-      const netSalary = Math.max(0, salary.gross - stdDed - salary.profTax);
+    const totalGross = salary.gross + otherSources.interest + otherSources.other + capitalGains.stcg + capitalGains.ltcg;
+    const additionalDed = Math.min(150000, deductions.sec80C) + Math.min(50000, deductions.sec80D) + Math.min(50000, deductions.sec80CCD) + (houseProperty.type === 'self' ? Math.min(200000, houseProperty.interest) : 0);
 
-      let hpInterest = 0;
-      if (houseProperty.type === 'self') {
-        hpInterest = regime === 'old' ? -Math.min(200000, houseProperty.interest) : 0;
-      } else {
-        hpInterest = -houseProperty.interest;
-      }
+    const newRes = calculateIndiaIncomeTax({
+      grossIncome: totalGross,
+      salaryIncome: salary.gross,
+      additionalDeductions: additionalDed,
+      regime: 'NEW',
+      age: profile.age,
+    });
 
-      const gross =
-        netSalary +
-        hpInterest +
-        capitalGains.stcg +
-        capitalGains.ltcg +
-        otherSources.interest +
-        otherSources.other;
-
-      let totalDeductions = 0;
-      if (regime === 'old') {
-        totalDeductions =
-          Math.min(150000, deductions.sec80C) +
-          Math.min(50000, deductions.sec80D) +
-          Math.min(50000, deductions.sec80CCD);
-      }
-
-      const taxable = Math.max(0, gross - totalDeductions);
-      let tax = 0;
-
-      if (regime === 'new') {
-        // New Regime Slabs (FY 2026-27)
-        if (taxable > 400000) tax += (Math.min(taxable, 800000) - 400000) * 0.05;
-        if (taxable > 800000) tax += (Math.min(taxable, 1200000) - 800000) * 0.1;
-        if (taxable > 1200000) tax += (Math.min(taxable, 1600000) - 1200000) * 0.15;
-        if (taxable > 1600000) tax += (Math.min(taxable, 2000000) - 1600000) * 0.2;
-        if (taxable > 2000000) tax += (Math.min(taxable, 2400000) - 2000000) * 0.25;
-        if (taxable > 2400000) tax += (taxable - 2400000) * 0.3;
-
-        // Section 87A rebate: Taxable income <= ₹12,00,000 gets full rebate (tax becomes ₹0)
-        if (taxable <= 1200000) {
-          tax = 0;
-        }
-      } else {
-        // Old Regime Slabs
-        const basicLimit = profile.age >= 80 ? 500000 : profile.age >= 60 ? 300000 : 250000;
-        if (taxable > basicLimit) tax += (Math.min(taxable, 500000) - basicLimit) * 0.05;
-        if (taxable > 500000) tax += (Math.min(taxable, 1000000) - 500000) * 0.2;
-        if (taxable > 1000000) tax += (taxable - 1000000) * 0.3;
-
-        // Section 87A rebate for Old Regime
-        if (taxable <= 500000) {
-          tax = Math.max(0, tax - 12500);
-        }
-      }
-
-      const cess = tax * 0.04;
-      const netTax = Math.round(tax + cess);
-
-      return { gross, stdDed, deductions: totalDeductions, taxable, netTax };
-    };
+    const oldRes = calculateIndiaIncomeTax({
+      grossIncome: totalGross,
+      salaryIncome: salary.gross,
+      additionalDeductions: additionalDed,
+      regime: 'OLD',
+      age: profile.age,
+    });
 
     return {
-      old: computeTaxForRegime('old'),
-      new: computeTaxForRegime('new'),
+      old: {
+        gross: totalGross,
+        stdDed: oldRes.standardDeduction,
+        deductions: oldRes.additionalDeductions,
+        taxable: oldRes.taxableIncome,
+        netTax: oldRes.totalTax,
+      },
+      new: {
+        gross: totalGross,
+        stdDed: newRes.standardDeduction,
+        deductions: newRes.additionalDeductions,
+        taxable: newRes.taxableIncome,
+        netTax: newRes.totalTax,
+      },
     };
   }, [profile, salary, houseProperty, capitalGains, otherSources, deductions]);
 

@@ -119,7 +119,14 @@ export interface Calculator {
   categoryId: string;
   subcategoryId: string;
   icon?: string;
-  engineType?: string; // 'custom_formula' | 'auto_loan' | 'mortgage' | 'compound' | 'debt_payoff' | 'personal_loan' | 'income_tax' | 'gst' | 'sip' | 'land_unit' | 'health_bmi'
+  engineType?: string; // 'custom_formula' | 'income_tax' | 'loans_emi' | etc.
+  engineKey?: string; // e.g. 'calculateIndiaIncomeTax'
+  rendererKey?: string; // e.g. 'EnterpriseTaxCalculator'
+  calculationVersion?: string; // e.g. 'AY-2026-27'
+  jurisdiction?: string; // e.g. 'IN'
+  ruleId?: string;
+  ruleVersion?: string;
+  ruleStatus?: 'ACTIVE_VERIFIED' | 'UNVERIFIED' | 'DEPRECATED';
   fields: CalculatorField[];
   outputs: CalculatorOutput[];
   presets?: CalculatorPreset[];

@@ -20,7 +20,7 @@ export const INDIA_INCOME_TAX_AY_2026_27: Readonly<{
     authority: "Income Tax Department, Government of India";
     sourceUrl: string;
     sourceDocument: string;
-    effectiveFrom: "2026-04-01";
+    effectiveFrom: "2025-04-01";
     effectiveTo: null;
     verifiedAt: "2026-10-04";
     verifiedBy: "Official Income Tax Department source review on 2026-10-04";
@@ -111,7 +111,7 @@ export const INDIA_INCOME_TAX_AY_2026_27: Readonly<{
     authority: "Income Tax Department, Government of India",
     sourceUrl: "https://www.incometax.gov.in/iec/foportal/help/individual/return-applicable-1",
     sourceDocument: "Income Tax Department — Salaried Individuals for AY 2026-27",
-    effectiveFrom: "2026-04-01",
+    effectiveFrom: "2025-04-01",
     effectiveTo: null,
     verifiedAt: "2026-10-04",
     verifiedBy: "Official Income Tax Department source review on 2026-10-04",
