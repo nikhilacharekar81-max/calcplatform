@@ -472,6 +472,7 @@ export interface ModuleRenderProps {
   onInputChange: (fieldId: string, value: any) => void;
   onReset: () => void;
   settings?: Record<string, any>;
+  calculatedResults?: any;
 }
 
 /**
@@ -503,9 +504,13 @@ export const MODULE_COMPONENT_MAP: Record<CanonicalModuleId, React.FC<ModuleRend
   'chart-visualizer': function ChartVisualizerComponent(props) {
     return (
       <ChartVisualizerModule
+        calculatorSlug={props.calculator.slug}
+        category={props.calculator.categoryId}
         outputs={props.evaluatedOutputs}
         chartConfig={props.calculator.chartConfig}
         settings={props.settings}
+        formValues={props.formValues}
+        calculatedResults={props.calculatedResults}
       />
     );
   },

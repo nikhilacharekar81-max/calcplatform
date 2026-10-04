@@ -96,7 +96,7 @@ export class ChartDataAdapter {
    */
   static fromRetirementResult(result: RetirementResult) {
     if (!result || !result.drawdown) {
-      return { accumulationAndDrawdown: [], requiredVsProjected: [] };
+      return { drawdownSeries: [], requiredVsProjected: [] };
     }
 
     const drawdownSeries = result.drawdown.map((row) => ({
