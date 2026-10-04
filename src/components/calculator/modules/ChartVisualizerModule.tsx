@@ -6,7 +6,6 @@ import { ChartRules } from '../../charts/ChartRules.ts';
 import {
   generateAmortizationSchedule,
   calculateInvestment,
-  calculateRetirement,
 } from '../../../engines/financial-maths/index.ts';
 
 interface ChartVisualizerModuleProps {
@@ -48,6 +47,7 @@ export const ChartVisualizerModule: React.FC<ChartVisualizerModuleProps> = ({
   let investmentData = { growthSeries: [] as any[], contributionVsReturns: [] as any[] };
   let retirementData = { drawdownSeries: [] as any[], requiredVsProjected: [] as any[] };
   let taxData = { regimeComparison: [] as any[] };
+  let insuranceData = { insuranceBreakdown: [] as any[], motorDepreciationSeries: [] as any[] };
 
   // Amortization (Loan / EMI)
   if (calculatedResults?.rows && Array.isArray(calculatedResults.rows)) {
@@ -108,6 +108,22 @@ export const ChartVisualizerModule: React.FC<ChartVisualizerModuleProps> = ({
     taxData = ChartDataAdapter.fromTaxComparison(oldT, newT);
   }
 
+  // Insurance Protection & Motor IDV
+  if (calculatedResults?.incomeReplacementNeed || calculatedResults?.netProtectionGap || calculatedResults?.recommendedSumAssured) {
+    const insRes = ChartDataAdapter.fromInsuranceNeedsResult(
+      calculatedResults.incomeReplacementNeed || calculatedResults.incomeReplacementLumpSum || 0,
+      calculatedResults.outstandingDebts || calculatedResults.treatmentSurchargeNeed || 0,
+      calculatedResults.existingResources || 0,
+      calculatedResults.netProtectionGap || calculatedResults.recommendedSumAssured || 0
+    );
+    insuranceData = { ...insuranceData, ...insRes };
+  } else if (calculatedResults?.insuredDeclaredValueIDV || formValues.exShowroomPrice || formValues.showroomExShowroomPrice) {
+    const exShowroom = parseFloat(calculatedResults?.insuredDeclaredValueIDV || formValues.exShowroomPrice || formValues.showroomExShowroomPrice || '800000');
+    if (exShowroom > 0) {
+      insuranceData.motorDepreciationSeries = ChartDataAdapter.fromMotorIdvResult(exShowroom).motorDepreciationSeries;
+    }
+  }
+
   // Generic scalar output segments
   const segments = ChartDataAdapter.fromOutputsToSegments(outputs);
 
@@ -121,6 +137,8 @@ export const ChartVisualizerModule: React.FC<ChartVisualizerModuleProps> = ({
     drawdownSeries: retirementData.drawdownSeries,
     requiredVsProjected: retirementData.requiredVsProjected,
     regimeComparison: taxData.regimeComparison,
+    insuranceBreakdown: insuranceData.insuranceBreakdown,
+    motorDepreciationSeries: insuranceData.motorDepreciationSeries,
     customSeries: segments.map((s) => ({ name: s.name, value: s.value, formatted: s.formatted, fill: s.color })),
   };
 
@@ -132,6 +150,8 @@ export const ChartVisualizerModule: React.FC<ChartVisualizerModuleProps> = ({
     hasInvestmentSchedule: investmentData.growthSeries.length > 0,
     hasRetirementDrawdown: retirementData.drawdownSeries.length > 0,
     hasTaxComparison: taxData.regimeComparison.length > 0,
+    hasInsuranceBreakdown: insuranceData.insuranceBreakdown.length > 0,
+    hasMotorDepreciation: insuranceData.motorDepreciationSeries.length > 0,
     outputsCount: outputs.length,
   });
 

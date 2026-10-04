@@ -1,6 +1,7 @@
 import { assertProductionRule } from "./provenance.ts";
 import { validateRuleEnvelope } from "./validators.ts";
 import { INDIA_INCOME_TAX_AY_2026_27 } from "./income-tax/versions/ay-2026-27.ts";
+import { INDIA_INSURANCE_STATUTORY_RULES_2026 } from "./insurance/versions/2026.ts";
 import type { IndiaDomain, IndiaRuleEnvelope } from "./types.ts";
 
 type RuleKey = `${string}:${string}:${string}`;
@@ -40,8 +41,9 @@ export class IndiaRuleRegistry {
 
 export const indiaRuleRegistry = new IndiaRuleRegistry();
 
-// Register ACTIVE_VERIFIED Income Tax rule
+// Register ACTIVE_VERIFIED Income Tax & Insurance rules
 indiaRuleRegistry.register(INDIA_INCOME_TAX_AY_2026_27);
+indiaRuleRegistry.register(INDIA_INSURANCE_STATUTORY_RULES_2026);
 
 // Register unverified/draft schemas for remaining domains (Phase 5 requirement)
 const UNVERIFIED_PROVENANCE = {

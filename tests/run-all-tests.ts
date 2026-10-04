@@ -5,6 +5,7 @@ import { runIndiaCalculatorsTests } from "./calculators/india/india-calculators.
 import { runArchitectureTests } from "./architecture/dag-worker.test.ts";
 import { runPropertyBasedTests } from "./property/maths.property.test.ts";
 import { runIndiaRegistryExpansionTests } from "./rules/india/india-registry-expansion.test.ts";
+import { runInsuranceTests } from "./rules/india/insurance.test.ts";
 
 async function main() {
   console.log("===============================================================");
@@ -41,6 +42,11 @@ async function main() {
     }
     console.log(`  Summary: ${results.filter(r => r.passed).length}/${results.length} passed in ${elapsed}ms`);
   }
+
+  // Suite 8. India Insurance Domain Models
+  const insRes = runInsuranceTests();
+  totalPassed += insRes.passed;
+  totalFailed += insRes.failed;
 
   console.log("\n===============================================================");
   console.log(` FINAL TEST RESULT: ${totalPassed} PASSED, ${totalFailed} FAILED`);

@@ -1,8 +1,6 @@
-import Decimal from "decimal.js";
-
-export function calculateInsuranceCoverMultiple(
-  annualIncome: string | Decimal | number,
-  multiple: string | Decimal | number
-) {
-  return new Decimal(annualIncome).mul(multiple);
-}
+export * from "./life.ts";
+export * from "./health.ts";
+export * from "./vehicle.ts";
+export * from "./travel.ts";
+export * from "./protection.ts";
+export * from "./propertyBusiness.ts";

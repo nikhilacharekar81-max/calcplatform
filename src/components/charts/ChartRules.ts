@@ -8,6 +8,8 @@ export interface ChartRuleContext {
   hasInvestmentSchedule?: boolean;
   hasRetirementDrawdown?: boolean;
   hasTaxComparison?: boolean;
+  hasInsuranceBreakdown?: boolean;
+  hasMotorDepreciation?: boolean;
   outputsCount?: number;
 }
 
@@ -24,7 +26,41 @@ export class ChartRules {
     const slug = (context.calculatorSlug || '').toLowerCase();
     const cat = (context.category || '').toLowerCase();
 
-    // 1. LOAN & EMI CALCULATORS (Home loan, Car loan, Personal loan, Bike loan, Mortgage)
+    // 1. INSURANCE CALCULATORS (Term Life, HLV, Health, Motor IDV, Travel, Accident)
+    if (context.hasInsuranceBreakdown || context.hasMotorDepreciation || cat.includes('insurance') || slug.includes('insurance') || slug.includes('hlv') || slug.includes('idv') || slug.includes('ncb')) {
+      if (slug.includes('car') || slug.includes('bike') || slug.includes('motor') || slug.includes('vehicle') || context.hasMotorDepreciation) {
+        recommendations.push({
+          chartId: 'motor-idv-depreciation-trajectory',
+          componentName: 'GradientAreaChart',
+          title: '5-Year Vehicle IDV Depreciation Trajectory',
+          description: 'Shows IRDAI statutory depreciation curve of vehicle Insured Declared Value over 5 years.',
+          priority: 1,
+          dataKey: 'motorDepreciationSeries',
+          parameters: {
+            xAxisKey: 'age',
+            primaryMetric: 'idv',
+            currencySymbol: '₹',
+            colors: ['#3b82f6'],
+          },
+        });
+      } else {
+        recommendations.push({
+          chartId: 'insurance-protection-breakdown',
+          componentName: 'DonutChart',
+          title: 'Insurance Financial Protection Need Breakdown',
+          description: 'Visual ratio of income replacement need, liabilities, existing assets, and net coverage gap.',
+          priority: 1,
+          dataKey: 'insuranceBreakdown',
+          parameters: {
+            currencySymbol: '₹',
+            colors: ['#3b82f6', '#ef4444', '#10b981', '#8b5cf6'],
+          },
+        });
+      }
+      return recommendations;
+    }
+
+    // 2. LOAN & EMI CALCULATORS (Home loan, Car loan, Personal loan, Bike loan, Mortgage)
     if (context.hasAmortization || slug.includes('emi') || slug.includes('loan') || slug.includes('mortgage')) {
       recommendations.push({
         chartId: 'principal-vs-interest',
@@ -75,7 +111,7 @@ export class ChartRules {
       return recommendations;
     }
 
-    // 2. INVESTMENT & WEALTH CALCULATORS (SIP, Lump sum, Compound Interest, CAGR, Mutual Fund)
+    // 3. INVESTMENT & WEALTH CALCULATORS (SIP, Lump sum, Compound Interest, CAGR, Mutual Fund)
     if (context.hasInvestmentSchedule || slug.includes('sip') || slug.includes('compound') || slug.includes('investment') || slug.includes('mutual-fund') || slug.includes('fd') || slug.includes('rd') || slug.includes('ppf')) {
       recommendations.push({
         chartId: 'investment-growth-curve',
@@ -107,7 +143,7 @@ export class ChartRules {
       return recommendations;
     }
 
-    // 3. RETIREMENT & FIRE CALCULATORS
+    // 4. RETIREMENT & FIRE CALCULATORS
     if (context.hasRetirementDrawdown || slug.includes('retirement') || slug.includes('pension') || slug.includes('fire') || slug.includes('nps')) {
       recommendations.push({
         chartId: 'retirement-corpus-trajectory',
@@ -126,7 +162,7 @@ export class ChartRules {
       return recommendations;
     }
 
-    // 4. INCOME TAX CALCULATORS (Old vs New Regime, Salary Tax, Tax Slabs)
+    // 5. INCOME TAX CALCULATORS (Old vs New Regime, Salary Tax, Tax Slabs)
     if (context.hasTaxComparison || slug.includes('tax') || slug.includes('income-tax') || slug.includes('regime') || slug.includes('salary')) {
       recommendations.push({
         chartId: 'old-vs-new-regime-tax-liability',
@@ -147,7 +183,7 @@ export class ChartRules {
       return recommendations;
     }
 
-    // 5. TAXABLE / COMPONENT BREAKDOWN CALCULATORS (GST, TDS, Capital Gains, EPF)
+    // 6. TAXABLE / COMPONENT BREAKDOWN CALCULATORS (GST, TDS, Capital Gains, EPF)
     if (slug.includes('gst') || slug.includes('tds') || slug.includes('capital-gains') || slug.includes('epf') || slug.includes('stamp-duty')) {
       if ((context.outputsCount || 0) >= 2) {
         recommendations.push({
@@ -165,8 +201,6 @@ export class ChartRules {
       return recommendations;
     }
 
-    // 6. GENERAL MATHEMATICS & SIMPLE ARITHMETIC (e.g., simple percentage, basic addition/subtraction)
-    // Return 0 charts when visualization provides no information gain.
     return recommendations;
   }
 }
