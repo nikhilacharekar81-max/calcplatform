@@ -1,0 +1,138 @@
+import { assertProductionRule } from "./provenance.ts";
+import { validateRuleEnvelope } from "./validators.ts";
+import { INDIA_INCOME_TAX_AY_2026_27 } from "./income-tax/versions/ay-2026-27.ts";
+import type { IndiaDomain, IndiaRuleEnvelope } from "./types.ts";
+
+type RuleKey = `${string}:${string}:${string}`;
+
+export interface IndiaRuleQuery {
+  domain: IndiaDomain | string;
+  ruleId: string;
+  version: string;
+}
+
+export class IndiaRuleRegistry {
+  private readonly rules = new Map<RuleKey, IndiaRuleEnvelope<unknown>>();
+
+  register<T>(rule: IndiaRuleEnvelope<T>): void {
+    validateRuleEnvelope(rule);
+    this.rules.set(this.key({ domain: rule.domain, ruleId: rule.ruleId, version: rule.version }), rule as IndiaRuleEnvelope<unknown>);
+  }
+
+  resolve<T = unknown>(query: IndiaRuleQuery): IndiaRuleEnvelope<T> | undefined {
+    return this.rules.get(this.key(query)) as IndiaRuleEnvelope<T> | undefined;
+  }
+
+  resolveActiveVerified<T = unknown>(query: IndiaRuleQuery): IndiaRuleEnvelope<T> {
+    const rule = this.resolve<T>(query);
+    if (!rule) throw new Error(`Unknown India rule: ${query.ruleId}@${query.version}`);
+    return assertProductionRule(rule);
+  }
+
+  list(domain?: string): readonly IndiaRuleEnvelope<unknown>[] {
+    return [...this.rules.values()].filter((rule) => !domain || rule.domain === domain);
+  }
+
+  private key(query: IndiaRuleQuery): RuleKey {
+    return `${query.domain}:${query.ruleId}:${query.version}`;
+  }
+}
+
+export const indiaRuleRegistry = new IndiaRuleRegistry();
+
+// Register ACTIVE_VERIFIED Income Tax rule
+indiaRuleRegistry.register(INDIA_INCOME_TAX_AY_2026_27);
+
+// Register unverified/draft schemas for remaining domains (Phase 5 requirement)
+const UNVERIFIED_PROVENANCE = {
+  authority: "Pending Statutory Notification",
+  sourceUrl: "https://www.gov.in/pending",
+  effectiveFrom: "2026-04-01",
+  effectiveTo: null,
+  verifiedAt: null,
+};
+
+indiaRuleRegistry.register({
+  ruleId: "GST-INDIA-2026-UNVERIFIED",
+  domain: "GST",
+  jurisdiction: "IN",
+  version: "2026-01",
+  status: "UNVERIFIED",
+  parameters: { rates: [5, 12, 18, 28] },
+  provenance: UNVERIFIED_PROVENANCE,
+});
+
+indiaRuleRegistry.register({
+  ruleId: "TDS-INDIA-2026-UNVERIFIED",
+  domain: "TDS",
+  jurisdiction: "IN",
+  version: "2026-01",
+  status: "UNVERIFIED",
+  parameters: { rates: { professional: 10, rent: 10, contract: 1 } },
+  provenance: UNVERIFIED_PROVENANCE,
+});
+
+indiaRuleRegistry.register({
+  ruleId: "CG-INDIA-2026-UNVERIFIED",
+  domain: "CAPITAL_GAINS",
+  jurisdiction: "IN",
+  version: "2026-01",
+  status: "UNVERIFIED",
+  parameters: { holdingPeriodDays: { equity: 365, realEstate: 730 }, rates: { stcg: 20, ltcg: 12.5 } },
+  provenance: UNVERIFIED_PROVENANCE,
+});
+
+indiaRuleRegistry.register({
+  ruleId: "EPF-INDIA-2026-UNVERIFIED",
+  domain: "EPF",
+  jurisdiction: "IN",
+  version: "2026-01",
+  status: "UNVERIFIED",
+  parameters: { employeeRate: 12, employerRate: 12, wageCeiling: 15000 },
+  provenance: UNVERIFIED_PROVENANCE,
+});
+
+indiaRuleRegistry.register({
+  ruleId: "NPS-INDIA-2026-UNVERIFIED",
+  domain: "NPS",
+  jurisdiction: "IN",
+  version: "2026-01",
+  status: "UNVERIFIED",
+  parameters: { tier1DeductionLimit: 150000, additionalNpsLimit: 50000 },
+  provenance: UNVERIFIED_PROVENANCE,
+});
+
+indiaRuleRegistry.register({
+  ruleId: "PT-MH-2026-UNVERIFIED",
+  domain: "PROFESSIONAL_TAX",
+  jurisdiction: "IN",
+  version: "2026-01",
+  status: "UNVERIFIED",
+  parameters: { state: "Maharashtra", slabs: [] },
+  provenance: UNVERIFIED_PROVENANCE,
+});
+
+indiaRuleRegistry.register({
+  ruleId: "SD-MH-2026-UNVERIFIED",
+  domain: "STAMP_DUTY",
+  jurisdiction: "IN",
+  version: "2026-01",
+  status: "UNVERIFIED",
+  parameters: { state: "Maharashtra", stampDutyRate: 5, registrationRate: 1 },
+  provenance: UNVERIFIED_PROVENANCE,
+});
+
+export function getIndiaRule<T = unknown>(ruleId: string): IndiaRuleEnvelope<T> {
+  const rule = [...indiaRuleRegistry.list()].find((candidate) => candidate.ruleId === ruleId);
+  if (!rule) throw new Error(`Unknown India rule: ${ruleId}`);
+  return rule as IndiaRuleEnvelope<T>;
+}
+
+export function getActiveIndiaRule<T = unknown>(ruleId: string): IndiaRuleEnvelope<T> {
+  const rule = getIndiaRule<T>(ruleId);
+  return assertProductionRule(rule);
+}
+
+export function listIndiaRules(domain?: IndiaDomain): readonly IndiaRuleEnvelope<unknown>[] {
+  return indiaRuleRegistry.list(domain);
+}

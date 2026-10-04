@@ -18,6 +18,7 @@ import {
   AlertTriangle
 } from 'lucide-react';
 import { Calculator } from '../../types/schema.ts';
+import { pmt } from '../../engines/financial-maths/index.ts';
 import { StackedBarChartComponent, ComposedChartComponent } from '../charts/index.tsx';
 
 interface LoansCalculatorAppProps {
@@ -101,13 +102,13 @@ export const LoansCalculatorApp: React.FC<LoansCalculatorAppProps> = ({ calculat
 
   const effectivePrincipal = slug.includes('gold') ? maxGoldLoanAmount : loanAmount;
 
-  // Standard EMI Formula: EMI = [P x R x (1+R)^N]/[(1+R)^N-1]
+  // Standard EMI Formula via Global Maths Engine PMT
   const monthlyRate = interestRate / 12 / 100;
   const totalMonths = tenureYears * 12;
 
   let emi = 0;
   if (monthlyRate > 0 && totalMonths > 0) {
-    emi = (effectivePrincipal * monthlyRate * Math.pow(1 + monthlyRate, totalMonths)) / (Math.pow(1 + monthlyRate, totalMonths) - 1);
+    emi = Math.abs(pmt(monthlyRate, totalMonths, effectivePrincipal));
   } else if (totalMonths > 0) {
     emi = effectivePrincipal / totalMonths;
   }

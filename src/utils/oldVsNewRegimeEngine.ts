@@ -1,7 +1,9 @@
+import { INDIA_INCOME_TAX_AY_2026_27 } from '../rules/india/income-tax/versions/ay-2026-27.ts';
+import { progressiveTax } from '../engines/financial-maths/index.ts';
+
 /**
- * FY 2026-27 (AY 2027-28) Old vs. New Tax Regime Comparison Engine
- * Pure mathematical functions for simultaneous tax calculation,
- * Section 87A rebates, marginal relief mechanics, surcharges, and 4% Cess.
+ * FY 2026-27 (AY 2026-27 / AY 2027-28) Old vs. New Tax Regime Comparison Engine
+ * Connected to India Rule Registry (ACTIVE_VERIFIED) and Global Financial Maths Engine.
  */
 
 export interface OldVsNewInputs {
@@ -177,8 +179,10 @@ export function calculateNewRegime2026(inputs: OldVsNewInputs): SingleRegimeResu
     (inputs.cryptoVdaIncome || 0) +
     (inputs.otherSourcesIncome || 0);
 
-  // New Regime Standard Deduction: ₹75,000 for salaried
-  const standardDeduction = inputs.isSalaried ? 75000 : 0;
+  // New Regime Standard Deduction from India Rule Registry
+  const standardDeduction = inputs.isSalaried
+    ? INDIA_INCOME_TAX_AY_2026_27.parameters.newRegime.standardDeduction
+    : 0;
 
   // Chapter VI-A allowed in New Regime: Section 80CCD(2) employer NPS (up to 14% of Basic)
   const maxNpsAllowed = 0.14 * (inputs.basicSalary || 0);
@@ -391,8 +395,10 @@ export function calculateOldRegime(inputs: OldVsNewInputs): SingleRegimeResult {
     (inputs.cryptoVdaIncome || 0) +
     (inputs.otherSourcesIncome || 0);
 
-  // Standard Deduction: ₹50,000 in Old Regime
-  const standardDeduction = inputs.isSalaried ? 50000 : 0;
+  // Standard Deduction from India Rule Registry
+  const standardDeduction = inputs.isSalaried
+    ? INDIA_INCOME_TAX_AY_2026_27.parameters.oldRegime.standardDeduction
+    : 0;
 
   // HRA Exemption
   const hraExemption = calculateHraExemption(
