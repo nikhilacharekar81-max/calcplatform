@@ -97,7 +97,14 @@ export function calculateTermLifeInsurance(input: TermLifeInput): TermLifeResult
   const goalYears = Math.max(0, input.goalYears ?? input.yearsUntilGoal ?? 0);
   const inflationRate = input.inflationRate !== undefined ? input.inflationRate : 6.0;
   const returnRate = input.investmentReturn ?? input.expectedReturnPercent ?? 8.5;
-  const goals = roundMoney(goalToday * Math.pow(1 + inflationRate / 100, goalYears));
+
+  const infDec = inflationRate / 100;
+  const retDec = returnRate / 100;
+  const futureNominalGoal = goalToday * Math.pow(1 + infDec, goalYears);
+  const goalPV = goalYears > 0 && retDec >= 0
+    ? futureNominalGoal / Math.pow(1 + retDec, goalYears)
+    : futureNominalGoal;
+  const goals = roundMoney(goalPV);
 
   // Income replacement need: calculated using monthly expenses or annual income multiple with dependents calibration
   let incomeReplacement: number;
@@ -255,8 +262,13 @@ export function calculateLifeInsuranceNeeds(input: LifeNeedsInput): LifeNeedsRes
   const currentAssets = Math.max(0, input.currentAssets ?? (savings + investments));
   const existingCover = Math.max(0, input.existingLifeCover ?? input.existingLifeInsurance ?? 0);
 
-  const futureInflationAdjustedGoals = roundMoney(futureGoalsToday * Math.pow(1 + infRate / 100, goalYears));
-  const totalNeed = expensesPV + futureInflationAdjustedGoals + debts;
+  const infDec = infRate / 100;
+  const retDec = returnRate / 100;
+  const futureInflationAdjustedGoals = roundMoney(futureGoalsToday * Math.pow(1 + infDec, goalYears));
+  const goalPV = goalYears > 0 && retDec >= 0
+    ? futureInflationAdjustedGoals / Math.pow(1 + retDec, goalYears)
+    : futureInflationAdjustedGoals;
+  const totalNeed = expensesPV + roundMoney(goalPV) + debts;
   const availableResources = currentAssets + existingCover;
   const protectionGap = Math.max(0, totalNeed - availableResources);
   const netInsuranceRequired = Math.ceil(protectionGap / 100000) * 100000;

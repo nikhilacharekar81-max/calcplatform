@@ -77,11 +77,12 @@ addScenario('SCENARIO-01', 'Normal Profile', {
   const realRate = (1 + ret) / (1 + inf) - 1; // 0.023584905660377353
   const expPV = Math.round(annualExp * (1 - Math.pow(1 + realRate, -yrs)) / realRate); // 12806751
   const debts = 2500000;
-  const goals = Math.round(3000000 * Math.pow(1.06, 10)); // 5372543
-  const grossNeed = expPV + debts + goals; // 20679294
+  const nominalGoal = Math.round(3000000 * Math.pow(1.06, 10)); // 5372543
+  const goalPV = Math.round(nominalGoal / Math.pow(1.085, 10)); // 2376220
+  const grossNeed = expPV + debts + goalPV; // 17682971
   const resources = 2000000 + 1500000; // 3500000
-  const netGap = Math.max(0, grossNeed - resources); // 17179294
-  const sumAssured = Math.ceil(netGap / 100000) * 100000; // 17200000
+  const netGap = Math.max(0, grossNeed - resources); // 14182971
+  const sumAssured = Math.ceil(netGap / 100000) * 100000; // 14200000
   return { grossNeed, netGap, sumAssured };
 });
 
@@ -122,8 +123,9 @@ addScenario('SCENARIO-03', 'Zero Inflation Rate', {
   const yrs = 20;
   const realRate = 0.08;
   const expPV = Math.round((50000 * 12) * (1 - Math.pow(1 + realRate, -yrs)) / realRate);
-  const goals = 1000000; // Exact today value
-  const grossNeed = expPV + goals;
+  const nominalGoal = 1000000;
+  const goalPV = Math.round(nominalGoal / Math.pow(1.08, 10)); // 463193
+  const grossNeed = expPV + goalPV;
   const netGap = grossNeed;
   const sumAssured = Math.ceil(netGap / 100000) * 100000;
   return { grossNeed, netGap, sumAssured };
@@ -172,7 +174,7 @@ addScenario('SCENARIO-05', 'Equal Inflation & Return (r_real = 0)', {
   return { grossNeed, netGap, sumAssured };
 });
 
-// SCENARIO 06 — Inflation Greater Than Return (Negative Real Rate)
+// SCENARIO 06 — Inflation Greater Than Return
 addScenario('SCENARIO-06', 'Inflation Greater Than Return', {
   age: 50,
   retirementAge: 60,
@@ -187,7 +189,7 @@ addScenario('SCENARIO-06', 'Inflation Greater Than Return', {
   const yrs = 10;
   const inf = 0.10;
   const ret = 0.08;
-  const realRate = (1 + ret) / (1 + inf) - 1; // -0.018181818
+  const realRate = (1 + ret) / (1 + inf) - 1;
   const expPV = Math.round((25000 * 12) * (1 - Math.pow(1 + realRate, -yrs)) / realRate);
   const grossNeed = expPV;
   const netGap = grossNeed;
@@ -195,7 +197,7 @@ addScenario('SCENARIO-06', 'Inflation Greater Than Return', {
   return { grossNeed, netGap, sumAssured };
 });
 
-// SCENARIO 07 — Goal Horizon Sensitivity (10 Yrs vs 20 Yrs)
+// SCENARIO 07 — Goal Horizon Sensitivity
 addScenario('SCENARIO-07', 'Goal Horizon Sensitivity (20 Yrs)', {
   age: 30,
   retirementAge: 60,
@@ -206,15 +208,17 @@ addScenario('SCENARIO-07', 'Goal Horizon Sensitivity (20 Yrs)', {
   futureFinancialGoals: 1000000,
   goalYears: 20,
   inflationRate: 6.0,
+  investmentReturn: 8.5,
 }, () => {
-  const goals = Math.round(1000000 * Math.pow(1.06, 20)); // 3207135
-  const grossNeed = goals;
+  const nominalGoal = Math.round(1000000 * Math.pow(1.06, 20)); // 3207135
+  const goalPV = Math.round(nominalGoal / Math.pow(1.085, 20)); // 627341
+  const grossNeed = goalPV;
   const netGap = grossNeed;
   const sumAssured = Math.ceil(netGap / 100000) * 100000;
   return { grossNeed, netGap, sumAssured };
 });
 
-// SCENARIO 08 — Investment Return Sensitivity (12% Return)
+// SCENARIO 08 — Investment Return Sensitivity
 addScenario('SCENARIO-08', 'Return Sensitivity (12% Return)', {
   age: 30,
   retirementAge: 60,
@@ -229,7 +233,7 @@ addScenario('SCENARIO-08', 'Return Sensitivity (12% Return)', {
   const yrs = 30;
   const inf = 0.06;
   const ret = 0.12;
-  const realRate = (1 + ret) / (1 + inf) - 1; // 0.05660377
+  const realRate = (1 + ret) / (1 + inf) - 1;
   const expPV = Math.round((50000 * 12) * (1 - Math.pow(1 + realRate, -yrs)) / realRate);
   const grossNeed = expPV;
   const netGap = grossNeed;
@@ -305,8 +309,9 @@ addScenario('SCENARIO-11', 'No Liabilities (Loans = 0)', {
   const ret = 0.085;
   const realRate = (1 + ret) / (1 + inf) - 1;
   const expPV = Math.round((40000 * 12) * (1 - Math.pow(1 + realRate, -yrs)) / realRate);
-  const goals = Math.round(1000000 * Math.pow(1.06, 5));
-  const grossNeed = expPV + goals;
+  const nominalGoal = Math.round(1000000 * Math.pow(1.06, 5));
+  const goalPV = Math.round(nominalGoal / Math.pow(1.085, 5));
+  const grossNeed = expPV + goalPV;
   const netGap = grossNeed;
   const sumAssured = Math.ceil(netGap / 100000) * 100000;
   return { grossNeed, netGap, sumAssured };
@@ -352,14 +357,14 @@ addScenario('SCENARIO-13', 'One-Year Support Horizon (Age 59 -> 60)', {
   const inf = 0.06;
   const ret = 0.085;
   const realRate = (1 + ret) / (1 + inf) - 1;
-  const expPV = Math.round((50000 * 12) * (1 - Math.pow(1 + realRate, -1)) / realRate); // 586175
+  const expPV = Math.round((50000 * 12) * (1 - Math.pow(1 + realRate, -1)) / realRate);
   const grossNeed = expPV;
   const netGap = grossNeed;
-  const sumAssured = Math.ceil(netGap / 100000) * 100000; // 600000
+  const sumAssured = Math.ceil(netGap / 100000) * 100000;
   return { grossNeed, netGap, sumAssured };
 });
 
-// SCENARIO 14 — Long Horizon (40 Years Support Period)
+// SCENARIO 14 — Long Horizon
 addScenario('SCENARIO-14', 'Long Horizon (40 Years Support Period)', {
   age: 20,
   retirementAge: 60,
@@ -382,7 +387,7 @@ addScenario('SCENARIO-14', 'Long Horizon (40 Years Support Period)', {
   return { grossNeed, netGap, sumAssured };
 });
 
-// SCENARIO 15 — Boundary Rounding (Exact Gap Boundary Rounding)
+// SCENARIO 15 — Boundary Rounding
 addScenario('SCENARIO-15', 'Boundary Rounding (Exact ₹1,00,001 -> ₹2,00,000)', {
   age: 30,
   retirementAge: 60,
@@ -397,7 +402,7 @@ addScenario('SCENARIO-15', 'Boundary Rounding (Exact ₹1,00,001 -> ₹2,00,000)
 }, () => {
   const grossNeed = 100001;
   const netGap = 100001;
-  const sumAssured = 200000; // Ceil to next ₹1 Lakh
+  const sumAssured = 200000;
   return { grossNeed, netGap, sumAssured };
 });
 
