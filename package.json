@@ -9,6 +9,7 @@
     "start": "tsx server.ts",
     "preview": "vite preview",
     "clean": "rm -rf dist server.js",
+    "test": "tsx src/engines/financial-maths/goldenTests.ts",
     "lint": "tsc --noEmit"
   },
   "dependencies": {

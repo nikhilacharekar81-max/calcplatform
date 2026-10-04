@@ -53,33 +53,69 @@ export function calculateSip(params: {
 }
 
 export function calculatePpf(params: {
-  yearlyDeposit: number;
-  years?: number; // default 15
-  rate?: number; // default 7.1
+  yearlyDeposit?: number;
+  monthlyDeposit?: number;
+  depositFrequency?: 'yearly' | 'monthly';
+  depositTiming?: 'BEFORE_5TH' | 'AFTER_5TH';
+  years?: number;
+  rate?: number;
+  ratePercent?: number;
 }) {
-  const deposit = Math.min(150000, Math.max(500, params.yearlyDeposit || 150000));
-  const years = params.years || 15;
-  const r = (params.rate || 7.1) / 100;
+  const years = Math.min(50, Math.max(15, params.years || 15));
+  const ratePct = params.ratePercent ?? params.rate ?? 7.1;
+  const annualRate = ratePct / 100;
+  const monthlyRate = annualRate / 12;
+  const freq = params.depositFrequency || (params.monthlyDeposit ? 'monthly' : 'yearly');
+  const timing = params.depositTiming || 'BEFORE_5TH';
+
+  let annualDeposit = 0;
+  let monthlyAmt = 0;
+  if (freq === 'monthly') {
+    monthlyAmt = Math.min(12500, Math.max(50, params.monthlyDeposit || (params.yearlyDeposit ? params.yearlyDeposit / 12 : 12500)));
+    annualDeposit = monthlyAmt * 12;
+  } else {
+    annualDeposit = Math.min(150000, Math.max(500, params.yearlyDeposit || 150000));
+  }
 
   let balance = 0;
-  let totalDeposit = 0;
-  const chartData = [];
+  let totalDeposited = 0;
+  const chartData: Array<{ year: string; Invested: number; Interest: number; Balance: number }> = [];
 
   for (let y = 1; y <= years; y++) {
-    balance = (balance + deposit) * (1 + r);
-    totalDeposit += deposit;
+    let yearInterest = 0;
+    if (freq === 'yearly') {
+      // Annual deposit before 5th of April vs later in the month
+      const eligibleApril = timing === 'BEFORE_5TH';
+      const balanceForYear = balance + annualDeposit;
+      totalDeposited += annualDeposit;
+      yearInterest = balance * annualRate + (eligibleApril ? annualDeposit * annualRate : annualDeposit * monthlyRate * 11);
+      balance = balanceForYear + yearInterest;
+    } else {
+      // Monthly installment with statutory minimum balance accrual
+      for (let m = 1; m <= 12; m++) {
+        balance += monthlyAmt;
+        totalDeposited += monthlyAmt;
+        const monthlyAccrual = timing === 'BEFORE_5TH' ? balance * monthlyRate : (balance - monthlyAmt) * monthlyRate;
+        yearInterest += monthlyAccrual;
+      }
+      balance += yearInterest;
+    }
+
     chartData.push({
       year: `Yr ${y}`,
-      Invested: totalDeposit,
-      Interest: Math.round(balance - totalDeposit),
+      Invested: Math.round(totalDeposited),
+      Interest: Math.round(balance - totalDeposited),
       Balance: Math.round(balance),
     });
   }
 
   return {
-    totalDeposited: totalDeposit,
-    interestEarned: Math.round(balance - totalDeposit),
+    totalDeposited: Math.round(totalDeposited),
+    interestEarned: Math.round(balance - totalDeposited),
     maturityAmount: Math.round(balance),
+    applicableInterestRate: `${ratePct}%`,
+    statutoryLockInYears: 15,
+    taxBenefitStatus: 'EEE (Exempt under Sec 80C, interest exempt, maturity exempt)',
     chartData,
   };
 }
@@ -88,32 +124,45 @@ export function calculateLandConversion(params: {
   value: number;
   fromUnit: string;
   toUnit: string;
+  state?: string;
 }) {
   const val = Math.max(0, params.value || 0);
   const from = params.fromUnit.toLowerCase();
   const to = params.toUnit.toLowerCase();
+  const state = (params.state || 'standard').toLowerCase();
 
+  // State-specific and Standard land units in Square Feet
   const sqftRates: Record<string, number> = {
     sqft: 1,
     sqm: 10.7639,
+    sqyd: 9,
+    gaj: 9,
     acre: 43560,
     hectare: 107639,
-    bigha: 27225, // Standard UP / North India Bigha
-    guntha: 1089, // Maharashtra / South India
-    cent: 435.6,  // South India (1 Acre = 100 Cents)
-    gaj: 9,       // North India (1 Gaj = 9 Sq Ft)
-    kanal: 5445,  // Punjab / Haryana (1 Acre = 8 Kanals)
-    biswa: 1361.25,
+    cent: 435.6, // South India (100 Cents = 1 Acre)
+    guntha: 1089, // Maharashtra & South India (40 Gunthas = 1 Acre)
+    ground: 2400, // Tamil Nadu
+    ankanams: 72, // Andhra Pradesh & Telangana
+    marla: 272.25, // Punjab / Haryana / HP (1 Kanal = 20 Marlas)
+    kanal: 5445, // Punjab / Haryana / HP (8 Kanals = 1 Acre)
+    bigha: state.includes('bengal') || state.includes('assam') ? 14400 : (state.includes('mp') ? 12000 : 27225), // Standard UP/North vs Bengal vs MP
+    biswa: state.includes('bengal') ? 720 : 1361.25,
+    katha: state.includes('bengal') || state.includes('bihar') ? 720 : 1361.25,
+    chatak: 45, // Bengal
+    dhur: 68.06, // Bihar / UP
   };
 
-  const sqftVal = val * (sqftRates[from] || 1);
-  const converted = sqftVal / (sqftRates[to] || 1);
+  const fromRate = sqftRates[from] || 1;
+  const toRate = sqftRates[to] || 1;
+  const sqftVal = val * fromRate;
+  const converted = sqftVal / toRate;
 
   return {
     inputFormatted: `${val} ${from.toUpperCase()}`,
     sqftValue: Math.round(sqftVal),
     convertedValue: converted,
     convertedFormatted: `${converted.toFixed(3)} ${to.toUpperCase()}`,
+    note: 'Note: Traditional units (Bigha, Biswa, Katha, Guntha) vary by state land revenue records and local registry bye-laws.',
   };
 }
 

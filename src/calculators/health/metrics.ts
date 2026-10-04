@@ -18,7 +18,7 @@ export function calculateBmi(input: BmiInput): BmiResult {
   let bmiCategory = 'Normal Weight';
   if (bmi < 18.5) {
     bmiCategory = 'Underweight';
-  } else if (bmi >= 25 && bmi < 29.9) {
+  } else if (bmi >= 25 && bmi < 30) {
     bmiCategory = 'Overweight';
   } else if (bmi >= 30) {
     bmiCategory = 'Obese';

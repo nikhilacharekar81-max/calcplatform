@@ -1,3 +1,4 @@
+import crypto from 'crypto';
 import express, { Request, Response } from 'express';
 import compression from 'compression';
 import fs from 'fs';
@@ -87,7 +88,7 @@ const defaultSettings: SiteSettings = {
   siteKeywords: 'calculators, online tools, finance, math, health, conversion, physics, science, engineering',
   brandName: 'CalcPlatform',
   adminUsername: 'admin',
-  adminPasswordHash: 'admin123',
+  adminPasswordHash: 'scrypt:0f7c9af65778257b5319906845ecd104:8f87b6a7814b59a23ec3b42fb0dd2ea8f8a3a625a9a46227ecfed76050685d4d5eae8985d301b7bbc1c7382eaa1e1e694a75b01ec6a46e967abdeacc4863fc9a',
   footerNotice: '© CalcPlatform. All calculations are provided for informational and educational purposes.',
   canonicalBaseUrl: 'https://calcplatform.org',
   contactEmail: 'admin@calcplatform.org',
@@ -564,6 +565,39 @@ function readDb(): DatabaseSchema {
   throw new Error('Database read error');
 }
 
+function hashPassword(password: string): string {
+  const salt = crypto.randomBytes(16).toString('hex');
+  const derived = crypto.scryptSync(password, salt, 64).toString('hex');
+  return `scrypt:${salt}:${derived}`;
+}
+
+function verifyPassword(password: string, storedHash: string): boolean {
+  if (!password || !storedHash) return false;
+  if (!storedHash.startsWith('scrypt:')) {
+    // Migration fallback for legacy stored value: use timing-safe comparison
+    try {
+      const a = Buffer.from(password);
+      const b = Buffer.from(storedHash);
+      if (a.length !== b.length) return false;
+      return crypto.timingSafeEqual(a, b);
+    } catch {
+      return false;
+    }
+  }
+  const parts = storedHash.split(':');
+  if (parts.length !== 3) return false;
+  const [, salt, expectedHash] = parts;
+  try {
+    const derived = crypto.scryptSync(password, salt, 64).toString('hex');
+    const a = Buffer.from(expectedHash, 'hex');
+    const b = Buffer.from(derived, 'hex');
+    if (a.length !== b.length) return false;
+    return crypto.timingSafeEqual(a, b);
+  } catch {
+    return false;
+  }
+}
+
 function writeDb(data: DatabaseSchema, source: string = 'unknown'): boolean {
   // SAFETY GUARD FOR POSTS: Prevent accidental wipe of posts array
   if (memoryDb && memoryDb.posts && memoryDb.posts.length > 0 && (!data.posts || data.posts.length === 0) && source !== 'delete_blog_post' && source !== 'admin_bulk_delete_blog_post') {
@@ -573,7 +607,6 @@ function writeDb(data: DatabaseSchema, source: string = 'unknown'): boolean {
   if (!data.posts || data.posts.length === 0) {
     data.posts = getBakedPosts();
   } else {
-    // Automatically bake blog articles directly to server code repository
     try {
       saveBakedPosts(data.posts);
     } catch (e: any) {
@@ -581,70 +614,59 @@ function writeDb(data: DatabaseSchema, source: string = 'unknown'): boolean {
     }
   }
 
-  memoryDb = data;
-  try {
-    let prevCalcCount = 0;
-    let prevCalcIds: string[] = [];
-
-    if (fs.existsSync(DB_FILE)) {
-      try {
-        const raw = fs.readFileSync(DB_FILE, 'utf-8');
-        if (raw && raw.trim().length > 0) {
-          const parsed = JSON.parse(raw);
-          if (Array.isArray(parsed.calculators)) {
-            prevCalcCount = parsed.calculators.length;
-            prevCalcIds = parsed.calculators.map((c: any) => c.id);
-          }
-        }
-      } catch (e) {
-        // Ignore parse error on previous disk copy
-      }
-    }
-
-    const nextCalcCount = data.calculators ? data.calculators.length : 0;
-    const nextCalcIds = data.calculators ? data.calculators.map((c: any) => c.id) : [];
-
-    // SAFETY GUARD (PHASE 4): Block accidental empty writes that wipe existing calculators
-    const allowedZeroCalcSources = [
-      'explicit_delete_all_confirmed',
-      'explicit_delete_category',
-      'explicit_delete_subcategory',
-      'explicit_delete_calculator',
-    ];
-
-    if (prevCalcCount > 0 && nextCalcCount === 0 && !allowedZeroCalcSources.includes(source)) {
-      const stack = new Error().stack;
-      console.error(`[BLOCKED CALCULATOR DB WRITE] Attempted to wipe all ${prevCalcCount} calculators from disk! Source: ${source}`);
-      console.error('Stack trace:', stack);
-      throw new Error(`Database Safety Guard Blocked Write: Attempted to replace ${prevCalcCount} calculators with 0 calculators from source '${source}'.`);
-    }
-
-    const targetCalcSummaries = (data.calculators || []).map((c: any) => {
-      const enabled = (c.modules || []).filter((m: any) => m.isEnabled).length;
-      const disabled = (c.modules || []).filter((m: any) => !m.isEnabled).length;
-      return `${c.id}(${c.name}): ${enabled} ON / ${disabled} OFF (total ${c.modules ? c.modules.length : 0})`;
-    });
-
-    console.log(`[DB_WRITE] Timestamp: ${new Date().toISOString()} | Source: ${source} | Count BEFORE: ${prevCalcCount} | Count AFTER: ${nextCalcCount} | Modules: [${targetCalcSummaries.join('; ')}]`);
-
-    const tempFile = `${DB_FILE}.tmp.${Date.now()}`;
-    const serialized = JSON.stringify(data, null, 2);
-    fs.writeFileSync(tempFile, serialized, 'utf-8');
-    fs.renameSync(tempFile, DB_FILE);
-
-    // Save secondary backup file for double-redundant persistence
+  let prevCalcCount = 0;
+  if (fs.existsSync(DB_FILE)) {
     try {
-      const backupFile = path.join(DATA_DIR, 'db_backup.json');
-      fs.writeFileSync(backupFile, serialized, 'utf-8');
-    } catch (e) {
-      console.error('Failed to write db_backup.json:', e);
-    }
-
-    return true;
-  } catch (err: any) {
-    console.error(`[ERROR IN writeDb (${source})]:`, err.message || err);
-    throw err;
+      const raw = fs.readFileSync(DB_FILE, 'utf-8');
+      if (raw && raw.trim().length > 0) {
+        const parsed = JSON.parse(raw);
+        if (Array.isArray(parsed.calculators)) {
+          prevCalcCount = parsed.calculators.length;
+        }
+      }
+    } catch (e) {}
   }
+
+  const nextCalcCount = data.calculators ? data.calculators.length : 0;
+  const allowedZeroCalcSources = [
+    'explicit_delete_all_confirmed',
+    'explicit_delete_category',
+    'explicit_delete_subcategory',
+    'explicit_delete_calculator',
+  ];
+
+  if (prevCalcCount > 0 && nextCalcCount === 0 && !allowedZeroCalcSources.includes(source)) {
+    const stack = new Error().stack;
+    console.error(`[BLOCKED CALCULATOR DB WRITE] Attempted to wipe all ${prevCalcCount} calculators from disk! Source: ${source}`);
+    console.error('Stack trace:', stack);
+    throw new Error(`Database Safety Guard Blocked Write: Attempted to replace ${prevCalcCount} calculators with 0 calculators from source '${source}'.`);
+  }
+
+  const targetCalcSummaries = (data.calculators || []).map((c: any) => {
+    const enabled = (c.modules || []).filter((m: any) => m.isEnabled).length;
+    const disabled = (c.modules || []).filter((m: any) => !m.isEnabled).length;
+    return `${c.id}(${c.name}): ${enabled} ON / ${disabled} OFF (total ${c.modules ? c.modules.length : 0})`;
+  });
+
+  console.log(`[DB_WRITE] Timestamp: ${new Date().toISOString()} | Source: ${source} | Count BEFORE: ${prevCalcCount} | Count AFTER: ${nextCalcCount} | Modules: [${targetCalcSummaries.join('; ')}]`);
+
+  const tempFile = `${DB_FILE}.tmp.${Date.now()}`;
+  const serialized = JSON.stringify(data, null, 2);
+  fs.writeFileSync(tempFile, serialized, 'utf-8');
+  fs.renameSync(tempFile, DB_FILE);
+
+  // Update in-memory cache ONLY AFTER disk write succeeds
+  memoryDb = data;
+
+  // Save secondary backup file for double-redundant persistence
+  try {
+    const backupFile = path.join(DATA_DIR, 'db_backup.json');
+    fs.writeFileSync(backupFile, serialized, 'utf-8');
+  } catch (e) {
+    console.error('Failed to write db_backup.json:', e);
+  }
+
+  return true;
 }
 
 // Initialize on startup
@@ -678,33 +700,55 @@ async function startServer() {
       .replace(/^-+|-+$/g, '');
   }
 
-  // Persistent Auth Sessions
+  // Persistent Auth Sessions with Expiration
   const SESSIONS_FILE = path.join(DATA_DIR, 'sessions.json');
+  const SESSION_TTL_MS = 24 * 60 * 60 * 1000; // 24-hour expiration
 
-  function loadSessions(): Set<string> {
+  interface SessionRecord {
+    token: string;
+    createdAt: number;
+    expiresAt: number;
+    username: string;
+  }
+
+  function loadSessions(): Map<string, SessionRecord> {
+    const map = new Map<string, SessionRecord>();
     try {
       if (fs.existsSync(SESSIONS_FILE)) {
         const raw = fs.readFileSync(SESSIONS_FILE, 'utf-8');
-        const list = JSON.parse(raw);
-        if (Array.isArray(list)) {
-          const s = new Set<string>(list);
-          s.add('admin-demo-token-active');
-          return s;
+        if (raw.trim()) {
+          const parsed = JSON.parse(raw);
+          const now = Date.now();
+          if (parsed && typeof parsed === 'object' && !Array.isArray(parsed)) {
+            for (const [token, rec] of Object.entries(parsed)) {
+              const session = rec as SessionRecord;
+              if (session && session.expiresAt && session.expiresAt > now) {
+                map.set(token, session);
+              }
+            }
+          }
         }
       }
     } catch (err) {
       console.error('Error reading sessions file:', err);
     }
-    return new Set<string>(['admin-demo-token-active']);
+    return map;
   }
 
-  function saveSessions(sessions: Set<string>): void {
+  function saveSessions(sessions: Map<string, SessionRecord>): void {
     try {
       const dir = path.dirname(SESSIONS_FILE);
       if (!fs.existsSync(dir)) {
         fs.mkdirSync(dir, { recursive: true });
       }
-      fs.writeFileSync(SESSIONS_FILE, JSON.stringify(Array.from(sessions)), 'utf-8');
+      const now = Date.now();
+      const obj: Record<string, SessionRecord> = {};
+      for (const [token, session] of sessions.entries()) {
+        if (session.expiresAt > now) {
+          obj[token] = session;
+        }
+      }
+      fs.writeFileSync(SESSIONS_FILE, JSON.stringify(obj, null, 2), 'utf-8');
     } catch (err) {
       console.error('Error saving sessions file:', err);
     }
@@ -714,8 +758,16 @@ async function startServer() {
 
   function requireAdmin(req: Request, res: Response, next: () => void) {
     const authHeader = req.headers.authorization;
-    const token = authHeader?.replace('Bearer ', '') || (req.query.token as string);
-    if (!token || !activeSessions.has(token)) {
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+      return res.status(401).json({ error: 'Unauthorized: Missing or malformed Authorization header' });
+    }
+    const token = authHeader.slice(7).trim();
+    const session = activeSessions.get(token);
+    if (!session || session.expiresAt <= Date.now()) {
+      if (session) {
+        activeSessions.delete(token);
+        saveSessions(activeSessions);
+      }
       return res.status(401).json({ error: 'Unauthorized: Invalid or expired admin session' });
     }
     next();
@@ -726,13 +778,28 @@ async function startServer() {
   // ==========================================
   app.post('/api/auth/login', (req: Request, res: Response) => {
     const { username, password } = req.body;
+    if (!username || !password) {
+      return res.status(400).json({ success: false, error: 'Username and password are required' });
+    }
     const db = readDb();
     if (
       username === db.settings.adminUsername &&
-      password === db.settings.adminPasswordHash
+      verifyPassword(password, db.settings.adminPasswordHash)
     ) {
-      const token = `adm_token_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`;
-      activeSessions.add(token);
+      // Upgrade plaintext password hash on successful login
+      if (!db.settings.adminPasswordHash.startsWith('scrypt:')) {
+        db.settings.adminPasswordHash = hashPassword(password);
+        writeDb(db, 'upgrade_password_hash');
+      }
+
+      const token = `adm_token_${Date.now()}_${crypto.randomBytes(16).toString('hex')}`;
+      const session: SessionRecord = {
+        token,
+        createdAt: Date.now(),
+        expiresAt: Date.now() + SESSION_TTL_MS,
+        username,
+      };
+      activeSessions.set(token, session);
       saveSessions(activeSessions);
       return res.json({
         success: true,
@@ -745,18 +812,21 @@ async function startServer() {
 
   app.get('/api/auth/check', (req: Request, res: Response) => {
     const authHeader = req.headers.authorization;
-    const token = authHeader?.replace('Bearer ', '') || (req.query.token as string);
-    if (token && activeSessions.has(token)) {
-      const db = readDb();
-      return res.json({ authenticated: true, username: db.settings.adminUsername });
+    if (authHeader && authHeader.startsWith('Bearer ')) {
+      const token = authHeader.slice(7).trim();
+      const session = activeSessions.get(token);
+      if (session && session.expiresAt > Date.now()) {
+        const db = readDb();
+        return res.json({ authenticated: true, username: db.settings.adminUsername });
+      }
     }
     return res.json({ authenticated: false });
   });
 
   app.post('/api/auth/logout', (req: Request, res: Response) => {
     const authHeader = req.headers.authorization;
-    const token = authHeader?.replace('Bearer ', '') || (req.query.token as string);
-    if (token) {
+    if (authHeader && authHeader.startsWith('Bearer ')) {
+      const token = authHeader.slice(7).trim();
       activeSessions.delete(token);
       saveSessions(activeSessions);
     }
@@ -3162,13 +3232,13 @@ Return a structured JSON schema ordering the most impactful charts for this user
     if (brandName) db.settings.brandName = brandName.trim();
     if (adminUsername) db.settings.adminUsername = adminUsername.trim();
     if (newPassword && newPassword.trim()) {
-      db.settings.adminPasswordHash = newPassword.trim();
+      db.settings.adminPasswordHash = hashPassword(newPassword.trim());
     }
     if (footerNotice !== undefined) db.settings.footerNotice = footerNotice.trim();
     if (canonicalBaseUrl !== undefined) db.settings.canonicalBaseUrl = canonicalBaseUrl.trim();
     if (contactEmail !== undefined) db.settings.contactEmail = contactEmail.trim();
 
-    writeDb(db);
+    writeDb(db, 'admin_update_settings');
 
     const { adminPasswordHash, ...safeSettings } = db.settings;
     return res.json({ success: true, settings: safeSettings });
@@ -3176,9 +3246,15 @@ Return a structured JSON schema ordering the most impactful charts for this user
 
   app.get('/api/admin/backup', requireAdmin, (_req: Request, res: Response) => {
     const db = readDb();
+    // Deep clone and strip all credentials, password hashes, and sensitive tokens
+    const sanitizedDb = JSON.parse(JSON.stringify(db));
+    if (sanitizedDb.settings) {
+      delete sanitizedDb.settings.adminPasswordHash;
+      delete sanitizedDb.settings.adminPassword;
+    }
     res.setHeader('Content-Type', 'application/json');
     res.setHeader('Content-Disposition', `attachment; filename=calcplatform-backup-${new Date().toISOString().split('T')[0]}.json`);
-    return res.json(db);
+    return res.json(sanitizedDb);
   });
 
   app.post('/api/admin/restore', requireAdmin, (req: Request, res: Response) => {

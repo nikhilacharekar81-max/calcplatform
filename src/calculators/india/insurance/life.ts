@@ -16,6 +16,8 @@ export interface TermLifeInput {
   futureFinancialGoals?: number;
   futureGoals?: number;
   inflationRate?: number;
+  expectedReturnPercent?: number;
+  investmentReturn?: number;
   incomeMultipleYears?: number;
   estimatedAnnualPremium?: number;
   isGroupPolicy?: boolean;
@@ -36,6 +38,11 @@ export interface TermLifeResult {
   section80cTaxBenefit: number;
   applicableGstPercent: number;
   section10_10dStatusNote: string;
+  assumptions: {
+    inflationRatePercent: number;
+    investmentReturnPercent: number;
+    dependentsCount: number;
+  };
   disclaimer: string;
   termStackedBars: Array<{
     category: string;
@@ -79,20 +86,22 @@ export function calculateTermLifeInsurance(input: TermLifeInput): TermLifeResult
   const age = Math.max(18, input.age || input.currentAge || 30);
   const retAge = Math.max(age + 1, input.retirementAge || 60);
   const workingYears = Math.max(1, retAge - age);
-  const multipleYears = input.incomeMultipleYears || Math.min(15, workingYears);
+  const dependents = Math.max(0, input.dependents || 0);
 
   const debts = Math.max(0, input.outstandingLoans ?? input.outstandingDebts ?? 0);
   const existingCover = Math.max(0, input.existingLifeCover ?? 0);
   const existingSavings = Math.max(0, input.existingSavings ?? 0);
   const goals = Math.max(0, input.futureFinancialGoals ?? input.futureGoals ?? 0);
   const inflationRate = input.inflationRate !== undefined ? input.inflationRate : 6.0;
+  const returnRate = input.investmentReturn ?? input.expectedReturnPercent ?? 8.5;
 
-  // Income replacement need: calculated using monthly expenses or annual income multiple
+  // Income replacement need: calculated using monthly expenses or annual income multiple with dependents calibration
   let incomeReplacement: number;
   if (input.monthlyExpenses && input.monthlyExpenses > 0) {
     const annualExp = input.monthlyExpenses * 12;
-    incomeReplacement = calculateLivingExpensesPV(annualExp, inflationRate, 8.0, workingYears);
+    incomeReplacement = calculateLivingExpensesPV(annualExp, inflationRate, returnRate, workingYears);
   } else {
+    const multipleYears = input.incomeMultipleYears || Math.min(workingYears, Math.max(10, 10 + dependents * 2.5));
     incomeReplacement = annualIncome * multipleYears;
   }
 
@@ -154,6 +163,11 @@ export function calculateTermLifeInsurance(input: TermLifeInput): TermLifeResult
     section80cTaxBenefit: max80cLimit,
     applicableGstPercent: gstPercent,
     section10_10dStatusNote,
+    assumptions: {
+      inflationRatePercent: inflationRate,
+      investmentReturnPercent: returnRate,
+      dependentsCount: dependents,
+    },
     disclaimer: "Income replacement multiples are CalcPlatform Planning Assumptions. Individual life policies are exempt from GST (0%) post Sept 22, 2025.",
     termStackedBars,
   };
@@ -190,7 +204,8 @@ export interface LifeNeedsResult {
   insuranceRequired: number;
   protectionGap: number;
   totalFinancialNeedToday: number;
-  futureInflationAdjustedGoals: number;
+  futureFinancialGoals: number;
+  futureInflationAdjustedGoals: number; // Maintained for backwards compatibility
   existingResources: number;
   netInsuranceRequired: number;
   netInsuranceRequiredFormatted: string;
@@ -266,6 +281,7 @@ export function calculateLifeInsuranceNeeds(input: LifeNeedsInput): LifeNeedsRes
     insuranceRequired: netInsuranceRequired,
     protectionGap: roundMoney(protectionGap),
     totalFinancialNeedToday: roundMoney(totalNeed),
+    futureFinancialGoals: roundMoney(futureGoals),
     futureInflationAdjustedGoals: roundMoney(futureGoals),
     existingResources: roundMoney(availableResources),
     netInsuranceRequired,
@@ -296,11 +312,13 @@ export interface HumanLifeValueResult {
   estimatedInsuranceRequirement: number;
   totalLifetimeNetEarningsPV: number;
   effectiveWorkingYears: number;
+  realDiscountRatePercent: number;
   hlvTrajectory: Array<{
     year: string;
     age: number;
     presentValue: number;
     futureIncome: number;
+    realPurchasingPower: number;
     cumulativePV: number;
   }>;
 }
@@ -325,13 +343,18 @@ export function calculateHumanLifeValue(input: HumanLifeValueInput): HumanLifeVa
 
   const growthRate = Math.max(0, input.expectedIncomeGrowth ?? input.expectedAnnualIncomeGrowthPercent ?? 8) / 100;
   const discountRate = Math.max(0, input.investmentReturn ?? input.discountRatePercent ?? 7.5) / 100;
+  const inflationRate = Math.max(0, input.inflationRate !== undefined ? input.inflationRate : 6.0) / 100;
 
-  // Year-by-year curve: present value and nominal earnings up to retirement
+  // Real discount rate via Fisher equation
+  const realDiscountRate = (1 + discountRate) / (1 + inflationRate) - 1;
+
+  // Year-by-year curve: present value, nominal earnings, and real purchasing power up to retirement
   const hlvTrajectory: Array<{
     year: string;
     age: number;
     presentValue: number;
     futureIncome: number;
+    realPurchasingPower: number;
     cumulativePV: number;
   }> = [];
 
@@ -342,6 +365,7 @@ export function calculateHumanLifeValue(input: HumanLifeValueInput): HumanLifeVa
     const yrAge = age + t;
     const nominalNet = netAnnualContribution * Math.pow(1 + growthRate, t - 1);
     const pv = nominalNet / Math.pow(1 + discountRate, t);
+    const realPower = nominalNet / Math.pow(1 + inflationRate, t - 1);
     cumPV += pv;
     cumNominal += nominalNet;
 
@@ -350,6 +374,7 @@ export function calculateHumanLifeValue(input: HumanLifeValueInput): HumanLifeVa
       age: yrAge,
       presentValue: roundMoney(pv),
       futureIncome: roundMoney(nominalNet),
+      realPurchasingPower: roundMoney(realPower),
       cumulativePV: roundMoney(cumPV),
     });
   }
@@ -365,6 +390,7 @@ export function calculateHumanLifeValue(input: HumanLifeValueInput): HumanLifeVa
     estimatedInsuranceRequirement: estimatedInsurance,
     totalLifetimeNetEarningsPV: hlv,
     effectiveWorkingYears: workingYears,
+    realDiscountRatePercent: parseFloat((realDiscountRate * 100).toFixed(2)),
     hlvTrajectory,
   };
 }

@@ -3591,7 +3591,7 @@
     "siteKeywords": "calculators, online tools, finance, math, health, conversion, physics, science, engineering",
     "brandName": "CalcPlatform",
     "adminUsername": "admin",
-    "adminPasswordHash": "admin123",
+    "adminPasswordHash": "scrypt:0f7c9af65778257b5319906845ecd104:8f87b6a7814b59a23ec3b42fb0dd2ea8f8a3a625a9a46227ecfed76050685d4d5eae8985d301b7bbc1c7382eaa1e1e694a75b01ec6a46e967abdeacc4863fc9a",
     "footerNotice": "© CalcPlatform. All calculations are provided for informational and educational purposes.",
     "canonicalBaseUrl": "https://calcplatform.org",
     "contactEmail": "admin@calcplatform.org"
