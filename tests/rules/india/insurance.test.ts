@@ -187,6 +187,33 @@ export function runInsuranceTests(): { passed: number; failed: number } {
     "Business Insurance - Material Damage & Gross Profit Interruption"
   );
 
+  // 14. Life Insurance Hardened Goal Inflation & Zero Preservation
+  const goalInflated = calculateLifeInsuranceNeeds({
+    annualFamilyExpenses: 0,
+    yearsOfSupportNeeded: 1,
+    futureGoals: 1000000,
+    goalYears: 10,
+    inflationRate: 6.5,
+    investmentReturn: 8.5,
+  });
+  const expectedInflatedGoal = 1000000 * Math.pow(1.065, 10);
+  assert(
+    Math.abs(goalInflated.futureInflationAdjustedGoals - expectedInflatedGoal) < 1.0,
+    "Life Insurance - Explicit Goal Horizon Inflation Compounding"
+  );
+
+  const goalZeroInf = calculateLifeInsuranceNeeds({
+    annualFamilyExpenses: 0,
+    yearsOfSupportNeeded: 1,
+    futureGoals: 1000000,
+    goalYears: 10,
+    inflationRate: 0,
+  });
+  assert(
+    goalZeroInf.futureInflationAdjustedGoals === 1000000,
+    "Life Insurance - Zero Inflation preserves Today's Goal Value"
+  );
+
   // 13. Statutory Registry Active Verified Check
   const rule = indiaRuleRegistry.resolveActiveVerified({
     domain: "INSURANCE",

@@ -191,6 +191,8 @@ export interface LifeNeedsInput {
   futureGoals?: number;
   childrenEducationCostToday?: number;
   childrenMarriageCostToday?: number;
+  goalYears?: number;
+  yearsUntilGoal?: number;
   inflationRate?: number;
   inflationRatePercent?: number;
   investmentReturn?: number;
@@ -240,7 +242,8 @@ export function calculateLifeInsuranceNeeds(input: LifeNeedsInput): LifeNeedsRes
 
   const eduCost = Math.max(0, input.childrenEducationCostToday || 0);
   const marriageCost = Math.max(0, input.childrenMarriageCostToday || 0);
-  const futureGoals = Math.max(0, input.futureGoals || (eduCost + marriageCost));
+  const futureGoalsToday = Math.max(0, input.futureGoals ?? (eduCost + marriageCost));
+  const goalYears = Math.max(0, input.goalYears ?? input.yearsUntilGoal ?? 0);
   const debts = Math.max(0, input.loans ?? input.totalDebts ?? 0);
 
   const savings = Math.max(0, input.savings || 0);
@@ -248,7 +251,8 @@ export function calculateLifeInsuranceNeeds(input: LifeNeedsInput): LifeNeedsRes
   const currentAssets = Math.max(0, input.currentAssets ?? (savings + investments));
   const existingCover = Math.max(0, input.existingLifeCover ?? input.existingLifeInsurance ?? 0);
 
-  const totalNeed = expensesPV + futureGoals + debts;
+  const futureInflationAdjustedGoals = roundMoney(futureGoalsToday * Math.pow(1 + infRate / 100, goalYears));
+  const totalNeed = expensesPV + futureInflationAdjustedGoals + debts;
   const availableResources = currentAssets + existingCover;
   const protectionGap = Math.max(0, totalNeed - availableResources);
   const netInsuranceRequired = Math.ceil(protectionGap / 100000) * 100000;
@@ -281,8 +285,8 @@ export function calculateLifeInsuranceNeeds(input: LifeNeedsInput): LifeNeedsRes
     insuranceRequired: netInsuranceRequired,
     protectionGap: roundMoney(protectionGap),
     totalFinancialNeedToday: roundMoney(totalNeed),
-    futureFinancialGoals: roundMoney(futureGoals),
-    futureInflationAdjustedGoals: roundMoney(futureGoals),
+    futureFinancialGoals: roundMoney(futureGoalsToday),
+    futureInflationAdjustedGoals: roundMoney(futureInflationAdjustedGoals),
     existingResources: roundMoney(availableResources),
     netInsuranceRequired,
     netInsuranceRequiredFormatted: `₹${(netInsuranceRequired / 100000).toFixed(2)} Lakh`,
