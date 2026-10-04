@@ -6,6 +6,8 @@
  * sqrt, pow, abs, round, floor, ceil, min, max, log, log10, exp, sin, cos, tan.
  */
 
+import { evaluateExpression } from '../engines/financial-maths/index.ts';
+
 export function evaluateFormula(
   formula: string,
   variables: Record<string, number | string | boolean>
@@ -13,74 +15,29 @@ export function evaluateFormula(
   if (!formula || !formula.trim()) return 0;
 
   try {
-    const cleaned = formula.trim();
-
-    // Prepare context of safe Math helper functions and provided variables
-    const context: Record<string, unknown> = {
-      sqrt: Math.sqrt,
-      pow: Math.pow,
-      abs: Math.abs,
-      round: Math.round,
-      floor: Math.floor,
-      ceil: Math.ceil,
-      min: Math.min,
-      max: Math.max,
-      log: Math.log,
-      log10: Math.log10,
-      exp: Math.exp,
-      sin: (deg: number) => Math.sin((deg * Math.PI) / 180),
-      cos: (deg: number) => Math.cos((deg * Math.PI) / 180),
-      tan: (deg: number) => Math.tan((deg * Math.PI) / 180),
+    const numericContext: Record<string, number> = {
       PI: Math.PI,
       E: Math.E,
     };
 
-    // Populate user input variables (convert strings to numbers if numeric)
     for (const [key, val] of Object.entries(variables)) {
       if (typeof val === 'number') {
-        context[key] = val;
+        numericContext[key] = val;
       } else if (typeof val === 'boolean') {
-        context[key] = val ? 1 : 0;
+        numericContext[key] = val ? 1 : 0;
       } else if (typeof val === 'string') {
         const parsed = parseFloat(val);
-        context[key] = isNaN(parsed) ? val : parsed;
+        numericContext[key] = isNaN(parsed) ? 0 : parsed;
       } else {
-        context[key] = 0;
+        numericContext[key] = 0;
       }
     }
 
-    // Replace '^' with '**' for exponentiation
-    let expression = cleaned.replace(/\^/g, '**');
-
-    // Security check: prohibit assignments, statements, prototypes, and forbidden tokens
-    const forbidden = [
-      'window', 'document', 'fetch', 'XMLHttpRequest', 'eval', 'Function',
-      'constructor', '__proto__', 'prototype', 'import', 'require', 'process',
-      'global', 'setTimeout', 'setInterval', 'localStorage', 'sessionStorage',
-      'cookie', 'location', 'alert', 'write', 'while', 'for', 'return'
-    ];
-
-    for (const token of forbidden) {
-      const regex = new RegExp(`\\b${token}\\b`, 'i');
-      if (regex.test(expression)) {
-        console.warn(`Formula contains forbidden identifier: ${token}`);
-        return 0;
-      }
-    }
-
-    // Safe execution sandbox passing context keys as arguments
-    const keys = Object.keys(context);
-    const values = Object.values(context);
-    const fn = new Function(...keys, `"use strict"; return (${expression});`);
-    const result = fn(...values);
-
-    if (typeof result === 'number') {
-      if (isNaN(result) || !isFinite(result)) return 0;
+    const result = evaluateExpression(formula, numericContext);
+    if (typeof result === 'number' && !isNaN(result) && isFinite(result)) {
       return result;
     }
-
-    const num = Number(result);
-    return isNaN(num) || !isFinite(num) ? 0 : num;
+    return 0;
   } catch (err) {
     console.error('Calculation evaluation error:', err, 'for formula:', formula);
     return 0;

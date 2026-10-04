@@ -3,6 +3,8 @@
  * Evaluates mathematical formulas securely against user variables.
  */
 
+import { evaluateExpression } from './financial-maths/index.ts';
+
 export function evaluateFormula(
   formula: string,
   variables: Record<string, number | string | boolean>
@@ -10,229 +12,29 @@ export function evaluateFormula(
   if (!formula || !formula.trim()) return 0;
 
   try {
-    const cleaned = formula.trim();
-
-    // Context dictionary with math helper functions
-    const context: Record<string, unknown> = {
-      sqrt: Math.sqrt,
-      pow: Math.pow,
-      abs: Math.abs,
-      round: Math.round,
-      floor: Math.floor,
-      ceil: Math.ceil,
-      min: Math.min,
-      max: Math.max,
-      log: Math.log,
-      log10: Math.log10,
-      exp: Math.exp,
-      sin: (deg: number) => Math.sin((deg * Math.PI) / 180),
-      cos: (deg: number) => Math.cos((deg * Math.PI) / 180),
-      tan: (deg: number) => Math.tan((deg * Math.PI) / 180),
+    const numericContext: Record<string, number> = {
       PI: Math.PI,
       E: Math.E,
-      // Tax calculation engines
-      tax_us: (taxable: number, status: string) => {
-        const brackets: Record<string, Array<{ min: number; max: number; rate: number }>> = {
-          single: [
-            { min: 0, max: 11925, rate: 0.10 },
-            { min: 11925, max: 48475, rate: 0.12 },
-            { min: 48475, max: 103350, rate: 0.22 },
-            { min: 103350, max: 197300, rate: 0.24 },
-            { min: 197300, max: 250525, rate: 0.32 },
-            { min: 250525, max: 626350, rate: 0.35 },
-            { min: 626350, max: Infinity, rate: 0.37 },
-          ],
-          married: [
-            { min: 0, max: 23850, rate: 0.10 },
-            { min: 23850, max: 96950, rate: 0.12 },
-            { min: 96950, max: 206700, rate: 0.22 },
-            { min: 206700, max: 394600, rate: 0.24 },
-            { min: 394600, max: 501050, rate: 0.32 },
-            { min: 501050, max: 751600, rate: 0.35 },
-            { min: 751600, max: Infinity, rate: 0.37 },
-          ],
-          head: [
-            { min: 0, max: 17000, rate: 0.10 },
-            { min: 17000, max: 64850, rate: 0.12 },
-            { min: 64850, max: 103350, rate: 0.22 },
-            { min: 103350, max: 197300, rate: 0.24 },
-            { min: 197300, max: 250500, rate: 0.32 },
-            { min: 250500, max: 626350, rate: 0.35 },
-            { min: 626350, max: Infinity, rate: 0.37 },
-          ],
-        };
-        const list = brackets[status] || brackets.single;
-        let tax = 0;
-        for (const b of list) {
-          if (taxable > b.min) {
-            const chunk = Math.min(taxable, b.max) - b.min;
-            tax += chunk * b.rate;
-          }
-        }
-        return Math.round(tax);
-      },
-      tax_us_marginal: (taxable: number, status: string) => {
-        const brackets: Record<string, Array<{ min: number; max: number; rate: number }>> = {
-          single: [
-            { min: 0, max: 11925, rate: 0.10 },
-            { min: 11925, max: 48475, rate: 0.12 },
-            { min: 48475, max: 103350, rate: 0.22 },
-            { min: 103350, max: 197300, rate: 0.24 },
-            { min: 197300, max: 250525, rate: 0.32 },
-            { min: 250525, max: 626350, rate: 0.35 },
-            { min: 626350, max: Infinity, rate: 0.37 },
-          ],
-          married: [
-            { min: 0, max: 23850, rate: 0.10 },
-            { min: 23850, max: 96950, rate: 0.12 },
-            { min: 96950, max: 206700, rate: 0.22 },
-            { min: 206700, max: 394600, rate: 0.24 },
-            { min: 394600, max: 501050, rate: 0.32 },
-            { min: 501050, max: 751600, rate: 0.35 },
-            { min: 751600, max: Infinity, rate: 0.37 },
-          ],
-          head: [
-            { min: 0, max: 17000, rate: 0.10 },
-            { min: 17000, max: 64850, rate: 0.12 },
-            { min: 64850, max: 103350, rate: 0.22 },
-            { min: 103350, max: 197300, rate: 0.24 },
-            { min: 197300, max: 250500, rate: 0.32 },
-            { min: 250500, max: 626350, rate: 0.35 },
-            { min: 626350, max: Infinity, rate: 0.37 },
-          ],
-        };
-        const list = brackets[status] || brackets.single;
-        let rate = 0;
-        for (const b of list) {
-          if (taxable > b.min) rate = b.rate * 100;
-        }
-        return rate;
-      },
-      tax_in: (taxable: number, regime: string) => {
-        const brackets: Record<string, Array<{ min: number; max: number; rate: number }>> = {
-          new: [
-            { min: 0, max: 400000, rate: 0.00 },
-            { min: 400000, max: 800000, rate: 0.05 },
-            { min: 800000, max: 1200000, rate: 0.10 },
-            { min: 1200000, max: 1600000, rate: 0.15 },
-            { min: 1600000, max: 2000000, rate: 0.20 },
-            { min: 2000000, max: 2400000, rate: 0.25 },
-            { min: 2400000, max: Infinity, rate: 0.30 },
-          ],
-          old: [
-            { min: 0, max: 250000, rate: 0.00 },
-            { min: 250000, max: 500000, rate: 0.05 },
-            { min: 500000, max: 1000000, rate: 0.20 },
-            { min: 1000000, max: Infinity, rate: 0.30 },
-          ],
-        };
-        const list = brackets[regime] || brackets.new;
-        let tax = 0;
-        for (const b of list) {
-          if (taxable > b.min) {
-            const chunk = Math.min(taxable, b.max) - b.min;
-            tax += chunk * b.rate;
-          }
-        }
-        if (regime === 'new' && taxable <= 1200000) {
-          tax = 0;
-        } else if (regime === 'old' && taxable <= 500000) {
-          tax = 0;
-        } else {
-          tax += tax * 0.04;
-        }
-        return Math.round(tax);
-      },
-      tax_in_marginal: (taxable: number, regime: string) => {
-        const brackets: Record<string, Array<{ min: number; max: number; rate: number }>> = {
-          new: [
-            { min: 0, max: 400000, rate: 0.00 },
-            { min: 400000, max: 800000, rate: 0.05 },
-            { min: 800000, max: 1200000, rate: 0.10 },
-            { min: 1200000, max: 1600000, rate: 0.15 },
-            { min: 1600000, max: 2000000, rate: 0.20 },
-            { min: 2000000, max: 2400000, rate: 0.25 },
-            { min: 2400000, max: Infinity, rate: 0.30 },
-          ],
-          old: [
-            { min: 0, max: 250000, rate: 0.00 },
-            { min: 250000, max: 500000, rate: 0.05 },
-            { min: 500000, max: 1000000, rate: 0.20 },
-            { min: 1000000, max: Infinity, rate: 0.30 },
-          ],
-        };
-        const list = brackets[regime] || brackets.new;
-        let rate = 0;
-        for (const b of list) {
-          if (taxable > b.min) rate = b.rate * 100;
-        }
-        return rate;
-      },
     };
 
-    const builtInNames = new Set([
-      'sqrt', 'pow', 'abs', 'round', 'floor', 'ceil', 'min', 'max',
-      'log', 'log10', 'exp', 'sin', 'cos', 'tan', 'PI', 'E',
-      'tax_us', 'tax_us_marginal', 'tax_in', 'tax_in_marginal'
-    ]);
-
-    // Populate user input variables while preserving built-in functions
     for (const [key, val] of Object.entries(variables || {})) {
-      if (builtInNames.has(key)) continue;
-
-      // Filter out invalid JS identifier keys
-      if (!/^[a-zA-Z_$][a-zA-Z0-9_$]*$/.test(key)) continue;
-
       if (typeof val === 'number') {
-        context[key] = val;
+        numericContext[key] = val;
       } else if (typeof val === 'boolean') {
-        context[key] = val ? 1 : 0;
+        numericContext[key] = val ? 1 : 0;
       } else if (typeof val === 'string') {
         const parsed = parseFloat(val);
-        context[key] = isNaN(parsed) ? val : parsed;
+        numericContext[key] = isNaN(parsed) ? 0 : parsed;
       } else {
-        context[key] = 0;
+        numericContext[key] = 0;
       }
     }
 
-    let expression = cleaned.replace(/\^/g, '**');
-
-    // Forbidden tokens for security
-    const forbidden = [
-      'window', 'document', 'fetch', 'XMLHttpRequest', 'eval', 'Function',
-      'constructor', '__proto__', 'prototype', 'import', 'require', 'process',
-      'global', 'setTimeout', 'setInterval', 'localStorage', 'sessionStorage',
-      'cookie', 'location', 'alert', 'write', 'while', 'for', 'return'
-    ];
-
-    for (const token of forbidden) {
-      const regex = new RegExp(`\\b${token}\\b`, 'i');
-      if (regex.test(expression)) {
-        console.warn(`Formula contains prohibited identifier: ${token}`);
-        return 0;
-      }
-    }
-
-    // Filter context keys to valid JS identifiers only
-    const validKeys: string[] = [];
-    const validValues: any[] = [];
-    for (const [k, v] of Object.entries(context)) {
-      if (/^[a-zA-Z_$][a-zA-Z0-9_$]*$/.test(k)) {
-        validKeys.push(k);
-        validValues.push(v);
-      }
-    }
-
-    const fn = new Function(...validKeys, `"use strict"; return (${expression});`);
-    const result = fn(...validValues);
-
-    if (typeof result === 'number') {
-      if (isNaN(result) || !isFinite(result)) return 0;
+    const result = evaluateExpression(formula, numericContext);
+    if (typeof result === 'number' && !isNaN(result) && isFinite(result)) {
       return result;
     }
-
-    const num = Number(result);
-    return isNaN(num) || !isFinite(num) ? 0 : num;
+    return 0;
   } catch (err) {
     console.error('Calculation evaluation error:', err, 'for formula:', formula);
     return 0;

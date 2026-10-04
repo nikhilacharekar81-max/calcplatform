@@ -504,8 +504,11 @@ export function tokenize(expression: string): Token[] {
 
 export class Parser {
   private index = 0;
+  private readonly tokens: Token[];
 
-  constructor(private readonly tokens: Token[]) {}
+  constructor(tokens: Token[]) {
+    this.tokens = tokens;
+  }
 
   parse(): AST {
     const node = this.parseAdditive();
@@ -685,6 +688,14 @@ const FUNCTION_REGISTRY: Record<string, FunctionSpec> = {
     maxArgs: 1,
     fn: (x) => {
       if (x <= 0) throw new CalculationError("DOMAIN", "log requires x > 0.");
+      return Math.log10(x);
+    }
+  },
+  log10: {
+    minArgs: 1,
+    maxArgs: 1,
+    fn: (x) => {
+      if (x <= 0) throw new CalculationError("DOMAIN", "log10 requires x > 0.");
       return Math.log10(x);
     }
   },
@@ -1779,7 +1790,10 @@ export interface ExtraPayment {
 
 export interface AmortizationInput {
   principal: number;
-  annualRate: number;
+  /** Nominal annual interest rate as decimal (e.g. 0.065 for 6.5%). Preferred canonical representation. */
+  annualRate?: number;
+  /** Nominal annual interest rate as percentage boundary value (e.g. 6.5 for 6.5%). */
+  annualRatePercent?: number;
   term: number;
   termUnit?: "YEARS" | "MONTHS" | "PERIODS";
   frequency?: Frequency;
@@ -1871,14 +1885,17 @@ export function generateAmortizationSchedule(
   input: AmortizationInput
 ): AmortizationResult {
   assertNonNegative(input.principal, "principal");
-  assertFinite(input.annualRate, "annualRate");
+  const rateDecimal = input.annualRatePercent !== undefined
+    ? percentToDecimal(input.annualRatePercent)
+    : (input.annualRate ?? 0);
+  assertFinite(rateDecimal, "annualRate");
 
   const frequency = input.frequency ?? "MONTHLY";
   const timing = input.timing ?? "END";
   const termUnit = input.termUnit ?? "YEARS";
   const periods = normalizePeriods(input.term, termUnit, frequency);
   const periodsPerYearValue = periodsPerYear(frequency);
-  const periodicRate = input.annualRate / 100 / periodsPerYearValue;
+  const periodicRate = rateDecimal / periodsPerYearValue;
 
   if (periodicRate <= -1) {
     throw new CalculationError("INVALID_RATE", "Periodic rate must be > -100%.");
@@ -2118,14 +2135,26 @@ export function generateAmortizationSchedule(
 
 export interface InvestmentInput {
   initial: number;
-  annualReturn: number;
+  /** Annual expected return as decimal (e.g. 0.12 for 12%). Preferred canonical representation. */
+  annualReturn?: number;
+  /** Annual expected return as percentage boundary value (e.g. 12 for 12%). */
+  annualReturnPercent?: number;
   years: number;
   contribution: number;
   contributionFrequency?: Frequency;
+  /** Annual contribution growth rate as decimal (e.g. 0.05 for 5%). */
   contributionGrowthRate?: number;
+  /** Annual contribution growth rate as percentage (e.g. 5 for 5%). */
+  contributionGrowthRatePercent?: number;
   contributionTiming?: PaymentTiming;
+  /** Annual fee rate as decimal (e.g. 0.01 for 1%). */
   feesAnnual?: number;
+  /** Annual fee rate as percentage (e.g. 1 for 1%). */
+  feesAnnualPercent?: number;
+  /** Annual inflation rate as decimal (e.g. 0.06 for 6%). */
   inflationRate?: number;
+  /** Annual inflation rate as percentage (e.g. 6 for 6%). */
+  inflationRatePercent?: number;
 }
 
 export interface InvestmentPeriod {
@@ -2156,11 +2185,29 @@ export function calculateInvestment(
   assertNonNegative(input.contribution, "contribution");
   assertPositive(input.years, "years");
 
+  const annualReturnDecimal = input.annualReturnPercent !== undefined
+    ? percentToDecimal(input.annualReturnPercent)
+    : (input.annualReturn ?? 0);
+  assertFinite(annualReturnDecimal, "annualReturn");
+
+  const feesAnnualDecimal = input.feesAnnualPercent !== undefined
+    ? percentToDecimal(input.feesAnnualPercent)
+    : (input.feesAnnual ?? 0);
+  assertFinite(feesAnnualDecimal, "feesAnnual");
+
+  const growthRateDecimal = input.contributionGrowthRatePercent !== undefined
+    ? percentToDecimal(input.contributionGrowthRatePercent)
+    : input.contributionGrowthRate;
+
+  const inflationDecimal = input.inflationRatePercent !== undefined
+    ? percentToDecimal(input.inflationRatePercent)
+    : (input.inflationRate ?? 0);
+
   const frequency = input.contributionFrequency ?? "MONTHLY";
   const periods = periodsPerYear(frequency);
   const count = Math.ceil(input.years * periods);
-  const periodicReturn = input.annualReturn / 100 / periods;
-  const periodicFee = (input.feesAnnual ?? 0) / 100 / periods;
+  const periodicReturn = annualReturnDecimal / periods;
+  const periodicFee = feesAnnualDecimal / periods;
   const timing = input.contributionTiming ?? "END";
 
   let balance = input.initial;
@@ -2205,23 +2252,20 @@ export function calculateInvestment(
       cumulativeContributions: totalContributions
     });
 
-    if (input.contributionGrowthRate !== undefined) {
-      contribution *=
-        1 + input.contributionGrowthRate / 100 / periods;
+    if (growthRateDecimal !== undefined) {
+      contribution *= 1 + growthRateDecimal / periods;
     }
   }
 
-  const inflation = input.inflationRate ?? 0;
-  const realFutureValue =
-    balance / Math.pow(1 + inflation / 100, input.years);
+  const realFutureValue = balance / Math.pow(1 + inflationDecimal, input.years);
 
   return {
-    futureValue: balance,
-    nominalFutureValue: balance,
-    realFutureValue,
-    totalContributions,
-    totalGrowth,
-    totalFees,
+    futureValue: roundMoney(balance),
+    nominalFutureValue: roundMoney(balance),
+    realFutureValue: roundMoney(realFutureValue),
+    totalContributions: roundMoney(totalContributions),
+    totalGrowth: roundMoney(totalGrowth),
+    totalFees: roundMoney(totalFees),
     schedule
   };
 }
@@ -2248,13 +2292,28 @@ export interface RetirementInput extends InvestmentInput {
   currentAge: number;
   retirementAge: number;
   lifeExpectancy: number;
-  postRetirementReturn: number;
+  /** Post-retirement annual return as decimal (e.g. 0.08 for 8%). Preferred canonical representation. */
+  postRetirementReturn?: number;
+  /** Post-retirement annual return as percentage (e.g. 8 for 8%). */
+  postRetirementReturnPercent?: number;
+  /** Annual withdrawal rate as decimal (e.g. 0.04 for 4%). */
   withdrawalRate?: number;
+  /** Annual withdrawal rate as percentage (e.g. 4 for 4%). */
+  withdrawalRatePercent?: number;
   annualRetirementSpending?: number;
+  /** Spending inflation rate as decimal (e.g. 0.06 for 6%). */
   spendingInflationRate?: number;
+  /** Spending inflation rate as percentage (e.g. 6 for 6%). */
+  spendingInflationRatePercent?: number;
   otherAnnualIncome?: number;
+  /** Other income annual growth rate as decimal (e.g. 0.03 for 3%). */
   otherIncomeGrowthRate?: number;
+  /** Other income annual growth rate as percentage (e.g. 3 for 3%). */
+  otherIncomeGrowthRatePercent?: number;
+  /** Retirement annual fee rate as decimal (e.g. 0.01 for 1%). */
   retirementFeesAnnual?: number;
+  /** Retirement annual fee rate as percentage (e.g. 1 for 1%). */
+  retirementFeesAnnualPercent?: number;
 }
 
 export interface RetirementDrawdownRow {
@@ -2298,12 +2357,33 @@ export function calculateRetirement(
     );
   }
 
+  const postReturnDecimal = input.postRetirementReturnPercent !== undefined
+    ? percentToDecimal(input.postRetirementReturnPercent)
+    : (input.postRetirementReturn ?? 0);
+  assertFinite(postReturnDecimal, "postRetirementReturn");
+
+  const withdrawalRateDecimal = input.withdrawalRatePercent !== undefined
+    ? percentToDecimal(input.withdrawalRatePercent)
+    : (input.withdrawalRate !== undefined ? input.withdrawalRate : 0.04);
+  assertFinite(withdrawalRateDecimal, "withdrawalRate");
+
+  const retFeesDecimal = input.retirementFeesAnnualPercent !== undefined
+    ? percentToDecimal(input.retirementFeesAnnualPercent)
+    : (input.retirementFeesAnnual ?? 0);
+
+  const spendingInfDecimal = input.spendingInflationRatePercent !== undefined
+    ? percentToDecimal(input.spendingInflationRatePercent)
+    : (input.spendingInflationRate ?? (input.inflationRatePercent !== undefined ? percentToDecimal(input.inflationRatePercent) : (input.inflationRate ?? 0)));
+
+  const otherIncomeGrowthDecimal = input.otherIncomeGrowthRatePercent !== undefined
+    ? percentToDecimal(input.otherIncomeGrowthRatePercent)
+    : (input.otherIncomeGrowthRate ?? 0);
+
   const accumulation = calculateInvestment(input);
-  const withdrawalRate = (input.withdrawalRate ?? 4) / 100;
 
   const startingSpending =
     input.annualRetirementSpending ??
-    accumulation.futureValue * withdrawalRate;
+    accumulation.futureValue * withdrawalRateDecimal;
 
   let balance = accumulation.futureValue;
   let spending = startingSpending;
@@ -2315,10 +2395,8 @@ export function calculateRetirement(
 
   for (let age = input.retirementAge; age <= input.lifeExpectancy; age++) {
     const beginningBalance = balance;
-    const investmentGrowth =
-      balance * (input.postRetirementReturn / 100);
-    const fees =
-      balance * ((input.retirementFeesAnnual ?? 0) / 100);
+    const investmentGrowth = balance * postReturnDecimal;
+    const fees = balance * retFeesDecimal;
 
     balance += investmentGrowth - fees;
 
@@ -2335,29 +2413,26 @@ export function calculateRetirement(
     drawdown.push({
       age,
       year: age - input.retirementAge + 1,
-      beginningBalance,
-      investmentGrowth,
-      fees,
-      otherIncome,
-      withdrawal,
-      endingBalance: balance,
-      cumulativeWithdrawals,
+      beginningBalance: roundMoney(beginningBalance),
+      investmentGrowth: roundMoney(investmentGrowth),
+      fees: roundMoney(fees),
+      otherIncome: roundMoney(otherIncome),
+      withdrawal: roundMoney(withdrawal),
+      endingBalance: roundMoney(balance),
+      cumulativeWithdrawals: roundMoney(cumulativeWithdrawals),
       depleted: balance === 0
     });
 
-    spending *=
-      1 + (input.spendingInflationRate ?? input.inflationRate ?? 0) / 100;
-
-    otherIncome *=
-      1 + (input.otherIncomeGrowthRate ?? 0) / 100;
+    spending *= 1 + spendingInfDecimal;
+    otherIncome *= 1 + otherIncomeGrowthDecimal;
   }
 
   return {
     accumulation,
-    nestEggNominal: accumulation.futureValue,
-    nestEggTodayDollars: accumulation.realFutureValue,
-    annualWithdrawalAtRetirement: startingSpending,
-    monthlyWithdrawalAtRetirement: startingSpending / 12,
+    nestEggNominal: roundMoney(accumulation.futureValue),
+    nestEggTodayDollars: roundMoney(accumulation.realFutureValue),
+    annualWithdrawalAtRetirement: roundMoney(startingSpending),
+    monthlyWithdrawalAtRetirement: roundMoney(startingSpending / 12),
     drawdown,
     sustainable: depletionAge === undefined,
     depletionAge
@@ -2738,9 +2813,15 @@ export async function monteCarloAsync(
 
 export interface BondInput {
   faceValue: number;
-  couponRate: number;
+  /** Annual coupon rate as decimal (e.g. 0.05 for 5%). Preferred canonical representation. */
+  couponRate?: number;
+  /** Annual coupon rate as percentage boundary value (e.g. 5 for 5%). */
+  couponRatePercent?: number;
   years: number;
-  marketRate: number;
+  /** Annual market discount rate as decimal (e.g. 0.06 for 6%). Preferred canonical representation. */
+  marketRate?: number;
+  /** Annual market discount rate as percentage boundary value (e.g. 6 for 6%). */
+  marketRatePercent?: number;
   paymentsPerYear?: number;
 }
 
@@ -2757,45 +2838,47 @@ export function bondPrice(input: BondInput): number {
     );
   }
 
-  const periods = Math.round(input.years * paymentsPerYear);
-  const coupon =
-    input.faceValue *
-    (input.couponRate / 100) /
-    paymentsPerYear;
+  const couponDecimal = input.couponRatePercent !== undefined
+    ? percentToDecimal(input.couponRatePercent)
+    : (input.couponRate ?? 0);
+  assertFinite(couponDecimal, "couponRate");
 
-  const periodicRate =
-    input.marketRate / 100 / paymentsPerYear;
+  const marketDecimal = input.marketRatePercent !== undefined
+    ? percentToDecimal(input.marketRatePercent)
+    : (input.marketRate ?? 0);
+  assertFinite(marketDecimal, "marketRate");
+
+  const periods = Math.round(input.years * paymentsPerYear);
+  const coupon = (input.faceValue * couponDecimal) / paymentsPerYear;
+  const periodicRate = marketDecimal / paymentsPerYear;
 
   if (nearlyZero(periodicRate)) {
-    return coupon * periods + input.faceValue;
+    return roundMoney(coupon * periods + input.faceValue);
   }
 
-  return (
-    coupon *
-      (1 - Math.pow(1 + periodicRate, -periods)) /
-      periodicRate +
-    input.faceValue *
-      Math.pow(1 + periodicRate, -periods)
-  );
+  const price = (coupon * (1 - Math.pow(1 + periodicRate, -periods))) / periodicRate +
+    input.faceValue * Math.pow(1 + periodicRate, -periods);
+
+  return roundMoney(price);
 }
 
 export function bondYieldToMaturity(
   faceValue: number,
-  couponRate: number,
+  couponRateDecimal: number,
   years: number,
   price: number,
   paymentsPerYear = 2
 ): SolverResult {
-  const fn = (periodicRate: number) =>
+  const fn = (marketRateDecimal: number) =>
     bondPrice({
       faceValue,
-      couponRate,
+      couponRate: couponRateDecimal,
       years,
-      marketRate: periodicRate * 100,
+      marketRate: marketRateDecimal,
       paymentsPerYear
     }) - price;
 
-  return brent(fn, -0.999999, 100, {
+  return brent(fn, -0.999999, 1.0, {
     tolerance: 1e-12,
     maxIterations: 600
   });
@@ -3118,13 +3201,12 @@ export function depreciation(
     }
 
     case "DECLINING_BALANCE": {
-      const rateDecimal =
-        (rate ?? (1 / life * 100)) / 100;
+      const rateDecimal = rate !== undefined ? rate : 1 / life;
 
       if (rateDecimal < 0 || rateDecimal >= 1) {
         throw new CalculationError(
           "DEPRECIATION_RATE",
-          "Declining-balance rate must be >= 0 and < 100%."
+          "Declining-balance rate must be >= 0 and < 1 (e.g. 0.20 for 20%)."
         );
       }
 
@@ -3147,7 +3229,7 @@ export function depreciation(
 
 export interface TaxBracket {
   upTo: number;
-  rate: number;
+  rate: number; // Bracket tax percentage (e.g. 10 for 10%)
 }
 
 export function progressiveTax(
@@ -3165,7 +3247,7 @@ export function progressiveTax(
     if (
       bracket.upTo <= previousLimit ||
       bracket.rate < 0 ||
-      !Number.isFinite(bracket.upTo) ||
+      (bracket.upTo !== Infinity && !Number.isFinite(bracket.upTo)) ||
       !Number.isFinite(bracket.rate)
     ) {
       throw new CalculationError(
@@ -3179,7 +3261,7 @@ export function progressiveTax(
       previousLimit;
 
     if (taxableSlice > 0) {
-      total += taxableSlice * bracket.rate / 100;
+      total += taxableSlice * (bracket.rate / 100);
     }
 
     if (taxableIncome <= bracket.upTo) break;
@@ -3217,34 +3299,34 @@ export function marginalTaxRate(
 
 export function vatFromNet(
   net: number,
-  vatRate: number
+  vatRatePercent: number
 ): { vat: number; gross: number } {
   assertNonNegative(net, "net");
-  assertNonNegative(vatRate, "vatRate");
+  assertNonNegative(vatRatePercent, "vatRatePercent");
 
-  const vat = net * vatRate / 100;
+  const vat = net * (vatRatePercent / 100);
   return { vat, gross: net + vat };
 }
 
 export function vatFromGross(
   gross: number,
-  vatRate: number
+  vatRatePercent: number
 ): { net: number; vat: number } {
   assertNonNegative(gross, "gross");
 
-  if (vatRate <= -100) {
+  if (vatRatePercent <= -100) {
     throw new CalculationError("VAT_RATE", "Invalid VAT rate.");
   }
 
-  const net = gross / (1 + vatRate / 100);
+  const net = gross / (1 + vatRatePercent / 100);
   return { net, vat: gross - net };
 }
 
 export function salesTax(
   amount: number,
-  taxRate: number
+  taxRatePercent: number
 ): number {
-  return amount * taxRate / 100;
+  return amount * (taxRatePercent / 100);
 }
 
 export function netPay(
@@ -3295,14 +3377,23 @@ export function commission(
   ratePercent: number,
   baseAdjustment = 0
 ): number {
-  return (sales - baseAdjustment) * ratePercent / 100;
+  return (sales - baseAdjustment) * (ratePercent / 100);
 }
 
+/**
+ * Calculates maximum home price and loan affordability based on DTI and monthly income.
+ * @param monthlyIncome Monthly gross income
+ * @param maxDTIPercent Maximum allowable DTI percentage (e.g. 36 for 36%)
+ * @param otherDebt Existing monthly non-housing debt obligations
+ * @param annualRateDecimal Canonical nominal annual interest rate as decimal (e.g. 0.065 for 6.5%)
+ * @param years Loan term in years
+ * @param downPayment Down payment amount
+ */
 export function houseAffordability(
   monthlyIncome: number,
-  maxDTI: number,
+  maxDTIPercent: number,
   otherDebt: number,
-  annualRate: number,
+  annualRateDecimal: number,
   years: number,
   downPayment = 0
 ): {
@@ -3311,14 +3402,12 @@ export function houseAffordability(
   maxHomePrice: number;
 } {
   const maximumDebt =
-    monthlyIncome * maxDTI / 100;
+    monthlyIncome * (maxDTIPercent / 100);
 
   const maxPrincipalAndInterest =
     Math.max(0, maximumDebt - otherDebt);
 
-  const monthlyRate =
-    annualRate / 100 / 12;
-
+  const monthlyRate = annualRateDecimal / 12;
   const periods = years * 12;
 
   const loan =
@@ -3384,19 +3473,26 @@ export interface PayoffResult {
   payoffMonths: number;
 }
 
+/**
+ * Calculates accelerated mortgage payoff given extra monthly payments.
+ * @param principal Outstanding principal loan balance
+ * @param annualRateDecimal Canonical nominal annual interest rate as decimal (e.g. 0.07 for 7%)
+ * @param remainingMonths Remaining loan term in months
+ * @param extraMonthlyPayment Extra monthly principal payment
+ */
 export function mortgagePayoff(
   principal: number,
-  annualRate: number,
+  annualRateDecimal: number,
   remainingMonths: number,
   extraMonthlyPayment = 0
 ): PayoffResult {
-  const monthlyRate = annualRate / 100 / 12;
+  const monthlyRate = annualRateDecimal / 12;
   const regularPayment =
     Math.abs(pmt(monthlyRate, remainingMonths, principal));
 
   const base = generateAmortizationSchedule({
     principal,
-    annualRate,
+    annualRate: annualRateDecimal,
     term: remainingMonths,
     termUnit: "MONTHS",
     frequency: "MONTHLY"
@@ -3404,7 +3500,7 @@ export function mortgagePayoff(
 
   const accelerated = generateAmortizationSchedule({
     principal,
-    annualRate,
+    annualRate: annualRateDecimal,
     term: remainingMonths,
     termUnit: "MONTHS",
     frequency: "MONTHLY",
@@ -3424,11 +3520,20 @@ export function mortgagePayoff(
   };
 }
 
+/**
+ * Compares current loan terms vs refinancing with new terms and closing costs.
+ * @param balance Outstanding loan balance
+ * @param currentRateDecimal Current annual interest rate as decimal (e.g. 0.065)
+ * @param currentMonths Remaining months on current loan
+ * @param newRateDecimal New refinancing annual interest rate as decimal (e.g. 0.0525)
+ * @param newMonths New loan term in months
+ * @param closingCosts Refinancing closing fees
+ */
 export function refinanceComparison(
   balance: number,
-  currentRate: number,
+  currentRateDecimal: number,
   currentMonths: number,
-  newRate: number,
+  newRateDecimal: number,
   newMonths: number,
   closingCosts = 0
 ): {
@@ -3440,10 +3545,10 @@ export function refinanceComparison(
   netSavings: number;
 } {
   const currentPayment =
-    Math.abs(pmt(currentRate / 100 / 12, currentMonths, balance));
+    Math.abs(pmt(currentRateDecimal / 12, currentMonths, balance));
 
   const newPayment =
-    Math.abs(pmt(newRate / 100 / 12, newMonths, balance));
+    Math.abs(pmt(newRateDecimal / 12, newMonths, balance));
 
   const currentInterest =
     currentPayment * currentMonths - balance;
@@ -3471,12 +3576,21 @@ export function refinanceComparison(
   };
 }
 
+/**
+ * Compares paying cash vs financing a purchase with opportunity cost of capital.
+ * @param cashPrice Full cash purchase price
+ * @param financeAmount Total amount financed
+ * @param annualRateDecimal Loan annual interest rate as decimal (e.g. 0.06)
+ * @param termMonths Loan duration in months
+ * @param investmentReturnDecimal Expected annual investment return as decimal (e.g. 0.08)
+ * @param downPayment Upfront cash down payment
+ */
 export function cashOrFinanceComparison(
   cashPrice: number,
   financeAmount: number,
-  annualRate: number,
+  annualRateDecimal: number,
   termMonths: number,
-  investmentReturn: number,
+  investmentReturnDecimal: number,
   downPayment = 0
 ): {
   loanPayment: number;
@@ -3490,7 +3604,7 @@ export function cashOrFinanceComparison(
   const payment =
     Math.abs(
       pmt(
-        annualRate / 100 / 12,
+        annualRateDecimal / 12,
         termMonths,
         loanPrincipal
       )
@@ -3503,7 +3617,7 @@ export function cashOrFinanceComparison(
     (cashPrice - downPayment) *
     (
       Math.pow(
-        1 + investmentReturn / 100,
+        1 + investmentReturnDecimal,
         termMonths / 12
       ) - 1
     );
@@ -3516,12 +3630,21 @@ export function cashOrFinanceComparison(
   };
 }
 
+/**
+ * Calculates monthly vehicle / asset lease payment.
+ * @param capCost Initial capitalized cost
+ * @param residual Estimated residual value at end of lease
+ * @param moneyFactor Lease money factor (APR / 2400)
+ * @param termMonths Lease duration in months
+ * @param salesTaxRatePercent Sales tax percentage (e.g. 7.5 for 7.5%)
+ * @param downPayment Capital reduction down payment
+ */
 export function leasePayment(
   capCost: number,
   residual: number,
   moneyFactor: number,
   termMonths: number,
-  taxRate = 0,
+  salesTaxRatePercent = 0,
   downPayment = 0
 ): number {
   const adjustedCapCost =
@@ -3536,7 +3659,7 @@ export function leasePayment(
     moneyFactor;
 
   return (depreciation + finance) *
-    (1 + taxRate / 100);
+    (1 + salesTaxRatePercent / 100);
 }
 
 /* ============================================================================

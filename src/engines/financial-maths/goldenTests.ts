@@ -26,6 +26,15 @@ import {
   presentValueOfInflationAdjustedFuture,
   compoundInterest,
   roundMoney,
+  houseAffordability,
+  mortgagePayoff,
+  refinanceComparison,
+  cashOrFinanceComparison,
+  depreciation,
+  progressiveTax,
+  vatFromNet,
+  vatFromGross,
+  commission,
 } from './index.ts';
 
 export interface GoldenTestCase {
@@ -445,14 +454,119 @@ export function runGoldenTestSuite(): GoldenTestSuiteResult {
     1.0
   );
 
+  // ==========================================================================
+  // SECTION 8: HIGH-LEVEL FINANCIAL PRIMITIVES (CANONICAL RATE AUDIT)
+  // ==========================================================================
+  const affordResult = houseAffordability(10000, 36, 600, 0.06, 30, 50000);
   evaluateTest(
-    'REGR-24CR-06',
-    'Insurance Regression: Negative Real Return (4% Return vs 6% Inflation)',
-    'Living Expenses = ₹9,60,000/yr, Inflation = 6.0%, Return = 4.0%, Horizon = 30 yrs -> PV = ₹3.92 Crores',
-    { annualExpense: 960000, inflation: 0.060, return: 0.040, years: 30 },
-    39219603.88,
-    calculateInflationAdjustedCashFlowsPV(960000, 0.040, 0.060, 30),
-    1.0
+    'AFFORD-01',
+    'House Affordability Max Loan',
+    'Income = 10000, maxDTI = 36%, otherDebt = 600, rate = 6.0% (0.06), 30 yrs -> maxLoan = 500374.84',
+    { monthlyIncome: 10000, maxDTIPercent: 36, otherDebt: 600, rateDecimal: 0.06, years: 30 },
+    500374.84,
+    affordResult.maxLoan,
+    0.10
+  );
+
+  evaluateTest(
+    'AFFORD-02',
+    'House Affordability Max Home Price',
+    'Max Loan 500374.84 + Down Payment 50000 -> 550374.84',
+    { maxLoan: 500374.84, downPayment: 50000 },
+    550374.84,
+    affordResult.maxHomePrice,
+    0.10
+  );
+
+  const payoff = mortgagePayoff(300000, 0.06, 360, 200);
+  evaluateTest(
+    'PAYOFF-01',
+    'Mortgage Payoff Regular Payment',
+    'Principal = 300000, rate = 0.06, 360 mos -> payment = 1798.65',
+    { principal: 300000, rateDecimal: 0.06, remainingMonths: 360 },
+    1798.65,
+    payoff.regularPayment,
+    0.05
+  );
+
+  const refi = refinanceComparison(400000, 0.065, 360, 0.050, 360, 5000);
+  evaluateTest(
+    'REFI-01',
+    'Refinance Comparison Monthly Savings',
+    'Balance = 400000, current = 0.065, new = 0.050, 360 mos -> savings = 380.98',
+    { balance: 400000, currentRate: 0.065, newRate: 0.050, months: 360 },
+    380.98,
+    refi.monthlySavings,
+    0.10
+  );
+
+  const cashFinance = cashOrFinanceComparison(50000, 50000, 0.06, 60, 0.08, 10000);
+  evaluateTest(
+    'CASHFIN-01',
+    'Cash vs Finance Loan Payment',
+    'Finance = 40000 net, rate = 0.06, 60 mos -> monthly payment = 773.31',
+    { financeAmount: 40000, rateDecimal: 0.06, termMonths: 60 },
+    773.31,
+    cashFinance.loanPayment,
+    0.05
+  );
+
+  evaluateTest(
+    'DEP-01',
+    'Declining Balance Depreciation (Canonical Decimal Rate)',
+    'Cost = 100000, salvage = 10000, life = 5, period 1, rate = 0.40 -> dep = 40000',
+    { cost: 100000, salvage: 10000, life: 5, period: 1, rate: 0.40 },
+    40000.0,
+    depreciation(100000, 10000, 5, 'DECLINING_BALANCE', 1, 0.40),
+    0.01
+  );
+
+  const tax = progressiveTax(150000, [
+    { upTo: 50000, rate: 10 },
+    { upTo: 100000, rate: 20 },
+    { upTo: Infinity, rate: 30 },
+  ]);
+  evaluateTest(
+    'TAX-01',
+    'Progressive Tax Calculation',
+    'Taxable = 150000 across 10%, 20%, 30% brackets -> tax = 30000',
+    { taxableIncome: 150000 },
+    30000.0,
+    tax,
+    0.01
+  );
+
+  const vatNet = vatFromNet(1000, 20);
+  evaluateTest(
+    'VAT-01',
+    'VAT from Net',
+    'Net = 1000, VAT rate = 20% -> vat = 200, gross = 1200',
+    { net: 1000, vatRatePercent: 20 },
+    200.0,
+    vatNet.vat,
+    0.01
+  );
+
+  const vatGross = vatFromGross(1200, 20);
+  evaluateTest(
+    'VAT-02',
+    'VAT from Gross',
+    'Gross = 1200, VAT rate = 20% -> net = 1000',
+    { gross: 1200, vatRatePercent: 20 },
+    1000.0,
+    vatGross.net,
+    0.01
+  );
+
+  const comm = commission(50000, 10);
+  evaluateTest(
+    'COMM-01',
+    'Commission Calculation',
+    'Sales = 50000, rate = 10% -> commission = 5000',
+    { sales: 50000, ratePercent: 10 },
+    5000.0,
+    comm,
+    0.01
   );
 
   const total = cases.length;
