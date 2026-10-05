@@ -385,8 +385,8 @@ export function computeNewTaxRegime2026(inputs: SalaryTaxInputs): RegimeTaxResul
   }
 
   const taxAfterSurcharge = taxAfterRebate + surchargeAmount;
-  const healthAndEducationCess = Math.round(taxAfterSurcharge * 0.04);
-  const totalTaxLiability = Math.round(taxAfterSurcharge + healthAndEducationCess);
+  const healthAndEducationCess = taxAfterSurcharge * 0.04;
+  const totalTaxLiability = Math.round((taxAfterSurcharge + healthAndEducationCess) / 10) * 10;
   const netPayableOrRefund = totalTaxLiability - (inputs.tdsAdvanceTaxPaid || 0);
 
   const effectiveTaxRate = grossTotalIncome > 0 ? (totalTaxLiability / grossTotalIncome) * 100 : 0;
@@ -628,8 +628,8 @@ export function computeOldTaxRegime(inputs: SalaryTaxInputs): RegimeTaxResult {
   }
 
   const taxAfterSurcharge = taxAfterRebate + surchargeAmount;
-  const healthAndEducationCess = Math.round(taxAfterSurcharge * 0.04);
-  const totalTaxLiability = Math.round(taxAfterSurcharge + healthAndEducationCess);
+  const healthAndEducationCess = taxAfterSurcharge * 0.04;
+  const totalTaxLiability = Math.round((taxAfterSurcharge + healthAndEducationCess) / 10) * 10;
   const netPayableOrRefund = totalTaxLiability - (inputs.tdsAdvanceTaxPaid || 0);
 
   const effectiveTaxRate = grossTotalIncome > 0 ? (totalTaxLiability / grossTotalIncome) * 100 : 0;

@@ -56,7 +56,7 @@ export function runIndiaCalculatorsTests(): { name: string; passed: boolean; err
     assert(tds.net.toNumber() === 45000, "Net ₹45,000");
   });
 
-  runTest("India Calculators - Capital Gains Computation", () => {
+  runTest("India Calculators - Capital Gains Computation & Legacy Adapter Metadata", () => {
     const cg = calculateCapitalGain({
       saleValue: 1500000,
       cost: 1000000,
@@ -65,6 +65,47 @@ export function runIndiaCalculatorsTests(): { name: string; passed: boolean; err
     assert(cg.gain.toNumber() === 500000, "Gain ₹5,00,000");
     assert(cg.tax.toNumber() === 62500, "Tax ₹62,500");
     assert(cg.netGain.toNumber() === 437500, "Net gain ₹4,37,500");
+
+    // Legacy adapter metadata/context test
+    const cgWithContext = calculateCapitalGain({
+      assetCategory: 'real_estate',
+      saleValue: 10000000, // ₹1 Cr
+      cost: 8000000, // ₹80 Lakhs
+      purchaseDate: '2020-01-01',
+      saleDate: '2025-08-01',
+      acquisitionBeforeJuly24: true,
+      indexedCostOfAcquisition: 8500000,
+    });
+    assert(cgWithContext.canonicalDetails.assetCategory === 'real_estate', "Asset category real_estate passed to canonical details");
+    assert(Boolean(cgWithContext.canonicalDetails.realEstateOptionUsed?.includes("Option B")), "Legacy adapter metadata triggers Option B evaluation");
+  });
+
+  runTest("India Calculators - Calendar Utility Statutory Holding-Period Boundaries", async () => {
+    const { addCalendarMonthsClamped, isShortTermHolding, computeHoldingPeriodDaysAndMonths } = await import("../../../src/utils/dateUtils.ts");
+
+    // 1. Clamped month-end clamping: Jan 31 + 1 month = Feb 28 (or Feb 29 leap year)
+    const jan31_2025 = new Date('2025-01-31');
+    const febClamped = addCalendarMonthsClamped(jan31_2025, 1);
+    assert(febClamped.getMonth() === 1, "Month is February (index 1)");
+    assert(febClamped.getDate() === 28, "Date clamped to 28th Feb in non-leap year");
+
+    const jan31_2024 = new Date('2024-01-31');
+    const febLeapClamped = addCalendarMonthsClamped(jan31_2024, 1);
+    assert(febLeapClamped.getDate() === 29, "Date clamped to 29th Feb in leap year 2024");
+
+    // 2. 12-month boundary for Listed Equity: Bought 2024-03-31, Sold 2025-03-30 (< 12 months) vs 2025-03-31 (>= 12 months)
+    const boughtMar31 = new Date('2024-03-31');
+    const soldMar30 = new Date('2025-03-30');
+    const soldMar31 = new Date('2025-03-31');
+
+    assert(isShortTermHolding(boughtMar31, soldMar30, 12) === true, "Sold on Mar 30 is Short-Term (< 12 calendar months)");
+    assert(isShortTermHolding(boughtMar31, soldMar31, 12) === false, "Sold on Mar 31 is Long-Term (>= 12 calendar months)");
+
+    const holdingInfoShort = computeHoldingPeriodDaysAndMonths(boughtMar31, soldMar30);
+    assert(holdingInfoShort.isShortTerm.equity === true, "Equity is short term prior to 12 calendar months");
+
+    const holdingInfoLong = computeHoldingPeriodDaysAndMonths(boughtMar31, soldMar31);
+    assert(holdingInfoLong.isShortTerm.equity === false, "Equity is long term at 12 calendar months boundary");
   });
 
   runTest("India Calculators - Statutory Capital Gains Engine (Losses, Set-Offs, Section 54 & Post-July 2024)", async () => {
@@ -137,6 +178,19 @@ export function runIndiaCalculatorsTests(): { name: string; passed: boolean; err
       jan312018Fmv: 1000000,
     });
     assert(gfPost2018.effectiveCoa === 500000, "Grandfathering rejected for assets acquired after Jan 31, 2018");
+
+    // 7. Real Estate Option B (12.5% without indexation) verification
+    const optionBRes = calculateStatutoryCapitalGains({
+      assetCategory: 'real_estate',
+      salePrice: 10000000, // ₹1 Crore
+      purchasePrice: 8000000, // ₹80 Lakhs
+      purchaseDate: '2020-01-01',
+      saleDate: '2025-08-01', // Post-July 23, 2024
+      acquisitionBeforeJuly24: true,
+      indexedCostOfAcquisition: 8500000, // Option A tax = (100L - 85L) * 20% = 3L; Option B tax = (100L - 80L) * 12.5% = 2.5L
+    });
+    assert(Boolean(optionBRes.realEstateOptionUsed?.includes("Option B")), "Option B selected as lower tax option");
+    assert(optionBRes.baseTax === 250000, `Expected 2,50,000 base tax under Option B (12.5% on 20L gain), got ${optionBRes.baseTax}`);
   });
 
   runTest("India Calculators - EPF 12% Contribution", () => {
@@ -215,6 +269,100 @@ export function runIndiaCalculatorsTests(): { name: string; passed: boolean; err
       surchargeRate: 0,
     });
     assert(crossingBill.totalTdsDeductible === 1100, `Expected ₹1,100 catch-up TDS, got ${crossingBill.totalTdsDeductible}`);
+
+    // TDS Historical Ledger FY Boundary test: Verify historical ledger for a previous FY is NOT counted against current FY threshold
+    const historicalLedgerRes = calculateEngineTds({
+      sectionKey: "194J_PROF",
+      payeeType: "Individual/HUF",
+      grossAmount: 20000,
+      aggregatePaidTillDate: 0,
+      isPanFurnished: true,
+      isSeniorCitizen: false,
+      isForm15Submitted: false,
+      hasForm13Certificate: false,
+      form13Rate: 0,
+      applySurchargeAndCess: false,
+      surchargeRate: 0,
+      transactionDate: "2025-06-15", // FY 2025-26
+      historicalPayments: [
+        { amount: 45000, transactionDate: "2024-08-10" }, // FY 2024-25 (previous FY)
+        { amount: 10000, transactionDate: "2025-05-01" }, // FY 2025-26 (same FY as transaction)
+      ],
+    });
+    // FY 2025-26 cumulative = 10,000 + 20,000 = 30,000 (below 194J ₹50,000 threshold). Should NOT include 45,000 from FY 2024-25.
+    assert(historicalLedgerRes.totalTdsDeductible === 0, `Expected ₹0 TDS as FY 2025-26 cumulative is ₹30,000 <= ₹50,000 threshold, got ${historicalLedgerRes.totalTdsDeductible}`);
+
+    // March 31 -> April 1 statutory trigger date tests (earlier of creditDate or paymentDate)
+    // Test 1: Credit on March 31, 2025 (FY 2024-25), Payment on April 5, 2025 (FY 2025-26) -> Trigger is March 31 (FY 2024-25)
+    const march31CreditRes = calculateEngineTds({
+      sectionKey: "194J_PROF",
+      payeeType: "Individual/HUF",
+      grossAmount: 30000,
+      isPanFurnished: true,
+      isSeniorCitizen: false,
+      isForm15Submitted: false,
+      hasForm13Certificate: false,
+      form13Rate: 0,
+      applySurchargeAndCess: false,
+      surchargeRate: 0,
+      creditDate: "2025-03-31", // FY 2024-25
+      paymentDate: "2025-04-05", // FY 2025-26
+      historicalPayments: [
+        { amount: 30000, creditDate: "2025-01-15" }, // FY 2024-25
+      ],
+    });
+    // Total FY 2024-25 = 30,000 + 30,000 = 60,000 (exceeds ₹50,000 threshold). Catch-up TDS @ 10% = ₹6,000
+    assert(march31CreditRes.evaluatedFinancialYear === "FY 2024-25", `Expected FY 2024-25, got ${march31CreditRes.evaluatedFinancialYear}`);
+    assert(march31CreditRes.statutoryTriggerDate === "2025-03-31", `Expected 2025-03-31 trigger, got ${march31CreditRes.statutoryTriggerDate}`);
+    assert(march31CreditRes.totalTdsDeductible === 6000, `Expected ₹6,000 TDS, got ${march31CreditRes.totalTdsDeductible}`);
+
+    // Test 2: April 1, 2025 new FY reset: Transaction on April 1, 2025 does NOT cross threshold even if March 31 had prior payments
+    const april1ResetRes = calculateEngineTds({
+      sectionKey: "194J_PROF",
+      payeeType: "Individual/HUF",
+      grossAmount: 30000,
+      isPanFurnished: true,
+      isSeniorCitizen: false,
+      isForm15Submitted: false,
+      hasForm13Certificate: false,
+      form13Rate: 0,
+      applySurchargeAndCess: false,
+      surchargeRate: 0,
+      currentTransactionDate: "2025-04-01", // FY 2025-26
+      historicalPayments: [
+        { amount: 45000, creditDate: "2025-03-31" }, // FY 2024-25
+      ],
+    });
+    // FY 2025-26 cumulative = 30,000 (below ₹50,000 threshold). ₹0 TDS.
+    assert(april1ResetRes.evaluatedFinancialYear === "FY 2025-26", `Expected FY 2025-26, got ${april1ResetRes.evaluatedFinancialYear}`);
+    assert(april1ResetRes.totalTdsDeductible === 0, `Expected ₹0 TDS on April 1 reset, got ${april1ResetRes.totalTdsDeductible}`);
+  });
+
+  runTest("India Loans - Education Loan Moratorium & Restructuring Engine", async () => {
+    const { calculateEducationLoanMoratorium } = await import("../../../src/calculators/india/loans/educationLoan.ts");
+
+    // Principal = ₹10,000,000 (10 Lakhs), Rate = 10%, Moratorium = 36 months (3 yrs study + buffer), Base Tenure = 5 years (60 months)
+    const baseInput = {
+      principal: 1000000,
+      annualInterestRatePercent: 10,
+      studyPeriodMonths: 24,
+      moratoriumBufferMonths: 12, // total 36 months
+      repaymentTenureYears: 5,
+    };
+
+    // 1. Verify Capitalization Assertion: repaymentStartPrincipal = originalPrincipal + moratoriumInterest
+    const fixEmiRes = calculateEducationLoanMoratorium({ ...baseInput, restructuringOption: 'FIX_TENURE_INCREASE_EMI' });
+    assert(fixEmiRes.accumulatedMoratoriumInterest === 300000, `Moratorium interest expected 300,000, got ${fixEmiRes.accumulatedMoratoriumInterest}`);
+    assert(fixEmiRes.repaymentStartPrincipal === 1300000, `Repayment start principal expected 1,300,000, got ${fixEmiRes.repaymentStartPrincipal}`);
+    assert(fixEmiRes.repaymentStartPrincipal === fixEmiRes.originalPrincipal + fixEmiRes.accumulatedMoratoriumInterest, "Assertion: repaymentStartPrincipal = originalPrincipal + moratoriumInterest");
+    assert(fixEmiRes.capitalizationAssertionVerified === true, "Capitalization assertion verified flag must be true");
+    assert(fixEmiRes.effectiveTenureMonths === 60, "FIX_TENURE_INCREASE_EMI keeps original 60 months tenure");
+
+    // 2. Verify FIX_EMI_EXTEND_TENURE mathematically extends tenure while fixing monthly EMI to baseline uncapitalized EMI
+    const extendTenureRes = calculateEducationLoanMoratorium({ ...baseInput, restructuringOption: 'FIX_EMI_EXTEND_TENURE' });
+    assert(extendTenureRes.monthlyEmi === extendTenureRes.baseUncapitalizedEmi, `FIX_EMI_EXTEND_TENURE fixes EMI at baseline uncapitalized EMI (${extendTenureRes.baseUncapitalizedEmi})`);
+    assert(extendTenureRes.effectiveTenureMonths > 60, `FIX_EMI_EXTEND_TENURE extends tenure beyond 60 months (got ${extendTenureRes.effectiveTenureMonths} months)`);
+    assert(extendTenureRes.effectiveTenureMonths === 86, `Expected tenure extended to 86 months, got ${extendTenureRes.effectiveTenureMonths}`);
   });
 
   return results;

@@ -1,4 +1,4 @@
-import { roundMoney } from "../../../engines/financial-maths/index.ts";
+import { roundMoney, isMonetaryLessOrEqual } from "../../../engines/financial-maths/index.ts";
 import { indiaRuleRegistry } from "../../../rules/india/registry.ts";
 import { IndiaInsuranceParameters } from "../../../rules/india/insurance/versions/2026.ts";
 
@@ -8,6 +8,57 @@ export interface VehicleDeductibleTariffProfile {
   discountSchedule: Array<{ minDeductibleRupees: number; discountPercentOnOD: number; maxDiscountRupees: number }>;
 }
 
+export class VehicleInsurerProfileRegistry {
+  private profiles: Map<string, VehicleDeductibleTariffProfile> = new Map();
+
+  constructor() {
+    this.registerProfile({
+      insurerId: 'hdfc_ergo',
+      insurerName: 'HDFC ERGO General Insurance',
+      discountSchedule: [
+        { minDeductibleRupees: 2500, discountPercentOnOD: 20, maxDiscountRupees: 750 },
+        { minDeductibleRupees: 5000, discountPercentOnOD: 25, maxDiscountRupees: 1500 },
+        { minDeductibleRupees: 7500, discountPercentOnOD: 30, maxDiscountRupees: 2000 },
+        { minDeductibleRupees: 15000, discountPercentOnOD: 35, maxDiscountRupees: 2500 },
+      ],
+    });
+    this.registerProfile({
+      insurerId: 'icici_lombard',
+      insurerName: 'ICICI Lombard General Insurance',
+      discountSchedule: [
+        { minDeductibleRupees: 2500, discountPercentOnOD: 20, maxDiscountRupees: 750 },
+        { minDeductibleRupees: 5000, discountPercentOnOD: 25, maxDiscountRupees: 1500 },
+        { minDeductibleRupees: 7500, discountPercentOnOD: 30, maxDiscountRupees: 2000 },
+        { minDeductibleRupees: 15000, discountPercentOnOD: 35, maxDiscountRupees: 2500 },
+      ],
+    });
+    this.registerProfile({
+      insurerId: 'bajaj_allianz',
+      insurerName: 'Bajaj Allianz General Insurance',
+      discountSchedule: [
+        { minDeductibleRupees: 2500, discountPercentOnOD: 20, maxDiscountRupees: 750 },
+        { minDeductibleRupees: 5000, discountPercentOnOD: 25, maxDiscountRupees: 1500 },
+        { minDeductibleRupees: 7500, discountPercentOnOD: 30, maxDiscountRupees: 2000 },
+        { minDeductibleRupees: 15000, discountPercentOnOD: 35, maxDiscountRupees: 2500 },
+      ],
+    });
+  }
+
+  public registerProfile(profile: VehicleDeductibleTariffProfile): void {
+    this.profiles.set(profile.insurerId, profile);
+  }
+
+  public getProfile(insurerId: string): VehicleDeductibleTariffProfile | undefined {
+    return this.profiles.get(insurerId);
+  }
+
+  public listProfiles(): VehicleDeductibleTariffProfile[] {
+    return Array.from(this.profiles.values());
+  }
+}
+
+export const vehicleInsurerProfileRegistry = new VehicleInsurerProfileRegistry();
+
 export interface CarInsuranceInput {
   manufacturerListedExShowroomPrice: number;
   vehicleAgeMonths: number;
@@ -16,6 +67,7 @@ export interface CarInsuranceInput {
   voluntaryDeductible?: number;
   isElectricVehicle?: boolean;
   isNewVehicle?: boolean;
+  insurerId?: string;
   insurerProfile?: VehicleDeductibleTariffProfile;
 }
 
@@ -44,7 +96,7 @@ function calculateVoluntaryDeductibleDiscount(
   
   const sorted = [...discountSchedule].sort((a, b) => b.minDeductibleRupees - a.minDeductibleRupees);
   for (const tier of sorted) {
-    if (deductibleRupees >= tier.minDeductibleRupees) {
+    if (isMonetaryLessOrEqual(tier.minDeductibleRupees, deductibleRupees)) {
       const calculatedDiscount = odPremium * (tier.discountPercentOnOD / 100);
       return roundMoney(Math.min(calculatedDiscount, tier.maxDiscountRupees));
     }
@@ -80,10 +132,11 @@ export function calculateCarInsurance(input: CarInsuranceInput): CarInsuranceRes
   const gstPercent = rule.parameters.gstRatesPercent.motorInsurance;
   const tpTariffs = rule.parameters.motorThirdPartyTariffs;
 
-  // Strict check: Voluntary deductible discounts are strictly insurer-specific. If no insurer profile is provided, discount is unavailable (no fabricated universal rule).
-  const hasInsurerProfile = Boolean(input.insurerProfile && input.insurerProfile.discountSchedule);
-  const activeSchedule = hasInsurerProfile ? input.insurerProfile!.discountSchedule : undefined;
-  const insurerNameUsed = hasInsurerProfile ? input.insurerProfile!.insurerName : "No Insurer Profile Selected (Voluntary Deductible Unavailable)";
+  // Resolve profile from parameter or managed profile registry
+  const profile = input.insurerProfile ?? (input.insurerId ? vehicleInsurerProfileRegistry.getProfile(input.insurerId) : undefined);
+  const hasInsurerProfile = Boolean(profile && profile.discountSchedule);
+  const activeSchedule = hasInsurerProfile ? profile!.discountSchedule : undefined;
+  const insurerNameUsed = hasInsurerProfile ? profile!.insurerName : "No Insurer Profile Selected (Voluntary Deductible Unavailable)";
 
   const depPct = getIdvDepreciationFromSchedule(ageMonths, rule.parameters.motorIdvDepreciationPercent);
   const idv = roundMoney(exShowroom * (1 - depPct / 100));
@@ -153,6 +206,7 @@ export interface BikeInsuranceInput {
   isElectricVehicle?: boolean;
   isNewVehicle?: boolean;
   voluntaryDeductible?: number;
+  insurerId?: string;
   insurerProfile?: VehicleDeductibleTariffProfile;
 }
 
@@ -186,9 +240,10 @@ export function calculateBikeInsurance(input: BikeInsuranceInput): BikeInsurance
   const gstPercent = rule.parameters.gstRatesPercent.motorInsurance;
   const tpTariffs = rule.parameters.motorThirdPartyTariffs;
 
-  const hasInsurerProfile = Boolean(input.insurerProfile && input.insurerProfile.discountSchedule);
-  const activeSchedule = hasInsurerProfile ? input.insurerProfile!.discountSchedule : undefined;
-  const insurerNameUsed = hasInsurerProfile ? input.insurerProfile!.insurerName : "No Insurer Profile Selected (Voluntary Deductible Unavailable)";
+  const profile = input.insurerProfile ?? (input.insurerId ? vehicleInsurerProfileRegistry.getProfile(input.insurerId) : undefined);
+  const hasInsurerProfile = Boolean(profile && profile.discountSchedule);
+  const activeSchedule = hasInsurerProfile ? profile!.discountSchedule : undefined;
+  const insurerNameUsed = hasInsurerProfile ? profile!.insurerName : "No Insurer Profile Selected (Voluntary Deductible Unavailable)";
 
   const depPct = getIdvDepreciationFromSchedule(ageMonths, rule.parameters.motorIdvDepreciationPercent);
   const idv = roundMoney(exShowroom * (1 - depPct / 100));

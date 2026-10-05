@@ -1,3 +1,5 @@
+import { isMonetaryExceeded, isMonetaryLessOrEqual } from "../engines/financial-maths/index.ts";
+
 export interface TdsSectionDefinition {
   code: string;
   name: string;
@@ -179,7 +181,7 @@ export interface TdsTransaction {
   amount: number;
   creditDate?: string;
   paymentDate?: string;
-  transactionDate: string;
+  transactionDate?: string;
 }
 
 export interface TdsInputState {
@@ -187,7 +189,7 @@ export interface TdsInputState {
   payeeType: 'Individual/HUF' | 'Company/Firm';
   payerType?: 'bank_post_office' | 'other_payer';
   grossAmount: number;
-  aggregatePaidTillDate: number;
+  aggregatePaidTillDate?: number; // Optional legacy fallback if historicalPayments is not provided
   isPanFurnished: boolean;
   isSeniorCitizen: boolean;
   isForm15Submitted: boolean;
@@ -195,7 +197,14 @@ export interface TdsInputState {
   form13Rate: number;
   applySurchargeAndCess: boolean;
   surchargeRate: number;
-  // Historical ledger supporting creditDate, paymentDate, chronological sorting, and FY grouping
+  
+  // Explicit Current Transaction timing fields for ledger evaluation & statutory trigger
+  currentTransactionDate?: string;
+  transactionDate?: string;
+  creditDate?: string;
+  paymentDate?: string;
+
+  // Primary historical ledger model supporting creditDate, paymentDate, chronological sorting, and FY grouping
   historicalPayments?: TdsTransaction[];
 }
 
@@ -217,6 +226,8 @@ export interface TdsCalculationResult {
   statusBadge: 'Deduction Applicable' | 'Below Threshold (₹0 TDS)' | 'Exempt (Form 15G/H)' | 'Lower Rate (Form 13)';
   penaltyWarning?: string;
   notes: string[];
+  evaluatedFinancialYear: string;
+  statutoryTriggerDate: string;
 }
 
 export const DEFAULT_TDS_INPUTS: TdsInputState = {
@@ -235,11 +246,11 @@ export const DEFAULT_TDS_INPUTS: TdsInputState = {
   historicalPayments: [],
 };
 
-function getFinancialYear(dateStr: string): string {
+export function getFinancialYear(dateStr: string): string {
   const d = new Date(dateStr);
   if (isNaN(d.getTime())) return "FY 2026-27";
   const year = d.getFullYear();
-  const month = d.getMonth(); // 3 = April
+  const month = d.getMonth(); // 3 = April (0-indexed)
   if (month >= 3) {
     return `FY ${year}-${(year + 1).toString().slice(-2)}`;
   } else {
@@ -247,12 +258,30 @@ function getFinancialYear(dateStr: string): string {
   }
 }
 
-function getStatutoryTriggerTimestamp(tx: { creditDate?: string; paymentDate?: string; transactionDate: string }): number {
-  const tDefault = new Date(tx.transactionDate).getTime() || Date.now();
-  const tCredit = tx.creditDate ? new Date(tx.creditDate).getTime() : NaN;
-  const tPayment = tx.paymentDate ? new Date(tx.paymentDate).getTime() : NaN;
-  const validTimes = [tDefault, tCredit, tPayment].filter(t => !isNaN(t));
-  return validTimes.length > 0 ? Math.min(...validTimes) : tDefault; // Earlier of credit or payment date
+/**
+ * Determine statutory trigger date: Earlier of credit or payment date per IT Act Section 194.
+ */
+export function resolveStatutoryTriggerDate(tx: { creditDate?: string; paymentDate?: string; transactionDate?: string; currentTransactionDate?: string }): {
+  dateStr: string;
+  timestamp: number;
+} {
+  const creditTime = tx.creditDate ? new Date(tx.creditDate).getTime() : NaN;
+  const paymentTime = tx.paymentDate ? new Date(tx.paymentDate).getTime() : NaN;
+  const txTime = (tx.currentTransactionDate || tx.transactionDate) ? new Date(tx.currentTransactionDate || tx.transactionDate!).getTime() : NaN;
+
+  const validEntries = [
+    { time: creditTime, dateStr: tx.creditDate! },
+    { time: paymentTime, dateStr: tx.paymentDate! },
+    { time: txTime, dateStr: (tx.currentTransactionDate || tx.transactionDate)! },
+  ].filter(item => !isNaN(item.time));
+
+  if (validEntries.length > 0) {
+    validEntries.sort((a, b) => a.time - b.time); // Statutory Rule: Earlier of credit date or payment date
+    return { dateStr: validEntries[0].dateStr, timestamp: validEntries[0].time };
+  }
+
+  const defaultStr = new Date().toISOString();
+  return { dateStr: defaultStr, timestamp: new Date(defaultStr).getTime() };
 }
 
 export function calculateTds(inputs: TdsInputState): TdsCalculationResult {
@@ -276,20 +305,33 @@ export function calculateTds(inputs: TdsInputState): TdsCalculationResult {
     }
   }
 
-  // Process historical ledger with chronological sorting by statutory trigger date (earlier of credit/payment) & FY grouping
-  let aggregatePaid = inputs.aggregatePaidTillDate || 0;
+  // Resolve statutory trigger date & target FY for the current transaction
+  const currentTrigger = resolveStatutoryTriggerDate(inputs);
+  const evaluatedFinancialYear = getFinancialYear(currentTrigger.dateStr);
+
+  // Determine prior cumulative aggregate paid in target FY
+  let aggregatePaid = 0;
   if (inputs.historicalPayments && inputs.historicalPayments.length > 0) {
-    const sortedTx = [...inputs.historicalPayments].sort((a, b) => getStatutoryTriggerTimestamp(a) - getStatutoryTriggerTimestamp(b));
-    // Group and accumulate by financial year
+    // Primary ledger model: chronologically sort historical payments by statutory trigger date
+    const sortedTx = [...inputs.historicalPayments].sort((a, b) => {
+      return resolveStatutoryTriggerDate(a).timestamp - resolveStatutoryTriggerDate(b).timestamp;
+    });
+
+    // Group cumulative payments by Financial Year
     const fyMap = new Map<string, number>();
     sortedTx.forEach(tx => {
-      const fy = getFinancialYear(tx.creditDate || tx.paymentDate || tx.transactionDate);
+      const trigger = resolveStatutoryTriggerDate(tx);
+      const fy = getFinancialYear(trigger.dateStr);
       const current = fyMap.get(fy) || 0;
       fyMap.set(fy, current + (tx.amount || 0));
     });
-    const currentTxFy = getFinancialYear(new Date().toISOString());
-    aggregatePaid = fyMap.get(currentTxFy) || aggregatePaid;
-    notes.push(`Processed chronological historical ledger with statutory trigger dates (earlier of credit/payment). FY cumulative sum: ₹${aggregatePaid.toLocaleString('en-IN')}`);
+
+    aggregatePaid = fyMap.get(evaluatedFinancialYear) || 0;
+    notes.push(`Primary historical ledger evaluated for ${evaluatedFinancialYear} using statutory earlier of credit/payment date (Trigger: ${currentTrigger.dateStr}). Prior FY cumulative sum: ₹${aggregatePaid.toLocaleString('en-IN')}`);
+  } else {
+    // Fallback model if no historical ledger provided
+    aggregatePaid = inputs.aggregatePaidTillDate || 0;
+    notes.push(`Legacy aggregate override evaluated for ${evaluatedFinancialYear}. Prior FY cumulative sum: ₹${aggregatePaid.toLocaleString('en-IN')}`);
   }
 
   const totalCumulativeAmount = aggregatePaid + (inputs.grossAmount || 0);
@@ -298,7 +340,7 @@ export function calculateTds(inputs: TdsInputState): TdsCalculationResult {
   let taxableBaseAmount = inputs.grossAmount;
 
   if (section.code === '194Q') {
-    if (totalCumulativeAmount > thresholdLimit) {
+    if (isMonetaryExceeded(totalCumulativeAmount, thresholdLimit)) {
       isThresholdCrossed = true;
       const previousExcess = Math.max(0, aggregatePaid - thresholdLimit);
       const totalExcess = totalCumulativeAmount - thresholdLimit;
@@ -311,13 +353,13 @@ export function calculateTds(inputs: TdsInputState): TdsCalculationResult {
   } else if (section.code === '194C') {
     const singleThreshold = 30000;
     const aggregateThreshold = 100000;
-    if (inputs.grossAmount > singleThreshold) {
+    if (isMonetaryExceeded(inputs.grossAmount, singleThreshold)) {
       isThresholdCrossed = true;
       taxableBaseAmount = inputs.grossAmount;
       notes.push(`Single invoice threshold of ₹30,000 exceeded.`);
-    } else if (totalCumulativeAmount > aggregateThreshold) {
+    } else if (isMonetaryExceeded(totalCumulativeAmount, aggregateThreshold)) {
       isThresholdCrossed = true;
-      if (aggregatePaid <= aggregateThreshold) {
+      if (isMonetaryLessOrEqual(aggregatePaid, aggregateThreshold)) {
         taxableBaseAmount = totalCumulativeAmount;
         notes.push(`Aggregate annual threshold of ₹1,00,000 exceeded. Catch-up TDS applied.`);
       } else {
@@ -328,9 +370,9 @@ export function calculateTds(inputs: TdsInputState): TdsCalculationResult {
       taxableBaseAmount = 0;
     }
   } else {
-    if (totalCumulativeAmount > thresholdLimit) {
+    if (isMonetaryExceeded(totalCumulativeAmount, thresholdLimit)) {
       isThresholdCrossed = true;
-      if (aggregatePaid <= thresholdLimit) {
+      if (isMonetaryLessOrEqual(aggregatePaid, thresholdLimit)) {
         taxableBaseAmount = totalCumulativeAmount;
         notes.push(`Annual threshold crossed. Catch-up TDS applied on cumulative sum.`);
       } else {
@@ -348,45 +390,43 @@ export function calculateTds(inputs: TdsInputState): TdsCalculationResult {
     notes.push('Valid Form 15G / 15H declared: 0% TDS applicable.');
   }
 
-  let effectiveRate = standardRate;
   let isMissingPanPenalty = false;
-  let penaltyWarning: string | undefined = undefined;
+  let effectiveTdsRate = standardRate;
 
-  if (isExemptedViaForm15) {
-    effectiveRate = 0;
-  } else if (!inputs.isPanFurnished) {
-    effectiveRate = Math.max(20, standardRate);
+  if (inputs.hasForm13Certificate && !isExemptedViaForm15) {
+    effectiveTdsRate = Math.max(0, inputs.form13Rate);
+    notes.push(`Section 197 Form 13 Lower Deduction Certificate rate of ${effectiveTdsRate}% applied.`);
+  }
+
+  if (!inputs.isPanFurnished && !isExemptedViaForm15) {
     isMissingPanPenalty = true;
-    penaltyWarning = `Section 206AA Penalty: Missing PAN triggers higher penalty TDS rate of ${effectiveRate}%.`;
-    notes.push(penaltyWarning);
-  } else if (inputs.hasForm13Certificate && section.supportsForm13) {
-    effectiveRate = Math.max(0, Number(inputs.form13Rate) || 0);
-    notes.push(`Form 13 Lower Deduction Certificate rate of ${effectiveRate}% applied.`);
+    effectiveTdsRate = Math.max(20, standardRate);
+    notes.push('Section 206AA Penalty applied: PAN not furnished. Higher of 20% or statutory rate enforced.');
   }
 
-  let baseTdsAmount = 0;
-  if (isThresholdCrossed && !isExemptedViaForm15) {
-    baseTdsAmount = (taxableBaseAmount * effectiveRate) / 100;
-  }
+  const baseTdsAmount = isThresholdCrossed && !isExemptedViaForm15
+    ? Math.round((taxableBaseAmount * (effectiveTdsRate / 100)) * 100) / 100
+    : 0;
 
   let surchargeAmount = 0;
   let cessAmount = 0;
   if (inputs.applySurchargeAndCess && baseTdsAmount > 0) {
-    const surchargeRate = Math.max(0, Number(inputs.surchargeRate) || 0);
-    surchargeAmount = (baseTdsAmount * surchargeRate) / 100;
-    cessAmount = ((baseTdsAmount + surchargeAmount) * 4) / 100;
+    surchargeAmount = Math.round((baseTdsAmount * (inputs.surchargeRate / 100)) * 100) / 100;
+    cessAmount = Math.round(((baseTdsAmount + surchargeAmount) * 0.04) * 100) / 100;
   }
 
-  const totalTdsDeductible = Math.round(baseTdsAmount + surchargeAmount + cessAmount);
-  const netPayableToPayee = Math.max(0, inputs.grossAmount - totalTdsDeductible);
+  const totalTdsDeductible = Math.round((baseTdsAmount + surchargeAmount + cessAmount) * 100) / 100;
+  const netPayableToPayee = Math.round((inputs.grossAmount - totalTdsDeductible) * 100) / 100;
 
-  let statusBadge: TdsCalculationResult['statusBadge'] = 'Deduction Applicable';
+  let statusBadge: 'Deduction Applicable' | 'Below Threshold (₹0 TDS)' | 'Exempt (Form 15G/H)' | 'Lower Rate (Form 13)';
   if (isExemptedViaForm15) {
     statusBadge = 'Exempt (Form 15G/H)';
   } else if (!isThresholdCrossed) {
     statusBadge = 'Below Threshold (₹0 TDS)';
-  } else if (inputs.hasForm13Certificate && section.supportsForm13) {
+  } else if (inputs.hasForm13Certificate) {
     statusBadge = 'Lower Rate (Form 13)';
+  } else {
+    statusBadge = 'Deduction Applicable';
   }
 
   return {
@@ -397,15 +437,17 @@ export function calculateTds(inputs: TdsInputState): TdsCalculationResult {
     isExemptedViaForm15,
     isMissingPanPenalty,
     baseTdsRate: standardRate,
-    effectiveTdsRate: effectiveRate,
-    baseTdsAmount: Math.round(baseTdsAmount),
-    surchargeAmount: Math.round(surchargeAmount),
-    cessAmount: Math.round(cessAmount),
+    effectiveTdsRate,
+    baseTdsAmount,
+    surchargeAmount,
+    cessAmount,
     totalTdsDeductible,
     netPayableToPayee,
     thresholdLimitUsed: thresholdLimit,
     statusBadge,
-    penaltyWarning,
+    penaltyWarning: isMissingPanPenalty ? 'Section 206AA Penalty Active: Higher of 20% or statutory rate applied due to missing PAN.' : undefined,
     notes,
+    evaluatedFinancialYear,
+    statutoryTriggerDate: currentTrigger.dateStr,
   };
 }

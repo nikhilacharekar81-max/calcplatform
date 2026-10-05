@@ -71,8 +71,8 @@ export const TdsCalculatorApp: React.FC<TdsCalculatorAppProps> = ({ initialState
       url.searchParams.set('amt', inputs.grossAmount.toString());
       url.searchParams.set('payee', inputs.payeeType);
       url.searchParams.set('pan', inputs.isPanFurnished ? '1' : '0');
-      if (inputs.aggregatePaidTillDate > 0) {
-        url.searchParams.set('agg', inputs.aggregatePaidTillDate.toString());
+      if ((inputs.aggregatePaidTillDate ?? 0) > 0) {
+        url.searchParams.set('agg', (inputs.aggregatePaidTillDate ?? 0).toString());
       } else {
         url.searchParams.delete('agg');
       }
@@ -133,7 +133,7 @@ export const TdsCalculatorApp: React.FC<TdsCalculatorAppProps> = ({ initialState
       ['Payee Category', inputs.payeeType],
       ['PAN Furnished', inputs.isPanFurnished ? 'Yes' : 'No (Sec 206AA Penalty)'],
       ['Gross Payment / Invoice Amount', `INR ${result.grossAmount.toLocaleString('en-IN')}`],
-      ['Aggregate Paid Till Date', `INR ${inputs.aggregatePaidTillDate.toLocaleString('en-IN')}`],
+      ['Aggregate Paid Till Date', `INR ${(inputs.aggregatePaidTillDate ?? 0).toLocaleString('en-IN')}`],
       ['Statutory Threshold Limit', `INR ${result.thresholdLimitUsed.toLocaleString('en-IN')}`],
       ['Threshold Status', result.isThresholdCrossed ? 'Threshold Crossed (TDS Applicable)' : 'Below Threshold'],
       ['Base TDS Rate (%)', `${result.baseTdsRate}%`],
@@ -379,7 +379,7 @@ export const TdsCalculatorApp: React.FC<TdsCalculatorAppProps> = ({ initialState
                     </span>
                   </label>
                   <span className="text-xs font-bold text-slate-600">
-                    ₹{inputs.aggregatePaidTillDate.toLocaleString('en-IN')}
+                    ₹{(inputs.aggregatePaidTillDate ?? 0).toLocaleString('en-IN')}
                   </span>
                 </div>
                 <div className="relative">

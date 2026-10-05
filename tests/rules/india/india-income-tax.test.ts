@@ -172,5 +172,34 @@ export function runIndiaIncomeTaxTests(): { name: string; passed: boolean; error
     assert(rejected, "Special-rate income must be explicitly rejected to prevent incorrect slab calculation");
   });
 
+  runTest("India Tax - Two-Stage Pipeline: Raw Full-Precision Computation vs Statutory Rounding Boundary", async () => {
+    const { calculateRawUnroundedIncomeTax, applyStatutoryRoundingBoundary } = await import("../../../src/calculators/india/incomeTax.ts");
+    
+    // Test input with fractional amount requiring statutory rounding
+    const rawDetails = calculateRawUnroundedIncomeTax({
+      grossIncome: 1545678,
+      salaryIncome: 1545678,
+      regime: "NEW",
+      age: 30,
+      resident: true,
+    });
+
+    // Verify rawDetails exposes 100% unrounded values
+    assert(rawDetails.rawGrossIncome === 1545678, "Raw gross income");
+    assert(rawDetails.rawStandardDeduction === 75000, "Raw standard deduction");
+    assert(rawDetails.rawTaxableIncome === 1470678, "Raw taxable income before Sec 288A rounding");
+    assert(rawDetails.rawTotalTaxBeforeStatutoryRounding > 0, "Raw unrounded tax float value present");
+
+    // Stage 2: Apply statutory boundary
+    const finalResult = applyStatutoryRoundingBoundary(rawDetails);
+    
+    // Sec 288A: Taxable income 1470678 rounded to 1470680 (nearest ₹10)
+    equal(finalResult.taxableIncome, 1470680, "Sec 288A rounded taxable income");
+    
+    // Sec 288B: Final tax rounded to nearest ₹10
+    equal(finalResult.totalTax % 10, 0, "Sec 288B final total tax rounded to multiple of 10");
+    equal(finalResult.rawDetails.rawTotalTaxBeforeStatutoryRounding !== finalResult.totalTax, true, "Raw float tax preserved in rawDetails while totalTax is statutory rounded");
+  });
+
   return results;
 }

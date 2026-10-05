@@ -154,8 +154,36 @@ export function compareMoney(a: number, b: number, tolerance = 0.01): boolean {
   return Math.abs(a - b) <= tolerance;
 }
 
+export function isMonetaryExceeded(amount: number, threshold: number, epsilon = 0.01): boolean {
+  assertFinite(amount);
+  assertFinite(threshold);
+  return (amount - threshold) > epsilon;
+}
+
+export function isMonetaryLessOrEqual(amount: number, threshold: number, epsilon = 0.01): boolean {
+  assertFinite(amount);
+  assertFinite(threshold);
+  return (amount - threshold) <= epsilon;
+}
+
 export function cleanZero(value: number, epsilon = 1e-10): number {
   return Math.abs(value) < epsilon ? 0 : value;
+}
+
+/**
+ * Section 288A Income-tax Act: Taxable income rounded off to the nearest multiple of ten rupees.
+ */
+export function applySection288ARounding(taxableIncome: number): number {
+  assertFinite(taxableIncome);
+  return Math.round(taxableIncome / 10) * 10;
+}
+
+/**
+ * Section 288B Income-tax Act: Final aggregate tax liability, surcharge, and cess rounded off to the nearest multiple of ten rupees.
+ */
+export function applySection288BRounding(totalTaxLiability: number): number {
+  assertFinite(totalTaxLiability);
+  return Math.round(totalTaxLiability / 10) * 10;
 }
 
 /* ============================================================================
