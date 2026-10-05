@@ -215,6 +215,16 @@ export function runInsuranceTests(): { passed: number; failed: number } {
     claimFreeYearsNCB: 2.5, // 2 completed years = 25% NCB
     voluntaryDeductible: 5000, // 25% discount on OD up to ₹1,500
     isElectricVehicle: true, // 15% discount on TP
+    insurerProfile: {
+      insurerId: 'TEST_INSURER',
+      insurerName: 'Test Insurer Ltd',
+      discountSchedule: [
+        { minDeductibleRupees: 2500, discountPercentOnOD: 20, maxDiscountRupees: 750 },
+        { minDeductibleRupees: 5000, discountPercentOnOD: 25, maxDiscountRupees: 1500 },
+        { minDeductibleRupees: 7500, discountPercentOnOD: 30, maxDiscountRupees: 2000 },
+        { minDeductibleRupees: 15000, discountPercentOnOD: 35, maxDiscountRupees: 2500 },
+      ],
+    },
   });
   assert(
     carEvRes.appliedDepreciationPercent === 30 &&

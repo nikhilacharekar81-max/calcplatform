@@ -46,7 +46,7 @@ export const TDS_SECTIONS: Record<string, TdsSectionDefinition> = {
     name: 'Rent on Land, Building, or Furniture',
     category: 'Rent',
     standardRate: 10,
-    thresholdAmount: 600000, // or ₹50,000/month for non-audit individual (194IB)
+    thresholdAmount: 600000,
     thresholdType: 'annual',
     thresholdDescription: '₹6,00,000 per financial year (or ₹50,000/month under 194-IB)',
     payeeTypes: ['Individual/HUF', 'Company/Firm', 'Any'],
@@ -71,13 +71,13 @@ export const TDS_SECTIONS: Record<string, TdsSectionDefinition> = {
     code: '194C',
     name: 'Payments to Contractors & Sub-Contractors',
     category: 'Contracts & Work',
-    standardRate: 1, // 1% for Ind/HUF, 2% for others
+    standardRate: 1,
     nonIndividualRate: 2,
-    thresholdAmount: 30000, // single invoice ₹30,000 or aggregate ₹1,00,000
+    thresholdAmount: 30000,
     thresholdType: 'single',
     thresholdDescription: '₹30,000 single bill or ₹1,00,000 aggregate per year',
     payeeTypes: ['Individual/HUF', 'Company/Firm'],
-    description: 'Carrying out any work (including advertising, broadcasting, catering, carriage of goods or passengers) pursuant to a contract.',
+    description: 'Carrying out any work pursuant to a contract.',
     supportsForm15GH: false,
     supportsForm13: true,
     notes: '1% if payee is Individual/HUF; 2% for Companies/LLPs/Partnership firms.',
@@ -86,12 +86,12 @@ export const TDS_SECTIONS: Record<string, TdsSectionDefinition> = {
     code: '194H',
     name: 'Commission or Brokerage',
     category: 'Commission',
-    standardRate: 2, // Concessional budget rate of 2%
+    standardRate: 2,
     thresholdAmount: 20000,
     thresholdType: 'annual',
     thresholdDescription: '₹20,000 per financial year',
     payeeTypes: ['Individual/HUF', 'Company/Firm', 'Any'],
-    description: 'Commission or brokerage fees for facilitating services in the course of buying or selling goods/properties.',
+    description: 'Commission or brokerage fees for facilitating services.',
     supportsForm15GH: false,
     supportsForm13: true,
   },
@@ -100,11 +100,11 @@ export const TDS_SECTIONS: Record<string, TdsSectionDefinition> = {
     name: 'Interest other than Interest on Securities (FD, NBFC, Loan)',
     category: 'Interest',
     standardRate: 10,
-    thresholdAmount: 10000, // ₹10,000 regular, ₹1,00,000 senior citizen
+    thresholdAmount: 10000,
     thresholdType: 'annual',
     thresholdDescription: '₹10,000 (regular) or ₹1,00,000 (Senior Citizen) for Banks/Co-op',
     payeeTypes: ['Individual/HUF', 'Company/Firm', 'Any'],
-    description: 'Interest paid by banks, co-operative societies, or private firms on fixed deposits, recurring deposits, or unsecured loans.',
+    description: 'Interest paid by banks, co-operative societies, or private firms.',
     supportsForm15GH: true,
     supportsForm13: true,
   },
@@ -117,7 +117,7 @@ export const TDS_SECTIONS: Record<string, TdsSectionDefinition> = {
     thresholdType: 'cumulative_excess',
     thresholdDescription: '₹50,00,000 aggregate purchase during the financial year',
     payeeTypes: ['Any'],
-    description: 'Applicable to buyers whose gross business turnover exceeds ₹10 Crores in the preceding FY. TDS @ 0.1% applies strictly on the sum exceeding ₹50 Lakhs.',
+    description: 'Applicable to buyers whose gross business turnover exceeds ₹10 Crores.',
     supportsForm15GH: false,
     supportsForm13: true,
   },
@@ -130,7 +130,7 @@ export const TDS_SECTIONS: Record<string, TdsSectionDefinition> = {
     thresholdType: 'annual',
     thresholdDescription: '₹20,000 aggregate value per financial year',
     payeeTypes: ['Individual/HUF', 'Company/Firm', 'Any'],
-    description: 'Value of any benefit, perk, gift, travel sponsorship, or dealer incentive provided in the course of business or profession.',
+    description: 'Value of any benefit, perk, gift, or travel sponsorship.',
     supportsForm15GH: false,
     supportsForm13: true,
   },
@@ -139,11 +139,11 @@ export const TDS_SECTIONS: Record<string, TdsSectionDefinition> = {
     name: 'Payment on Transfer of Virtual Digital Assets (Crypto / NFT)',
     category: 'Digital Assets',
     standardRate: 1,
-    thresholdAmount: 10000, // or ₹50,000 for specified persons
+    thresholdAmount: 10000,
     thresholdType: 'annual',
     thresholdDescription: '₹10,000 (or ₹50,000 for specified individual buyers)',
     payeeTypes: ['Any'],
-    description: 'TDS @ 1% on consideration paid to a resident on transfer of Virtual Digital Assets (crypto, tokens, NFTs).',
+    description: 'TDS @ 1% on consideration paid on transfer of VDAs.',
     supportsForm15GH: false,
     supportsForm13: false,
   },
@@ -156,7 +156,7 @@ export const TDS_SECTIONS: Record<string, TdsSectionDefinition> = {
     thresholdType: 'annual',
     thresholdDescription: '₹20,000 per financial year',
     payeeTypes: ['Individual/HUF'],
-    description: 'TDS @ 10% on salary, remuneration, bonus, commission, or interest paid by partnership firms/LLPs to their partners.',
+    description: 'TDS @ 10% on salary, remuneration, or interest paid to partners.',
     supportsForm15GH: false,
     supportsForm13: true,
   },
@@ -164,16 +164,23 @@ export const TDS_SECTIONS: Record<string, TdsSectionDefinition> = {
     code: '194O',
     name: 'TDS on E-Commerce Operator Payments to Participants',
     category: 'E-Commerce',
-    standardRate: 0.1, // Concessional 0.1%
+    standardRate: 0.1,
     thresholdAmount: 500000,
     thresholdType: 'annual',
     thresholdDescription: '₹5,00,000 for Individual/HUF e-commerce sellers',
     payeeTypes: ['Individual/HUF', 'Company/Firm'],
-    description: 'E-commerce platform operator deducting TDS on gross sales of goods or digital services facilitated through its marketplace.',
+    description: 'E-commerce platform operator deducting TDS on gross sales.',
     supportsForm15GH: false,
     supportsForm13: true,
   },
 };
+
+export interface TdsTransaction {
+  amount: number;
+  creditDate?: string;
+  paymentDate?: string;
+  transactionDate: string;
+}
 
 export interface TdsInputState {
   sectionKey: string;
@@ -182,12 +189,14 @@ export interface TdsInputState {
   grossAmount: number;
   aggregatePaidTillDate: number;
   isPanFurnished: boolean;
-  isSeniorCitizen: boolean; // Relevant for 194A
-  isForm15Submitted: boolean; // 15G or 15H
-  hasForm13Certificate: boolean; // Lower deduction certificate
-  form13Rate: number; // percentage
+  isSeniorCitizen: boolean;
+  isForm15Submitted: boolean;
+  hasForm13Certificate: boolean;
+  form13Rate: number;
   applySurchargeAndCess: boolean;
-  surchargeRate: number; // e.g. 0, 10, 15
+  surchargeRate: number;
+  // Historical ledger supporting creditDate, paymentDate, chronological sorting, and FY grouping
+  historicalPayments?: TdsTransaction[];
 }
 
 export interface TdsCalculationResult {
@@ -223,64 +232,94 @@ export const DEFAULT_TDS_INPUTS: TdsInputState = {
   form13Rate: 1.5,
   applySurchargeAndCess: false,
   surchargeRate: 0,
+  historicalPayments: [],
 };
+
+function getFinancialYear(dateStr: string): string {
+  const d = new Date(dateStr);
+  if (isNaN(d.getTime())) return "FY 2026-27";
+  const year = d.getFullYear();
+  const month = d.getMonth(); // 3 = April
+  if (month >= 3) {
+    return `FY ${year}-${(year + 1).toString().slice(-2)}`;
+  } else {
+    return `FY ${year - 1}-${year.toString().slice(-2)}`;
+  }
+}
+
+function getStatutoryTriggerTimestamp(tx: { creditDate?: string; paymentDate?: string; transactionDate: string }): number {
+  const tDefault = new Date(tx.transactionDate).getTime() || Date.now();
+  const tCredit = tx.creditDate ? new Date(tx.creditDate).getTime() : NaN;
+  const tPayment = tx.paymentDate ? new Date(tx.paymentDate).getTime() : NaN;
+  const validTimes = [tDefault, tCredit, tPayment].filter(t => !isNaN(t));
+  return validTimes.length > 0 ? Math.min(...validTimes) : tDefault; // Earlier of credit or payment date
+}
 
 export function calculateTds(inputs: TdsInputState): TdsCalculationResult {
   const section = TDS_SECTIONS[inputs.sectionKey] || TDS_SECTIONS['194J_PROF'];
   const notes: string[] = [];
 
-  // Determine standard base rate
   let standardRate = section.standardRate;
   if (section.nonIndividualRate && inputs.payeeType === 'Company/Firm') {
     standardRate = section.nonIndividualRate;
   }
 
-  // Determine Threshold Limit
   let thresholdLimit = section.thresholdAmount;
   if (section.code === '194A') {
     const isBankOrPostOffice = inputs.payerType === undefined || inputs.payerType === 'bank_post_office';
     if (inputs.isSeniorCitizen && isBankOrPostOffice && inputs.sectionKey === '194A_INTEREST') {
-      thresholdLimit = 100000; 
-      notes.push('Senior Citizen threshold of ₹1,00,000 applied (applicable for Banks/Post Office).');
+      thresholdLimit = 100000;
+      notes.push('Senior Citizen threshold of ₹1,00,000 applied (Banks/Post Office).');
     } else if (inputs.isSeniorCitizen && !isBankOrPostOffice) {
       thresholdLimit = 10000;
       notes.push('Standard non-bank threshold of ₹10,000 applied for other payers.');
     }
   }
 
-  const totalCumulativeAmount = (inputs.aggregatePaidTillDate || 0) + (inputs.grossAmount || 0);
+  // Process historical ledger with chronological sorting by statutory trigger date (earlier of credit/payment) & FY grouping
+  let aggregatePaid = inputs.aggregatePaidTillDate || 0;
+  if (inputs.historicalPayments && inputs.historicalPayments.length > 0) {
+    const sortedTx = [...inputs.historicalPayments].sort((a, b) => getStatutoryTriggerTimestamp(a) - getStatutoryTriggerTimestamp(b));
+    // Group and accumulate by financial year
+    const fyMap = new Map<string, number>();
+    sortedTx.forEach(tx => {
+      const fy = getFinancialYear(tx.creditDate || tx.paymentDate || tx.transactionDate);
+      const current = fyMap.get(fy) || 0;
+      fyMap.set(fy, current + (tx.amount || 0));
+    });
+    const currentTxFy = getFinancialYear(new Date().toISOString());
+    aggregatePaid = fyMap.get(currentTxFy) || aggregatePaid;
+    notes.push(`Processed chronological historical ledger with statutory trigger dates (earlier of credit/payment). FY cumulative sum: ₹${aggregatePaid.toLocaleString('en-IN')}`);
+  }
 
-  // Evaluate threshold status
+  const totalCumulativeAmount = aggregatePaid + (inputs.grossAmount || 0);
+
   let isThresholdCrossed = false;
   let taxableBaseAmount = inputs.grossAmount;
 
   if (section.code === '194Q') {
-    // 194Q applies strictly on excess above ₹50 Lakhs
     if (totalCumulativeAmount > thresholdLimit) {
       isThresholdCrossed = true;
-      const previousExcess = Math.max(0, (inputs.aggregatePaidTillDate || 0) - thresholdLimit);
+      const previousExcess = Math.max(0, aggregatePaid - thresholdLimit);
       const totalExcess = totalCumulativeAmount - thresholdLimit;
       taxableBaseAmount = Math.max(0, totalExcess - previousExcess);
-      notes.push(`Section 194Q applies only to the incremental amount exceeding ₹50,00,000.`);
+      notes.push(`Section 194Q applies to incremental amount exceeding ₹50,00,000.`);
     } else {
       isThresholdCrossed = false;
       taxableBaseAmount = 0;
     }
   } else if (section.code === '194C') {
-    // Single bill > ₹30,000 or Aggregate > ₹1,00,000
     const singleThreshold = 30000;
     const aggregateThreshold = 100000;
-
     if (inputs.grossAmount > singleThreshold) {
       isThresholdCrossed = true;
       taxableBaseAmount = inputs.grossAmount;
       notes.push(`Single invoice threshold of ₹30,000 exceeded.`);
     } else if (totalCumulativeAmount > aggregateThreshold) {
       isThresholdCrossed = true;
-      if ((inputs.aggregatePaidTillDate || 0) <= aggregateThreshold) {
-        // First time crossing aggregate limit: tax the whole year's payments
+      if (aggregatePaid <= aggregateThreshold) {
         taxableBaseAmount = totalCumulativeAmount;
-        notes.push(`Aggregate annual threshold of ₹1,00,000 exceeded. Catch-up TDS applied on total payments of ₹${totalCumulativeAmount.toLocaleString('en-IN')}.`);
+        notes.push(`Aggregate annual threshold of ₹1,00,000 exceeded. Catch-up TDS applied.`);
       } else {
         taxableBaseAmount = inputs.grossAmount;
       }
@@ -289,16 +328,11 @@ export function calculateTds(inputs: TdsInputState): TdsCalculationResult {
       taxableBaseAmount = 0;
     }
   } else {
-    // Standard annual or single limit
     if (totalCumulativeAmount > thresholdLimit) {
       isThresholdCrossed = true;
-      // If it's the first time crossing the threshold, the taxable base should be the 
-      // entire cumulative amount (catch-up), provided previous payments were below threshold.
-      // However, if previous payments were already above threshold (aggregatePaidTillDate > thresholdLimit),
-      // then we only tax the current gross amount.
-      if ((inputs.aggregatePaidTillDate || 0) <= thresholdLimit) {
+      if (aggregatePaid <= thresholdLimit) {
         taxableBaseAmount = totalCumulativeAmount;
-        notes.push(`Annual threshold of ₹${thresholdLimit.toLocaleString('en-IN')} crossed. TDS applied on total cumulative payment of ₹${totalCumulativeAmount.toLocaleString('en-IN')}.`);
+        notes.push(`Annual threshold crossed. Catch-up TDS applied on cumulative sum.`);
       } else {
         taxableBaseAmount = inputs.grossAmount;
       }
@@ -308,14 +342,12 @@ export function calculateTds(inputs: TdsInputState): TdsCalculationResult {
     }
   }
 
-  // Evaluate Form 15G / 15H Exemption
   let isExemptedViaForm15 = false;
   if (section.supportsForm15GH && inputs.isForm15Submitted) {
     isExemptedViaForm15 = true;
-    notes.push('Valid Form 15G / 15H declared: 0% TDS applicable regardless of threshold.');
+    notes.push('Valid Form 15G / 15H declared: 0% TDS applicable.');
   }
 
-  // Determine Effective Rate
   let effectiveRate = standardRate;
   let isMissingPanPenalty = false;
   let penaltyWarning: string | undefined = undefined;
@@ -323,36 +355,31 @@ export function calculateTds(inputs: TdsInputState): TdsCalculationResult {
   if (isExemptedViaForm15) {
     effectiveRate = 0;
   } else if (!inputs.isPanFurnished) {
-    // Higher rate u/s 206AA: Higher of 20% or standard rate
     effectiveRate = Math.max(20, standardRate);
     isMissingPanPenalty = true;
     penaltyWarning = `Section 206AA Penalty: Missing PAN triggers higher penalty TDS rate of ${effectiveRate}%.`;
     notes.push(penaltyWarning);
   } else if (inputs.hasForm13Certificate && section.supportsForm13) {
     effectiveRate = Math.max(0, Number(inputs.form13Rate) || 0);
-    notes.push(`Assessing Officer Lower Deduction Certificate (Form 13) rate of ${effectiveRate}% applied.`);
+    notes.push(`Form 13 Lower Deduction Certificate rate of ${effectiveRate}% applied.`);
   }
 
-  // Calculate Base TDS
   let baseTdsAmount = 0;
   if (isThresholdCrossed && !isExemptedViaForm15) {
     baseTdsAmount = (taxableBaseAmount * effectiveRate) / 100;
   }
 
-  // Surcharge & Cess (if enabled)
   let surchargeAmount = 0;
   let cessAmount = 0;
   if (inputs.applySurchargeAndCess && baseTdsAmount > 0) {
     const surchargeRate = Math.max(0, Number(inputs.surchargeRate) || 0);
     surchargeAmount = (baseTdsAmount * surchargeRate) / 100;
-    // Health & Education Cess is 4% on (Base TDS + Surcharge)
     cessAmount = ((baseTdsAmount + surchargeAmount) * 4) / 100;
   }
 
   const totalTdsDeductible = Math.round(baseTdsAmount + surchargeAmount + cessAmount);
   const netPayableToPayee = Math.max(0, inputs.grossAmount - totalTdsDeductible);
 
-  // Status Badge
   let statusBadge: TdsCalculationResult['statusBadge'] = 'Deduction Applicable';
   if (isExemptedViaForm15) {
     statusBadge = 'Exempt (Form 15G/H)';

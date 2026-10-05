@@ -148,6 +148,12 @@ export function roundMoney(value: number): number {
   return roundNumber(value, { mode: "HALF_UP", scale: 2 });
 }
 
+export function compareMoney(a: number, b: number, tolerance = 0.01): boolean {
+  assertFinite(a);
+  assertFinite(b);
+  return Math.abs(a - b) <= tolerance;
+}
+
 export function cleanZero(value: number, epsilon = 1e-10): number {
   return Math.abs(value) < epsilon ? 0 : value;
 }
