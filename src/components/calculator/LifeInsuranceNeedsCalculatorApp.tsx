@@ -3,13 +3,10 @@ import {
   ShieldCheck,
   TrendingUp,
   AlertCircle,
-  HelpCircle,
   CheckCircle2,
-  DollarSign,
-  BarChart2,
+  PieChart as PieIcon,
   Sparkles,
-  Info,
-  ArrowRight,
+  Layers,
 } from 'lucide-react';
 import {
   ResponsiveContainer,
@@ -23,40 +20,45 @@ import {
 } from 'recharts';
 import { Calculator } from '../../types/schema.ts';
 import { calculateLifeInsuranceNeeds } from '../../calculators/india/insurance/life.ts';
+import { AccessibleSlider } from '../common/AccessibleSlider.tsx';
+import { AccessibleSummaryCard } from '../common/AccessibleSummaryCard.tsx';
 
 interface LifeInsuranceNeedsCalculatorAppProps {
   calculator?: Calculator;
 }
 
 export const LifeInsuranceNeedsCalculatorApp: React.FC<LifeInsuranceNeedsCalculatorAppProps> = () => {
-  // 12 Inputs requested by user
+  // Required Inputs
   const [age, setAge] = useState<number>(32);
   const [annualIncome, setAnnualIncome] = useState<number>(1500000); // ₹15 Lakh
-  const [monthlyExpenses, setMonthlyExpenses] = useState<number>(60000); // ₹60,000 / mo
-  const [retirementAge, setRetirementAge] = useState<number>(60);
-  const [dependents, setDependents] = useState<number>(2);
-  const [loans, setLoans] = useState<number>(2000000); // ₹20 Lakh
-  const [existingLifeCover, setExistingLifeCover] = useState<number>(2500000); // ₹25 Lakh
-  const [savings, setSavings] = useState<number>(1000000); // ₹10 Lakh
-  const [investments, setInvestments] = useState<number>(1500000); // ₹15 Lakh
-  const [futureGoals, setFutureGoals] = useState<number>(3500000); // ₹35 Lakh
+  const [yearsOfSupportNeeded, setYearsOfSupportNeeded] = useState<number>(25); // 25 years
+  const [homeLoan, setHomeLoan] = useState<number>(3000000); // ₹30 Lakh
+  const [otherDebts, setOtherDebts] = useState<number>(500000); // ₹5 Lakh
+  const [futureGoals, setFutureGoals] = useState<number>(2500000); // ₹25 Lakh
+  const [finalEmergencyExpenses, setFinalEmergencyExpenses] = useState<number>(500000); // ₹5 Lakh
+  const [existingLifeCover, setExistingLifeCover] = useState<number>(2000000); // ₹20 Lakh
+  const [savings, setSavings] = useState<number>(1500000); // ₹15 Lakh
   const [inflationRate, setInflationRate] = useState<number>(6.0); // 6%
-  const [investmentReturn, setInvestmentReturn] = useState<number>(8.5); // 8.5%
+
+  // Optional Inputs
+  const [employerLifeInsurance, setEmployerLifeInsurance] = useState<number>(1000000); // ₹10 Lakh
+  const [spouseDependentIncome, setSpouseDependentIncome] = useState<number>(300000); // ₹3 Lakh/yr
 
   // Execute mathematical engine
   const result = calculateLifeInsuranceNeeds({
     age,
     annualIncome,
-    monthlyExpenses,
-    retirementAge,
-    dependents,
-    loans,
-    existingLifeCover,
-    savings,
-    investments,
+    yearsOfSupportNeeded,
+    homeLoan,
+    otherDebts,
     futureGoals,
+    finalEmergencyExpenses,
+    existingLifeCover,
+    employerLifeInsurance,
+    spouseDependentIncome,
+    savings,
     inflationRate,
-    investmentReturn,
+    investmentReturn: 8.5,
   });
 
   const formatINR = (val: number) => {
@@ -76,10 +78,10 @@ export const LifeInsuranceNeedsCalculatorApp: React.FC<LifeInsuranceNeedsCalcula
     return `₹${val.toLocaleString('en-IN')}`;
   };
 
-  // Grouped Bar Chart Data (Comparison View)
+  // Grouped Bar Chart Data
   const chartData = [
     {
-      metric: 'Financial Need vs Resources',
+      metric: 'Financial Needs vs Resources',
       totalNeed: result.totalFinancialNeed,
       availableResources: result.availableResources,
       protectionGap: result.protectionGap,
@@ -87,522 +89,396 @@ export const LifeInsuranceNeedsCalculatorApp: React.FC<LifeInsuranceNeedsCalcula
   ];
 
   return (
-    <div className="space-y-10 font-sans text-[#404145]">
-      {/* Main Grid: Inputs on Left, Output & Charts on Right */}
-      <div className="bg-white rounded-3xl border border-[#e4e5e7] p-6 sm:p-8 shadow-xs grid grid-cols-1 lg:grid-cols-12 gap-8">
-        {/* Left Column: 12 Inputs with Paired Sliders & Numeric Inputs */}
-        <div className="lg:col-span-6 space-y-6">
-          <div className="border-b border-slate-100 pb-4">
-            <h2 className="text-lg font-bold text-[#222325] flex items-center gap-2">
-              <span className="w-2.5 h-2.5 rounded-full bg-[#1dbf73]" />
+    <main
+      aria-label="Life Insurance Needs Calculator Workspace"
+      className="space-y-10 font-sans text-slate-800"
+    >
+      <div className="bg-white rounded-3xl border border-slate-300 p-6 sm:p-8 shadow-xs grid grid-cols-1 lg:grid-cols-12 gap-8">
+        
+        {/* Left Column: Inputs */}
+        <section
+          aria-labelledby="life-needs-inputs-title"
+          className="lg:col-span-6 space-y-6"
+        >
+          <header className="border-b border-slate-200 pb-4">
+            <h2 id="life-needs-inputs-title" className="text-lg sm:text-xl font-extrabold text-slate-900 flex items-center gap-2">
+              <span className="w-3 h-3 rounded-full bg-emerald-600" aria-hidden="true" />
               Life Needs Evaluation Parameters
             </h2>
-            <p className="text-xs text-[#74767e] mt-1">
-              Deterministic capital needs analysis. All sliders are bi-directionally synchronized with text entry.
+            <p className="text-xs sm:text-sm text-slate-600 mt-1 leading-relaxed">
+              Comprehensive financial protection analysis factoring debts, goals, and optional family income.
             </p>
+          </header>
+
+          <fieldset className="space-y-5 border-none p-0 m-0">
+            <legend className="sr-only">Primary Inputs</legend>
+
+            <AccessibleSlider
+              id="needs-input-age"
+              label="1. Current Age"
+              value={age}
+              min={18}
+              max={65}
+              unit="Yrs"
+              valueText={`${age} years old`}
+              onChange={(val) => setAge(val)}
+            />
+
+            <AccessibleSlider
+              id="needs-input-income"
+              label="2. Annual Income"
+              value={annualIncome}
+              min={100000}
+              max={100000000}
+              step={50000}
+              prefix="₹"
+              valueText={formatINR(annualIncome)}
+              minLabel="₹1 Lakh"
+              maxLabel="₹10 Crore"
+              onChange={(val) => setAnnualIncome(val)}
+            />
+
+            <AccessibleSlider
+              id="needs-input-years"
+              label="3. Years of Income Replacement"
+              value={yearsOfSupportNeeded}
+              min={5}
+              max={40}
+              unit="Yrs"
+              valueText={`${yearsOfSupportNeeded} years support`}
+              minLabel="5 Yrs"
+              maxLabel="40 Yrs"
+              onChange={(val) => setYearsOfSupportNeeded(val)}
+            />
+
+            <AccessibleSlider
+              id="needs-input-homeloan"
+              label="4. Home Loan Liability"
+              value={homeLoan}
+              min={0}
+              max={50000000}
+              step={50000}
+              prefix="₹"
+              valueText={formatINR(homeLoan)}
+              minLabel="₹0"
+              maxLabel="₹5 Crore"
+              onChange={(val) => setHomeLoan(val)}
+            />
+
+            <AccessibleSlider
+              id="needs-input-otherdebts"
+              label="5. Other Debts & Personal Loans"
+              value={otherDebts}
+              min={0}
+              max={20000000}
+              step={25000}
+              prefix="₹"
+              valueText={formatINR(otherDebts)}
+              minLabel="₹0"
+              maxLabel="₹2 Crore"
+              onChange={(val) => setOtherDebts(val)}
+            />
+
+            <AccessibleSlider
+              id="needs-input-goals"
+              label="6. Education & Future Goals"
+              value={futureGoals}
+              min={0}
+              max={50000000}
+              step={50000}
+              prefix="₹"
+              valueText={formatINR(futureGoals)}
+              minLabel="₹0"
+              maxLabel="₹5 Crore"
+              onChange={(val) => setFutureGoals(val)}
+            />
+
+            <AccessibleSlider
+              id="needs-input-emergency"
+              label="7. Final & Emergency Expenses"
+              value={finalEmergencyExpenses}
+              min={0}
+              max={5000000}
+              step={25000}
+              prefix="₹"
+              valueText={formatINR(finalEmergencyExpenses)}
+              minLabel="₹0"
+              maxLabel="₹50 Lakh"
+              onChange={(val) => setFinalEmergencyExpenses(val)}
+            />
+
+            <AccessibleSlider
+              id="needs-input-cover"
+              label="8. Existing Personal Life Insurance"
+              value={existingLifeCover}
+              min={0}
+              max={50000000}
+              step={50000}
+              prefix="₹"
+              valueText={formatINR(existingLifeCover)}
+              minLabel="₹0"
+              maxLabel="₹5 Crore"
+              onChange={(val) => setExistingLifeCover(val)}
+            />
+
+            <AccessibleSlider
+              id="needs-input-savings"
+              label="9. Savings & Liquid Investments"
+              value={savings}
+              min={0}
+              max={50000000}
+              step={50000}
+              prefix="₹"
+              valueText={formatINR(savings)}
+              minLabel="₹0"
+              maxLabel="₹5 Crore"
+              onChange={(val) => setSavings(val)}
+            />
+
+            <AccessibleSlider
+              id="needs-input-inflation"
+              label="10. Inflation Rate (% p.a.)"
+              value={inflationRate}
+              min={0}
+              max={15}
+              step={0.5}
+              unit="%"
+              valueText={`${inflationRate} percent per annum`}
+              minLabel="0.0%"
+              maxLabel="15.0%"
+              onChange={(val) => setInflationRate(val)}
+            />
+          </fieldset>
+
+          {/* Optional Inputs Accordion / Block */}
+          <div className="p-4 bg-slate-50 border border-slate-300 rounded-2xl space-y-4">
+            <h3 className="text-xs font-bold text-slate-800 uppercase tracking-wider flex items-center gap-1.5">
+              <Sparkles className="w-3.5 h-3.5 text-emerald-600" />
+              Optional Family & Employer Resources
+            </h3>
+
+            <AccessibleSlider
+              id="needs-input-employer-cover"
+              label="Employer Group Life Insurance"
+              value={employerLifeInsurance}
+              min={0}
+              max={20000000}
+              step={50000}
+              prefix="₹"
+              valueText={formatINR(employerLifeInsurance)}
+              minLabel="₹0"
+              maxLabel="₹2 Crore"
+              helperText="Group term policy provided by current employer"
+              onChange={(val) => setEmployerLifeInsurance(val)}
+            />
+
+            <AccessibleSlider
+              id="needs-input-spouse-income"
+              label="Spouse / Secondary Dependent Income"
+              value={spouseDependentIncome}
+              min={0}
+              max={5000000}
+              step={25000}
+              prefix="₹"
+              unit="/yr"
+              valueText={`${formatINR(spouseDependentIncome)} per year`}
+              minLabel="₹0"
+              maxLabel="₹50 Lakh/yr"
+              helperText="Secondary earning contribution by spouse or family"
+              onChange={(val) => setSpouseDependentIncome(val)}
+            />
+          </div>
+        </section>
+
+        {/* Right Column: All Requested Outputs */}
+        <section
+          aria-label="Life Needs Calculation Results Dashboard"
+          className="lg:col-span-6 space-y-6"
+        >
+          {/* Primary Recommended Cover Card */}
+          <AccessibleSummaryCard
+            id="hero-needs-cover"
+            title="Estimated Additional Life Insurance Required"
+            value={formatINR(result.insuranceRequired)}
+            formattedSubtitle={result.netInsuranceRequiredFormatted}
+            badgeLabel={`${yearsOfSupportNeeded} Yrs Replacement`}
+            isHero={true}
+            statusType={result.protectionGap > 0 ? 'warning' : 'success'}
+            statusText={
+              result.protectionGap > 0
+                ? `Net Protection Gap of ${formatINR(result.protectionGap)} detected`
+                : 'Existing assets & resources fully cover total financial need'
+            }
+          />
+
+          {/* Outputs 1 & 2: Total Financial Need vs Existing Resources */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <AccessibleSummaryCard
+              id="card-total-need"
+              title="1. Total Financial Need"
+              value={formatINR(result.totalFinancialNeed)}
+              formattedSubtitle="Living PV + Debts + Goals + Emergency"
+            />
+
+            <AccessibleSummaryCard
+              id="card-existing-resources"
+              title="2. Existing Resources"
+              value={formatINR(result.availableResources)}
+              formattedSubtitle="Personal + Employer Cover + Savings + Spouse Income"
+            />
           </div>
 
-          <div className="space-y-4 max-h-[720px] overflow-y-auto pr-1">
-            {/* 1. Age */}
-            <div className="space-y-1.5">
-              <div className="flex items-center justify-between">
-                <label className="text-xs sm:text-sm font-bold text-slate-700">Current Age</label>
-                <div className="flex items-center bg-slate-50 rounded-lg px-2.5 py-1 border border-slate-200 focus-within:border-[#1dbf73] focus-within:bg-white transition-all">
-                  <input
-                    type="number"
-                    min={18}
-                    max={65}
-                    step={1}
-                    value={age || ''}
-                    onChange={(e) => setAge(e.target.value === '' ? 18 : Math.min(65, Math.max(18, Number(e.target.value))))}
-                    className="w-16 text-right text-xs sm:text-sm font-bold text-slate-800 bg-transparent focus:outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
-                  />
-                  <span className="text-xs font-semibold text-slate-500 ml-1 select-none">Yrs</span>
-                </div>
+          {/* Itemized Calculation Breakdown Card */}
+          <article
+            aria-labelledby="needs-breakdown-heading"
+            className="p-5 bg-slate-900 text-white rounded-2xl space-y-3 border border-slate-800 shadow-md"
+          >
+            <h3 id="needs-breakdown-heading" className="text-xs font-bold text-emerald-400 uppercase tracking-wider flex items-center gap-1.5">
+              <CheckCircle2 className="w-4 h-4 text-emerald-400" aria-hidden="true" />
+              Itemized Protection Breakdown
+            </h3>
+            <div className="text-xs space-y-1.5 font-mono text-slate-200">
+              <div className="flex justify-between">
+                <span>Income Replacement Corpus:</span>
+                <span className="font-bold">{formatINR(result.incomeReplacementCorpus)}</span>
               </div>
-              <input
-                type="range"
-                min={18}
-                max={65}
-                step={1}
-                value={age}
-                onChange={(e) => setAge(Number(e.target.value))}
-                className="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-[#1dbf73]"
-              />
-              <div className="flex justify-between text-[11px] text-slate-400 font-medium">
-                <span>18 Yrs</span>
-                <span>65 Yrs</span>
+              <div className="flex justify-between">
+                <span>Home Loan Liability:</span>
+                <span className="font-bold">{formatINR(result.homeLoanProtection)}</span>
+              </div>
+              <div className="flex justify-between">
+                <span>Other Debts & Loans:</span>
+                <span className="font-bold">{formatINR(result.otherDebtsProtection)}</span>
+              </div>
+              <div className="flex justify-between">
+                <span>Education & Milestone Goals:</span>
+                <span className="font-bold">{formatINR(result.futureFinancialGoals)}</span>
+              </div>
+              <div className="flex justify-between">
+                <span>Final / Emergency Expenses:</span>
+                <span className="font-bold">{formatINR(result.finalEmergencyExpenses)}</span>
+              </div>
+
+              <div className="flex justify-between border-t border-slate-700 pt-1 font-bold text-white text-sm">
+                <span>Total Financial Need:</span>
+                <span>{formatINR(result.totalFinancialNeed)}</span>
+              </div>
+
+              <div className="flex justify-between text-emerald-400">
+                <span>Less Personal Life Cover:</span>
+                <span>−{formatINR(result.existingPersonalCover)}</span>
+              </div>
+              <div className="flex justify-between text-emerald-400">
+                <span>Less Employer Life Cover:</span>
+                <span>−{formatINR(result.employerLifeInsurance)}</span>
+              </div>
+              <div className="flex justify-between text-emerald-400">
+                <span>Less Savings & Investments:</span>
+                <span>−{formatINR(result.savingsAndInvestments)}</span>
+              </div>
+              {result.spouseIncomePresentValue > 0 && (
+                <div className="flex justify-between text-emerald-400">
+                  <span>Less Spouse Income PV:</span>
+                  <span>−{formatINR(result.spouseIncomePresentValue)}</span>
+                </div>
+              )}
+
+              <div className="flex justify-between border-t border-slate-700 pt-1 font-black text-amber-300 text-sm sm:text-base">
+                <span>Additional Insurance Required:</span>
+                <output aria-live="polite">{formatINR(result.protectionGap)}</output>
               </div>
             </div>
+          </article>
 
-            {/* 2. Annual Income */}
-            <div className="space-y-1.5">
-              <div className="flex items-center justify-between">
-                <label className="text-xs sm:text-sm font-bold text-slate-700">Annual Income</label>
-                <div className="flex items-center bg-slate-50 rounded-lg px-2.5 py-1 border border-slate-200 focus-within:border-[#1dbf73] focus-within:bg-white transition-all">
-                  <span className="text-xs font-bold text-slate-500 mr-1 select-none">₹</span>
-                  <input
-                    type="number"
-                    min={100000}
-                    max={100000000}
-                    step={50000}
-                    value={annualIncome || ''}
-                    onChange={(e) => setAnnualIncome(e.target.value === '' ? 0 : Math.max(0, Number(e.target.value)))}
-                    className="w-28 text-right text-xs sm:text-sm font-bold text-slate-800 bg-transparent focus:outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
-                  />
-                </div>
-              </div>
-              <input
-                type="range"
-                min={100000}
-                max={10000000}
-                step={50000}
-                value={annualIncome}
-                onChange={(e) => setAnnualIncome(Number(e.target.value))}
-                className="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-[#1dbf73]"
-              />
-              <div className="flex justify-between text-[11px] text-slate-400 font-medium">
-                <span>₹1 Lakh</span>
-                <span>₹1 Crore</span>
-              </div>
-            </div>
+          {/* Methodology Comparison Panel: Income-Multiple vs DIME vs Detailed Needs */}
+          <article
+            aria-labelledby="comparison-heading"
+            className="p-5 bg-white border border-slate-300 rounded-2xl space-y-3 shadow-2xs"
+          >
+            <h3 id="comparison-heading" className="text-xs sm:text-sm font-bold text-slate-900 flex items-center gap-1.5">
+              <Layers className="w-4 h-4 text-emerald-600" aria-hidden="true" />
+              Methodology Comparison (Income Multiple vs DIME vs Detailed Needs)
+            </h3>
+            <p className="text-[11px] text-slate-600 leading-normal">
+              Comparing 3 industry-standard valuation approaches for your profile:
+            </p>
 
-            {/* 3. Monthly Expenses */}
-            <div className="space-y-1.5">
-              <div className="flex items-center justify-between">
-                <label className="text-xs sm:text-sm font-bold text-slate-700">Monthly Household Expenses</label>
-                <div className="flex items-center bg-slate-50 rounded-lg px-2.5 py-1 border border-slate-200 focus-within:border-[#1dbf73] focus-within:bg-white transition-all">
-                  <span className="text-xs font-bold text-slate-500 mr-1 select-none">₹</span>
-                  <input
-                    type="number"
-                    min={10000}
-                    max={1000000}
-                    step={5000}
-                    value={monthlyExpenses || ''}
-                    onChange={(e) => setMonthlyExpenses(e.target.value === '' ? 0 : Math.max(0, Number(e.target.value)))}
-                    className="w-24 text-right text-xs sm:text-sm font-bold text-slate-800 bg-transparent focus:outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
-                  />
-                  <span className="text-xs font-semibold text-slate-500 ml-1 select-none">/mo</span>
-                </div>
-              </div>
-              <input
-                type="range"
-                min={10000}
-                max={500000}
-                step={5000}
-                value={monthlyExpenses}
-                onChange={(e) => setMonthlyExpenses(Number(e.target.value))}
-                className="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-[#1dbf73]"
-              />
-              <div className="flex justify-between text-[11px] text-slate-400 font-medium">
-                <span>₹10,000</span>
-                <span>₹5 Lakh</span>
-              </div>
-            </div>
-
-            {/* 4. Retirement Age */}
-            <div className="space-y-1.5">
-              <div className="flex items-center justify-between">
-                <label className="text-xs sm:text-sm font-bold text-slate-700">Planned Retirement Age</label>
-                <div className="flex items-center bg-slate-50 rounded-lg px-2.5 py-1 border border-slate-200 focus-within:border-[#1dbf73] focus-within:bg-white transition-all">
-                  <input
-                    type="number"
-                    min={45}
-                    max={75}
-                    step={1}
-                    value={retirementAge || ''}
-                    onChange={(e) => setRetirementAge(e.target.value === '' ? 60 : Math.min(75, Math.max(45, Number(e.target.value))))}
-                    className="w-16 text-right text-xs sm:text-sm font-bold text-slate-800 bg-transparent focus:outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
-                  />
-                  <span className="text-xs font-semibold text-slate-500 ml-1 select-none">Yrs</span>
-                </div>
-              </div>
-              <input
-                type="range"
-                min={45}
-                max={75}
-                step={1}
-                value={retirementAge}
-                onChange={(e) => setRetirementAge(Number(e.target.value))}
-                className="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-[#1dbf73]"
-              />
-              <div className="flex justify-between text-[11px] text-slate-400 font-medium">
-                <span>45 Yrs</span>
-                <span>75 Yrs</span>
-              </div>
-            </div>
-
-            {/* 5. Dependents */}
-            <div className="space-y-1.5">
-              <div className="flex items-center justify-between">
-                <label className="text-xs sm:text-sm font-bold text-slate-700">Financial Dependents</label>
-                <div className="flex items-center bg-slate-50 rounded-lg px-2.5 py-1 border border-slate-200 focus-within:border-[#1dbf73] focus-within:bg-white transition-all">
-                  <input
-                    type="number"
-                    min={0}
-                    max={10}
-                    step={1}
-                    value={dependents}
-                    onChange={(e) => setDependents(e.target.value === '' ? 0 : Math.min(10, Math.max(0, Number(e.target.value))))}
-                    className="w-16 text-right text-xs sm:text-sm font-bold text-slate-800 bg-transparent focus:outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
-                  />
-                  <span className="text-xs font-semibold text-slate-500 ml-1 select-none">Members</span>
-                </div>
-              </div>
-              <input
-                type="range"
-                min={0}
-                max={10}
-                step={1}
-                value={dependents}
-                onChange={(e) => setDependents(Number(e.target.value))}
-                className="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-[#1dbf73]"
-              />
-              <div className="flex justify-between text-[11px] text-slate-400 font-medium">
-                <span>0</span>
-                <span>10 Dependents</span>
-              </div>
-            </div>
-
-            {/* 6. Loans */}
-            <div className="space-y-1.5">
-              <div className="flex items-center justify-between">
-                <label className="text-xs sm:text-sm font-bold text-slate-700">Outstanding Loans</label>
-                <div className="flex items-center bg-slate-50 rounded-lg px-2.5 py-1 border border-slate-200 focus-within:border-[#1dbf73] focus-within:bg-white transition-all">
-                  <span className="text-xs font-bold text-slate-500 mr-1 select-none">₹</span>
-                  <input
-                    type="number"
-                    min={0}
-                    max={50000000}
-                    step={50000}
-                    value={loans || ''}
-                    onChange={(e) => setLoans(e.target.value === '' ? 0 : Math.max(0, Number(e.target.value)))}
-                    className="w-28 text-right text-xs sm:text-sm font-bold text-slate-800 bg-transparent focus:outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
-                  />
-                </div>
-              </div>
-              <input
-                type="range"
-                min={0}
-                max={20000000}
-                step={50000}
-                value={loans}
-                onChange={(e) => setLoans(Number(e.target.value))}
-                className="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-[#1dbf73]"
-              />
-              <div className="flex justify-between text-[11px] text-slate-400 font-medium">
-                <span>₹0</span>
-                <span>₹2 Crore</span>
-              </div>
-            </div>
-
-            {/* 7. Existing Life Cover */}
-            <div className="space-y-1.5">
-              <div className="flex items-center justify-between">
-                <label className="text-xs sm:text-sm font-bold text-slate-700">Existing Life Cover</label>
-                <div className="flex items-center bg-slate-50 rounded-lg px-2.5 py-1 border border-slate-200 focus-within:border-[#1dbf73] focus-within:bg-white transition-all">
-                  <span className="text-xs font-bold text-slate-500 mr-1 select-none">₹</span>
-                  <input
-                    type="number"
-                    min={0}
-                    max={50000000}
-                    step={50000}
-                    value={existingLifeCover || ''}
-                    onChange={(e) => setExistingLifeCover(e.target.value === '' ? 0 : Math.max(0, Number(e.target.value)))}
-                    className="w-28 text-right text-xs sm:text-sm font-bold text-slate-800 bg-transparent focus:outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
-                  />
-                </div>
-              </div>
-              <input
-                type="range"
-                min={0}
-                max={20000000}
-                step={50000}
-                value={existingLifeCover}
-                onChange={(e) => setExistingLifeCover(Number(e.target.value))}
-                className="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-[#1dbf73]"
-              />
-              <div className="flex justify-between text-[11px] text-slate-400 font-medium">
-                <span>₹0</span>
-                <span>₹2 Crore</span>
-              </div>
-            </div>
-
-            {/* 8. Savings */}
-            <div className="space-y-1.5">
-              <div className="flex items-center justify-between">
-                <label className="text-xs sm:text-sm font-bold text-slate-700">Bank Savings & Deposits</label>
-                <div className="flex items-center bg-slate-50 rounded-lg px-2.5 py-1 border border-slate-200 focus-within:border-[#1dbf73] focus-within:bg-white transition-all">
-                  <span className="text-xs font-bold text-slate-500 mr-1 select-none">₹</span>
-                  <input
-                    type="number"
-                    min={0}
-                    max={50000000}
-                    step={50000}
-                    value={savings || ''}
-                    onChange={(e) => setSavings(e.target.value === '' ? 0 : Math.max(0, Number(e.target.value)))}
-                    className="w-28 text-right text-xs sm:text-sm font-bold text-slate-800 bg-transparent focus:outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
-                  />
-                </div>
-              </div>
-              <input
-                type="range"
-                min={0}
-                max={10000000}
-                step={50000}
-                value={savings}
-                onChange={(e) => setSavings(Number(e.target.value))}
-                className="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-[#1dbf73]"
-              />
-              <div className="flex justify-between text-[11px] text-slate-400 font-medium">
-                <span>₹0</span>
-                <span>₹1 Crore</span>
-              </div>
-            </div>
-
-            {/* 9. Investments */}
-            <div className="space-y-1.5">
-              <div className="flex items-center justify-between">
-                <label className="text-xs sm:text-sm font-bold text-slate-700">Investments (MFs, Stocks, Real Estate)</label>
-                <div className="flex items-center bg-slate-50 rounded-lg px-2.5 py-1 border border-slate-200 focus-within:border-[#1dbf73] focus-within:bg-white transition-all">
-                  <span className="text-xs font-bold text-slate-500 mr-1 select-none">₹</span>
-                  <input
-                    type="number"
-                    min={0}
-                    max={50000000}
-                    step={50000}
-                    value={investments || ''}
-                    onChange={(e) => setInvestments(e.target.value === '' ? 0 : Math.max(0, Number(e.target.value)))}
-                    className="w-28 text-right text-xs sm:text-sm font-bold text-slate-800 bg-transparent focus:outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
-                  />
-                </div>
-              </div>
-              <input
-                type="range"
-                min={0}
-                max={20000000}
-                step={50000}
-                value={investments}
-                onChange={(e) => setInvestments(Number(e.target.value))}
-                className="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-[#1dbf73]"
-              />
-              <div className="flex justify-between text-[11px] text-slate-400 font-medium">
-                <span>₹0</span>
-                <span>₹2 Crore</span>
-              </div>
-            </div>
-
-            {/* 10. Future Goals */}
-            <div className="space-y-1.5">
-              <div className="flex items-center justify-between">
-                <label className="text-xs sm:text-sm font-bold text-slate-700">Future Financial Goals</label>
-                <div className="flex items-center bg-slate-50 rounded-lg px-2.5 py-1 border border-slate-200 focus-within:border-[#1dbf73] focus-within:bg-white transition-all">
-                  <span className="text-xs font-bold text-slate-500 mr-1 select-none">₹</span>
-                  <input
-                    type="number"
-                    min={0}
-                    max={50000000}
-                    step={50000}
-                    value={futureGoals || ''}
-                    onChange={(e) => setFutureGoals(e.target.value === '' ? 0 : Math.max(0, Number(e.target.value)))}
-                    className="w-28 text-right text-xs sm:text-sm font-bold text-slate-800 bg-transparent focus:outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
-                  />
-                </div>
-              </div>
-              <input
-                type="range"
-                min={0}
-                max={20000000}
-                step={50000}
-                value={futureGoals}
-                onChange={(e) => setFutureGoals(Number(e.target.value))}
-                className="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-[#1dbf73]"
-              />
-              <div className="flex justify-between text-[11px] text-slate-400 font-medium">
-                <span>₹0</span>
-                <span>₹2 Crore</span>
-              </div>
-            </div>
-
-            {/* 11. Inflation Rate */}
-            <div className="space-y-1.5">
-              <div className="flex items-center justify-between">
-                <label className="text-xs sm:text-sm font-bold text-slate-700">Inflation Rate (% p.a.)</label>
-                <div className="flex items-center bg-slate-50 rounded-lg px-2.5 py-1 border border-slate-200 focus-within:border-[#1dbf73] focus-within:bg-white transition-all">
-                  <input
-                    type="number"
-                    min={3}
-                    max={12}
-                    step={0.5}
-                    value={inflationRate || ''}
-                    onChange={(e) => setInflationRate(e.target.value === '' ? 6 : Math.min(12, Math.max(3, Number(e.target.value))))}
-                    className="w-16 text-right text-xs sm:text-sm font-bold text-slate-800 bg-transparent focus:outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
-                  />
-                  <span className="text-xs font-semibold text-slate-500 ml-1 select-none">%</span>
-                </div>
-              </div>
-              <input
-                type="range"
-                min={3}
-                max={12}
-                step={0.5}
-                value={inflationRate}
-                onChange={(e) => setInflationRate(Number(e.target.value))}
-                className="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-[#1dbf73]"
-              />
-              <div className="flex justify-between text-[11px] text-slate-400 font-medium">
-                <span>3.0%</span>
-                <span>12.0%</span>
-              </div>
-            </div>
-
-            {/* 12. Investment Return */}
-            <div className="space-y-1.5">
-              <div className="flex items-center justify-between">
-                <label className="text-xs sm:text-sm font-bold text-slate-700">Expected Investment Return (% p.a.)</label>
-                <div className="flex items-center bg-slate-50 rounded-lg px-2.5 py-1 border border-slate-200 focus-within:border-[#1dbf73] focus-within:bg-white transition-all">
-                  <input
-                    type="number"
-                    min={4}
-                    max={15}
-                    step={0.5}
-                    value={investmentReturn || ''}
-                    onChange={(e) => setInvestmentReturn(e.target.value === '' ? 8.5 : Math.min(15, Math.max(4, Number(e.target.value))))}
-                    className="w-16 text-right text-xs sm:text-sm font-bold text-slate-800 bg-transparent focus:outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
-                  />
-                  <span className="text-xs font-semibold text-slate-500 ml-1 select-none">%</span>
-                </div>
-              </div>
-              <input
-                type="range"
-                min={4}
-                max={15}
-                step={0.5}
-                value={investmentReturn}
-                onChange={(e) => setInvestmentReturn(Number(e.target.value))}
-                className="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-[#1dbf73]"
-              />
-              <div className="flex justify-between text-[11px] text-slate-400 font-medium">
-                <span>4.0%</span>
-                <span>15.0%</span>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Right Column: 4 Outputs & Grouped Bar Chart */}
-        <div className="lg:col-span-6 space-y-6">
-          {/* Primary Insurance Required Hero Card */}
-          <div className="bg-gradient-to-br from-[#0c2a1a] via-[#103a22] to-[#081e13] rounded-3xl p-6 sm:p-7 text-white shadow-md relative overflow-hidden">
-            <div className="absolute top-0 right-0 w-48 h-48 bg-[#1dbf73]/10 rounded-full blur-2xl pointer-events-none" />
-            <div className="relative space-y-4">
-              <div className="flex items-center justify-between">
-                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#1dbf73]/20 border border-[#1dbf73]/30 text-xs font-bold text-[#1dbf73]">
-                  <ShieldCheck className="w-3.5 h-3.5" />
-                  Life Insurance Needs Assessment
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5 text-xs pt-1">
+              <div className="p-3 bg-slate-50 border border-slate-200 rounded-xl space-y-1">
+                <span className="font-bold text-slate-700 block">10x Income Multiple</span>
+                <span className="text-sm font-extrabold text-slate-900 block">
+                  {formatINR(result.methodologyComparison.incomeMultipleMethod)}
                 </span>
-                <span className="text-xs text-emerald-300 font-medium">
-                  {retirementAge - age} Working Yrs
+                <span className="text-[10px] text-slate-500 block">Simple 10x salary thumb rule</span>
+              </div>
+
+              <div className="p-3 bg-slate-50 border border-slate-200 rounded-xl space-y-1">
+                <span className="font-bold text-slate-700 block">DIME Method</span>
+                <span className="text-sm font-extrabold text-slate-900 block">
+                  {formatINR(result.methodologyComparison.dimeMethod)}
                 </span>
+                <span className="text-[10px] text-slate-500 block">Debt + Income + Mortgage + Education</span>
               </div>
 
-              <div>
-                <p className="text-xs text-emerald-200 font-medium">Total Insurance Required</p>
-                <div className="flex items-baseline gap-2 mt-1">
-                  <h3 className="text-2xl sm:text-3xl font-black text-white">
-                    {formatINR(result.insuranceRequired)}
-                  </h3>
-                  <span className="text-sm font-semibold text-[#1dbf73]">
-                    ({result.netInsuranceRequiredFormatted})
-                  </span>
-                </div>
-              </div>
-
-              {/* 3 Core Summary Outputs requested: Total Need, Available Resources, Protection Gap */}
-              <div className="grid grid-cols-3 gap-2.5 pt-3 border-t border-emerald-800/40">
-                <div className="bg-emerald-950/40 p-2.5 rounded-2xl border border-emerald-500/20">
-                  <p className="text-[10px] text-emerald-300/80 font-medium truncate">Total Financial Need</p>
-                  <p className="text-sm sm:text-base font-bold text-white mt-0.5">{formatShort(result.totalFinancialNeed)}</p>
-                </div>
-                <div className="bg-emerald-950/40 p-2.5 rounded-2xl border border-emerald-500/20">
-                  <p className="text-[10px] text-emerald-300/80 font-medium truncate">Available Resources</p>
-                  <p className="text-sm sm:text-base font-bold text-emerald-300 mt-0.5">{formatShort(result.availableResources)}</p>
-                </div>
-                <div className="bg-emerald-950/40 p-2.5 rounded-2xl border border-emerald-500/20">
-                  <p className="text-[10px] text-emerald-300/80 font-medium truncate">Protection Gap</p>
-                  <p className={`text-sm sm:text-base font-bold mt-0.5 ${result.protectionGap > 0 ? 'text-amber-400' : 'text-emerald-400'}`}>
-                    {formatShort(result.protectionGap)}
-                  </p>
-                </div>
+              <div className="p-3 bg-emerald-50 border border-emerald-300 rounded-xl space-y-1">
+                <span className="font-bold text-emerald-900 block">Detailed Needs Analysis</span>
+                <span className="text-sm font-black text-emerald-800 block">
+                  {formatINR(result.methodologyComparison.detailedNeedsMethod)}
+                </span>
+                <span className="text-[10px] text-emerald-700 block font-medium">Actuarial PV Net Need (Recommended)</span>
               </div>
             </div>
-          </div>
+          </article>
 
-          {/* Grouped Bar Chart (Comparison View) Requested by User */}
-          <div className="p-5 bg-white border border-slate-200 rounded-2xl shadow-2xs space-y-3">
+          {/* Grouped Bar Chart */}
+          <article
+            aria-label="Chart: Total Need vs Resources vs Gap"
+            className="p-5 bg-white border border-slate-300 rounded-2xl shadow-2xs space-y-3"
+          >
             <div className="flex items-center justify-between">
               <div>
-                <h4 className="text-xs sm:text-sm font-bold text-[#222325] flex items-center gap-1.5">
-                  <BarChart2 className="w-4 h-4 text-[#1dbf73]" />
-                  Total Financial Need vs Available Resources (Comparison View)
-                </h4>
-                <p className="text-[11px] text-slate-500">
-                  Side-by-side comparative bars contrasting total need against available resources.
+                <h3 className="text-xs sm:text-sm font-bold text-slate-900 flex items-center gap-1.5">
+                  <PieIcon className="w-4 h-4 text-emerald-600" aria-hidden="true" />
+                  Visual Comparison: Need vs Resources
+                </h3>
+                <p className="text-[11px] text-slate-600">
+                  Visualizing total financial obligations against available resources and net gap.
                 </p>
               </div>
             </div>
 
-            <div className="h-64 w-full">
+            <div className="h-56 w-full">
               <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={chartData} margin={{ top: 20, right: 30, left: 10, bottom: 5 }}>
-                  <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
-                  <XAxis dataKey="metric" fontSize={11} stroke="#64748b" tickLine={false} />
-                  <YAxis fontSize={11} stroke="#64748b" tickLine={false} tickFormatter={(v) => formatShort(v)} />
+                <BarChart data={chartData} margin={{ top: 20, right: 20, left: 10, bottom: 5 }}>
+                  <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e2e8f0" />
+                  <XAxis dataKey="metric" fontSize={11} stroke="#475569" tickLine={false} />
+                  <YAxis fontSize={11} stroke="#475569" tickLine={false} tickFormatter={(v) => formatShort(v)} />
                   <Tooltip
                     formatter={(value: any, name: any) => [
                       formatINR(Number(value)),
                       name === 'totalNeed' ? 'Total Financial Need' :
-                      name === 'availableResources' ? 'Available Resources (Cover + Assets)' :
-                      name === 'protectionGap' ? 'Resulting Protection Gap' : name
+                      name === 'availableResources' ? 'Available Resources' :
+                      name === 'protectionGap' ? 'Net Protection Gap' : name
                     ]}
                     contentStyle={{
                       backgroundColor: 'rgba(255, 255, 255, 0.98)',
                       borderRadius: '12px',
-                      border: '1px solid #e2e8f0',
+                      border: '1px solid #cbd5e1',
                       fontSize: '12px',
                       boxShadow: '0 4px 12px rgba(0, 0, 0, 0.08)'
                     }}
                   />
-                  <Legend
-                    wrapperStyle={{ fontSize: '11px', paddingTop: '10px' }}
-                    formatter={(val) => {
-                      if (val === 'totalNeed') return 'Total Financial Need';
-                      if (val === 'availableResources') return 'Available Resources';
-                      if (val === 'protectionGap') return 'Protection Gap';
-                      return val;
-                    }}
-                  />
-                  <Bar dataKey="totalNeed" fill="#3b82f6" radius={[6, 6, 0, 0]} maxBarSize={60} />
-                  <Bar dataKey="availableResources" fill="#10b981" radius={[6, 6, 0, 0]} maxBarSize={60} />
-                  <Bar dataKey="protectionGap" fill="#f59e0b" radius={[6, 6, 0, 0]} maxBarSize={60} />
+                  <Legend wrapperStyle={{ fontSize: '11px', paddingTop: '10px' }} />
+                  <Bar dataKey="totalNeed" name="Total Financial Need" fill="#2563eb" radius={[4, 4, 0, 0]} />
+                  <Bar dataKey="availableResources" name="Available Resources" fill="#059669" radius={[4, 4, 0, 0]} />
+                  <Bar dataKey="protectionGap" name="Protection Gap" fill="#dc2626" radius={[4, 4, 0, 0]} />
                 </BarChart>
               </ResponsiveContainer>
             </div>
+          </article>
 
-            <div className="p-3.5 bg-slate-50 border border-slate-200 rounded-2xl text-xs space-y-1.5">
-              <div className="flex items-center justify-between font-bold text-slate-800">
-                <span>Total Need Breakdown:</span>
-                <span>{formatINR(result.totalFinancialNeed)}</span>
-              </div>
-              <div className="grid grid-cols-3 gap-2 text-[11px] text-slate-600 pt-1 border-t border-slate-200">
-                <div>Living Expenses PV: <strong className="text-slate-800">{formatShort(result.totalFinancialNeed - loans - futureGoals)}</strong></div>
-                <div>Outstanding Loans: <strong className="text-slate-800">{formatShort(loans)}</strong></div>
-                <div>Future Goals: <strong className="text-slate-800">{formatShort(futureGoals)}</strong></div>
-              </div>
-            </div>
-          </div>
-        </div>
+        </section>
       </div>
-    </div>
+    </main>
   );
 };

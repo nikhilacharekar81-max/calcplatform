@@ -36,6 +36,8 @@ import { LifeInsuranceNeedsCalculatorApp } from '../components/calculator/LifeIn
 import { LifeInsuranceNeedsGuideContent } from '../components/calculator/LifeInsuranceNeedsGuideContent.tsx';
 import { HumanLifeValueCalculatorApp } from '../components/calculator/HumanLifeValueCalculatorApp.tsx';
 import { HumanLifeValueGuideContent } from '../components/calculator/HumanLifeValueGuideContent.tsx';
+import { HealthInsuranceCalculatorApp } from '../components/calculator/HealthInsuranceCalculatorApp.tsx';
+import { HealthInsuranceCoverageCalculatorApp } from '../components/calculator/HealthInsuranceCoverageCalculatorApp.tsx';
 import { getAdminToken } from '../services/api.ts';
 
 interface CalculatorPageProps {
@@ -234,6 +236,10 @@ export const CalculatorPage: React.FC<CalculatorPageProps> = ({
           <HumanLifeValueCalculatorApp calculator={calculator} />
           <HumanLifeValueGuideContent />
         </div>
+      ) : calculator.slug === 'health-insurance-calculator' ? (
+        <HealthInsuranceCalculatorApp calculator={calculator} />
+      ) : calculator.slug === 'health-insurance-coverage-calculator' ? (
+        <HealthInsuranceCoverageCalculatorApp calculator={calculator} />
       ) : calculator.slug === 'income-tax-calculator' ? (
         <EnterpriseTaxCalculatorApp calculator={calculator} />
       ) : calculator.slug === 'capital-gains-tax' ? (

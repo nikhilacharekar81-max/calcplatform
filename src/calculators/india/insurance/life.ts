@@ -192,10 +192,15 @@ export interface LifeNeedsInput {
   annualFamilyExpenses?: number;
   retirementAge?: number;
   dependents?: number;
+  homeLoan?: number;
+  otherDebts?: number;
   loans?: number;
   totalDebts?: number;
+  finalEmergencyExpenses?: number;
   existingLifeCover?: number;
   existingLifeInsurance?: number;
+  employerLifeInsurance?: number;
+  spouseDependentIncome?: number;
   savings?: number;
   investments?: number;
   currentAssets?: number;
@@ -217,11 +222,24 @@ export interface LifeNeedsResult {
   insuranceRequired: number;
   protectionGap: number;
   totalFinancialNeedToday: number;
+  incomeReplacementCorpus: number;
+  homeLoanProtection: number;
+  otherDebtsProtection: number;
   futureFinancialGoals: number;
-  futureInflationAdjustedGoals: number; // Maintained for backwards compatibility
+  futureInflationAdjustedGoals: number;
+  finalEmergencyExpenses: number;
+  existingPersonalCover: number;
+  employerLifeInsurance: number;
+  savingsAndInvestments: number;
+  spouseIncomePresentValue: number;
   existingResources: number;
   netInsuranceRequired: number;
   netInsuranceRequiredFormatted: string;
+  methodologyComparison: {
+    incomeMultipleMethod: number;
+    dimeMethod: number;
+    detailedNeedsMethod: number;
+  };
   needsComparisonBars: Array<{
     category: string;
     totalNeed: number;
@@ -237,32 +255,40 @@ export function calculateLifeInsuranceNeeds(input: LifeNeedsInput): LifeNeedsRes
   const age = Math.max(18, input.age || input.currentAge || 32);
   const retAge = Math.max(age + 1, input.retirementAge || 60);
   const workingYears = Math.max(1, retAge - age);
+  const annualIncome = Math.max(0, input.annualIncome || 0);
 
   let expenses = 0;
   if (input.annualFamilyExpenses !== undefined && input.annualFamilyExpenses !== null) {
     expenses = Math.max(0, input.annualFamilyExpenses);
   } else if (input.monthlyExpenses !== undefined && input.monthlyExpenses !== null) {
     expenses = Math.max(0, input.monthlyExpenses * 12);
-  } else if (input.annualIncome !== undefined && input.annualIncome !== null && input.annualIncome > 0) {
-    expenses = Math.max(0, input.annualIncome * 0.6);
+  } else if (annualIncome > 0) {
+    expenses = Math.max(0, annualIncome * 0.6);
   }
 
   const years = Math.max(1, input.yearsOfSupportNeeded || workingYears);
   const infRate = input.inflationRate ?? input.inflationRatePercent ?? 6.0;
   const returnRate = input.investmentReturn ?? input.expectedReturnRatePercent ?? 8.5;
 
-  const expensesPV = calculateLivingExpensesPV(expenses, infRate, returnRate, years);
+  const incomeReplacementCorpus = calculateLivingExpensesPV(expenses, infRate, returnRate, years);
 
   const eduCost = Math.max(0, input.childrenEducationCostToday || 0);
   const marriageCost = Math.max(0, input.childrenMarriageCostToday || 0);
   const futureGoalsToday = Math.max(0, input.futureGoals ?? (eduCost + marriageCost));
   const goalYears = Math.max(0, input.goalYears ?? input.yearsUntilGoal ?? 0);
-  const debts = Math.max(0, input.loans ?? input.totalDebts ?? 0);
+
+  const homeLoan = Math.max(0, input.homeLoan ?? 0);
+  const otherDebts = Math.max(0, input.otherDebts ?? input.loans ?? input.totalDebts ?? 0);
+  const emergencyExpenses = Math.max(0, input.finalEmergencyExpenses ?? 500000);
 
   const savings = Math.max(0, input.savings || 0);
   const investments = Math.max(0, input.investments || 0);
-  const currentAssets = Math.max(0, input.currentAssets ?? (savings + investments));
-  const existingCover = Math.max(0, input.existingLifeCover ?? input.existingLifeInsurance ?? 0);
+  const savingsAndInvestments = Math.max(0, input.currentAssets ?? (savings + investments));
+  
+  const existingPersonalCover = Math.max(0, input.existingLifeCover ?? input.existingLifeInsurance ?? 0);
+  const employerLifeInsurance = Math.max(0, input.employerLifeInsurance ?? 0);
+  const spouseDependentIncomeAnnual = Math.max(0, input.spouseDependentIncome ?? 0);
+  const spouseIncomePresentValue = calculateLivingExpensesPV(spouseDependentIncomeAnnual, infRate, returnRate, years);
 
   const infDec = infRate / 100;
   const retDec = returnRate / 100;
@@ -270,10 +296,23 @@ export function calculateLifeInsuranceNeeds(input: LifeNeedsInput): LifeNeedsRes
   const goalPV = goalYears > 0 && retDec >= 0
     ? futureInflationAdjustedGoals / Math.pow(1 + retDec, goalYears)
     : futureInflationAdjustedGoals;
-  const totalNeed = expensesPV + roundMoney(goalPV) + debts;
-  const availableResources = currentAssets + existingCover;
+
+  const totalNeed = incomeReplacementCorpus + roundMoney(goalPV) + homeLoan + otherDebts + emergencyExpenses;
+  const availableResources = savingsAndInvestments + existingPersonalCover + employerLifeInsurance + spouseIncomePresentValue;
   const protectionGap = Math.max(0, totalNeed - availableResources);
   const netInsuranceRequired = Math.ceil(protectionGap / 100000) * 100000;
+
+  // 3 Methodology Comparison Models:
+  // 1. Income Multiple: 10x Annual Income
+  const incomeMultipleMethod = Math.ceil((annualIncome * 10) / 100000) * 100000;
+
+  // 2. DIME Method: Debt + Income (for N years) + Mortgage + Education/Goals
+  const dimeTotal = (homeLoan + otherDebts) + (annualIncome * years) + futureGoalsToday + emergencyExpenses;
+  const dimeGap = Math.max(0, dimeTotal - (existingPersonalCover + employerLifeInsurance + savingsAndInvestments));
+  const dimeMethod = Math.ceil(dimeGap / 100000) * 100000;
+
+  // 3. Detailed Needs Analysis: Discounted PV Needs - Resources
+  const detailedNeedsMethod = netInsuranceRequired;
 
   // Comparison View: Grouped Bar Chart
   const needsComparisonBars = [
@@ -303,11 +342,24 @@ export function calculateLifeInsuranceNeeds(input: LifeNeedsInput): LifeNeedsRes
     insuranceRequired: netInsuranceRequired,
     protectionGap: roundMoney(protectionGap),
     totalFinancialNeedToday: roundMoney(totalNeed),
+    incomeReplacementCorpus: roundMoney(incomeReplacementCorpus),
+    homeLoanProtection: roundMoney(homeLoan),
+    otherDebtsProtection: roundMoney(otherDebts),
     futureFinancialGoals: roundMoney(futureGoalsToday),
     futureInflationAdjustedGoals: roundMoney(futureInflationAdjustedGoals),
+    finalEmergencyExpenses: roundMoney(emergencyExpenses),
+    existingPersonalCover: roundMoney(existingPersonalCover),
+    employerLifeInsurance: roundMoney(employerLifeInsurance),
+    savingsAndInvestments: roundMoney(savingsAndInvestments),
+    spouseIncomePresentValue: roundMoney(spouseIncomePresentValue),
     existingResources: roundMoney(availableResources),
     netInsuranceRequired,
     netInsuranceRequiredFormatted: `₹${(netInsuranceRequired / 100000).toFixed(2)} Lakh`,
+    methodologyComparison: {
+      incomeMultipleMethod,
+      dimeMethod,
+      detailedNeedsMethod,
+    },
     needsComparisonBars,
   };
 }

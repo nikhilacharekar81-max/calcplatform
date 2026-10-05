@@ -57,10 +57,16 @@ export const api = {
     inFlightCategoriesPromise = (async () => {
       try {
         const res = await fetch('/api/public/categories');
-        if (!res.ok) throw new Error('Failed to fetch categories');
+        if (!res.ok) throw new Error(`HTTP ${res.status}: Failed to fetch categories`);
         const data = await res.json();
-        categoriesCache = data;
+        if (Array.isArray(data)) {
+          categoriesCache = data;
+        }
         return data;
+      } catch (err) {
+        if (categoriesCache) return categoriesCache;
+        console.warn('Network error fetching categories, returning empty array fallback:', err);
+        return [];
       } finally {
         inFlightCategoriesPromise = null;
       }
@@ -70,12 +76,17 @@ export const api = {
   },
 
   async getSubcategories(params?: { categorySlug?: string; categoryId?: string }): Promise<Array<Subcategory & { category?: Category; calculatorsCount: number }>> {
-    const query = new URLSearchParams();
-    if (params?.categorySlug) query.set('categorySlug', params.categorySlug);
-    if (params?.categoryId) query.set('categoryId', params.categoryId);
-    const res = await fetch(`/api/public/subcategories?${query.toString()}`);
-    if (!res.ok) throw new Error('Failed to fetch subcategories');
-    return res.json();
+    try {
+      const query = new URLSearchParams();
+      if (params?.categorySlug) query.set('categorySlug', params.categorySlug);
+      if (params?.categoryId) query.set('categoryId', params.categoryId);
+      const res = await fetch(`/api/public/subcategories?${query.toString()}`);
+      if (!res.ok) throw new Error(`HTTP ${res.status}: Failed to fetch subcategories`);
+      return await res.json();
+    } catch (err) {
+      console.warn('Network error fetching subcategories:', err);
+      return [];
+    }
   },
 
   async getCalculators(params?: {
@@ -85,16 +96,21 @@ export const api = {
     featured?: boolean;
     limit?: number;
   }): Promise<Array<Calculator & { category?: Category; subcategory?: Subcategory }>> {
-    const query = new URLSearchParams();
-    if (params?.categorySlug) query.set('categorySlug', params.categorySlug);
-    if (params?.subcategorySlug) query.set('subcategorySlug', params.subcategorySlug);
-    if (params?.search) query.set('search', params.search);
-    if (params?.featured) query.set('featured', 'true');
-    if (params?.limit) query.set('limit', params.limit.toString());
+    try {
+      const query = new URLSearchParams();
+      if (params?.categorySlug) query.set('categorySlug', params.categorySlug);
+      if (params?.subcategorySlug) query.set('subcategorySlug', params.subcategorySlug);
+      if (params?.search) query.set('search', params.search);
+      if (params?.featured) query.set('featured', 'true');
+      if (params?.limit) query.set('limit', params.limit.toString());
 
-    const res = await fetch(`/api/public/calculators?${query.toString()}`);
-    if (!res.ok) throw new Error('Failed to fetch calculators');
-    return res.json();
+      const res = await fetch(`/api/public/calculators?${query.toString()}`);
+      if (!res.ok) throw new Error(`HTTP ${res.status}: Failed to fetch calculators`);
+      return await res.json();
+    } catch (err) {
+      console.warn('Network error fetching calculators:', err);
+      return [];
+    }
   },
 
   async resolvePath(path: string, forceRefresh = false): Promise<{

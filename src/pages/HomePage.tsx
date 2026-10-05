@@ -25,10 +25,20 @@ export const HomePage: React.FC<HomePageProps> = ({ onOpenSearch, brandName = 'c
         api.getCategories(),
         api.getCalculators({ featured: true, limit: 8 }),
       ]);
-      setCategories(catsData);
-      setFeaturedCalculators(featuredData);
+      setCategories(catsData || []);
+      setFeaturedCalculators(featuredData || []);
     } catch (err) {
-      console.error('Failed to load home data:', err);
+      console.warn('Failed to load home data on first attempt, retrying...', err);
+      try {
+        const [catsData, featuredData] = await Promise.all([
+          api.getCategories(true),
+          api.getCalculators({ featured: true, limit: 8 }),
+        ]);
+        setCategories(catsData || []);
+        setFeaturedCalculators(featuredData || []);
+      } catch (retryErr) {
+        console.error('Failed to load home data after retry:', retryErr);
+      }
     } finally {
       setIsLoading(false);
     }

@@ -365,6 +365,20 @@
       "isActive": true,
       "createdAt": "2026-10-04T08:23:58.540Z",
       "updatedAt": "2026-10-04T08:23:58.540Z"
+    },
+    {
+      "id": "sub_1791173973396_w219f",
+      "categoryId": "cat_1791101453693_sszmv",
+      "name": "Health Insurance",
+      "slug": "health-insurance",
+      "description": "",
+      "seoTitle": "Health Insurance",
+      "seoDescription": "",
+      "seoKeywords": "",
+      "order": 2,
+      "isActive": true,
+      "createdAt": "2026-10-05T04:19:33.396Z",
+      "updatedAt": "2026-10-05T04:19:33.396Z"
     }
   ],
   "calculators": [
@@ -2642,6 +2656,44 @@
       "isPopular": true,
       "createdAt": "2026-10-04T08:36:38.880Z",
       "updatedAt": "2026-10-04T08:36:38.880Z",
+      "viewsCount": 0
+    },
+    {
+      "id": "calc_health_insurance",
+      "name": "Health Insurance Calculator",
+      "slug": "health-insurance-calculator",
+      "shortDescription": "How much might my health insurance cost? Estimate annual premium based on member ages, city tier, sum insured, and chronic health factors.",
+      "categoryId": "cat_1791101453693_sszmv",
+      "subcategoryId": "sub_1791173973396_w219f",
+      "engineType": "health_insurance_cost",
+      "fields": [],
+      "seoTitle": "Health Insurance Premium & Cost Calculator",
+      "seoDescription": "Estimate annual policy premium based on family demographics, location tiers, sum insured coverage parameters, and health loading factors.",
+      "seoKeywords": "health insurance premium calculator, medical insurance cost estimator, premium calculator, zone pricing health insurance",
+      "isActive": true,
+      "isFeatured": true,
+      "isPopular": true,
+      "createdAt": "2026-10-05T04:46:44.000Z",
+      "updatedAt": "2026-10-05T04:46:44.000Z",
+      "viewsCount": 0
+    },
+    {
+      "id": "calc_health_coverage",
+      "name": "Health Insurance Coverage Calculator",
+      "slug": "health-insurance-coverage-calculator",
+      "shortDescription": "How much health insurance cover should I have? Size your optimal medical safety net with demographic baselines and 12% inflation compounding.",
+      "categoryId": "cat_1791101453693_sszmv",
+      "subcategoryId": "sub_1791173973396_w219f",
+      "engineType": "health_insurance_coverage",
+      "fields": [],
+      "seoTitle": "Health Insurance Sizing & Coverage Calculator",
+      "seoDescription": "Sizing optimal health insurance coverage for your family, factoring senior parents, existing policy deductions, chronic conditions, and 12% medical inflation.",
+      "seoKeywords": "how much health insurance do I need, health cover calculator, sum insured calculator, medical inflation projection",
+      "isActive": true,
+      "isFeatured": true,
+      "isPopular": true,
+      "createdAt": "2026-10-05T04:46:44.000Z",
+      "updatedAt": "2026-10-05T04:46:44.000Z",
       "viewsCount": 0
     }
   ],
