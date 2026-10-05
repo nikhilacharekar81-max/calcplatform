@@ -299,5 +299,77 @@ export function runInsuranceTests(): { passed: number; failed: number } {
     "Rule Registry - ACTIVE_VERIFIED INSURANCE Statutory Rule Envelope"
   );
 
+  // 20. IDV Exact Depreciation Boundary Tests (6, 12, 24, 36, 48, 60 months)
+  const idv6 = calculateCarInsurance({ manufacturerListedExShowroomPrice: 1000000, vehicleAgeMonths: 6, claimFreeYearsNCB: 0 });
+  const idv12 = calculateCarInsurance({ manufacturerListedExShowroomPrice: 1000000, vehicleAgeMonths: 12, claimFreeYearsNCB: 0 });
+  const idv24 = calculateCarInsurance({ manufacturerListedExShowroomPrice: 1000000, vehicleAgeMonths: 24, claimFreeYearsNCB: 0 });
+  const idv36 = calculateCarInsurance({ manufacturerListedExShowroomPrice: 1000000, vehicleAgeMonths: 36, claimFreeYearsNCB: 0 });
+  const idv48 = calculateCarInsurance({ manufacturerListedExShowroomPrice: 1000000, vehicleAgeMonths: 48, claimFreeYearsNCB: 0 });
+  const idv60 = calculateCarInsurance({ manufacturerListedExShowroomPrice: 1000000, vehicleAgeMonths: 60, claimFreeYearsNCB: 0 });
+
+  assert(
+    idv6.appliedDepreciationPercent === 5 &&
+    idv12.appliedDepreciationPercent === 15 &&
+    idv24.appliedDepreciationPercent === 20 &&
+    idv36.appliedDepreciationPercent === 30 &&
+    idv48.appliedDepreciationPercent === 40 &&
+    idv60.appliedDepreciationPercent === 50,
+    "Car Insurance - IDV Depreciation Boundary Schedule (6m: 5%, 12m: 15%, 24m: 20%, 36m: 30%, 48m: 40%, 60m: 50%)"
+  );
+
+  // 21. Section 80C Renaming & Eligible Premium Deduction Key Test
+  const term80c = calculateTermLifeInsurance({
+    annualIncome: 1500000,
+    age: 30,
+    retirementAge: 60,
+    estimatedAnnualPremium: 25000,
+  });
+  assert(
+    term80c.section80cEligiblePremiumDeduction === 25000 &&
+    term80c.section80cTaxBenefit === 25000,
+    "Life Insurance - section80cEligiblePremiumDeduction Renaming with Alias"
+  );
+
+  // 22. Term Insurance Household Expense vs Personal Expense Mapping Direction Test
+  const termLowExp = calculateTermLifeInsurance({ annualIncome: 2000000, monthlyExpenses: 40000, age: 30, retirementAge: 60 });
+  const termHighExp = calculateTermLifeInsurance({ annualIncome: 2000000, monthlyExpenses: 90000, age: 30, retirementAge: 60 });
+  assert(
+    termHighExp.incomeReplacementNeed > termLowExp.incomeReplacementNeed &&
+    termHighExp.recommendedSumAssured >= termLowExp.recommendedSumAssured,
+    "Term Insurance - Higher Household Expenses Correctly Increase Required Cover"
+  );
+
+  // 23. Zero Personal Expense Ratio Preservation
+  const lifeZeroPersonalExp = calculateLifeInsuranceNeeds({
+    annualIncome: 1000000,
+    personalExpenseRatioPercent: 0,
+    yearsOfSupportNeeded: 10,
+    inflationRate: 0,
+    investmentReturn: 0,
+  });
+  assert(
+    lifeZeroPersonalExp.incomeReplacementCorpus === 10000000,
+    "Life Needs - 0% Personal Expense Ratio Preserves 100% Income for Dependents"
+  );
+
+  // 24. Canonical Health Coverage Complete Sizing Engine Test
+  const canonicalCoverageSizing = calculateHealthCoverage({
+    ageOfEldestMember: 48,
+    adultsCount: 2,
+    childrenCount: 2,
+    seniorParentsCount: 1,
+    hasChronicCondition: true,
+    existingCover: 500000,
+    medicalInflationRatePercent: 8,
+    yearsInFuture: 10,
+  });
+  assert(
+    canonicalCoverageSizing.recommendedSumInsured >= 1500000 &&
+    canonicalCoverageSizing.chronicAdjustment === 500000 &&
+    canonicalCoverageSizing.coverageGap > 0 &&
+    canonicalCoverageSizing.futureProjections.length === 11,
+    "Health Coverage - Canonical Sizing Engine Produces Structured Outputs & Future Projections"
+  );
+
   return { passed, failed };
 }

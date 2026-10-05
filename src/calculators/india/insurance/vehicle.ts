@@ -27,27 +27,28 @@ export interface CarInsuranceResult {
   disclaimer: string;
 }
 
-function calculateVoluntaryDeductibleDiscount(odPremium: number, deductibleInput: number): number {
-  if (deductibleInput <= 0 || odPremium <= 0) return 0;
-  // If user entered a percentage (e.g. 10, 20, 25, 30, 35)
-  if (deductibleInput <= 50) {
-    return roundMoney(odPremium * (deductibleInput / 100));
+function calculateVoluntaryDeductibleDiscount(
+  odPremium: number,
+  deductibleRupees: number,
+  discountSchedule?: Array<{ minDeductibleRupees: number; discountPercentOnOD: number; maxDiscountRupees: number }>
+): number {
+  if (deductibleRupees <= 0 || odPremium <= 0) return 0;
+  
+  if (discountSchedule && discountSchedule.length > 0) {
+    const sorted = [...discountSchedule].sort((a, b) => b.minDeductibleRupees - a.minDeductibleRupees);
+    for (const tier of sorted) {
+      if (deductibleRupees >= tier.minDeductibleRupees) {
+        const calculatedDiscount = odPremium * (tier.discountPercentOnOD / 100);
+        return roundMoney(Math.min(calculatedDiscount, tier.maxDiscountRupees));
+      }
+    }
   }
-  // If user entered standard IRDAI rupee voluntary deductible tiers
-  if (deductibleInput >= 15000) {
-    return roundMoney(Math.min(odPremium * 0.35, 2500));
+
+  // Fallback: If user enters a percentage (<=50%) directly in illustrative tools
+  if (deductibleRupees <= 50) {
+    return roundMoney(odPremium * (deductibleRupees / 100));
   }
-  if (deductibleInput >= 7500) {
-    return roundMoney(Math.min(odPremium * 0.30, 2000));
-  }
-  if (deductibleInput >= 5000) {
-    return roundMoney(Math.min(odPremium * 0.25, 1500));
-  }
-  if (deductibleInput >= 2500) {
-    return roundMoney(Math.min(odPremium * 0.20, 750));
-  }
-  // General proportional discount capped at 35% of OD
-  return roundMoney(Math.min(odPremium * 0.35, deductibleInput * 0.15));
+  return 0;
 }
 
 function getIdvDepreciationPercent(ageMonths: number): number {
@@ -77,6 +78,7 @@ export function calculateCarInsurance(input: CarInsuranceInput): CarInsuranceRes
   const ncbLadder = rule.parameters.motorNcbLadderPercent;
   const gstPercent = rule.parameters.gstRatesPercent.motorInsurance;
   const tpTariffs = rule.parameters.motorThirdPartyTariffs;
+  const deductibleSchedule = rule.parameters.motorVoluntaryDeductibleDiscountSchedule;
 
   // Determine IRDAI IDV Depreciation Percentage
   const depPct = getIdvDepreciationPercent(ageMonths);
@@ -96,8 +98,12 @@ export function calculateCarInsurance(input: CarInsuranceInput): CarInsuranceRes
   const ncbDiscount = grossOdPremium * (ncbPct / 100);
   const odAfterNcb = Math.max(0, grossOdPremium - ncbDiscount);
 
-  // Voluntary deductible gives a percentage discount on OD premium, NOT raw rupee subtraction
-  const deductibleDiscount = calculateVoluntaryDeductibleDiscount(odAfterNcb, input.voluntaryDeductible || 0);
+  // Voluntary deductible lookup from registry motor tariff schedule
+  const deductibleDiscount = calculateVoluntaryDeductibleDiscount(
+    odAfterNcb,
+    input.voluntaryDeductible ?? 0,
+    deductibleSchedule
+  );
   const netOdPremium = roundMoney(Math.max(0, odAfterNcb - deductibleDiscount));
 
   // Statutory Third-Party Premium Estimate based on CC and vehicle age

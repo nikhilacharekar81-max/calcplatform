@@ -39,6 +39,8 @@ export const LifeInsuranceNeedsCalculatorApp: React.FC<LifeInsuranceNeedsCalcula
   const [existingLifeCover, setExistingLifeCover] = useState<number>(2000000); // ₹20 Lakh
   const [savings, setSavings] = useState<number>(1500000); // ₹15 Lakh
   const [inflationRate, setInflationRate] = useState<number>(6.0); // 6%
+  const [investmentReturn, setInvestmentReturn] = useState<number>(8.5); // 8.5%
+  const [personalExpenseRatio, setPersonalExpenseRatio] = useState<number>(30); // 30%
 
   // Optional Inputs
   const [employerLifeInsurance, setEmployerLifeInsurance] = useState<number>(1000000); // ₹10 Lakh
@@ -58,7 +60,8 @@ export const LifeInsuranceNeedsCalculatorApp: React.FC<LifeInsuranceNeedsCalcula
     spouseDependentIncome,
     savings,
     inflationRate,
-    investmentReturn: 8.5,
+    investmentReturn,
+    personalExpenseRatioPercent: personalExpenseRatio,
   });
 
   const formatINR = (val: number) => {
@@ -237,16 +240,47 @@ export const LifeInsuranceNeedsCalculatorApp: React.FC<LifeInsuranceNeedsCalcula
 
             <AccessibleSlider
               id="needs-input-inflation"
-              label="10. Inflation Rate (% p.a.)"
+              label="10. Assumed Inflation Rate (% p.a.)"
               value={inflationRate}
               min={0}
               max={15}
               step={0.5}
               unit="%"
-              valueText={`${inflationRate} percent per annum`}
+              valueText={`${inflationRate}% p.a.`}
               minLabel="0.0%"
               maxLabel="15.0%"
+              helperText="Planning assumption for compounding living costs"
               onChange={(val) => setInflationRate(val)}
+            />
+
+            <AccessibleSlider
+              id="needs-input-return"
+              label="11. Expected Investment Return (% p.a.)"
+              value={investmentReturn}
+              min={0}
+              max={15}
+              step={0.5}
+              unit="%"
+              valueText={`${investmentReturn}% p.a.`}
+              minLabel="0.0%"
+              maxLabel="15.0%"
+              helperText="Planning assumption for discounting future corpus"
+              onChange={(val) => setInvestmentReturn(val)}
+            />
+
+            <AccessibleSlider
+              id="needs-input-personal-exp"
+              label="12. Personal Expense Ratio (%)"
+              value={personalExpenseRatio}
+              min={0}
+              max={70}
+              step={5}
+              unit="%"
+              valueText={`${personalExpenseRatio}% personal expenditure`}
+              minLabel="0%"
+              maxLabel="70%"
+              helperText="Share of income spent personally (remainder supports dependents)"
+              onChange={(val) => setPersonalExpenseRatio(val)}
             />
           </fieldset>
 
@@ -413,11 +447,11 @@ export const LifeInsuranceNeedsCalculatorApp: React.FC<LifeInsuranceNeedsCalcula
               </div>
 
               <div className="p-3 bg-slate-50 border border-slate-200 rounded-xl space-y-1">
-                <span className="font-bold text-slate-700 block">DIME Method</span>
+                <span className="font-bold text-slate-700 block">DIME Methodology Estimate</span>
                 <span className="text-sm font-extrabold text-slate-900 block">
                   {formatINR(result.methodologyComparison.dimeMethod)}
                 </span>
-                <span className="text-[10px] text-slate-500 block">Debt + Income + Mortgage + Education</span>
+                <span className="text-[10px] text-slate-500 block">Debt + Income + Mortgage + Education minus existing resources</span>
               </div>
 
               <div className="p-3 bg-emerald-50 border border-emerald-300 rounded-xl space-y-1">

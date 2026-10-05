@@ -53,8 +53,9 @@ for (const stateRule of Object.values(STATE_RULE_REGISTRY)) {
 
 // Register Active Statutory Rules for TDS and Capital Gains
 const STATUTORY_PROVENANCE = {
-  authority: "Central Board of Direct Taxes (CBDT) & Income-tax Act, 2025 / 1961",
+  authority: "Central Board of Direct Taxes (CBDT) & Income-tax Act",
   sourceUrl: "https://www.incometax.gov.in/",
+  sourceDocument: "Income-tax Act, 1961 (Statutory Direct Taxes Code as amended)",
   effectiveFrom: "2026-04-01",
   effectiveTo: null,
   verifiedAt: "2026-10-04",

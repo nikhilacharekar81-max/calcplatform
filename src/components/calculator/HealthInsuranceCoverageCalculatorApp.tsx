@@ -31,6 +31,8 @@ import { Calculator } from '../../types/schema.ts';
 import { AccessibleSlider } from '../common/AccessibleSlider.tsx';
 import { AccessibleSummaryCard } from '../common/AccessibleSummaryCard.tsx';
 
+import { calculateHealthInsurance, calculateHealthCoverage } from '../../calculators/india/insurance/health.ts';
+
 interface HealthInsuranceCoverageCalculatorAppProps {
   calculator?: Calculator;
 }
@@ -45,8 +47,8 @@ export const HealthInsuranceCoverageCalculatorApp: React.FC<HealthInsuranceCover
   const [existingCover, setExistingCover] = useState<number>(500000); // 5 Lakh default
   const [hasChronicCondition, setChronicCondition] = useState<boolean>(false);
 
-  // --- CORRECTION 5: Editable medical inflation rate instead of hardcoded 12% fact ---
-  const [medicalInflation, setMedicalInflation] = useState<number>(10); // Default 10% editable
+  // Editable medical inflation rate (preserves 0% without fallback)
+  const [medicalInflation, setMedicalInflation] = useState<number>(10);
   const [showAdvanced, setShowAdvanced] = useState<boolean>(false);
   const [showMethodology, setShowMethodology] = useState<boolean>(false);
 
@@ -65,80 +67,62 @@ export const HealthInsuranceCoverageCalculatorApp: React.FC<HealthInsuranceCover
     return `₹${val.toLocaleString('en-IN')}`;
   };
 
-  // 2. Calculations
+  // 2. Calculations strictly routed through canonical statutory & coverage sizing engine
   const results = useMemo(() => {
-    // 1. Base Coverage Sizing Guidelines
-    let baseCover = 500000; // ₹5 Lakh basic cover base
-    if (ageOfOldestMember > 45) {
-      baseCover = 750000;
-    }
-    if (ageOfOldestMember > 60) {
-      baseCover = 1000000;
-    }
+    const canonicalCoverage = calculateHealthCoverage({
+      ageOfEldestMember: ageOfOldestMember,
+      adultsCount,
+      childrenCount,
+      seniorParentsCount,
+      hasChronicCondition,
+      existingCover: hasExistingInsurance ? existingCover : 0,
+      medicalInflationRatePercent: medicalInflation,
+      yearsInFuture: 15,
+      selfAgeAbove60: ageOfOldestMember >= 60,
+      includeParentCover80D: seniorParentsCount > 0,
+      parentsAgeAbove60: true,
+    });
 
-    // 2. Family-size adjustments
-    let sizeAdjustment = 0;
-    if (adultsCount > 1) {
-      sizeAdjustment += (adultsCount - 1) * 200000; // +2L per additional adult
-    }
-    sizeAdjustment += childrenCount * 150000; // +1.5L per kid
-    sizeAdjustment += seniorParentsCount * 500000; // +5L per senior parent (higher hospitalization bracket)
-
-    // 3. Chronic illness load
-    let chronicAdjustment = 0;
-    if (hasChronicCondition) {
-      chronicAdjustment = 500000; // +5 Lakh protective loading cover buffer
-    }
-
-    const rawTotalNeed = baseCover + sizeAdjustment + chronicAdjustment;
-
-    // Standard cover slabs in Indian market
-    const coverSlabs = [500000, 750000, 1000000, 1500000, 2000000, 2500000, 5000000, 10000000];
-    let recommendedCover = coverSlabs[0];
-    for (const slab of coverSlabs) {
-      if (rawTotalNeed <= slab) {
-        recommendedCover = slab;
-        break;
-      }
-      recommendedCover = slab; // highest is 1 Cr
-    }
-
+    const recommendedCover = canonicalCoverage.recommendedSumInsured;
     const actualExistingCover = hasExistingInsurance ? existingCover : 0;
-    const coverageGap = Math.max(0, recommendedCover - actualExistingCover);
+    const coverageGap = canonicalCoverage.coverageGap;
 
-    // --- CORRECTION 7: Bar series names match Estimated Cover vs Existing Cover vs Coverage Gap ---
     const barChartData = [
       {
         name: 'Cover Sizing Overview',
         'Estimated Cover': recommendedCover,
         'Existing Cover': actualExistingCover,
-        'Coverage Gap': coverageGap
-      }
+        'Coverage Gap': coverageGap,
+      },
     ];
 
-    // Generate future coverage projections with custom medical inflation
-    const inflationDec = medicalInflation / 100;
-    const futureChartData = Array.from({ length: 16 }, (_, i) => {
-      const year = i;
-      const futureCost = Math.round(recommendedCover * Math.pow(1 + inflationDec, year));
-      return {
-        year: `Yr ${year}`,
-        cover: futureCost
-      };
-    });
+    const futureChartData = canonicalCoverage.futureProjections.map((p) => ({
+      year: p.yearLabel,
+      cover: p.projectedCost,
+    }));
 
     return {
-      baseCover,
-      sizeAdjustment,
-      chronicAdjustment,
+      baseCover: canonicalCoverage.baseCoverageNeed,
+      sizeAdjustment: canonicalCoverage.familyAdjustment,
+      chronicAdjustment: canonicalCoverage.chronicAdjustment,
       recommendedCover,
       existingCoverText: formatINR(actualExistingCover),
       existingCoverValue: actualExistingCover,
       coverageGap,
       barChartData,
-      futureChartData
+      futureChartData,
+      statutoryDetails: canonicalCoverage,
     };
-  }, [ageOfOldestMember, adultsCount, childrenCount, seniorParentsCount, hasExistingInsurance, existingCover, hasChronicCondition, medicalInflation]);
+  }, [
+    ageOfOldestMember,
+    adultsCount,
+    childrenCount,
+    seniorParentsCount,
+    hasExistingInsurance,
+    existingCover,
+    hasChronicCondition,
+    medicalInflation,
+  ]);
 
   return (
     <main

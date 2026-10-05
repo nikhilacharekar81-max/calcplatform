@@ -37,6 +37,8 @@ export interface TermLifeResult {
   incomeReplacementNeed: number;
   outstandingDebts: number;
   netProtectionGap: number;
+  section80cEligiblePremiumDeduction: number;
+  /** @deprecated Backward-compatibility alias for section80cEligiblePremiumDeduction */
   section80cTaxBenefit: number;
   applicableGstPercent: number;
   section10_10dStatusNote: string;
@@ -170,6 +172,7 @@ export function calculateTermLifeInsurance(input: TermLifeInput): TermLifeResult
     incomeReplacementNeed: roundMoney(incomeReplacement),
     outstandingDebts: roundMoney(debts),
     netProtectionGap: roundMoney(netProtectionGap),
+    section80cEligiblePremiumDeduction: roundMoney(section80cTaxBenefit),
     section80cTaxBenefit: roundMoney(section80cTaxBenefit),
     applicableGstPercent: gstPercent,
     section10_10dStatusNote,
@@ -213,6 +216,7 @@ export interface LifeNeedsInput {
   investmentReturn?: number;
   expectedReturnRatePercent?: number;
   yearsOfSupportNeeded?: number;
+  personalExpenseRatioPercent?: number;
 }
 
 export interface LifeNeedsResult {
@@ -262,9 +266,9 @@ export function calculateLifeInsuranceNeeds(input: LifeNeedsInput): LifeNeedsRes
   } else if (input.monthlyExpenses !== undefined && input.monthlyExpenses !== null) {
     expenses = Math.max(0, input.monthlyExpenses * 12);
   } else if (annualIncome > 0) {
-    // Default family household expense (assuming 30% personal expense, 70% family dependency)
-    const personalExpPct = 30;
-    expenses = annualIncome * (1 - personalExpPct / 100);
+    // Default family household expense (using configurable personalExpenseRatioPercent, default 30%)
+    const personalExpPct = input.personalExpenseRatioPercent !== undefined ? input.personalExpenseRatioPercent : 30;
+    expenses = annualIncome * Math.max(0, 1 - personalExpPct / 100);
   }
 
   const years = Math.max(1, input.yearsOfSupportNeeded || workingYears);

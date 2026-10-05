@@ -46,12 +46,9 @@ export const HealthInsuranceCalculatorApp: React.FC<HealthInsuranceCalculatorApp
   const [ageOldestChild, setAgeOldestChild] = useState<number>(5);
   const [ageOldestParent, setAgeOldestParent] = useState<number>(60);
 
-  const [gender, setGender] = useState<'Male' | 'Female'>('Male');
   const [policyType, setPolicyType] = useState<'Individual' | 'Family Floater'>('Family Floater');
   const [sumInsuredValue, setSumInsuredValue] = useState<number>(1000000); // 10 Lakhs default
   const [voluntaryDeductible, setVoluntaryDeductible] = useState<number>(0); // Percentage
-  const [preExistingCondition, setPreExistingCondition] = useState<'Yes' | 'No'>('No');
-
   const [showMethodology, setShowMethodology] = useState<boolean>(false);
 
   // Sum Insured options
@@ -341,10 +338,9 @@ export const HealthInsuranceCalculatorApp: React.FC<HealthInsuranceCalculatorApp
     ageSpouse,
     ageOldestChild,
     ageOldestParent,
-    gender,
     policyType,
     sumInsuredValue,
-    preExistingCondition
+    voluntaryDeductible,
   ]);
 
   return (
@@ -491,28 +487,13 @@ export const HealthInsuranceCalculatorApp: React.FC<HealthInsuranceCalculatorApp
             {/* Core Settings */}
             <div className="space-y-4 pt-4 border-t border-slate-100">
               <span className="block text-xs font-bold text-slate-700 uppercase tracking-wider">
-                3. Underwriting & Policy Details
+                3. Policy & Coverage Details
               </span>
 
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-1">
-                  <label htmlFor="select-gender" className="block text-xs font-semibold text-slate-700">
-                    Gender (of Primary Insured)
-                  </label>
-                  <select
-                    id="select-gender"
-                    value={gender}
-                    onChange={(e) => setGender(e.target.value as any)}
-                    className="w-full text-xs p-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:ring-emerald-500 font-medium"
-                  >
-                    <option value="Male">Male</option>
-                    <option value="Female">Female</option>
-                  </select>
-                </div>
-
-                <div className="space-y-1">
                   <label htmlFor="select-policy-type" className="block text-xs font-semibold text-slate-700">
-                    Policy Type
+                    Policy Structure
                   </label>
                   <select
                     id="select-policy-type"
@@ -524,49 +505,21 @@ export const HealthInsuranceCalculatorApp: React.FC<HealthInsuranceCalculatorApp
                     <option value="Individual">Individual Policy</option>
                   </select>
                 </div>
-              </div>
 
-              <div className="space-y-1">
-                <label htmlFor="select-sum-insured" className="block text-xs font-semibold text-slate-700">
-                  Sum Insured Cover
-                </label>
-                <select
-                  id="select-sum-insured"
-                  value={sumInsuredValue}
-                  onChange={(e) => setSumInsuredValue(Number(e.target.value))}
-                  className="w-full text-xs p-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:ring-emerald-500 font-medium"
-                >
+                <div className="space-y-1">
+                  <label htmlFor="select-sum-insured" className="block text-xs font-semibold text-slate-700">
+                    Sum Insured Cover
+                  </label>
+                  <select
+                    id="select-sum-insured"
+                    value={sumInsuredValue}
+                    onChange={(e) => setSumInsuredValue(Number(e.target.value))}
+                    className="w-full text-xs p-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:ring-emerald-500 font-medium"
+                  >
                     {sumInsuredOptions.map(opt => (
                       <option key={opt.value} value={opt.value}>{opt.label}</option>
                     ))}
                   </select>
-                </div>
-
-              <div className="space-y-1.5">
-                <span className="block text-xs font-semibold text-slate-700">
-                  Pre-existing Conditions?
-                </span>
-                <div className="flex gap-4">
-                  <label className="flex items-center gap-2 text-xs font-medium text-slate-700 cursor-pointer">
-                    <input
-                      type="radio"
-                      name="preExisting"
-                      checked={preExistingCondition === 'Yes'}
-                      onChange={() => setPreExistingCondition('Yes')}
-                      className="text-emerald-600 focus:ring-emerald-500 w-4 h-4"
-                    />
-                    Yes
-                  </label>
-                  <label className="flex items-center gap-2 text-xs font-medium text-slate-700 cursor-pointer">
-                    <input
-                      type="radio"
-                      name="preExisting"
-                      checked={preExistingCondition === 'No'}
-                      onChange={() => setPreExistingCondition('No')}
-                      className="text-emerald-600 focus:ring-emerald-500 w-4 h-4"
-                    />
-                    No
-                  </label>
                 </div>
               </div>
             </div>

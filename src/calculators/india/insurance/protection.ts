@@ -20,8 +20,8 @@ export interface PersonalAccidentResult {
  */
 export function calculatePersonalAccidentCover(input: PersonalAccidentInput): PersonalAccidentResult {
   const income = Math.max(0, input.annualEarnedIncome);
-  const debts = Math.max(0, input.outstandingDebts || 0);
-  const dependents = Math.max(0, input.dependentsCount || 0);
+  const debts = Math.max(0, input.outstandingDebts ?? 0);
+  const dependents = Math.max(0, input.dependentsCount ?? 0);
   const multipleYears = input.incomeMultipleYears !== undefined ? input.incomeMultipleYears : 10;
 
   // Accidental Death Sum Insured = (10x Annual Income) + Outstanding Debts + Dependent Calibration
@@ -73,7 +73,7 @@ export function calculateCriticalIllnessCover(input: CriticalIllnessInput): Crit
   const treatmentCost = input.expectedSpecializedTreatmentCost !== undefined
     ? Math.max(0, input.expectedSpecializedTreatmentCost)
     : 1500000;
-  const existingCover = Math.max(0, input.existingHealthInsuranceCover || 0);
+  const existingCover = Math.max(0, input.existingHealthInsuranceCover ?? 0);
 
   const incomeReplacementNeed = expenses * replacementYears;
   // Existing health cover strictly offsets specialized treatment costs, not daily income replacement

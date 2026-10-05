@@ -14,14 +14,17 @@ export function validateRuleEnvelope<T>(rule: IndiaRuleEnvelope<T>): void {
     throw new Error("Rule source URL is required");
   }
   
-  // Validate that sourceUrl is a valid HTTP or HTTPS URL (no multiple URLs or plain text)
+  // Validate that sourceUrl is a valid HTTPS URL or approved archival reference
   try {
     const parsedUrl = new URL(rule.provenance.sourceUrl);
-    if (parsedUrl.protocol !== "http:" && parsedUrl.protocol !== "https:") {
+    if (parsedUrl.protocol !== "https:" && parsedUrl.protocol !== "http:") {
       throw new Error();
     }
   } catch {
-    throw new Error(`Rule sourceUrl must be a valid HTTP/HTTPS URL, received: "${rule.provenance.sourceUrl}"`);
+    // Check if it's an approved archival reference schema (e.g. urn: or archive:)
+    if (!rule.provenance.sourceUrl.startsWith("urn:") && !rule.provenance.sourceUrl.startsWith("archive:")) {
+      throw new Error(`Rule sourceUrl must be a valid HTTPS URL or archival reference, received: "${rule.provenance.sourceUrl}"`);
+    }
   }
 
   if (!rule.provenance.effectiveFrom) {
@@ -38,11 +41,20 @@ export function validateRuleEnvelope<T>(rule: IndiaRuleEnvelope<T>): void {
   }
 
   if (rule.status === "ACTIVE_VERIFIED") {
+    // Structural Guard: Reject placeholder references from ACTIVE_VERIFIED status
+    const urlLower = rule.provenance.sourceUrl.toLowerCase();
+    if (urlLower.includes("pending") || urlLower.includes("placeholder") || urlLower.includes("unverified") || urlLower.includes("example.com")) {
+      throw new Error(`ACTIVE_VERIFIED rules cannot use placeholder or pending source URLs: "${rule.provenance.sourceUrl}"`);
+    }
+
     if (!rule.provenance.verifiedAt) {
       throw new Error("ACTIVE_VERIFIED rules require verifiedAt");
     }
-    if (!rule.provenance.verifiedBy || typeof rule.provenance.verifiedBy !== "string") {
+    if (!rule.provenance.verifiedBy || typeof rule.provenance.verifiedBy !== "string" || rule.provenance.verifiedBy.trim().length === 0) {
       throw new Error("ACTIVE_VERIFIED rules require verifiedBy attribution");
+    }
+    if (!rule.provenance.sourceDocument || rule.provenance.sourceDocument.trim().length === 0) {
+      throw new Error("ACTIVE_VERIFIED rules require sourceDocument reference");
     }
   }
 }

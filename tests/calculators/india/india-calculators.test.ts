@@ -67,6 +67,78 @@ export function runIndiaCalculatorsTests(): { name: string; passed: boolean; err
     assert(cg.netGain.toNumber() === 437500, "Net gain ₹4,37,500");
   });
 
+  runTest("India Calculators - Statutory Capital Gains Engine (Losses, Set-Offs, Section 54 & Post-July 2024)", async () => {
+    const { calculateStatutoryCapitalGains } = await import("../../../src/calculators/india/capital-gains/index.ts");
+
+    // 1. Negative capital gains (Capital Loss)
+    const lossRes = calculateStatutoryCapitalGains({
+      assetCategory: 'listed_equity',
+      salePrice: 400000,
+      purchasePrice: 600000,
+      purchaseDate: '2025-01-10',
+      saleDate: '2025-06-15', // Short-term loss
+    });
+    assert(lossRes.rawCapitalGain === -200000, "Negative gain correctly computed as -2,00,000");
+    assert(lossRes.taxableStcg === 0 && lossRes.unabsorbedStcl === 200000, "Unabsorbed STCL accumulated for carry-forward");
+
+    // 2. STCL offsetting both STCG and LTCG
+    const stclOffsetRes = calculateStatutoryCapitalGains({
+      assetCategory: 'listed_equity',
+      salePrice: 1500000,
+      purchasePrice: 1000000,
+      purchaseDate: '2023-01-01',
+      saleDate: '2026-06-01', // LTCG of ₹5,00,000
+      broughtForwardStcl: 200000,
+    });
+    assert(stclOffsetRes.stcgOffsetLtcg === 200000, "STCL successfully offsets LTCG");
+    assert(stclOffsetRes.taxableLtcg === 300000, "Remaining taxable LTCG is 3,00,000");
+
+    // 3. Section 54 Real Estate vs 54F (₹10 Cr cap)
+    const sec54Res = calculateStatutoryCapitalGains({
+      assetCategory: 'real_estate',
+      salePrice: 200000000, // ₹20 Cr
+      purchasePrice: 50000000, // ₹5 Cr
+      purchaseDate: '2020-01-01',
+      saleDate: '2026-05-01',
+      reinvestmentSec54: 150000000, // ₹15 Cr reinvestment (capped at 10 Cr)
+    });
+    assert(sec54Res.exemptionClaimed === 100000000, "Section 54 reinvestment strictly capped at ₹10 Crore");
+
+    // 4. Section 50AA Debt Mutual Funds acquired after April 1, 2023 are always STCG
+    const debtMfRes = calculateStatutoryCapitalGains({
+      assetCategory: 'debt_mutual_funds',
+      salePrice: 1500000,
+      purchasePrice: 1000000,
+      purchaseDate: '2023-05-01', // Post April 2023
+      saleDate: '2026-09-01', // Held > 3 years
+      annualOtherIncome: 1000000,
+    });
+    assert(debtMfRes.isShortTerm === true, "Specified debt mutual funds post April 2023 taxed as short term under Sec 50AA");
+
+    // 5. Post July 23, 2024 Listed Equity Rate (12.5% with ₹1.25 Lakh exemption)
+    const postJulyRes = calculateStatutoryCapitalGains({
+      assetCategory: 'listed_equity',
+      salePrice: 1500000,
+      purchasePrice: 1000000,
+      purchaseDate: '2023-01-01',
+      saleDate: '2025-08-01', // Post July 23, 2024
+    });
+    // LTCG = 5,00,000 - 1,25,000 = 3,75,000 * 12.5% = 46,875 base tax
+    assert(postJulyRes.baseTax === 46875, `Expected 46,875 base tax on LTCG post July 2024, got ${postJulyRes.baseTax}`);
+
+    // 6. Section 112A Grandfathering date guard (only applies if purchase < Jan 31, 2018)
+    const gfPost2018 = calculateStatutoryCapitalGains({
+      assetCategory: 'listed_equity',
+      salePrice: 1500000,
+      purchasePrice: 500000,
+      purchaseDate: '2019-01-01', // Post Jan 31, 2018
+      saleDate: '2026-01-01',
+      applyGrandfathering: true,
+      jan312018Fmv: 1000000,
+    });
+    assert(gfPost2018.effectiveCoa === 500000, "Grandfathering rejected for assets acquired after Jan 31, 2018");
+  });
+
   runTest("India Calculators - EPF 12% Contribution", () => {
     const epf = calculateEpfContribution(15000, 12, 12);
     assert(epf.employee.toNumber() === 1800, "Employee EPF ₹1,800");

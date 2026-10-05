@@ -34,6 +34,11 @@ export interface IndiaInsuranceParameters {
     twoWheelers5YearBundled: { under75cc: number; from75to150cc: number; from150to350cc: number; above350cc: number };
     electricVehicleTpDiscountPercent: number; // 15% statutory discount
   };
+  motorVoluntaryDeductibleDiscountSchedule: Array<{
+    minDeductibleRupees: number;
+    discountPercentOnOD: number;
+    maxDiscountRupees: number;
+  }>;
   gstRatesPercent: {
     effectiveFromDate: string; // "2025-09-22" GST Council Reform
     individualLifeInsurance: number; // 0% Exempt post Sept 22, 2025
@@ -94,6 +99,12 @@ export const INDIA_INSURANCE_STATUTORY_RULES_2026: IndiaRuleEnvelope<IndiaInsura
       twoWheelers5YearBundled: { under75cc: 2901, from75to150cc: 3851, from150to350cc: 7365, above350cc: 15117 },
       electricVehicleTpDiscountPercent: 15,
     },
+    motorVoluntaryDeductibleDiscountSchedule: [
+      { minDeductibleRupees: 2500, discountPercentOnOD: 20, maxDiscountRupees: 750 },
+      { minDeductibleRupees: 5000, discountPercentOnOD: 25, maxDiscountRupees: 1500 },
+      { minDeductibleRupees: 7500, discountPercentOnOD: 30, maxDiscountRupees: 2000 },
+      { minDeductibleRupees: 15000, discountPercentOnOD: 35, maxDiscountRupees: 2500 },
+    ],
     gstRatesPercent: {
       effectiveFromDate: "2025-09-22",
       individualLifeInsurance: 0, // Exempt post Sept 22, 2025 GST Council decision
