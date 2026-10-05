@@ -44,10 +44,7 @@ function calculateVoluntaryDeductibleDiscount(
     }
   }
 
-  // Fallback: If user enters a percentage (<=50%) directly in illustrative tools
-  if (deductibleRupees <= 50) {
-    return roundMoney(odPremium * (deductibleRupees / 100));
-  }
+  // Deductible is strictly a rupee amount; no percentage interpretation
   return 0;
 }
 
@@ -98,7 +95,7 @@ export function calculateCarInsurance(input: CarInsuranceInput): CarInsuranceRes
   const ncbDiscount = grossOdPremium * (ncbPct / 100);
   const odAfterNcb = Math.max(0, grossOdPremium - ncbDiscount);
 
-  // Voluntary deductible lookup from registry motor tariff schedule
+  // Voluntary deductible lookup from registry motor tariff schedule (Rupees only)
   const deductibleDiscount = calculateVoluntaryDeductibleDiscount(
     odAfterNcb,
     input.voluntaryDeductible ?? 0,
@@ -106,24 +103,24 @@ export function calculateCarInsurance(input: CarInsuranceInput): CarInsuranceRes
   );
   const netOdPremium = roundMoney(Math.max(0, odAfterNcb - deductibleDiscount));
 
-  // Statutory Third-Party Premium Estimate based on CC and vehicle age
-  const cc = input.engineCapacityCC || 1200;
-  let tpTariff = 2094;
+  // Statutory Third-Party Premium Estimate based on CC and vehicle age from Rule Registry
+  const cc = input.engineCapacityCC ?? 1200;
+  let tpTariff = 0;
   if (input.isNewVehicle || ageMonths === 0) {
     // 3-Year bundled TP policy for new private cars
-    if (cc > 1500) tpTariff = tpTariffs?.cars3YearBundled.above1500cc ?? 24596;
-    else if (cc > 1000) tpTariff = tpTariffs?.cars3YearBundled.from1000to1500cc ?? 10640;
-    else tpTariff = tpTariffs?.cars3YearBundled.under1000cc ?? 6521;
+    if (cc > 1500) tpTariff = tpTariffs.cars3YearBundled.above1500cc;
+    else if (cc > 1000) tpTariff = tpTariffs.cars3YearBundled.from1000to1500cc;
+    else tpTariff = tpTariffs.cars3YearBundled.under1000cc;
   } else {
     // 1-Year statutory annual TP policy
-    if (cc > 1500) tpTariff = tpTariffs?.carsAnnual.above1500cc ?? 7897;
-    else if (cc > 1000) tpTariff = tpTariffs?.carsAnnual.from1000to1500cc ?? 3416;
-    else tpTariff = tpTariffs?.carsAnnual.under1000cc ?? 2094;
+    if (cc > 1500) tpTariff = tpTariffs.carsAnnual.above1500cc;
+    else if (cc > 1000) tpTariff = tpTariffs.carsAnnual.from1000to1500cc;
+    else tpTariff = tpTariffs.carsAnnual.under1000cc;
   }
 
-  // Electric Vehicle 15% TP discount per IRDAI notification
+  // Electric Vehicle 15% TP discount per IRDAI statutory tariff notification
   if (input.isElectricVehicle) {
-    const evDiscount = tpTariffs?.electricVehicleTpDiscountPercent ?? 15;
+    const evDiscount = tpTariffs.electricVehicleTpDiscountPercent;
     tpTariff = roundMoney(tpTariff * (1 - evDiscount / 100));
   }
 
@@ -185,6 +182,7 @@ export function calculateBikeInsurance(input: BikeInsuranceInput): BikeInsurance
   const ncbLadder = rule.parameters.motorNcbLadderPercent;
   const gstPercent = rule.parameters.gstRatesPercent.motorInsurance;
   const tpTariffs = rule.parameters.motorThirdPartyTariffs;
+  const deductibleSchedule = rule.parameters.motorVoluntaryDeductibleDiscountSchedule;
 
   // Determine IRDAI IDV Depreciation Percentage
   const depPct = getIdvDepreciationPercent(ageMonths);
@@ -200,28 +198,34 @@ export function calculateBikeInsurance(input: BikeInsuranceInput): BikeInsurance
   const grossOd = idv * grossOdRate;
   const ncbDiscount = grossOd * (ncbPct / 100);
   const odAfterNcb = Math.max(0, grossOd - ncbDiscount);
-  const deductibleDiscount = calculateVoluntaryDeductibleDiscount(odAfterNcb, input.voluntaryDeductible || 0);
+  
+  // Deductible discount from registry schedule
+  const deductibleDiscount = calculateVoluntaryDeductibleDiscount(
+    odAfterNcb,
+    input.voluntaryDeductible ?? 0,
+    deductibleSchedule
+  );
   const netOd = roundMoney(Math.max(0, odAfterNcb - deductibleDiscount));
 
-  const cc = input.engineCapacityCC || 125;
-  let tpTariff = 714;
+  const cc = input.engineCapacityCC ?? 125;
+  let tpTariff = 0;
   if (input.isNewVehicle || ageMonths === 0) {
-    // 5-Year bundled TP policy for new two-wheelers
-    if (cc > 350) tpTariff = tpTariffs?.twoWheelers5YearBundled.above350cc ?? 15117;
-    else if (cc > 150) tpTariff = tpTariffs?.twoWheelers5YearBundled.from150to350cc ?? 7365;
-    else if (cc > 75) tpTariff = tpTariffs?.twoWheelers5YearBundled.from75to150cc ?? 3851;
-    else tpTariff = tpTariffs?.twoWheelers5YearBundled.under75cc ?? 2901;
+    // 5-Year bundled TP policy for new two-wheelers from registry
+    if (cc > 350) tpTariff = tpTariffs.twoWheelers5YearBundled.above350cc;
+    else if (cc > 150) tpTariff = tpTariffs.twoWheelers5YearBundled.from150to350cc;
+    else if (cc > 75) tpTariff = tpTariffs.twoWheelers5YearBundled.from75to150cc;
+    else tpTariff = tpTariffs.twoWheelers5YearBundled.under75cc;
   } else {
-    // 1-Year annual TP tariff
-    if (cc > 350) tpTariff = tpTariffs?.twoWheelersAnnual.above350cc ?? 2804;
-    else if (cc > 150) tpTariff = tpTariffs?.twoWheelersAnnual.from150to350cc ?? 1366;
-    else if (cc > 75) tpTariff = tpTariffs?.twoWheelersAnnual.from75to150cc ?? 714;
-    else tpTariff = tpTariffs?.twoWheelersAnnual.under75cc ?? 538;
+    // 1-Year annual TP tariff from registry
+    if (cc > 350) tpTariff = tpTariffs.twoWheelersAnnual.above350cc;
+    else if (cc > 150) tpTariff = tpTariffs.twoWheelersAnnual.from150to350cc;
+    else if (cc > 75) tpTariff = tpTariffs.twoWheelersAnnual.from75to150cc;
+    else tpTariff = tpTariffs.twoWheelersAnnual.under75cc;
   }
 
-  // Electric Vehicle 15% TP discount per IRDAI notification
+  // Electric Vehicle 15% TP discount per IRDAI statutory tariff notification
   if (input.isElectricVehicle) {
-    const evDiscount = tpTariffs?.electricVehicleTpDiscountPercent ?? 15;
+    const evDiscount = tpTariffs.electricVehicleTpDiscountPercent;
     tpTariff = roundMoney(tpTariff * (1 - evDiscount / 100));
   }
 

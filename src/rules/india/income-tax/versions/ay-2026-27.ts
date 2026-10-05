@@ -32,9 +32,9 @@ export const INDIA_INCOME_TAX_AY_2026_27: Readonly<{
   assessmentYear: "AY-2026-27",
   status: "ACTIVE_VERIFIED",
   parameters: {
-    taxYear: "FY 2026-27",
-    assessmentYear: "AY 2027-28",
-    act: "Income-tax Act, 2025",
+    taxYear: "FY 2025-26",
+    assessmentYear: "AY 2026-27",
+    act: "Income-tax Act, 1961 (as amended by Finance Act)",
     healthAndEducationCessRate: 4,
     newRegime: {
       standardDeduction: 75000,

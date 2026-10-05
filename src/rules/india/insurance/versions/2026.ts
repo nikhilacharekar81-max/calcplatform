@@ -118,9 +118,9 @@ export const INDIA_INSURANCE_STATUTORY_RULES_2026: IndiaRuleEnvelope<IndiaInsura
     },
   },
   provenance: {
-    authority: "GST Council 56th Meeting Decision (Eff. 22 Sept 2025), IRDAI & Income Tax Act, 1961",
-    sourceUrl: "https://cbic-gst.gov.in/",
-    sourceDocument: "GST Council Exemption Notification for Individual Life & Health Insurance (Sept 2025), IRDAI Motor Tariff & Income Tax Sec 80D/80C/10(10D)",
+    authority: "Insurance Regulatory and Development Authority of India (IRDAI) & GST Council",
+    sourceUrl: "https://irdai.gov.in/",
+    sourceDocument: "IRDAI Motor Tariff Schedule & GST Council Exemption Notification (Notification No. 09/2025-CTR)",
     effectiveFrom: "2025-09-22",
     effectiveTo: null,
     verifiedAt: "2026-04-01T00:00:00.000Z",

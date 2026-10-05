@@ -67,19 +67,6 @@ export const TDS_SECTIONS: Record<string, TdsSectionDefinition> = {
     supportsForm15GH: false,
     supportsForm13: true,
   },
-  '194IA_PROPERTY': {
-    code: '194-IA',
-    name: 'TDS on Sale of Immovable Property',
-    category: 'Property',
-    standardRate: 1,
-    thresholdAmount: 5000000,
-    thresholdType: 'single',
-    thresholdDescription: '₹50,00,000 single transaction value',
-    payeeTypes: ['Individual/HUF', 'Company/Firm', 'Any'],
-    description: '1% TDS on consideration paid for transfer of immovable property (other than agricultural land) exceeding ₹50 Lakhs.',
-    supportsForm15GH: false,
-    supportsForm13: false,
-  },
   '194C_CONTRACTOR': {
     code: '194C',
     name: 'Payments to Contractors & Sub-Contractors',
@@ -191,11 +178,11 @@ export const TDS_SECTIONS: Record<string, TdsSectionDefinition> = {
 export interface TdsInputState {
   sectionKey: string;
   payeeType: 'Individual/HUF' | 'Company/Firm';
+  payerType?: 'bank_post_office' | 'other_payer';
   grossAmount: number;
   aggregatePaidTillDate: number;
   isPanFurnished: boolean;
   isSeniorCitizen: boolean; // Relevant for 194A
-  isSpecifiedPerson?: boolean; // Relevant for 194S (below turnover threshold)
   isForm15Submitted: boolean; // 15G or 15H
   hasForm13Certificate: boolean; // Lower deduction certificate
   form13Rate: number; // percentage
@@ -226,6 +213,7 @@ export interface TdsCalculationResult {
 export const DEFAULT_TDS_INPUTS: TdsInputState = {
   sectionKey: '194J_PROF',
   payeeType: 'Individual/HUF',
+  payerType: 'bank_post_office',
   grossAmount: 75000,
   aggregatePaidTillDate: 0,
   isPanFurnished: true,
@@ -250,19 +238,13 @@ export function calculateTds(inputs: TdsInputState): TdsCalculationResult {
   // Determine Threshold Limit
   let thresholdLimit = section.thresholdAmount;
   if (section.code === '194A') {
-    // Note: ₹1,00,000 limit only applies to Banks, Co-operatives, and Post Offices.
-    // Private firms/NBFCs usually have lower limits (standard 10k/40k).
-    // Our section key '194A_INTEREST' covers bank-like payers.
-    if (inputs.isSeniorCitizen && inputs.sectionKey === '194A_INTEREST') {
+    const isBankOrPostOffice = inputs.payerType === undefined || inputs.payerType === 'bank_post_office';
+    if (inputs.isSeniorCitizen && isBankOrPostOffice && inputs.sectionKey === '194A_INTEREST') {
       thresholdLimit = 100000; 
       notes.push('Senior Citizen threshold of ₹1,00,000 applied (applicable for Banks/Post Office).');
-    }
-  }
-
-  if (section.code === '194S') {
-    if (inputs.isSpecifiedPerson) {
-      thresholdLimit = 50000;
-      notes.push('Specified Person threshold of ₹50,000 applied (Individual/HUF below audit limits).');
+    } else if (inputs.isSeniorCitizen && !isBankOrPostOffice) {
+      thresholdLimit = 10000;
+      notes.push('Standard non-bank threshold of ₹10,000 applied for other payers.');
     }
   }
 

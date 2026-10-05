@@ -86,11 +86,11 @@ export function calculateLivingExpensesPV(
  * 1. Term Insurance Calculator — Income Replacement, Debt, Goal & Net Protection Gap
  */
 export function calculateTermLifeInsurance(input: TermLifeInput): TermLifeResult {
-  const annualIncome = Math.max(0, input.annualIncome || 0);
-  const age = Math.max(18, input.age || input.currentAge || 30);
-  const retAge = Math.max(age + 1, input.retirementAge || 60);
+  const annualIncome = Math.max(0, input.annualIncome ?? 0);
+  const age = Math.max(18, input.age ?? input.currentAge ?? 30);
+  const retAge = Math.max(age + 1, input.retirementAge ?? 60);
   const workingYears = Math.max(1, retAge - age);
-  const dependents = Math.max(0, input.dependents || 0);
+  const dependents = Math.max(0, input.dependents ?? 0);
 
   const debts = Math.max(0, input.outstandingLoans ?? input.outstandingDebts ?? 0);
   const existingCover = Math.max(0, input.existingLifeCover ?? 0);
@@ -114,7 +114,7 @@ export function calculateTermLifeInsurance(input: TermLifeInput): TermLifeResult
     const annualExp = Math.max(0, input.monthlyExpenses) * 12;
     incomeReplacement = calculateLivingExpensesPV(annualExp, inflationRate, returnRate, workingYears);
   } else {
-    const multipleYears = input.incomeMultipleYears || Math.min(workingYears, Math.max(10, 10 + dependents * 2.5));
+    const multipleYears = input.incomeMultipleYears ?? Math.min(workingYears, Math.max(10, 10 + dependents * 2.5));
     incomeReplacement = annualIncome * multipleYears;
   }
 
@@ -255,10 +255,10 @@ export interface LifeNeedsResult {
  * 2. Life Insurance Needs Calculator — Comprehensive Net Need & Goal Discounting
  */
 export function calculateLifeInsuranceNeeds(input: LifeNeedsInput): LifeNeedsResult {
-  const age = Math.max(18, input.age || input.currentAge || 32);
-  const retAge = Math.max(age + 1, input.retirementAge || 60);
+  const age = Math.max(18, input.age ?? input.currentAge ?? 32);
+  const retAge = Math.max(age + 1, input.retirementAge ?? 60);
   const workingYears = Math.max(1, retAge - age);
-  const annualIncome = Math.max(0, input.annualIncome || 0);
+  const annualIncome = Math.max(0, input.annualIncome ?? 0);
 
   let expenses = 0;
   if (input.annualFamilyExpenses !== undefined && input.annualFamilyExpenses !== null) {
@@ -277,8 +277,8 @@ export function calculateLifeInsuranceNeeds(input: LifeNeedsInput): LifeNeedsRes
 
   const incomeReplacementCorpus = calculateLivingExpensesPV(expenses, infRate, returnRate, years);
 
-  const eduCost = Math.max(0, input.childrenEducationCostToday || 0);
-  const marriageCost = Math.max(0, input.childrenMarriageCostToday || 0);
+  const eduCost = Math.max(0, input.childrenEducationCostToday ?? 0);
+  const marriageCost = Math.max(0, input.childrenMarriageCostToday ?? 0);
   const futureGoalsToday = Math.max(0, input.futureGoals ?? (eduCost + marriageCost));
   const goalYears = Math.max(0, input.goalYears ?? input.yearsUntilGoal ?? 0);
 
@@ -286,8 +286,8 @@ export function calculateLifeInsuranceNeeds(input: LifeNeedsInput): LifeNeedsRes
   const otherDebts = Math.max(0, input.otherDebts ?? input.loans ?? input.totalDebts ?? 0);
   const emergencyExpenses = Math.max(0, input.finalEmergencyExpenses ?? 0);
 
-  const savings = Math.max(0, input.savings || 0);
-  const investments = Math.max(0, input.investments || 0);
+  const savings = Math.max(0, input.savings ?? 0);
+  const investments = Math.max(0, input.investments ?? 0);
   const savingsAndInvestments = Math.max(0, input.currentAssets ?? (savings + investments));
   
   const existingPersonalCover = Math.max(0, input.existingLifeCover ?? input.existingLifeInsurance ?? 0);
@@ -406,8 +406,8 @@ export interface HumanLifeValueResult {
  * 3. Human Life Value (HLV) Calculator — Discounted Present Value of Future Lifetime Net Earnings
  */
 export function calculateHumanLifeValue(input: HumanLifeValueInput): HumanLifeValueResult {
-  const age = Math.max(18, input.age || input.currentAge || 30);
-  const retAge = Math.max(age + 1, input.retirementAge || 60);
+  const age = Math.max(18, input.age ?? input.currentAge ?? 30);
+  const retAge = Math.max(age + 1, input.retirementAge ?? 60);
   const workingYears = Math.max(1, retAge - age);
 
   const grossIncome = Math.max(0, input.annualIncome);

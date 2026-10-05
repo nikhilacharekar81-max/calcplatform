@@ -7,8 +7,8 @@ interface AdminLoginPageProps {
 }
 
 export const AdminLoginPage: React.FC<AdminLoginPageProps> = ({ onLoginSuccess }) => {
-  const [username, setUsername] = useState('admin');
-  const [password, setPassword] = useState('admin123');
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -112,7 +112,7 @@ export const AdminLoginPage: React.FC<AdminLoginPageProps> = ({ onLoginSuccess }
           </form>
 
           <div className="mt-6 pt-5 border-t border-[#f5f5f5] text-center text-[11px] text-[#74767e]">
-            Default credentials: <span className="font-mono font-bold text-[#222325]">admin / admin123</span>
+            <span>Secure administrative access. Credentials are encrypted and verified server-side.</span>
           </div>
         </div>
       </div>

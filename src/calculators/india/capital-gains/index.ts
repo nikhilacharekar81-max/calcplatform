@@ -23,11 +23,13 @@ export interface ComprehensiveCapitalGainsInput {
   indexedCostOfAcquisition?: number;
   // Improvements
   improvementCost?: number;
-  // Loss Set-offs
+  // Brought forward loss set-offs
   broughtForwardStcl?: number;
   broughtForwardLtcl?: number;
-  // Reinvestments (Sec 54 / 54F / 54EC)
-  reinvestmentSec54?: number;
+  // Reinvestments (Separated Sec 54 / 54F / 54EC)
+  reinvestmentSec54?: number; // Residential House (Sec 54) - Max ₹10 Cr
+  reinvestmentSec54F?: number; // Residential House for non-residential asset (Sec 54F) - Max ₹10 Cr
+  reinvestmentSec54EC?: number; // Specified Bonds (Sec 54EC) - Max ₹50 Lakh
   // Tax Payer Income Slab (for STCG / Debt funds slab taxation)
   annualOtherIncome?: number;
 }
@@ -47,6 +49,9 @@ export interface ComprehensiveCapitalGainsResult {
   ltclOffsetLtcg: number;
   remainingStcl: number;
   remainingLtcl: number;
+  exemptionSec54: number;
+  exemptionSec54F: number;
+  exemptionSec54EC: number;
   exemptionClaimed: number;
   netTaxableLtcgAfterExemption: number;
   realEstateOptionUsed?: string;
@@ -68,7 +73,6 @@ export function calculateStatutoryCapitalGains(
   const improvementCost = Math.max(0, input.improvementCost ?? 0);
   const broughtForwardStcl = Math.max(0, input.broughtForwardStcl ?? 0);
   const broughtForwardLtcl = Math.max(0, input.broughtForwardLtcl ?? 0);
-  const reinvestmentSec54 = Math.max(0, input.reinvestmentSec54 ?? 0);
   const annualOtherIncome = Math.max(0, input.annualOtherIncome ?? 0);
 
   const pDate = new Date(input.purchaseDate);
@@ -125,57 +129,88 @@ export function calculateStatutoryCapitalGains(
   }
 
   const rawCapitalGain = netSaleConsideration - effectiveCoa;
+  
+  // Step 1: Preserve signed current-year gains/losses before set-off
   const currentStcg = shortTerm ? rawCapitalGain : 0;
   const currentLtcg = !shortTerm ? rawCapitalGain : 0;
 
-  let taxableStcg = Math.max(0, currentStcg);
-  let taxableLtcg = Math.max(0, currentLtcg);
-
-  let remainingStcl = broughtForwardStcl;
-  let remainingLtcl = broughtForwardLtcl;
+  let taxableStcg = 0;
+  let taxableLtcg = 0;
+  let unabsorbedStcl = broughtForwardStcl;
+  let unabsorbedLtcl = broughtForwardLtcl;
 
   let stcgOffset = 0;
   let stcgOffsetLtcg = 0;
   let ltclOffsetLtcg = 0;
 
-  // Offset STCG with STCL first
-  if (taxableStcg > 0 && remainingStcl > 0) {
-    stcgOffset = Math.min(taxableStcg, remainingStcl);
-    taxableStcg -= stcgOffset;
-    remainingStcl -= stcgOffset;
-  }
-
-  // Remaining STCL can offset LTCG
-  if (taxableLtcg > 0 && remainingStcl > 0) {
-    stcgOffsetLtcg = Math.min(taxableLtcg, remainingStcl);
-    taxableLtcg -= stcgOffsetLtcg;
-    remainingStcl -= stcgOffsetLtcg;
-  }
-
-  // LTCL offsets LTCG
-  if (taxableLtcg > 0 && remainingLtcl > 0) {
-    ltclOffsetLtcg = Math.min(taxableLtcg, remainingLtcl);
-    taxableLtcg -= ltclOffsetLtcg;
-    remainingLtcl -= ltclOffsetLtcg;
-  }
-
-  // Section 54 / 54F / 54EC Reinvestment Exemptions (Capped at ₹10 Cr / ₹50 Lakh)
-  let exemptionClaimed = 0;
-  if (!shortTerm && reinvestmentSec54 > 0) {
-    const cappedReinvestment = Math.min(reinvestmentSec54, 100000000); // 10 Cr cap
-    if (input.assetCategory === 'real_estate') {
-      exemptionClaimed = Math.min(taxableLtcg, cappedReinvestment);
+  // Step 2: Perform statutory loss set-offs
+  if (currentStcg < 0) {
+    // Current year STCL accumulates into unabsorbed STCL
+    unabsorbedStcl += Math.abs(currentStcg);
+    taxableStcg = 0;
+  } else {
+    // Current year positive STCG: offset with brought-forward STCL
+    if (unabsorbedStcl > 0) {
+      stcgOffset = Math.min(currentStcg, unabsorbedStcl);
+      taxableStcg = currentStcg - stcgOffset;
+      unabsorbedStcl -= stcgOffset;
     } else {
-      if (netSaleConsideration > 0) {
-        exemptionClaimed = (taxableLtcg * cappedReinvestment) / netSaleConsideration;
-        exemptionClaimed = Math.min(taxableLtcg, exemptionClaimed);
-      }
+      taxableStcg = currentStcg;
     }
   }
 
-  const netTaxableLtcgAfterExemption = Math.max(0, taxableLtcg - exemptionClaimed);
+  if (currentLtcg < 0) {
+    // Current year LTCL accumulates into unabsorbed LTCL
+    unabsorbedLtcl += Math.abs(currentLtcg);
+    taxableLtcg = 0;
+  } else {
+    // Current year positive LTCG: offset with remaining STCL first, then LTCL
+    let availableLtcg = currentLtcg;
+    if (unabsorbedStcl > 0) {
+      stcgOffsetLtcg = Math.min(availableLtcg, unabsorbedStcl);
+      availableLtcg -= stcgOffsetLtcg;
+      unabsorbedStcl -= stcgOffsetLtcg;
+    }
+    if (availableLtcg > 0 && unabsorbedLtcl > 0) {
+      ltclOffsetLtcg = Math.min(availableLtcg, unabsorbedLtcl);
+      availableLtcg -= ltclOffsetLtcg;
+      unabsorbedLtcl -= ltclOffsetLtcg;
+    }
+    taxableLtcg = availableLtcg;
+  }
 
-  // Real Estate Dual Option (Acquired before July 23, 2024)
+  // Step 3: Section 54 / 54F / 54EC Reinvestment Exemptions
+  let exemptionSec54 = 0;
+  let exemptionSec54F = 0;
+  let exemptionSec54EC = 0;
+
+  if (!shortTerm && taxableLtcg > 0) {
+    // Section 54 (Residential house on transfer of residential house)
+    if (input.reinvestmentSec54 !== undefined && input.reinvestmentSec54 > 0 && input.assetCategory === 'real_estate') {
+      const capped54 = Math.min(input.reinvestmentSec54, 100000000); // ₹10 Cr cap
+      exemptionSec54 = Math.min(taxableLtcg, capped54);
+    }
+
+    // Section 54F (Residential house on transfer of any long-term asset other than residential house)
+    if (input.reinvestmentSec54F !== undefined && input.reinvestmentSec54F > 0 && input.assetCategory !== 'real_estate') {
+      const capped54F = Math.min(input.reinvestmentSec54F, 100000000); // ₹10 Cr cap
+      if (netSaleConsideration > 0) {
+        exemptionSec54F = Math.min(taxableLtcg, (taxableLtcg * capped54F) / netSaleConsideration);
+      }
+    }
+
+    // Section 54EC (Specified Capital Gains Bonds: NHAI / REC / PFC)
+    if (input.reinvestmentSec54EC !== undefined && input.reinvestmentSec54EC > 0) {
+      const capped54EC = Math.min(input.reinvestmentSec54EC, 5000000); // ₹50 Lakh statutory cap
+      const remainingFor54EC = Math.max(0, taxableLtcg - exemptionSec54 - exemptionSec54F);
+      exemptionSec54EC = Math.min(remainingFor54EC, capped54EC);
+    }
+  }
+
+  const totalExemptionClaimed = Math.min(taxableLtcg, exemptionSec54 + exemptionSec54F + exemptionSec54EC);
+  const netTaxableLtcgAfterExemption = Math.max(0, taxableLtcg - totalExemptionClaimed);
+
+  // Step 4: Real Estate Dual Option (Acquired before July 23, 2024 & Sold on/after July 23, 2024)
   let realEstateOptionUsed: string | undefined = undefined;
   let finalLtcgTaxableForRealEstate = netTaxableLtcgAfterExemption;
 
@@ -185,7 +220,12 @@ export function calculateStatutoryCapitalGains(
     realEstateOptionUsed = 'Option A (12.5% Flat without Indexation)';
     const indexedCost = (input.indexedCostOfAcquisition ?? input.purchasePrice) + improvementCost;
     const indexedGain = Math.max(0, netSaleConsideration - indexedCost);
-    const remainingIndexedGain = Math.max(0, indexedGain - exemptionClaimed - ltclOffsetLtcg - stcgOffsetLtcg);
+    
+    // Apply loss offsets and Section 54/54EC to indexed gain for fair comparison
+    const remainingIndexedGain = Math.max(
+      0,
+      indexedGain - totalExemptionClaimed - ltclOffsetLtcg - stcgOffsetLtcg
+    );
 
     const taxOptionA = netTaxableLtcgAfterExemption * 0.125;
     const taxOptionB = remainingIndexedGain * 0.20;
@@ -196,7 +236,7 @@ export function calculateStatutoryCapitalGains(
     }
   }
 
-  // Calculate Base Tax
+  // Step 5: Calculate Base Tax
   let baseTax = 0;
   if (shortTerm) {
     if (input.assetCategory === 'listed_equity') {
@@ -238,21 +278,20 @@ export function calculateStatutoryCapitalGains(
     }
   }
 
-  // Surcharge (15% cap on capital gains)
+  // Step 6: Surcharge Routing (15% statutory cap on special-rate capital gains under Finance Act)
   const totalIncomeForSurcharge = annualOtherIncome + taxableStcg + netTaxableLtcgAfterExemption;
   let surchargeRate = 0;
-  if (totalIncomeForSurcharge > 20000000) surchargeRate = 0.15;
-  else if (totalIncomeForSurcharge > 10000000) surchargeRate = 0.15;
-  else if (totalIncomeForSurcharge > 5000000) surchargeRate = 0.10;
+  if (totalIncomeForSurcharge > 20000000) {
+    surchargeRate = (shortTerm && input.assetCategory !== 'listed_equity') ? 0.25 : 0.15;
+  } else if (totalIncomeForSurcharge > 10000000) {
+    surchargeRate = 0.15;
+  } else if (totalIncomeForSurcharge > 5000000) {
+    surchargeRate = 0.10;
+  }
 
   const surcharge = baseTax * surchargeRate;
   const cess = (baseTax + surcharge) * 0.04;
   const totalTaxLiability = Math.round((baseTax + surcharge + cess) / 10) * 10;
-
-  const currentYearStcl = currentStcg < 0 ? Math.abs(currentStcg) : 0;
-  const currentYearLtcl = currentLtcg < 0 ? Math.abs(currentLtcg) : 0;
-  const unabsorbedStcl = remainingStcl + currentYearStcl;
-  const unabsorbedLtcl = remainingLtcl + currentYearLtcl;
 
   return {
     holdingDays,
@@ -267,9 +306,12 @@ export function calculateStatutoryCapitalGains(
     stcgOffset: roundMoney(stcgOffset),
     stcgOffsetLtcg: roundMoney(stcgOffsetLtcg),
     ltclOffsetLtcg: roundMoney(ltclOffsetLtcg),
-    remainingStcl: roundMoney(remainingStcl),
-    remainingLtcl: roundMoney(remainingLtcl),
-    exemptionClaimed: roundMoney(exemptionClaimed),
+    remainingStcl: roundMoney(unabsorbedStcl),
+    remainingLtcl: roundMoney(unabsorbedLtcl),
+    exemptionSec54: roundMoney(exemptionSec54),
+    exemptionSec54F: roundMoney(exemptionSec54F),
+    exemptionSec54EC: roundMoney(exemptionSec54EC),
+    exemptionClaimed: roundMoney(totalExemptionClaimed),
     netTaxableLtcgAfterExemption: roundMoney(netTaxableLtcgAfterExemption),
     realEstateOptionUsed,
     baseTax: roundMoney(baseTax),
@@ -300,14 +342,24 @@ export interface LegacyCapitalGainResult {
 
 /**
  * Adapter mapping legacy caller contracts to canonical calculation engine
+ * UI → Capital Gains Adapter → Canonical Statutory Capital Gains Engine
  */
 export function calculateCapitalGain(input: CapitalGainInput): LegacyCapitalGainResult {
   const saleVal = new Decimal(input.saleValue);
   const costVal = new Decimal(input.cost);
   const rateVal = new Decimal(input.rate);
 
-  const gain = saleVal.minus(costVal);
-  const taxableGain = Decimal.max(gain, 0);
+  // Execute canonical statutory capital gains calculation
+  const canonicalResult = calculateStatutoryCapitalGains({
+    assetCategory: 'listed_equity',
+    salePrice: saleVal.toNumber(),
+    purchasePrice: costVal.toNumber(),
+    purchaseDate: '2023-01-01',
+    saleDate: '2026-06-01',
+  });
+
+  const gain = new Decimal(canonicalResult.rawCapitalGain);
+  const taxableGain = new Decimal(Math.max(0, canonicalResult.rawCapitalGain));
   const tax = taxableGain.mul(rateVal).div(100);
 
   return {
@@ -317,4 +369,5 @@ export function calculateCapitalGain(input: CapitalGainInput): LegacyCapitalGain
     netGain: gain.minus(tax),
   };
 }
+
 

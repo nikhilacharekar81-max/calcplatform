@@ -52,11 +52,21 @@ for (const stateRule of Object.values(STATE_RULE_REGISTRY)) {
 }
 
 // Register Active Statutory Rules for TDS and Capital Gains
-const STATUTORY_PROVENANCE = {
-  authority: "Central Board of Direct Taxes (CBDT) & Income-tax Act",
+const TDS_STATUTORY_PROVENANCE = {
+  authority: "Central Board of Direct Taxes (CBDT)",
   sourceUrl: "https://www.incometax.gov.in/",
-  sourceDocument: "Income-tax Act, 1961 (Statutory Direct Taxes Code as amended)",
+  sourceDocument: "Income-tax Act, 1961 (Sections 194A, 194C, 194H, 194I, 194J, 194Q)",
   effectiveFrom: "2026-04-01",
+  effectiveTo: null,
+  verifiedAt: "2026-10-04",
+  verifiedBy: "CalcPlatform Regulatory Audit Team",
+};
+
+const CG_STATUTORY_PROVENANCE = {
+  authority: "Central Board of Direct Taxes (CBDT)",
+  sourceUrl: "https://www.incometax.gov.in/",
+  sourceDocument: "Income-tax Act, 1961 (Sections 45, 48, 50AA, 54, 54EC, 54F, 111A, 112A as amended by Finance Act 2024)",
+  effectiveFrom: "2024-07-23",
   effectiveTo: null,
   verifiedAt: "2026-10-04",
   verifiedBy: "CalcPlatform Regulatory Audit Team",
@@ -72,7 +82,7 @@ indiaRuleRegistry.register({
     rates: { professional: 10, rent: 10, contract: 1, commission: 2, technical: 2 },
     thresholds: { rent: 600000, interest: 10000, contractSingle: 30000, contractAggregate: 100000 }
   },
-  provenance: STATUTORY_PROVENANCE,
+  provenance: TDS_STATUTORY_PROVENANCE,
 });
 
 indiaRuleRegistry.register({
@@ -86,8 +96,18 @@ indiaRuleRegistry.register({
     rates: { stcgEquity: 20, ltcgEquity: 12.5, ltcgOther: 12.5, stcgOther: "slab" },
     exemptions: { ltcgEquityLimit: 125000, sec54Cap: 100000000, sec54EcCap: 5000000 }
   },
-  provenance: STATUTORY_PROVENANCE,
+  provenance: CG_STATUTORY_PROVENANCE,
 });
+
+const GENERAL_STATUTORY_PROVENANCE = {
+  authority: "Ministry of Finance & EPFO",
+  sourceUrl: "https://www.incometax.gov.in/",
+  sourceDocument: "Statutory Direct Taxes & Labour Codes",
+  effectiveFrom: "2026-04-01",
+  effectiveTo: null,
+  verifiedAt: "2026-10-04",
+  verifiedBy: "CalcPlatform Regulatory Audit Team",
+};
 
 indiaRuleRegistry.register({
   ruleId: "GST-INDIA-2026-UNVERIFIED",
@@ -96,7 +116,7 @@ indiaRuleRegistry.register({
   version: "2026-01",
   status: "UNVERIFIED",
   parameters: { rates: [5, 12, 18, 28] },
-  provenance: STATUTORY_PROVENANCE,
+  provenance: GENERAL_STATUTORY_PROVENANCE,
 });
 
 indiaRuleRegistry.register({
@@ -106,7 +126,7 @@ indiaRuleRegistry.register({
   version: "2026-01",
   status: "UNVERIFIED",
   parameters: { employeeRate: 12, employerRate: 12, wageCeiling: 15000 },
-  provenance: STATUTORY_PROVENANCE,
+  provenance: GENERAL_STATUTORY_PROVENANCE,
 });
 
 indiaRuleRegistry.register({
@@ -116,7 +136,7 @@ indiaRuleRegistry.register({
   version: "2026-01",
   status: "UNVERIFIED",
   parameters: { tier1DeductionLimit: 150000, additionalNpsLimit: 50000 },
-  provenance: STATUTORY_PROVENANCE,
+  provenance: GENERAL_STATUTORY_PROVENANCE,
 });
 
 export function getIndiaRule<T = unknown>(ruleId: string): IndiaRuleEnvelope<T> {
