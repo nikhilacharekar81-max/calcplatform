@@ -1134,14 +1134,22 @@ function getArticleFromFiles(slug: string) {
       const category = matchCategory(p0);
       if (category) {
         // Direct calculator match under this category
-        const directCalc = db.calculators.find(
-          (c) =>
-            c.isActive &&
-            c.categoryId === category.id &&
-            (cleanPathSlug(c.slug) === cleanPathSlug(p1) ||
-              c.id.toLowerCase() === p1.toLowerCase() ||
-              cleanPathSlug(c.slug) === `${cleanPathSlug(p1)}-calculator`)
-        );
+        // But do not short-circuit to a direct calculator if p1 is a subcategory with more than 1 active calculator
+        const subForP1 = matchSubcategory(p1, category.id);
+        const subCalcsCount = subForP1
+          ? db.calculators.filter((c) => c.subcategoryId === subForP1.id && c.isActive).length
+          : 0;
+
+        const directCalc = subCalcsCount > 1
+          ? null
+          : db.calculators.find(
+              (c) =>
+                c.isActive &&
+                c.categoryId === category.id &&
+                (cleanPathSlug(c.slug) === cleanPathSlug(p1) ||
+                  c.id.toLowerCase() === p1.toLowerCase() ||
+                  cleanPathSlug(c.slug) === `${cleanPathSlug(p1)}-calculator`)
+            );
         if (directCalc) {
           const sub =
             db.subcategories.find((s) => s.id === directCalc.subcategoryId && s.isActive) ||
@@ -1160,14 +1168,16 @@ function getArticleFromFiles(slug: string) {
 
         const subcategory = matchSubcategory(p1, category.id);
         if (subcategory) {
-          // If subcategory has a primary matching calculator with slug matching subcategory
-          const matchingCalc = db.calculators.find(
-            (c) =>
-              c.isActive &&
-              c.subcategoryId === subcategory.id &&
-              (cleanPathSlug(c.slug) === cleanPathSlug(p1) ||
-                cleanPathSlug(c.slug) === `${cleanPathSlug(p1)}-calculator`)
-          );
+          // If subcategory has a primary matching calculator with slug matching subcategory,
+          // but only short-circuit to it if there is only 1 active calculator under this subcategory.
+          const subCalcs = db.calculators.filter((c) => c.subcategoryId === subcategory.id && c.isActive);
+          const matchingCalc = subCalcs.length <= 1
+            ? subCalcs.find(
+                (c) =>
+                  cleanPathSlug(c.slug) === cleanPathSlug(p1) ||
+                  cleanPathSlug(c.slug) === `${cleanPathSlug(p1)}-calculator`
+              )
+            : null;
           if (matchingCalc) {
             matchingCalc.viewsCount = (matchingCalc.viewsCount || 0) + 1;
             return {
