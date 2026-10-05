@@ -1,5 +1,5 @@
 import Decimal from "decimal.js";
-import { roundMoney, compareMoney, isMonetaryLessOrEqual } from "../../../engines/financial-maths/index.ts";
+import { roundMoney, compareMoney, isMonetaryLessOrEqual, isMonetaryExceeded } from "../../../engines/financial-maths/index.ts";
 import { computeHoldingPeriodDaysAndMonths } from "../../../utils/dateUtils.ts";
 
 export type AssetCategory =
@@ -232,12 +232,12 @@ export function calculateStatutoryCapitalGains(
     } else {
       const totalIncome = Math.max(0, effectiveOtherIncome + taxableStcg);
       const calculateSlabTax = (income: number) => {
-        if (income <= 400000) return 0;
-        if (income <= 800000) return (income - 400000) * 0.05;
-        if (income <= 1200000) return 20000 + (income - 800000) * 0.10;
-        if (income <= 1600000) return 60000 + (income - 1200000) * 0.15;
-        if (income <= 2000000) return 120000 + (income - 1600000) * 0.20;
-        if (income <= 2400000) return 200000 + (income - 2000000) * 0.25;
+        if (isMonetaryLessOrEqual(income, 400000)) return 0;
+        if (isMonetaryLessOrEqual(income, 800000)) return (income - 400000) * 0.05;
+        if (isMonetaryLessOrEqual(income, 1200000)) return 20000 + (income - 800000) * 0.10;
+        if (isMonetaryLessOrEqual(income, 1600000)) return 60000 + (income - 1200000) * 0.15;
+        if (isMonetaryLessOrEqual(income, 2000000)) return 120000 + (income - 1600000) * 0.20;
+        if (isMonetaryLessOrEqual(income, 2400000)) return 200000 + (income - 2000000) * 0.25;
         return 300000 + (income - 2400000) * 0.30;
       };
       const taxTotal = calculateSlabTax(totalIncome);
@@ -274,11 +274,11 @@ export function calculateStatutoryCapitalGains(
 
   const totalIncomeForSurcharge = annualOtherIncome + taxableStcg + netTaxableLtcgAfterExemption;
   let surchargeRate = 0;
-  if (totalIncomeForSurcharge > 20000000) {
+  if (isMonetaryExceeded(totalIncomeForSurcharge, 20000000)) {
     surchargeRate = (shortTerm && input.assetCategory !== 'listed_equity') ? 0.25 : 0.15;
-  } else if (totalIncomeForSurcharge > 10000000) {
+  } else if (isMonetaryExceeded(totalIncomeForSurcharge, 10000000)) {
     surchargeRate = 0.15;
-  } else if (totalIncomeForSurcharge > 5000000) {
+  } else if (isMonetaryExceeded(totalIncomeForSurcharge, 5000000)) {
     surchargeRate = 0.10;
   }
 
@@ -308,9 +308,9 @@ export function calculateStatutoryCapitalGains(
     exemptionClaimed: roundMoney(totalExemptionClaimed),
     netTaxableLtcgAfterExemption: roundMoney(netTaxableLtcgAfterExemption),
     realEstateOptionUsed,
-    baseTax: roundMoney(baseTax),
-    surcharge: roundMoney(surcharge),
-    cess: roundMoney(cess),
+    baseTax,
+    surcharge,
+    cess,
     totalTaxLiability,
     unabsorbedStcl: roundMoney(unabsorbedStcl),
     unabsorbedLtcl: roundMoney(unabsorbedLtcl),

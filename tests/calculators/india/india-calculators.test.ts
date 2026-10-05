@@ -191,6 +191,18 @@ export function runIndiaCalculatorsTests(): { name: string; passed: boolean; err
     });
     assert(Boolean(optionBRes.realEstateOptionUsed?.includes("Option B")), "Option B selected as lower tax option");
     assert(optionBRes.baseTax === 250000, `Expected 2,50,000 base tax under Option B (12.5% on 20L gain), got ${optionBRes.baseTax}`);
+
+    // 8. Raw / full-precision Intermediate Fields Verification (baseTax, surcharge, cess)
+    const fractionalHugeRes = calculateStatutoryCapitalGains({
+      assetCategory: 'listed_equity',
+      salePrice: 200000.12345,
+      purchasePrice: 50000.0,
+      purchaseDate: '2023-01-01',
+      saleDate: '2025-08-01', // post July 23, 2024
+    });
+    // LTCG = 150000.12345 - 125000 exemption = 25000.12345 * 12.5% = 3125.01543125
+    assert(fractionalHugeRes.baseTax > 3125 && fractionalHugeRes.baseTax < 3126, `baseTax should retain full float precision, got ${fractionalHugeRes.baseTax}`);
+    assert(fractionalHugeRes.baseTax.toString().includes("."), `baseTax should have a decimal portion, got ${fractionalHugeRes.baseTax}`);
   });
 
   runTest("India Calculators - EPF 12% Contribution", () => {
