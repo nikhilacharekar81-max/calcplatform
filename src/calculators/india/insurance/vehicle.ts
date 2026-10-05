@@ -48,14 +48,17 @@ function calculateVoluntaryDeductibleDiscount(
   return 0;
 }
 
-function getIdvDepreciationPercent(ageMonths: number): number {
+function getIdvDepreciationFromSchedule(
+  ageMonths: number,
+  schedule: Array<{ minAgeMonths: number; maxAgeMonths: number; depreciationPercent: number }>
+): number {
   if (ageMonths <= 0) return 0;
-  if (ageMonths <= 6) return 5;
-  if (ageMonths <= 12) return 15;
-  if (ageMonths <= 24) return 20;
-  if (ageMonths <= 36) return 30;
-  if (ageMonths <= 48) return 40;
-  return 50;
+  for (const tier of schedule) {
+    if (ageMonths > tier.minAgeMonths && ageMonths <= tier.maxAgeMonths) {
+      return tier.depreciationPercent;
+    }
+  }
+  return 50; // Max depreciation for vehicles older than 60 months
 }
 
 /**
@@ -77,8 +80,8 @@ export function calculateCarInsurance(input: CarInsuranceInput): CarInsuranceRes
   const tpTariffs = rule.parameters.motorThirdPartyTariffs;
   const deductibleSchedule = rule.parameters.motorVoluntaryDeductibleDiscountSchedule;
 
-  // Determine IRDAI IDV Depreciation Percentage
-  const depPct = getIdvDepreciationPercent(ageMonths);
+  // Determine IRDAI IDV Depreciation Percentage from Registry Schedule
+  const depPct = getIdvDepreciationFromSchedule(ageMonths, rule.parameters.motorIdvDepreciationPercent);
 
   // Calculate Insured Declared Value (IDV) based on Manufacturer Listed Ex-Showroom Price
   const idv = roundMoney(exShowroom * (1 - depPct / 100));
@@ -184,8 +187,8 @@ export function calculateBikeInsurance(input: BikeInsuranceInput): BikeInsurance
   const tpTariffs = rule.parameters.motorThirdPartyTariffs;
   const deductibleSchedule = rule.parameters.motorVoluntaryDeductibleDiscountSchedule;
 
-  // Determine IRDAI IDV Depreciation Percentage
-  const depPct = getIdvDepreciationPercent(ageMonths);
+  // Determine IRDAI IDV Depreciation Percentage from Registry Schedule
+  const depPct = getIdvDepreciationFromSchedule(ageMonths, rule.parameters.motorIdvDepreciationPercent);
   const idv = roundMoney(exShowroom * (1 - depPct / 100));
 
   // Determine NCB Percentage (using completed claim-free years)

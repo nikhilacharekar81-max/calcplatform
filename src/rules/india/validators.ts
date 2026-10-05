@@ -14,25 +14,27 @@ export function validateRuleEnvelope<T>(rule: IndiaRuleEnvelope<T>): void {
     throw new Error("Rule source URL is required");
   }
   
-  // Validate that sourceUrl is a valid HTTPS URL or approved archival reference
+  // Validate that sourceUrl is a valid HTTPS URL
   try {
     const parsedUrl = new URL(rule.provenance.sourceUrl);
-    if (parsedUrl.protocol !== "https:" && parsedUrl.protocol !== "http:") {
-      throw new Error();
+    if (parsedUrl.protocol !== "https:") {
+      throw new Error(`Rule sourceUrl must use HTTPS protocol, received: "${rule.provenance.sourceUrl}"`);
     }
-  } catch {
-    // Check if it's an approved archival reference schema (e.g. urn: or archive:)
+  } catch (err: any) {
     if (!rule.provenance.sourceUrl.startsWith("urn:") && !rule.provenance.sourceUrl.startsWith("archive:")) {
-      throw new Error(`Rule sourceUrl must be a valid HTTPS URL or archival reference, received: "${rule.provenance.sourceUrl}"`);
+      throw new Error(`Rule sourceUrl must be a valid HTTPS URL, received: "${rule.provenance.sourceUrl}"`);
     }
   }
 
-  if (!rule.provenance.effectiveFrom) {
-    throw new Error("Rule effectiveFrom is required");
+  if (!rule.provenance.effectiveFrom || !/^\d{4}-\d{2}-\d{2}$/.test(rule.provenance.effectiveFrom)) {
+    throw new Error(`Rule effectiveFrom must be in strict YYYY-MM-DD format, received: "${rule.provenance.effectiveFrom}"`);
   }
 
   // Validate date sequence if effectiveTo is specified
   if (rule.provenance.effectiveTo) {
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(rule.provenance.effectiveTo)) {
+      throw new Error(`Rule effectiveTo must be in strict YYYY-MM-DD format, received: "${rule.provenance.effectiveTo}"`);
+    }
     const fromTime = new Date(rule.provenance.effectiveFrom).getTime();
     const toTime = new Date(rule.provenance.effectiveTo).getTime();
     if (!isNaN(fromTime) && !isNaN(toTime) && fromTime > toTime) {
@@ -47,8 +49,8 @@ export function validateRuleEnvelope<T>(rule: IndiaRuleEnvelope<T>): void {
       throw new Error(`ACTIVE_VERIFIED rules cannot use placeholder or pending source URLs: "${rule.provenance.sourceUrl}"`);
     }
 
-    if (!rule.provenance.verifiedAt) {
-      throw new Error("ACTIVE_VERIFIED rules require verifiedAt");
+    if (!rule.provenance.verifiedAt || !/^\d{4}-\d{2}-\d{2}/.test(rule.provenance.verifiedAt)) {
+      throw new Error("ACTIVE_VERIFIED rules require verifiedAt in strict date format (YYYY-MM-DD...)");
     }
     if (!rule.provenance.verifiedBy || typeof rule.provenance.verifiedBy !== "string" || rule.provenance.verifiedBy.trim().length === 0) {
       throw new Error("ACTIVE_VERIFIED rules require verifiedBy attribution");

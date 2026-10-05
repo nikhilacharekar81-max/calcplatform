@@ -347,7 +347,7 @@ export interface LegacyCapitalGainResult {
 export function calculateCapitalGain(input: CapitalGainInput): LegacyCapitalGainResult {
   const saleVal = new Decimal(input.saleValue);
   const costVal = new Decimal(input.cost);
-  const rateVal = new Decimal(input.rate);
+  const rateVal = input.rate !== undefined ? new Decimal(input.rate) : null;
 
   // Execute canonical statutory capital gains calculation
   const canonicalResult = calculateStatutoryCapitalGains({
@@ -360,7 +360,9 @@ export function calculateCapitalGain(input: CapitalGainInput): LegacyCapitalGain
 
   const gain = new Decimal(canonicalResult.rawCapitalGain);
   const taxableGain = new Decimal(Math.max(0, canonicalResult.rawCapitalGain));
-  const tax = taxableGain.mul(rateVal).div(100);
+  const tax = rateVal !== null
+    ? taxableGain.mul(rateVal).div(100)
+    : new Decimal(canonicalResult.totalTaxLiability);
 
   return {
     gain,

@@ -1,6 +1,7 @@
 import { assertProductionRule } from "./provenance.ts";
 import { validateRuleEnvelope } from "./validators.ts";
 import { INDIA_INCOME_TAX_AY_2026_27 } from "./income-tax/versions/ay-2026-27.ts";
+import { INDIA_INCOME_TAX_AY_2027_28 } from "./income-tax/versions/ay-2027-28.ts";
 import { INDIA_INSURANCE_STATUTORY_RULES_2026 } from "./insurance/versions/2026.ts";
 import { STATE_RULE_REGISTRY } from "./states/index.ts";
 import type { IndiaDomain, IndiaRuleEnvelope } from "./types.ts";
@@ -44,6 +45,7 @@ export const indiaRuleRegistry = new IndiaRuleRegistry();
 
 // Register ACTIVE_VERIFIED Income Tax & Insurance rules
 indiaRuleRegistry.register(INDIA_INCOME_TAX_AY_2026_27);
+indiaRuleRegistry.register(INDIA_INCOME_TAX_AY_2027_28);
 indiaRuleRegistry.register(INDIA_INSURANCE_STATUTORY_RULES_2026);
 
 // Register All State Rules from the comprehensive state registry

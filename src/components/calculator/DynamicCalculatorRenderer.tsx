@@ -199,9 +199,9 @@ export const DynamicCalculatorRenderer: React.FC<DynamicCalculatorRendererProps>
         });
       case 'health-insurance-coverage-calculator':
         return calculateHealthCoverage({
-          currentCoverageAmount: Number(v.currentCoverageAmount || 0),
-          medicalInflationRatePercent: Number(v.medicalInflationRatePercent || 12),
-          yearsInFuture: Number(v.yearsInFuture || 10),
+          currentCoverageAmount: Number(v.currentCoverageAmount ?? 0),
+          medicalInflationRatePercent: Number(v.medicalInflationRatePercent !== undefined ? v.medicalInflationRatePercent : 10),
+          yearsInFuture: Number(v.yearsInFuture ?? 10),
           selfAgeAbove60: Boolean(v.selfAgeAbove60 || false),
           includeParentCover80D: Boolean(v.includeParentCover80D || false),
           parentsAgeAbove60: Boolean(v.parentsAgeAbove60 || false),
@@ -343,9 +343,9 @@ export const DynamicCalculatorRenderer: React.FC<DynamicCalculatorRendererProps>
           currentAge: Number(v.currentAge || 0),
           retirementAge: Number(v.retirementAge || 60),
           lifeExpectancy: Number(v.lifeExpectancy || 85),
-          inflationPercent: Number(v.inflationPercent || 6),
-          preRetirementReturnPercent: Number(v.preRetirementReturnPercent || 12),
-          postRetirementReturnPercent: Number(v.postRetirementReturnPercent || 8),
+          inflationPercent: Number(v.inflationPercent !== undefined ? v.inflationPercent : 6),
+          preRetirementReturnPercent: Number(v.preRetirementReturnPercent !== undefined ? v.preRetirementReturnPercent : 10),
+          postRetirementReturnPercent: Number(v.postRetirementReturnPercent !== undefined ? v.postRetirementReturnPercent : 8),
         });
       case 'bmi-calculator':
         return calculateBmi({
