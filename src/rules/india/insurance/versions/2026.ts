@@ -27,6 +27,13 @@ export interface IndiaInsuranceParameters {
     claimFreeYears: number;
     ncbPercent: number;
   }>;
+  motorThirdPartyTariffs: {
+    carsAnnual: { under1000cc: number; from1000to1500cc: number; above1500cc: number };
+    cars3YearBundled: { under1000cc: number; from1000to1500cc: number; above1500cc: number };
+    twoWheelersAnnual: { under75cc: number; from75to150cc: number; from150to350cc: number; above350cc: number };
+    twoWheelers5YearBundled: { under75cc: number; from75to150cc: number; from150to350cc: number; above350cc: number };
+    electricVehicleTpDiscountPercent: number; // 15% statutory discount
+  };
   gstRatesPercent: {
     effectiveFromDate: string; // "2025-09-22" GST Council Reform
     individualLifeInsurance: number; // 0% Exempt post Sept 22, 2025
@@ -37,20 +44,6 @@ export interface IndiaInsuranceParameters {
     propertyInsurance: number; // 18%
     businessInsurance: number; // 18%
     historicalPreSept2025IndividualRate: number; // 18%
-  };
-  planningAssumptions: {
-    label: string;
-    cityTierMultipliers: {
-      TIER_1: number;
-      TIER_2: number;
-      TIER_3: number;
-    };
-    preExistingConditionMultiplier: number;
-    roomCategoryMultipliers: {
-      SHARED: number;
-      SINGLE_PRIVATE: number;
-      SUITE: number;
-    };
   };
 }
 
@@ -94,6 +87,13 @@ export const INDIA_INSURANCE_STATUTORY_RULES_2026: IndiaRuleEnvelope<IndiaInsura
       { claimFreeYears: 4, ncbPercent: 45 },
       { claimFreeYears: 5, ncbPercent: 50 },
     ],
+    motorThirdPartyTariffs: {
+      carsAnnual: { under1000cc: 2094, from1000to1500cc: 3416, above1500cc: 7897 },
+      cars3YearBundled: { under1000cc: 6521, from1000to1500cc: 10640, above1500cc: 24596 },
+      twoWheelersAnnual: { under75cc: 538, from75to150cc: 714, from150to350cc: 1366, above350cc: 2804 },
+      twoWheelers5YearBundled: { under75cc: 2901, from75to150cc: 3851, from150to350cc: 7365, above350cc: 15117 },
+      electricVehicleTpDiscountPercent: 15,
+    },
     gstRatesPercent: {
       effectiveFromDate: "2025-09-22",
       individualLifeInsurance: 0, // Exempt post Sept 22, 2025 GST Council decision
@@ -104,20 +104,6 @@ export const INDIA_INSURANCE_STATUTORY_RULES_2026: IndiaRuleEnvelope<IndiaInsura
       propertyInsurance: 18,
       businessInsurance: 18,
       historicalPreSept2025IndividualRate: 18,
-    },
-    planningAssumptions: {
-      label: "CalcPlatform Planning Assumptions (Not IRDAI Statutory Rules)",
-      cityTierMultipliers: {
-        TIER_1: 1.5,
-        TIER_2: 1.2,
-        TIER_3: 1.0,
-      },
-      preExistingConditionMultiplier: 1.25,
-      roomCategoryMultipliers: {
-        SHARED: 1.0,
-        SINGLE_PRIVATE: 1.15,
-        SUITE: 1.3,
-      },
     },
   },
   provenance: {

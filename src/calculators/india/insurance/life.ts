@@ -128,16 +128,15 @@ export function calculateTermLifeInsurance(input: TermLifeInput): TermLifeResult
     version: "2026-01",
   });
   const max80cLimit = rule.parameters.section80C.maxDeductionLimit;
-  const sec10_10D = rule.parameters.section10_10D;
   const gstRules = rule.parameters.gstRatesPercent;
 
   const estPremium = input.estimatedAnnualPremium || (recommendedSumAssured * 0.001);
-  const premiumToSumRatio = recommendedSumAssured > 0 ? (estPremium / recommendedSumAssured) * 100 : 0;
-  const satisfies10_10DRatio = premiumToSumRatio <= sec10_10D.maxPremiumRatioOfSumAssuredPercent;
+  // Section 80C deduction is based on actual eligible premium paid (capped at ₹1.5L and 10% of sum assured)
+  const maxEligiblePremiumBySum = recommendedSumAssured > 0 ? (recommendedSumAssured * 0.10) : 0;
+  const eligiblePremium = Math.min(estPremium, maxEligiblePremiumBySum);
+  const section80cTaxBenefit = Math.min(max80cLimit, eligiblePremium);
 
-  const section10_10dStatusNote = satisfies10_10DRatio
-    ? "Maturity proceed is modeled as tax-exempt under Sec 10(10D) (Annual premium ≤ 10% of sum assured)."
-    : "Warning: Premium ratio exceeds 10% of sum assured. Maturity proceeds may not qualify for Sec 10(10D) exemption.";
+  const section10_10dStatusNote = "Death benefit sum assured received by beneficiaries under a pure term life insurance policy is 100% tax-free under Section 10(10D) of the Income-tax Act.";
 
   const gstPercent = input.isGroupPolicy ? gstRules.groupLifeHealthInsurance : gstRules.individualLifeInsurance;
 
@@ -171,7 +170,7 @@ export function calculateTermLifeInsurance(input: TermLifeInput): TermLifeResult
     incomeReplacementNeed: roundMoney(incomeReplacement),
     outstandingDebts: roundMoney(debts),
     netProtectionGap: roundMoney(netProtectionGap),
-    section80cTaxBenefit: max80cLimit,
+    section80cTaxBenefit: roundMoney(section80cTaxBenefit),
     applicableGstPercent: gstPercent,
     section10_10dStatusNote,
     assumptions: {
@@ -263,8 +262,9 @@ export function calculateLifeInsuranceNeeds(input: LifeNeedsInput): LifeNeedsRes
   } else if (input.monthlyExpenses !== undefined && input.monthlyExpenses !== null) {
     expenses = Math.max(0, input.monthlyExpenses * 12);
   } else if (annualIncome > 0) {
-    // Default to 0 if not provided, or a very minimal baseline
-    expenses = 0;
+    // Default family household expense (assuming 30% personal expense, 70% family dependency)
+    const personalExpPct = 30;
+    expenses = annualIncome * (1 - personalExpPct / 100);
   }
 
   const years = Math.max(1, input.yearsOfSupportNeeded || workingYears);
@@ -303,15 +303,14 @@ export function calculateLifeInsuranceNeeds(input: LifeNeedsInput): LifeNeedsRes
   const protectionGap = Math.max(0, totalNeed - availableResources);
   const netInsuranceRequired = Math.ceil(protectionGap / 100000) * 100000;
 
-  // 3 Methodology Comparison Models:
-  // 1. Income Multiple: 10x Annual Income
-  const incomeMultipleMethod = Math.ceil((annualIncome * 10) / 100000) * 100000;
+  // 3 Methodology Comparison Models (all properly net of existing cover):
+  // 1. Income Multiple: 10x Annual Income minus existing personal & employer cover
+  const grossIncomeMultiple = annualIncome * 10;
+  const incomeMultipleMethod = Math.ceil(Math.max(0, grossIncomeMultiple - (existingPersonalCover + employerLifeInsurance)) / 100000) * 100000;
 
-  // 2. DIME Method: Debt + Income (for N years) + Mortgage + Education/Goals
-  // Note: Standard DIME usually uses simplified multiples. We apply a net-of-assets check.
-  const dimeTotal = (homeLoan + otherDebts) + (annualIncome * Math.min(20, years)) + futureGoalsToday + emergencyExpenses;
-  const dimeResources = existingPersonalCover + employerLifeInsurance + savingsAndInvestments;
-  const dimeMethod = Math.ceil(Math.max(0, dimeTotal - dimeResources) / 100000) * 100000;
+  // 2. DIME Method: Debt + Income Replacement + Mortgage + Education/Goals minus existing resources
+  const dimeTotal = otherDebts + incomeReplacementCorpus + homeLoan + roundMoney(goalPV) + emergencyExpenses;
+  const dimeMethod = Math.ceil(Math.max(0, dimeTotal - availableResources) / 100000) * 100000;
 
   // 3. Detailed Needs Analysis: Discounted PV Needs - Resources
   const detailedNeedsMethod = netInsuranceRequired;

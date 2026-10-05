@@ -75,9 +75,7 @@ export function runInsuranceTests(): { passed: number; failed: number } {
   // 4. Health Insurance - Separate Sec 80D Buckets (Self + Senior Parents)
   const healthRes = calculateHealthInsurance({
     ageOfEldestMember: 35,
-    cityTier: "TIER_1",
     familyMembersCount: 4,
-    preferredRoomCategory: "SINGLE_PRIVATE",
     includeParents80D: true,
     parentsAgeAbove60: true,
   });
@@ -164,6 +162,18 @@ export function runInsuranceTests(): { passed: number; failed: number } {
     "Critical Illness - 3-Year Income Replacement & Treatment Lump Sum"
   );
 
+  // 10b. Critical Illness with explicit ₹0 treatment cost
+  const criticalZeroRes = calculateCriticalIllnessCover({
+    annualLivingExpenses: 500000,
+    yearsOfIncomeReplacementNeeded: 2,
+    expectedSpecializedTreatmentCost: 0,
+    existingHealthInsuranceCover: 200000,
+  });
+  assert(
+    criticalZeroRes.treatmentSurchargeNeed === 0 && criticalZeroRes.incomeReplacementLumpSum === 1000000,
+    "Critical Illness - Explicit ₹0 Treatment Cost strictly preserved without 15L fallback"
+  );
+
   // 11. Home Insurance
   const homeRes = calculateHomeInsurance({
     builtUpAreaSqFt: 1200,
@@ -187,7 +197,71 @@ export function runInsuranceTests(): { passed: number; failed: number } {
     "Business Insurance - Material Damage & Gross Profit Interruption"
   );
 
-  // 14. Life Insurance Hardened Goal Inflation & Zero Preservation
+  // 13. Health Insurance 0% Medical Inflation Test
+  const healthZeroInf = calculateHealthCoverage({
+    currentCoverageAmount: 1000000,
+    medicalInflationRatePercent: 0,
+    yearsInFuture: 5,
+  });
+  assert(
+    healthZeroInf.projectedFutureTreatmentCost === 1000000 && healthZeroInf.additionalCoverageNeededInFuture === 0,
+    "Health Coverage - 0% Medical Inflation correctly preserves 100% principal"
+  );
+
+  // 14. Car Insurance Voluntary Deductible Discount & Fractional NCB & EV Discount
+  const carEvRes = calculateCarInsurance({
+    manufacturerListedExShowroomPrice: 1500000,
+    vehicleAgeMonths: 30, // 2 to 3 years = 30% dep
+    claimFreeYearsNCB: 2.5, // 2 completed years = 25% NCB
+    voluntaryDeductible: 5000, // 25% discount on OD up to ₹1,500
+    isElectricVehicle: true, // 15% discount on TP
+  });
+  assert(
+    carEvRes.appliedDepreciationPercent === 30 &&
+      carEvRes.noClaimBonusPercent === 25 &&
+      carEvRes.voluntaryDeductibleDiscount > 0 &&
+      carEvRes.voluntaryDeductibleDiscount <= 1500,
+    "Car Insurance - 30% Depreciation, 25% Fractional NCB & Voluntary Deductible Percentage Discount"
+  );
+
+  // 15. New Vehicle Bundled Multi-Year Third Party Policy
+  const newBikeRes = calculateBikeInsurance({
+    manufacturerListedExShowroomPrice: 120000,
+    bikeAgeMonths: 0,
+    claimFreeYearsNCB: 0,
+    engineCapacityCC: 125,
+    isNewVehicle: true, // 5-Year bundled TP = ₹3,851
+  });
+  assert(
+    newBikeRes.statutoryThirdPartyPremium === 3851 && newBikeRes.appliedDepreciationPercent === 0,
+    "Bike Insurance - Brand New 5-Year Bundled Statutory Third Party Policy"
+  );
+
+  // 16. Personal Accident Weekly Benefit Income Cap
+  const accidentCapRes = calculatePersonalAccidentCover({
+    annualEarnedIncome: 260000, // ₹5,000/week
+    outstandingDebts: 0,
+  });
+  assert(
+    accidentCapRes.temporaryTotalDisabilityWeeklyBenefit === 5000,
+    "Personal Accident - Weekly Benefit strictly capped at actual weekly income"
+  );
+
+  // 17. Travel Insurance Underscore Replacement & Threshold
+  const travelAsiaRes = calculateTravelInsurance({
+    destinationRegion: "ASIA_EXCLUDING_JAPAN",
+    tripDurationDays: 10,
+    travelerAge: 28,
+    medicalCoverUsdThreshold: 75000,
+  });
+  assert(
+    travelAsiaRes.recommendedMedicalSumInsuredUsd === 75000 &&
+      travelAsiaRes.riskFactorNotes.includes("ASIA EXCLUDING JAPAN") &&
+      !travelAsiaRes.riskFactorNotes.includes("_"),
+    "Travel Insurance - Underscores fully replaced and custom threshold applied"
+  );
+
+  // 18. Life Insurance Hardened Goal Inflation & Zero Preservation
   const goalInflated = calculateLifeInsuranceNeeds({
     annualFamilyExpenses: 0,
     yearsOfSupportNeeded: 1,
@@ -214,7 +288,7 @@ export function runInsuranceTests(): { passed: number; failed: number } {
     "Life Insurance - Zero Inflation preserves Today's Goal Value"
   );
 
-  // 13. Statutory Registry Active Verified Check
+  // 19. Statutory Registry Active Verified Check
   const rule = indiaRuleRegistry.resolveActiveVerified({
     domain: "INSURANCE",
     ruleId: "INSURANCE-INDIA-2026",

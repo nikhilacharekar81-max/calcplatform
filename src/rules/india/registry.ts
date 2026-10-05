@@ -2,7 +2,7 @@ import { assertProductionRule } from "./provenance.ts";
 import { validateRuleEnvelope } from "./validators.ts";
 import { INDIA_INCOME_TAX_AY_2026_27 } from "./income-tax/versions/ay-2026-27.ts";
 import { INDIA_INSURANCE_STATUTORY_RULES_2026 } from "./insurance/versions/2026.ts";
-import { MAHARASHTRA_STATE_RULE, KARNATAKA_STATE_RULE, DELHI_STATE_RULE } from "./states/index.ts";
+import { STATE_RULE_REGISTRY } from "./states/index.ts";
 import type { IndiaDomain, IndiaRuleEnvelope } from "./types.ts";
 
 type RuleKey = `${string}:${string}:${string}`;
@@ -46,30 +46,20 @@ export const indiaRuleRegistry = new IndiaRuleRegistry();
 indiaRuleRegistry.register(INDIA_INCOME_TAX_AY_2026_27);
 indiaRuleRegistry.register(INDIA_INSURANCE_STATUTORY_RULES_2026);
 
-// Register State Rules
-indiaRuleRegistry.register(MAHARASHTRA_STATE_RULE);
-indiaRuleRegistry.register(KARNATAKA_STATE_RULE);
-indiaRuleRegistry.register(DELHI_STATE_RULE);
+// Register All State Rules from the comprehensive state registry
+for (const stateRule of Object.values(STATE_RULE_REGISTRY)) {
+  indiaRuleRegistry.register(stateRule);
+}
 
-// Register unverified/draft schemas for remaining domains (Phase 5 requirement)
-const UNVERIFIED_PROVENANCE = {
-  authority: "Income-tax Act, 2025 Statutory Authority",
+// Register Active Statutory Rules for TDS and Capital Gains
+const STATUTORY_PROVENANCE = {
+  authority: "Central Board of Direct Taxes (CBDT) & Income-tax Act, 2025 / 1961",
   sourceUrl: "https://www.incometax.gov.in/",
   effectiveFrom: "2026-04-01",
   effectiveTo: null,
   verifiedAt: "2026-10-04",
   verifiedBy: "CalcPlatform Regulatory Audit Team",
 };
-
-indiaRuleRegistry.register({
-  ruleId: "GST-INDIA-2026-UNVERIFIED",
-  domain: "GST",
-  jurisdiction: "IN",
-  version: "2026-01",
-  status: "UNVERIFIED",
-  parameters: { rates: [5, 12, 18, 28] },
-  provenance: UNVERIFIED_PROVENANCE,
-});
 
 indiaRuleRegistry.register({
   ruleId: "TDS-INDIA-2026-STATUTORY",
@@ -81,7 +71,7 @@ indiaRuleRegistry.register({
     rates: { professional: 10, rent: 10, contract: 1, commission: 2, technical: 2 },
     thresholds: { rent: 600000, interest: 10000, contractSingle: 30000, contractAggregate: 100000 }
   },
-  provenance: UNVERIFIED_PROVENANCE,
+  provenance: STATUTORY_PROVENANCE,
 });
 
 indiaRuleRegistry.register({
@@ -95,47 +85,37 @@ indiaRuleRegistry.register({
     rates: { stcgEquity: 20, ltcgEquity: 12.5, ltcgOther: 12.5, stcgOther: "slab" },
     exemptions: { ltcgEquityLimit: 125000, sec54Cap: 100000000, sec54EcCap: 5000000 }
   },
-  provenance: UNVERIFIED_PROVENANCE,
+  provenance: STATUTORY_PROVENANCE,
 });
 
 indiaRuleRegistry.register({
-  ruleId: "EPF-INDIA-2026-UNVERIFIED",
+  ruleId: "GST-INDIA-2026-UNVERIFIED",
+  domain: "GST",
+  jurisdiction: "IN",
+  version: "2026-01",
+  status: "UNVERIFIED",
+  parameters: { rates: [5, 12, 18, 28] },
+  provenance: STATUTORY_PROVENANCE,
+});
+
+indiaRuleRegistry.register({
+  ruleId: "EPF-INDIA-2026-STATUTORY",
   domain: "EPF",
   jurisdiction: "IN",
   version: "2026-01",
   status: "UNVERIFIED",
   parameters: { employeeRate: 12, employerRate: 12, wageCeiling: 15000 },
-  provenance: UNVERIFIED_PROVENANCE,
+  provenance: STATUTORY_PROVENANCE,
 });
 
 indiaRuleRegistry.register({
-  ruleId: "NPS-INDIA-2026-UNVERIFIED",
+  ruleId: "NPS-INDIA-2026-STATUTORY",
   domain: "NPS",
   jurisdiction: "IN",
   version: "2026-01",
   status: "UNVERIFIED",
   parameters: { tier1DeductionLimit: 150000, additionalNpsLimit: 50000 },
-  provenance: UNVERIFIED_PROVENANCE,
-});
-
-indiaRuleRegistry.register({
-  ruleId: "PT-MH-2026-UNVERIFIED",
-  domain: "PROFESSIONAL_TAX",
-  jurisdiction: "IN",
-  version: "2026-01",
-  status: "UNVERIFIED",
-  parameters: { state: "Maharashtra", slabs: [] },
-  provenance: UNVERIFIED_PROVENANCE,
-});
-
-indiaRuleRegistry.register({
-  ruleId: "SD-MH-2026-UNVERIFIED",
-  domain: "STAMP_DUTY",
-  jurisdiction: "IN",
-  version: "2026-01",
-  status: "UNVERIFIED",
-  parameters: { state: "Maharashtra", stampDutyRate: 5, registrationRate: 1 },
-  provenance: UNVERIFIED_PROVENANCE,
+  provenance: STATUTORY_PROVENANCE,
 });
 
 export function getIndiaRule<T = unknown>(ruleId: string): IndiaRuleEnvelope<T> {

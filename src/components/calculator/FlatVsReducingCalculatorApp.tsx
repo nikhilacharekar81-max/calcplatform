@@ -36,10 +36,31 @@ export const FlatVsReducingCalculatorApp: React.FC = () => {
     const interestSavings = Math.max(0, flatTotalInterest - reducingTotalInterest);
     const emiDifference = Math.max(0, flatEmi - reducingEmi);
 
+    // 3. True Effective Reducing Rate (APR / IRR) of Flat Loan
+    let effectiveReducingRate = R;
+    if (flatEmi > 0 && P > 0 && months > 0) {
+      let r = (R * 1.8) / 12 / 100;
+      for (let i = 0; i < 50; i++) {
+        let pv = 0;
+        let dpv = 0;
+        for (let t = 1; t <= months; t++) {
+          const d = Math.pow(1 + r, t);
+          pv += flatEmi / d;
+          dpv -= (t * flatEmi) / (d * (1 + r));
+        }
+        const diff = pv - P;
+        if (Math.abs(diff) < 1e-6) break;
+        r -= diff / dpv;
+        if (r <= 0) r = 0.0001;
+      }
+      effectiveReducingRate = parseFloat((r * 12 * 100).toFixed(2));
+    }
+
     return {
       flatEmi,
       flatTotalInterest,
       flatTotalRepayment,
+      effectiveReducingRate,
       reducingEmi,
       reducingTotalInterest,
       reducingTotalRepayment,
@@ -233,6 +254,10 @@ export const FlatVsReducingCalculatorApp: React.FC = () => {
                   <div className="flex justify-between items-center text-xs">
                     <span className="text-slate-400 font-semibold">Total Interest Paid:</span>
                     <span className="text-sm font-extrabold text-rose-400">{formatRupee(calculations.flatTotalInterest)}</span>
+                  </div>
+                  <div className="flex justify-between items-center text-xs">
+                    <span className="text-amber-400 font-bold">True Effective Rate (APR):</span>
+                    <span className="text-sm font-black text-amber-400">{calculations.effectiveReducingRate}% p.a.</span>
                   </div>
                   <div className="flex justify-between items-center text-xs pt-1 border-t border-slate-700/50">
                     <span className="text-slate-300 font-bold">Total Repayment:</span>

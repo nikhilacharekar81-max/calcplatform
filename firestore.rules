@@ -1,12 +1,49 @@
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
-    match /posts/{postId} {
-      allow read: if true;
-      allow write: if true;
+    // Helper functions
+    function isAuthenticated() {
+      return request.auth != null;
     }
+    
+    function isAdmin() {
+      return isAuthenticated() && 
+        (request.auth.token.email == 'nikhilacharekar81@gmail.com' || request.auth.token.admin == true);
+    }
+
+    // Public readable blog posts and calculators
+    match /posts/{postId} {
+      allow read: if resource == null || resource.data.status == 'published' || isAdmin();
+      allow write: if isAdmin();
+    }
+
+    match /categories/{categoryId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    match /calculators/{calculatorId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    match /settings/{settingId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    match /audit_logs/{logId} {
+      allow read: if isAdmin();
+      allow write: if isAuthenticated();
+    }
+
+    match /user_profiles/{userId} {
+      allow read, write: if isAuthenticated() && request.auth.uid == userId;
+    }
+
+    // Default deny for all other collections
     match /{document=**} {
-      allow read, write: if true;
+      allow read, write: if false;
     }
   }
 }

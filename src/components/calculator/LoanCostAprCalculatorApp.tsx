@@ -43,8 +43,10 @@ export const LoanCostAprCalculatorApp: React.FC<LoanCostAprCalculatorAppProps> =
   // Convert tenure to total months
   const totalMonths = tenureUnit === 'years' ? Math.round((tenureValue || 0) * 12) : Math.round(tenureValue || 0);
 
-  // Upfront Fees calculation
-  const upfrontFees = feeType === 'amount' ? (feeValue || 0) : ((loanAmount || 0) * (feeValue || 0)) / 100;
+  // Upfront Fees calculation with 18% statutory GST included
+  const baseFees = feeType === 'amount' ? (feeValue || 0) : ((loanAmount || 0) * (feeValue || 0)) / 100;
+  const feeGst = baseFees * 0.18;
+  const upfrontFees = baseFees + feeGst;
 
   // Net Cash Disbursed
   const netCashDisbursed = Math.max(0, (loanAmount || 0) - upfrontFees);
@@ -201,7 +203,7 @@ export const LoanCostAprCalculatorApp: React.FC<LoanCostAprCalculatorAppProps> =
                   onClick={() => {
                     if (tenureUnit === 'months') {
                       setTenureUnit('years');
-                      setTenureValue(Math.max(1, Math.round(tenureValue / 12)));
+                      setTenureValue(parseFloat(((tenureValue || 12) / 12).toFixed(2)));
                     }
                   }}
                   className={`px-3 py-1.5 rounded-lg transition-all ${
@@ -215,7 +217,7 @@ export const LoanCostAprCalculatorApp: React.FC<LoanCostAprCalculatorAppProps> =
                   onClick={() => {
                     if (tenureUnit === 'years') {
                       setTenureUnit('months');
-                      setTenureValue(Math.min(360, Math.round(tenureValue * 12)));
+                      setTenureValue(Math.round((tenureValue || 1) * 12));
                     }
                   }}
                   className={`px-3 py-1.5 rounded-lg transition-all ${

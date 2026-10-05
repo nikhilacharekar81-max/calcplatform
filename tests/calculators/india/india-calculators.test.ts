@@ -88,5 +88,62 @@ export function runIndiaCalculatorsTests(): { name: string; passed: boolean; err
     assert(curr.includes("1,00,00,000") || curr.includes("₹"), `Expected formatted 1 Crore, got ${curr}`);
   });
 
+  runTest("India Calculators - Maharashtra Professional Tax (Feb ₹300 & Women Exemption)", async () => {
+    const { calculateStateProfessionalTax } = await import("../../../src/calculators/india/state/professionalTax.ts");
+    
+    // Male with salary > 10,000 in regular month (₹200) vs February (₹300)
+    const regularMonth = calculateStateProfessionalTax({ stateCode: "MH", monthlySalary: 15000, month: 5, gender: "male" });
+    assert(regularMonth.monthlyTax === 200, "MH Male regular month ₹200");
+    
+    const febMonth = calculateStateProfessionalTax({ stateCode: "MH", monthlySalary: 15000, month: 2, gender: "male" });
+    assert(febMonth.monthlyTax === 300, "MH Male February ₹300");
+    assert(febMonth.annualTaxEstimated === 2500, "MH Male Annual ₹2,500");
+
+    // Female with salary ₹20,000 (Exempt in Maharashtra <= 25,000)
+    const femaleExempt = calculateStateProfessionalTax({ stateCode: "MH", monthlySalary: 20000, month: 5, gender: "female" });
+    assert(femaleExempt.isFemaleExempt === true && femaleExempt.monthlyTax === 0, "MH Female <= 25k is exempt");
+
+    // Karnataka PT (>= 15,000: ₹200 regular, ₹300 in Feb)
+    const kaFeb = calculateStateProfessionalTax({ stateCode: "KA", monthlySalary: 25000, month: 2, gender: "male" });
+    assert(kaFeb.monthlyTax === 300 && kaFeb.annualTaxEstimated === 2500, "KA Feb ₹300, Annual ₹2,500");
+  });
+
+  runTest("India Calculators - TDS Threshold Crossing & Cumulative Catch-up", async () => {
+    const { calculateTds: calculateEngineTds } = await import("../../../src/utils/tdsEngine.ts");
+
+    // 194C Contractor: Single bill of ₹25,000 (below ₹30,000 single limit) with 0 prior aggregate -> ₹0 TDS
+    const firstBill = calculateEngineTds({
+      sectionKey: "194C_CONTRACTOR",
+      payeeType: "Individual/HUF",
+      grossAmount: 25000,
+      aggregatePaidTillDate: 0,
+      isPanFurnished: true,
+      isSeniorCitizen: false,
+      isForm15Submitted: false,
+      hasForm13Certificate: false,
+      form13Rate: 0,
+      applySurchargeAndCess: false,
+      surchargeRate: 0,
+    });
+    assert(firstBill.totalTdsDeductible === 0, "194C bill below single threshold is exempt");
+
+    // 194C Contractor: 4th bill of ₹30,000 where prior aggregate was ₹80,000 (total = ₹1,10,000, crossing ₹1L aggregate threshold)
+    // Entire ₹1,10,000 is now subjected to 1% TDS catch-up = ₹1,100
+    const crossingBill = calculateEngineTds({
+      sectionKey: "194C_CONTRACTOR",
+      payeeType: "Individual/HUF",
+      grossAmount: 30000,
+      aggregatePaidTillDate: 80000,
+      isPanFurnished: true,
+      isSeniorCitizen: false,
+      isForm15Submitted: false,
+      hasForm13Certificate: false,
+      form13Rate: 0,
+      applySurchargeAndCess: false,
+      surchargeRate: 0,
+    });
+    assert(crossingBill.totalTdsDeductible === 1100, `Expected ₹1,100 catch-up TDS, got ${crossingBill.totalTdsDeductible}`);
+  });
+
   return results;
 }

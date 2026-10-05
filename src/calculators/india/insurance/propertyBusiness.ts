@@ -1,4 +1,6 @@
 import { roundMoney } from "../../../engines/financial-maths/index.ts";
+import { indiaRuleRegistry } from "../../../rules/india/registry.ts";
+import { IndiaInsuranceParameters } from "../../../rules/india/insurance/versions/2026.ts";
 
 export interface HomeInsuranceInput {
   builtUpAreaSqFt: number;
@@ -30,10 +32,18 @@ export function calculateHomeInsurance(input: HomeInsuranceInput): HomeInsurance
 
   const totalSumInsured = structureSumInsured + totalContents;
 
+  // Retrieve statutory GST rate from India Rule Registry
+  const rule = indiaRuleRegistry.resolveActiveVerified<IndiaInsuranceParameters>({
+    domain: "INSURANCE",
+    ruleId: "INSURANCE-INDIA-2026",
+    version: "2026-01",
+  });
+  const gstRate = rule.parameters.gstRatesPercent.propertyInsurance;
+
   // Bharat Griha Raksha standard rate estimate (~₹50 per ₹1 Lakh sum insured)
   const baseRate = 0.0005;
   const netPremium = totalSumInsured * baseRate;
-  const gst = netPremium * 0.18;
+  const gst = netPremium * (gstRate / 100);
   const totalPremium = roundMoney(netPremium + gst);
 
   return {

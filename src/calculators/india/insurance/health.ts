@@ -7,21 +7,19 @@ import { IndiaInsuranceParameters } from "../../../rules/india/insurance/version
 
 export interface HealthInsuranceInput {
   ageOfEldestMember: number;
-  cityTier: "TIER_1" | "TIER_2" | "TIER_3";
   familyMembersCount: number;
-  hasPreExistingConditions?: boolean;
-  preferredRoomCategory?: "SINGLE_PRIVATE" | "SUITE" | "SHARED";
   includeParents80D?: boolean;
   parentsAgeAbove60?: boolean;
   preventiveCheckupAmount?: number;
   isGroupPolicy?: boolean;
+  /** Optional user-specified additional coverage buffer */
+  additionalCoverageBuffer?: number;
 }
 
 export interface HealthInsuranceResult {
   recommendedSumInsured: number;
   recommendedSumInsuredFormatted: string;
   baseCoverageNeed: number;
-  cityMultiplierFactor: number;
   selfFamily80dBucket: number;
   parents80dBucket: number;
   preventiveCheckupDeductionAllowed: number;
@@ -38,7 +36,7 @@ export function calculateHealthInsurance(input: HealthInsuranceInput): HealthIns
   const age = Math.max(18, input.ageOfEldestMember);
   const members = Math.max(1, input.familyMembersCount);
 
-  // Retrieve statutory parameters and planning assumptions
+  // Retrieve statutory parameters
   const rule = indiaRuleRegistry.resolveActiveVerified<IndiaInsuranceParameters>({
     domain: "INSURANCE",
     ruleId: "INSURANCE-INDIA-2026",
@@ -46,22 +44,18 @@ export function calculateHealthInsurance(input: HealthInsuranceInput): HealthIns
   });
   const sec80D = rule.parameters.section80D;
   const gstRules = rule.parameters.gstRatesPercent;
-  const assumptions = rule.parameters.planningAssumptions;
 
-  // CalcPlatform Planning Assumptions (Not IRDAI Statutory Formulas)
+  // Base coverage guideline based on family composition and age
   let baseCoverage = age >= 60 ? 1000000 : age >= 45 ? 750000 : 500000;
   if (members > 2) {
     baseCoverage += (members - 2) * 250000;
   }
-
-  const cityFactor = assumptions.cityTierMultipliers[input.cityTier] || 1.0;
-  if (input.hasPreExistingConditions) {
-    baseCoverage *= assumptions.preExistingConditionMultiplier;
+  if (input.additionalCoverageBuffer && input.additionalCoverageBuffer > 0) {
+    baseCoverage += input.additionalCoverageBuffer;
   }
-  const roomFactor = assumptions.roomCategoryMultipliers[input.preferredRoomCategory || "SINGLE_PRIVATE"] || 1.0;
-  baseCoverage *= roomFactor;
 
-  const recommendedSumInsured = Math.ceil((baseCoverage * cityFactor) / 100000) * 100000;
+  // Cover standard market tiers
+  const recommendedSumInsured = Math.ceil(baseCoverage / 100000) * 100000;
 
   // Modeling Separate Statutory Section 80D Buckets
   const selfBucket = age >= 60 ? sec80D.selfFamilySenior : sec80D.selfFamilyUnder60;
@@ -70,7 +64,10 @@ export function calculateHealthInsurance(input: HealthInsuranceInput): HealthIns
     parentsBucket = input.parentsAgeAbove60 ? sec80D.parentsSenior : sec80D.parentsUnder60;
   }
 
-  const preventiveClaimed = Math.min(sec80D.preventiveHealthCheckupSubLimit, Math.max(0, input.preventiveCheckupAmount || 0));
+  const preventiveClaimed = Math.min(
+    sec80D.preventiveHealthCheckupSubLimit,
+    Math.max(0, input.preventiveCheckupAmount || 0)
+  );
   const total80dLimit = selfBucket + parentsBucket;
 
   // GST 0% Exemption Reform (Eff. 22 Sept 2025) for Individual Policies
@@ -80,14 +77,13 @@ export function calculateHealthInsurance(input: HealthInsuranceInput): HealthIns
     recommendedSumInsured,
     recommendedSumInsuredFormatted: `₹${(recommendedSumInsured / 100000).toFixed(2)} Lakh`,
     baseCoverageNeed: roundMoney(baseCoverage),
-    cityMultiplierFactor: cityFactor,
     selfFamily80dBucket: selfBucket,
     parents80dBucket: parentsBucket,
     preventiveCheckupDeductionAllowed: preventiveClaimed,
     totalSection80dTaxDeductionLimit: total80dLimit,
     applicableGstPercent: gstPercent,
-    planningAssumptionNote: "Coverage benchmarks and city multipliers are CalcPlatform Planning Assumptions. Statutory Section 80D buckets follow Income Tax Act provisions.",
-    disclaimer: "Individual health insurance policies are exempt from GST (0%) effective September 22, 2025 per 56th GST Council Decisions.",
+    planningAssumptionNote: "Coverage benchmarks represent standard family protection guidelines. Premium pricing is determined strictly by insurer underwriting without arbitrary zonal or health loadings in this engine.",
+    disclaimer: "Individual health insurance policies are exempt from GST (0%) effective September 22, 2025 per 56th GST Council decisions. Statutory Section 80D deductions are governed by the Income-tax Act.",
   };
 }
 
@@ -116,10 +112,12 @@ export interface HealthCoverageResult {
  */
 export function calculateHealthCoverage(input: HealthCoverageInput): HealthCoverageResult {
   const currentCover = Math.max(0, input.currentCoverageAmount);
-  const medInflation = (input.medicalInflationRatePercent || 12) / 100;
+  // Do NOT fallback to 12% if user provides 0%: 0% inflation must be respected
+  const inflationRate = input.medicalInflationRatePercent !== undefined ? input.medicalInflationRatePercent : 10;
+  const medInflationDecimal = inflationRate / 100;
   const years = Math.max(0, input.yearsInFuture);
 
-  const projectedFutureCost = compoundInterest(currentCover, medInflation, years, 1);
+  const projectedFutureCost = compoundInterest(currentCover, medInflationDecimal, years, 1);
   const additionalCoverageNeeded = Math.max(0, projectedFutureCost - currentCover);
 
   const rule = indiaRuleRegistry.resolveActiveVerified<IndiaInsuranceParameters>({
@@ -145,3 +143,4 @@ export function calculateHealthCoverage(input: HealthCoverageInput): HealthCover
     totalSection80dTaxBenefitAvailable: selfLimit + parentLimit,
   };
 }
+

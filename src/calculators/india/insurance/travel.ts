@@ -72,12 +72,17 @@ export function calculateTravelInsurance(input: TravelInsuranceInput): TravelIns
   const gst = roundMoney(baseNetPremium * (gstRate / 100));
   const totalInr = roundMoney(baseNetPremium + gst);
 
+  // If caller specified a higher custom medical cover threshold, respect it
+  const recommendedMedicalCover = input.medicalCoverUsdThreshold && input.medicalCoverUsdThreshold > baseUsdCover
+    ? input.medicalCoverUsdThreshold
+    : baseUsdCover;
+
   return {
-    recommendedMedicalSumInsuredUsd: baseUsdCover,
-    recommendedMedicalSumInsuredUsdFormatted: `$${baseUsdCover.toLocaleString("en-US")} USD`,
+    recommendedMedicalSumInsuredUsd: recommendedMedicalCover,
+    recommendedMedicalSumInsuredUsdFormatted: `$${recommendedMedicalCover.toLocaleString("en-US")} USD`,
     estimatedTotalPremiumInr: totalInr,
     estimatedTotalPremiumInrFormatted: `₹${totalInr.toLocaleString("en-IN")}`,
     gstAmountInr: gst,
-    riskFactorNotes: `Destination: ${input.destinationRegion.replace("_", " ")}, Duration: ${duration} Days, Age Surcharge Factor: ${ageLoadingFactor.toFixed(1)}x`,
+    riskFactorNotes: `Destination: ${input.destinationRegion.replaceAll("_", " ")}, Duration: ${duration} Days, Age Surcharge Factor: ${ageLoadingFactor.toFixed(1)}x`,
   };
 }

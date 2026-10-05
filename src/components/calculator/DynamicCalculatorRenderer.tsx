@@ -192,9 +192,7 @@ export const DynamicCalculatorRenderer: React.FC<DynamicCalculatorRendererProps>
       case 'health-insurance-calculator':
         return calculateHealthInsurance({
           ageOfEldestMember: Number(v.ageOfEldestMember || 35),
-          cityTier: v.cityTier || 'TIER_1',
           familyMembersCount: Number(v.familyMembersCount || 4),
-          preferredRoomCategory: v.preferredRoomCategory || 'SINGLE_PRIVATE',
           includeParents80D: Boolean(v.includeParents80D || false),
           parentsAgeAbove60: Boolean(v.parentsAgeAbove60 || false),
           isGroupPolicy: Boolean(v.isGroupPolicy || false),

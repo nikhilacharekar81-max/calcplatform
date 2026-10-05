@@ -21,18 +21,22 @@ export interface PersonalAccidentResult {
 export function calculatePersonalAccidentCover(input: PersonalAccidentInput): PersonalAccidentResult {
   const income = Math.max(0, input.annualEarnedIncome);
   const debts = Math.max(0, input.outstandingDebts || 0);
+  const dependents = Math.max(0, input.dependentsCount || 0);
   const multipleYears = input.incomeMultipleYears !== undefined ? input.incomeMultipleYears : 10;
 
-  // Accidental Death Sum Insured = (10x Annual Income) + Outstanding Debts
-  const deathCoverNeeded = income * multipleYears + debts;
+  // Accidental Death Sum Insured = (10x Annual Income) + Outstanding Debts + Dependent Calibration
+  const dependentSizing = dependents > 0 ? (income * 0.5 * dependents) : 0;
+  const deathCoverNeeded = income * multipleYears + debts + dependentSizing;
   const deathCover = Math.ceil(deathCoverNeeded / 500000) * 500000;
 
   // Permanent Total Disability Cover = 125% of Death Sum Insured
   const disabilityCover = Math.ceil((deathCover * 1.25) / 500000) * 500000;
 
-  // Weekly Benefit for Temporary Total Disability = 1% of Sum Insured capped at ₹10,000/week OR weekly income
-  const weeklyIncome = income / 52;
-  const weeklyBenefit = Math.min(10000, weeklyIncome, roundMoney(deathCover * 0.01));
+  // Weekly Benefit for Temporary Total Disability = 1% of Sum Insured capped strictly at actual weekly income and statutory ₹10,000/week limit
+  const weeklyIncome = income > 0 ? (income / 52) : 0;
+  const weeklyBenefit = income > 0
+    ? roundMoney(Math.min(10000, weeklyIncome, deathCover * 0.01))
+    : 0;
 
   return {
     recommendedAccidentalDeathCover: deathCover,
@@ -65,10 +69,14 @@ export function calculateCriticalIllnessCover(input: CriticalIllnessInput): Crit
   const expenses = Math.max(0, input.annualLivingExpenses);
   const replacementYears = input.yearsOfIncomeReplacementNeeded !== undefined ? input.yearsOfIncomeReplacementNeeded : 3;
 
-  const treatmentCost = input.expectedSpecializedTreatmentCost !== undefined ? input.expectedSpecializedTreatmentCost : 1500000;
+  // Explicit ₹0 treatment cost must NOT be overridden with ₹15L default
+  const treatmentCost = input.expectedSpecializedTreatmentCost !== undefined
+    ? Math.max(0, input.expectedSpecializedTreatmentCost)
+    : 1500000;
   const existingCover = Math.max(0, input.existingHealthInsuranceCover || 0);
 
   const incomeReplacementNeed = expenses * replacementYears;
+  // Existing health cover strictly offsets specialized treatment costs, not daily income replacement
   const treatmentGap = Math.max(0, treatmentCost - existingCover);
   const netGap = incomeReplacementNeed + treatmentGap;
 
@@ -82,3 +90,4 @@ export function calculateCriticalIllnessCover(input: CriticalIllnessInput): Crit
     netCoverageGap: roundMoney(netGap),
   };
 }
+
