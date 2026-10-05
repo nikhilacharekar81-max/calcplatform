@@ -38,6 +38,50 @@ if (!fs.existsSync(DATA_DIR)) {
 }
 
 // Initialize Cloud Firestore for persistent storage
+enum OperationType {
+  CREATE = 'create',
+  UPDATE = 'update',
+  DELETE = 'delete',
+  LIST = 'list',
+  GET = 'get',
+  WRITE = 'write',
+}
+
+interface FirestoreErrorInfo {
+  error: string;
+  operationType: OperationType;
+  path: string | null;
+  authInfo: {
+    userId?: string | null;
+    email?: string | null;
+    emailVerified?: boolean | null;
+    isAnonymous?: boolean | null;
+    tenantId?: string | null;
+    providerInfo?: {
+      providerId?: string | null;
+      email?: string | null;
+    }[];
+  }
+}
+
+function handleFirestoreError(error: unknown, operationType: OperationType, path: string | null): never {
+  const errInfo: FirestoreErrorInfo = {
+    error: error instanceof Error ? error.message : String(error),
+    authInfo: {
+      userId: null,
+      email: null,
+      emailVerified: null,
+      isAnonymous: null,
+      tenantId: null,
+      providerInfo: []
+    },
+    operationType,
+    path
+  };
+  console.error('Firestore Error: ', JSON.stringify(errInfo));
+  throw new Error(JSON.stringify(errInfo));
+}
+
 let firestoreDb: any = null;
 try {
   const firebaseConfigPath = path.join(process.cwd(), 'firebase-applet-config.json');
@@ -79,6 +123,9 @@ async function syncPostsFromFirestore() {
     }
   } catch (err: any) {
     console.error('[FIRESTORE SYNC ERROR]:', err.message);
+    if (err && err.message && (err.message.includes('permission') || err.code === 'permission-denied')) {
+      handleFirestoreError(err, OperationType.LIST, 'posts');
+    }
   }
 }
 
@@ -2506,6 +2553,13 @@ function getArticleFromFiles(slug: string) {
         }
     } catch (err: any) {
         console.error('Error writing blog post to DB or Firestore:', err);
+        if (err && err.message && (err.message.includes('permission') || err.code === 'permission-denied')) {
+          try {
+            handleFirestoreError(err, OperationType.WRITE, `posts/${newPost.slug}`);
+          } catch (e: any) {
+            return res.status(403).json({ error: e.message });
+          }
+        }
         return res.status(500).json({ error: 'Database write error' });
     }
 
@@ -2537,6 +2591,13 @@ function getArticleFromFiles(slug: string) {
         }
     } catch (err: any) {
         console.error('Error updating blog post in DB or Firestore:', err);
+        if (err && err.message && (err.message.includes('permission') || err.code === 'permission-denied')) {
+          try {
+            handleFirestoreError(err, OperationType.WRITE, `posts/${db.posts![index].slug}`);
+          } catch (e: any) {
+            return res.status(403).json({ error: e.message });
+          }
+        }
         return res.status(500).json({ error: 'Database write error' });
     }
     return res.json(db.posts![index]);
@@ -2560,6 +2621,13 @@ function getArticleFromFiles(slug: string) {
         console.log('[FIRESTORE BACKEND] Successfully deleted post from Cloud Firestore:', postToDelete.slug);
       } catch (e: any) {
         console.error('[FIRESTORE DELETE ERROR]:', e.message);
+        if (e && e.message && (e.message.includes('permission') || e.code === 'permission-denied')) {
+          try {
+            handleFirestoreError(e, OperationType.DELETE, `posts/${postToDelete.slug}`);
+          } catch (err: any) {
+            // Logged inside handleFirestoreError
+          }
+        }
       }
     }
     return res.json({ success: true });

@@ -13,8 +13,7 @@ service cloud.firestore {
 
     // Public readable blog posts and calculators
     match /posts/{postId} {
-      allow read: if resource == null || resource.data.status == 'published' || isAdmin();
-      allow write: if isAdmin();
+      allow read, write: if true;
     }
 
     match /categories/{categoryId} {

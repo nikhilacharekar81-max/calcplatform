@@ -65,6 +65,13 @@ export interface ComprehensiveCapitalGainsResult {
   surcharge: number;
   cess: number;
   totalTaxLiability: number;
+  baseTaxRounded?: number;
+  surchargeRounded?: number;
+  cessRounded?: number;
+  baseTaxFormatted?: string;
+  surchargeFormatted?: string;
+  cessFormatted?: string;
+  totalTaxLiabilityFormatted?: string;
   unabsorbedStcl: number;
   unabsorbedLtcl: number;
   isStandaloneEstimate: boolean;
@@ -312,6 +319,13 @@ export function calculateStatutoryCapitalGains(
     surcharge,
     cess,
     totalTaxLiability,
+    baseTaxRounded: Math.round(baseTax),
+    surchargeRounded: Math.round(surcharge),
+    cessRounded: Math.round(cess),
+    baseTaxFormatted: `₹${Math.round(baseTax).toLocaleString('en-IN')}`,
+    surchargeFormatted: `₹${Math.round(surcharge).toLocaleString('en-IN')}`,
+    cessFormatted: `₹${Math.round(cess).toLocaleString('en-IN')}`,
+    totalTaxLiabilityFormatted: `₹${totalTaxLiability.toLocaleString('en-IN')}`,
     unabsorbedStcl: roundMoney(unabsorbedStcl),
     unabsorbedLtcl: roundMoney(unabsorbedLtcl),
     isStandaloneEstimate: isStandalone,

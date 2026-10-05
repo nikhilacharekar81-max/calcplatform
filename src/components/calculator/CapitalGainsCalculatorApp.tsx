@@ -66,6 +66,9 @@ export const CapitalGainsCalculatorApp: React.FC = () => {
     surcharge,
     cess,
     totalTaxLiability,
+    baseTaxFormatted,
+    cessFormatted,
+    totalTaxLiabilityFormatted,
     unabsorbedStcl,
     unabsorbedLtcl,
   } = useMemo(() => {
@@ -455,7 +458,7 @@ export const CapitalGainsCalculatorApp: React.FC = () => {
               <div>
                 <div className="text-xs text-slate-400 mb-1">Total Tax Liability (Incl. 4% Cess)</div>
                 <div className="text-3xl font-black text-[#1dbf73]">
-                  ₹{totalTaxLiability.toLocaleString('en-IN')}
+                  {totalTaxLiabilityFormatted}
                 </div>
               </div>
             </div>
@@ -463,11 +466,11 @@ export const CapitalGainsCalculatorApp: React.FC = () => {
             <div className="pt-4 border-t border-slate-800 space-y-2 text-xs text-slate-300">
               <div className="flex justify-between">
                 <span>Base Tax:</span>
-                <span>₹{Math.round(baseTax).toLocaleString('en-IN')}</span>
+                <span>{baseTaxFormatted}</span>
               </div>
               <div className="flex justify-between">
                 <span>Health & Education Cess (4%):</span>
-                <span>₹{Math.round(cess).toLocaleString('en-IN')}</span>
+                <span>{cessFormatted}</span>
               </div>
             </div>
 

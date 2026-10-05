@@ -1,5 +1,6 @@
 import Decimal from "decimal.js";
 import { STATE_RULE_REGISTRY } from "../../../rules/india/states/index.ts";
+import { isMonetaryExceeded, isMonetaryLessOrEqual, compareMoney } from "../../../engines/financial-maths/index.ts";
 
 export interface StateProfessionalTaxInput {
   stateCode: string; // e.g. "MH", "KA", "WB", "TS", "GJ", "TN"
@@ -45,15 +46,15 @@ export function calculateStateProfessionalTax(input: StateProfessionalTaxInput):
     // Maharashtra:
     // Men: Up to 7500: Nil, 7501-10000: 175/mo, >10000: 200/mo (300 in Feb = 2500/yr)
     // Women: Exempt up to ₹25,000/month; >25000: 200/mo (300 in Feb = 2500/yr)
-    if (gender === "female" && salary <= 25000) {
+    if (gender === "female" && isMonetaryLessOrEqual(salary, 25000)) {
       isFemaleExempt = true;
       monthlyTax = 0;
       annualTax = 0;
       notes.push("Women earning up to ₹25,000/month are completely exempt from Maharashtra Professional Tax.");
-    } else if (salary > 10000) {
+    } else if (isMonetaryExceeded(salary, 10000)) {
       monthlyTax = month === 2 ? 300 : 200;
       annualTax = 200 * 11 + 300; // ₹2,500
-    } else if (salary > 7500) {
+    } else if (isMonetaryExceeded(salary, 7500)) {
       monthlyTax = 175;
       annualTax = 175 * 12; // ₹2,100
     } else {
@@ -63,7 +64,7 @@ export function calculateStateProfessionalTax(input: StateProfessionalTaxInput):
   } else if (input.stateCode.toUpperCase() === "KA") {
     // Karnataka:
     // >= 15000: ₹200/mo, ₹300 in Feb = ₹2,500/yr
-    if (salary >= 15000) {
+    if (isMonetaryLessOrEqual(15000, salary)) {
       monthlyTax = month === 2 ? 300 : 200;
       annualTax = 200 * 11 + 300; // ₹2,500
     } else {
@@ -80,8 +81,8 @@ export function calculateStateProfessionalTax(input: StateProfessionalTaxInput):
     const schedule = stateRule.parameters.professionalTaxSchedule;
     if (schedule && schedule.length > 0) {
       for (const tier of schedule) {
-        if (salary > tier.monthlySalaryAbove) {
-          if (gender === "female" && tier.femaleExemptionThreshold && salary <= tier.femaleExemptionThreshold) {
+        if (isMonetaryExceeded(salary, tier.monthlySalaryAbove)) {
+          if (gender === "female" && tier.femaleExemptionThreshold && isMonetaryLessOrEqual(salary, tier.femaleExemptionThreshold)) {
             isFemaleExempt = true;
             monthlyTax = 0;
           } else {

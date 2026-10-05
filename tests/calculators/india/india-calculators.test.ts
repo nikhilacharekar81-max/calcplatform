@@ -379,5 +379,48 @@ export function runIndiaCalculatorsTests(): { name: string; passed: boolean; err
     assert(extendTenureRes.effectiveTenureMonths === 86, `Expected tenure extended to 86 months, got ${extendTenureRes.effectiveTenureMonths}`);
   });
 
+  runTest("India Calculators - Universal Statutory Date Abstraction Suite", async () => {
+    const { 
+      getUSTaxYearDetails, 
+      computeDayCountFraction, 
+      getStatutoryQuarterEnd, 
+      addBusinessDays, 
+      rollToBusinessDay 
+    } = await import("../../../src/utils/dateUtils.ts");
+
+    // 1. US Tax Year
+    const ty = getUSTaxYearDetails("2026-08-15");
+    assert(ty.taxYearString === "TY 2026", "US Tax Year string resolved");
+    assert(ty.startDateIso === "2026-01-01" && ty.endDateIso === "2026-12-31", "US Tax Year boundaries resolved");
+
+    // 2. Day count fractions
+    const dStart = new Date("2026-01-15");
+    const dEnd = new Date("2026-04-15");
+    const f30360 = computeDayCountFraction(dStart, dEnd, "30/360");
+    assert(f30360 === 0.25, `30/360 should resolve exactly to 0.25 (90/360), got ${f30360}`);
+
+    const fAct360 = computeDayCountFraction(dStart, dEnd, "ACT/360");
+    // Jan 15 to Apr 15 = 16 (Jan) + 28 (Feb) + 31 (Mar) + 15 (Apr) = 90 days. 90 / 360 = 0.25
+    assert(fAct360 === 0.25, `ACT/360 should resolve exactly to 0.25, got ${fAct360}`);
+
+    const fAct365 = computeDayCountFraction(dStart, dEnd, "ACT/365");
+    assert(fAct365 === 90 / 365, `ACT/365 should resolve to 90/365, got ${fAct365}`);
+
+    // 3. Quarter End
+    const qe = getStatutoryQuarterEnd("2026-11-20");
+    assert(qe.quarter === "Q4", "Quarter resolved correctly");
+    assert(qe.quarterEndIso === "2026-12-31", "Quarter-end ISO resolved correctly");
+
+    // 4. Add business days (skips weekends and specified holidays)
+    const startFriday = new Date("2026-10-02"); // Friday
+    const plus3Days = addBusinessDays(startFriday, 3, ["2026-10-05"]); // Mon Oct 5 is holiday. Next days are Sat/Sun Oct 3/4. 3 business days = Mon 5 (holiday, skipped) -> Tue 6 (1) -> Wed 7 (2) -> Thu 8 (3)
+    assert(plus3Days.getDate() === 8, `Expected adding 3 business days to Friday Oct 2 to land on Thu Oct 8, got ${plus3Days.toDateString()}`);
+
+    // 5. Roll to business day (Modified Following)
+    const satOct3 = new Date("2026-10-03"); // Saturday
+    const rolledMF = rollToBusinessDay(satOct3, "MODIFIED_FOLLOWING", ["2026-10-05"]); // Sat -> Sun -> Mon (holiday) -> Tue Oct 6
+    assert(rolledMF.getDate() === 6, `MODIFIED_FOLLOWING should roll Saturday Oct 3 to Tuesday Oct 6 due to Monday holiday, got ${rolledMF.toDateString()}`);
+  });
+
   return results;
 }

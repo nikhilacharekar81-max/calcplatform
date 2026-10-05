@@ -1,4 +1,5 @@
 import { isMonetaryExceeded, isMonetaryLessOrEqual } from "../engines/financial-maths/index.ts";
+import { getIndianFinancialYearDetails } from "./dateUtils.ts";
 
 export interface TdsSectionDefinition {
   code: string;
@@ -245,15 +246,7 @@ export const DEFAULT_TDS_INPUTS: TdsInputState = {
 };
 
 export function getFinancialYear(dateStr: string): string {
-  const d = new Date(dateStr);
-  if (isNaN(d.getTime())) return "FY 2026-27";
-  const year = d.getFullYear();
-  const month = d.getMonth(); // 3 = April (0-indexed)
-  if (month >= 3) {
-    return `FY ${year}-${(year + 1).toString().slice(-2)}`;
-  } else {
-    return `FY ${year - 1}-${year.toString().slice(-2)}`;
-  }
+  return getIndianFinancialYearDetails(dateStr).fyString;
 }
 
 /**
