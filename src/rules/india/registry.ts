@@ -58,6 +58,7 @@ const UNVERIFIED_PROVENANCE = {
   effectiveFrom: "2026-04-01",
   effectiveTo: null,
   verifiedAt: "2026-10-04",
+  verifiedBy: "CalcPlatform Regulatory Audit Team",
 };
 
 indiaRuleRegistry.register({

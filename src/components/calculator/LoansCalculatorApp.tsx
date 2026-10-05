@@ -171,7 +171,13 @@ export const LoansCalculatorApp: React.FC<LoansCalculatorAppProps> = ({ calculat
     frequency: "MONTHLY",
     timing: "END"
   });
-  const schedule = scheduleResult.schedule;
+  const schedule = scheduleResult.annual.map((s) => ({
+    year: s.year,
+    principalPaid: s.principal,
+    interestPaid: s.interest,
+    totalPaid: s.payments,
+    closingBalance: s.endingBalance,
+  }));
 
   // India Tax Benefits (Sec 24b & 80C) - Computing for Year 1
   const firstYear = schedule.find(s => s.year === 1);

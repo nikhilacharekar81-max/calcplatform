@@ -1,3 +1,5 @@
+import { calculateIndiaIncomeTaxAY2026_27 } from '../calculators/india/incomeTax.ts';
+
 export interface ScenarioInputParams {
   annualIncome?: number;
   homeLoanAmount?: number;
@@ -86,40 +88,30 @@ export function calculateDeterministicScenario(params: ScenarioInputParams) {
   const totalSipInvested = monthlySip * 12 * sipYears;
   const finalSipCorpus = yearlyCompounding[yearlyCompounding.length - 1]?.wealth ?? 0;
 
-  // 3. Tax Regime Comparison (Deterministic Old vs New Regime)
-  // Standard Deduction: ₹75,000 for New, ₹50,000 for Old
+  // 3. Tax Regime Comparison (Deterministic Old vs New Regime via Statutory AY 2026-27 Engine)
   // Sec 24b Home Loan Interest: up to ₹2,00,000 in Old Regime
   const homeLoanInterestDeduction = Math.min(200000, yearlyAmortization[0]?.interest ?? 200000);
-  
-  // Old Regime Taxable
-  const oldDeductions = 50000 + Math.min(150000, ded80C) + ded80D + homeLoanInterestDeduction;
-  const oldTaxable = Math.max(0, income - oldDeductions);
-  let oldTax = 0;
-  if (oldTaxable > 1000000) {
-    oldTax = 112500 + (oldTaxable - 1000000) * 0.30;
-  } else if (oldTaxable > 500000) {
-    oldTax = 12500 + (oldTaxable - 500000) * 0.20;
-  } else if (oldTaxable > 250000) {
-    oldTax = (oldTaxable - 250000) * 0.05;
-  }
-  if (oldTaxable <= 500000) oldTax = 0; // 87A rebate
-  oldTax = Math.round(oldTax * 1.04); // 4% cess
+  const eligibleOldAdditionalDeductions = Math.min(150000, ded80C) + ded80D + homeLoanInterestDeduction;
 
-  // New Regime Taxable (FY 2026-27 Slabs)
-  const newDeductions = 75000; // Standard deduction
-  const newTaxable = Math.max(0, income - newDeductions);
-  let newTax = 0;
-  if (newTaxable > 1500000) {
-    newTax = 140000 + (newTaxable - 1500000) * 0.30;
-  } else if (newTaxable > 1200000) {
-    newTax = 80000 + (newTaxable - 1200000) * 0.20;
-  } else if (newTaxable > 800000) {
-    newTax = 40000 + (newTaxable - 800000) * 0.10;
-  } else if (newTaxable > 400000) {
-    newTax = (newTaxable - 400000) * 0.05;
-  }
-  if (newTaxable <= 1200000) newTax = 0; // 87A rebate for new regime
-  newTax = Math.round(newTax * 1.04);
+  const oldRegimeRes = calculateIndiaIncomeTaxAY2026_27({
+    grossIncome: income,
+    salaryIncome: income,
+    additionalDeductions: eligibleOldAdditionalDeductions,
+    regime: 'OLD',
+  });
+
+  const newRegimeRes = calculateIndiaIncomeTaxAY2026_27({
+    grossIncome: income,
+    salaryIncome: income,
+    regime: 'NEW',
+  });
+
+  const oldTax = oldRegimeRes.totalTax;
+  const newTax = newRegimeRes.totalTax;
+  const oldDeductions = oldRegimeRes.standardDeduction + oldRegimeRes.additionalDeductions;
+  const newDeductions = newRegimeRes.standardDeduction + newRegimeRes.additionalDeductions;
+  const oldTaxable = oldRegimeRes.taxableIncome;
+  const newTaxable = newRegimeRes.taxableIncome;
 
   const regimeComparison = [
     { label: 'Gross Annual Income', oldRegime: income, newRegime: income },

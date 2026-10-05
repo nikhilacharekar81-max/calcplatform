@@ -192,3 +192,5 @@ export function calculateIndiaIncomeTax(
     totalTaxFormatted: formatIndianCurrency(totalTax),
   };
 }
+
+export const calculateIndiaIncomeTaxAY2026_27 = calculateIndiaIncomeTax;

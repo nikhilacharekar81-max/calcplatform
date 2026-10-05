@@ -18,9 +18,9 @@ export interface IndiaIncomeTaxRegimeRules {
 }
 
 export interface IndiaIncomeTaxAY2026_27Parameters {
-  readonly taxYear: "AY-2026-27";
-  readonly assessmentYear: "AY-2026-27";
-  readonly act: "Income Tax Act, 1961";
+  readonly taxYear: string;
+  readonly assessmentYear: string;
+  readonly act: string;
   readonly healthAndEducationCessRate: number;
   readonly newRegime: IndiaIncomeTaxRegimeRules;
   readonly oldRegime: IndiaIncomeTaxRegimeRules;

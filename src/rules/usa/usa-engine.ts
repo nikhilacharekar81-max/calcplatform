@@ -311,7 +311,8 @@ export function calculateUSRegZActuarialAPRFromTransaction(
 export interface MortgageInput {
   homePrice: number;
   downPayment: number;
-  annualRate: number;
+  annualRate?: number;
+  annualRatePercent?: number;
   termYears: number;
   propertyTaxAnnual?: number;
   homeInsuranceAnnual?: number;
@@ -364,6 +365,7 @@ export function calculateMortgage(input: MortgageInput): MortgageResult {
   const amortization = generateAmortizationSchedule({
     principal: loanAmount,
     annualRate: input.annualRate,
+    annualRatePercent: input.annualRatePercent,
     term: input.termYears,
     termUnit: "YEARS",
     frequency: input.frequency ?? "MONTHLY",
@@ -1114,6 +1116,7 @@ export function calculateUSMortgageEnhanced(
     const scheduledOnly = generateAmortizationSchedule({
       principal: base.principal,
       annualRate: input.annualRate,
+      annualRatePercent: input.annualRatePercent,
       term: input.termYears,
       termUnit: "YEARS",
       frequency: "MONTHLY",

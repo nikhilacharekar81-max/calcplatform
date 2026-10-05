@@ -35,12 +35,12 @@ export const MAHARASHTRA_STATE_RULE: StateTaxRule = {
     maxRegistrationFee: 30000,
   },
   provenance: {
-    authority: "Maharashtra State Tax Department & Inspector General of Registration",
+    authority: "Maharashtra State Tax Department (PT) & Inspector General of Registration and Stamps (IGR Maharashtra)",
     sourceUrl: "https://mahagst.gov.in/",
     effectiveFrom: "2026-04-01",
     effectiveTo: null,
     verifiedAt: "2026-10-04",
-    verifiedBy: "CalcPlatform Regulatory Audit Team",
+    verifiedBy: "Official Maharashtra PT Gazette & IGR Notification Review",
   },
 };
 
@@ -69,7 +69,7 @@ export const KARNATAKA_STATE_RULE: StateTaxRule = {
     effectiveFrom: "2025-04-01",
     effectiveTo: null,
     verifiedAt: "2026-10-04",
-    verifiedBy: "CalcPlatform Regulatory Audit Team",
+    verifiedBy: "Karnataka Commercial Taxes Notification Review",
   },
 };
 
@@ -190,7 +190,7 @@ function createDraftStateRule(code: string, name: string, authorityName = `Gover
     },
     provenance: {
       authority: authorityName,
-      sourceUrl: "https://www.incometax.gov.in/",
+      sourceUrl: "https://www.india.gov.in/",
       effectiveFrom: "2025-04-01",
       effectiveTo: null,
       verifiedAt: null,

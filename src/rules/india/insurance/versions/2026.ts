@@ -15,6 +15,7 @@ export interface IndiaInsuranceParameters {
   section10_10D: {
     maxPremiumRatioOfSumAssuredPercent: number;
     annualAggregatePremiumThresholdNonUlip: number;
+    annualAggregatePremiumThresholdUlip?: number;
     modelingDisclaimer: string;
   };
   motorIdvDepreciationPercent: Array<{

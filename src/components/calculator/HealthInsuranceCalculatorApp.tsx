@@ -132,7 +132,12 @@ export const HealthInsuranceCalculatorApp: React.FC<HealthInsuranceCalculatorApp
         peopleCoveredText: 'No members selected',
         factors: [],
         chartDataSI: [],
-        chartDataAge: []
+        chartDataAge: [],
+        total80DDeduction: 0,
+        deductionSelf: 0,
+        deductionParents: 0,
+        limitSelf: 25000,
+        limitParents: 25000
       };
     }
 

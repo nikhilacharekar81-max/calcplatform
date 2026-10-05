@@ -23,6 +23,8 @@ export interface EpfRuleParameters {
 }
 
 export interface NpsRuleParameters {
+  tier1DeductionLimit?: number;
+  additionalNpsLimit?: number;
   contributionLimits?: Readonly<Record<string, number>>;
   deductionLimits?: Readonly<Record<string, number>>;
 }

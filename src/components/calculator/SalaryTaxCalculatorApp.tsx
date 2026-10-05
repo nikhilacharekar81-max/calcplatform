@@ -1015,24 +1015,36 @@ export const SalaryTaxCalculatorApp: React.FC<SalaryTaxCalculatorAppProps> = ({
                 </div>
 
                 {/* 80D Parents */}
-                <div className="space-y-1.5">
-                  <label className="text-xs font-bold text-[#222325] flex items-center justify-between">
-                    <span>Section 80D (Parents)</span>
-                    <span className="text-[10px] text-slate-500">Max ₹25k / ₹50k Senior</span>
-                  </label>
-                  <div className="relative">
-                    <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-xs font-bold">
-                      ₹
-                    </span>
-                    <input
-                      type="number"
-                      value={inputs.sec80D_Parents || ''}
-                      onChange={(e) =>
-                        handleInputChange('sec80D_Parents', Number(e.target.value))
-                      }
-                      className="w-full pl-8 pr-3 py-2.5 bg-[#fafafa] border border-slate-200 rounded-xl text-xs font-bold text-[#222325] focus:bg-white focus:border-[#1dbf73] outline-hidden"
-                      placeholder="e.g. 25000"
-                    />
+                <div className="space-y-2">
+                  <div className="space-y-1.5">
+                    <label className="text-xs font-bold text-[#222325] flex items-center justify-between">
+                      <span>Section 80D (Parents)</span>
+                      <span className="text-[10px] text-slate-500">Max ₹25k / ₹50k Senior</span>
+                    </label>
+                    <div className="relative">
+                      <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-xs font-bold">
+                        ₹
+                      </span>
+                      <input
+                        type="number"
+                        value={inputs.sec80D_Parents || ''}
+                        onChange={(e) =>
+                          handleInputChange('sec80D_Parents', Number(e.target.value))
+                        }
+                        className="w-full pl-8 pr-3 py-2.5 bg-[#fafafa] border border-slate-200 rounded-xl text-xs font-bold text-[#222325] focus:bg-white focus:border-[#1dbf73] outline-hidden"
+                        placeholder="e.g. 25000"
+                      />
+                    </div>
+                  </div>
+                  <div className="flex items-center justify-between p-2.5 bg-slate-50 rounded-xl border border-slate-100">
+                    <span className="text-[11px] font-bold text-slate-700">Are parents senior citizens (60+)?</span>
+                    <button
+                      type="button"
+                      onClick={() => handleInputChange('parentsAreSeniors', !inputs.parentsAreSeniors)}
+                      className={`w-9 h-5 rounded-full transition-colors relative ${inputs.parentsAreSeniors ? 'bg-[#1dbf73]' : 'bg-slate-300'}`}
+                    >
+                      <div className={`absolute top-1 w-3 h-3 bg-white rounded-full transition-all ${inputs.parentsAreSeniors ? 'right-1' : 'left-1'}`} />
+                    </button>
                   </div>
                 </div>
 

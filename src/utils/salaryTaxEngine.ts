@@ -12,6 +12,7 @@ export interface SalaryTaxInputs {
 
   // 1. Income from Salary
   basicSalary: number;
+  dearnessAllowance: number;
   hraReceived: number;
   specialAllowance: number;
   ltaReceived: number;
@@ -42,6 +43,7 @@ export interface SalaryTaxInputs {
   sec80C: number; // Max ₹1,50,000 (EPF, PPF, ELSS, Life Ins, Principal, etc.)
   sec80D_SelfFamily: number; // Max ₹25,000 (or ₹50,000 if senior)
   sec80D_Parents: number; // Max ₹25,000 (or ₹50,000 if senior)
+  parentsAreSeniors: boolean;
   sec80CCD1B_NPS: number; // Max ₹50,000 self-contribution
   sec80E_EducationLoan: number; // Actual interest
   sec80G_Donations: number;
@@ -125,6 +127,7 @@ export const DEFAULT_SALARY_INPUTS: SalaryTaxInputs = {
   // Salary
   basicSalary: 900000,
   hraReceived: 180000,
+  dearnessAllowance: 0,
   specialAllowance: 120000,
   ltaReceived: 0,
   bonusVariable: 75000,
@@ -154,6 +157,7 @@ export const DEFAULT_SALARY_INPUTS: SalaryTaxInputs = {
   sec80C: 150000,
   sec80D_SelfFamily: 25000,
   sec80D_Parents: 25000,
+  parentsAreSeniors: true,
   sec80CCD1B_NPS: 50000,
   sec80E_EducationLoan: 0,
   sec80G_Donations: 0,
@@ -173,13 +177,15 @@ export const DEFAULT_SALARY_INPUTS: SalaryTaxInputs = {
  */
 export function computeHraExemption(
   basicSalary: number,
+  dearnessAllowance: number,
   hraReceived: number,
   actualRentPaid: number,
   isMetro: boolean
 ): number {
   if (hraReceived <= 0 || actualRentPaid <= 0) return 0;
-  const excessRent = Math.max(0, actualRentPaid - 0.1 * basicSalary);
-  const salaryPercentage = isMetro ? 0.5 * basicSalary : 0.4 * basicSalary;
+  const salaryForHra = basicSalary + dearnessAllowance;
+  const excessRent = Math.max(0, actualRentPaid - 0.1 * salaryForHra);
+  const salaryPercentage = isMetro ? 0.5 * salaryForHra : 0.4 * salaryForHra;
   const exemption = Math.min(hraReceived, excessRent, salaryPercentage);
   return Math.round(Math.max(0, exemption));
 }
@@ -201,6 +207,7 @@ export function computeHraExemption(
 export function computeNewTaxRegime2026(inputs: SalaryTaxInputs): RegimeTaxResult {
   const grossSalary =
     inputs.basicSalary +
+    inputs.dearnessAllowance +
     inputs.hraReceived +
     inputs.specialAllowance +
     inputs.ltaReceived +
@@ -323,11 +330,12 @@ export function computeNewTaxRegime2026(inputs: SalaryTaxInputs): RegimeTaxResul
   const totalBaseTax = baseTaxOnSlabs + specialRateTax;
 
   // Section 87A Rebate & Marginal Relief (New Regime threshold: ₹12,00,000)
+  // Eligibility check should consider Total Taxable Income (including special rates)
   let sec87aRebate = 0;
   let marginalReliefSec87A = 0;
   let taxAfterRebate = totalBaseTax;
 
-  if (slabTaxableIncome <= 1200000) {
+  if (netTaxableIncome <= 1200000) {
     // 100% rebate on base tax up to ₹60,000
     sec87aRebate = Math.min(totalBaseTax, 60000);
     taxAfterRebate = Math.max(0, totalBaseTax - sec87aRebate);
@@ -455,6 +463,7 @@ function computeBaseTaxNewRegime(taxableIncome: number): number {
 export function computeOldTaxRegime(inputs: SalaryTaxInputs): RegimeTaxResult {
   const grossSalary =
     inputs.basicSalary +
+    inputs.dearnessAllowance +
     inputs.hraReceived +
     inputs.specialAllowance +
     inputs.ltaReceived +
@@ -465,6 +474,7 @@ export function computeOldTaxRegime(inputs: SalaryTaxInputs): RegimeTaxResult {
   // HRA Exemption Sec 10(13A)
   const hraExemption = computeHraExemption(
     inputs.basicSalary,
+    inputs.dearnessAllowance,
     inputs.hraReceived,
     inputs.actualRentPaidYearly,
     inputs.isLivingInMetro
@@ -489,8 +499,15 @@ export function computeOldTaxRegime(inputs: SalaryTaxInputs): RegimeTaxResult {
   }
 
   // Other Sources
-  const savingsDeductionMax = inputs.ageCategory === 'senior' || inputs.ageCategory === 'superSenior' ? 50000 : 10000;
-  const sec80TTA_TTB = Math.min(inputs.savingsInterest, savingsDeductionMax);
+  const isSenior = inputs.ageCategory === 'senior' || inputs.ageCategory === 'superSenior';
+  const savingsDeductionMax = isSenior ? 50000 : 10000;
+  
+  // 80TTB for seniors includes FD interest; 80TTA for others only Savings interest
+  const eligibleInterestForDeduction = isSenior 
+    ? (inputs.savingsInterest + inputs.fixedDepositInterest)
+    : inputs.savingsInterest;
+    
+  const sec80TTA_TTB = Math.min(eligibleInterestForDeduction, savingsDeductionMax);
 
   const otherSourcesIncome =
     inputs.savingsInterest +
@@ -513,7 +530,7 @@ export function computeOldTaxRegime(inputs: SalaryTaxInputs): RegimeTaxResult {
   // Chapter VI-A Deductions
   const ded80C = Math.min(150000, inputs.sec80C || 0);
   const ded80D_Self = Math.min(inputs.ageCategory !== 'general' ? 50000 : 25000, inputs.sec80D_SelfFamily || 0);
-  const ded80D_Parents = Math.min(50000, inputs.sec80D_Parents || 0);
+  const ded80D_Parents = Math.min(inputs.parentsAreSeniors ? 50000 : 25000, inputs.sec80D_Parents || 0);
   const ded80CCD1B = Math.min(50000, inputs.sec80CCD1B_NPS || 0);
   const ded80E = inputs.sec80E_EducationLoan || 0;
   const ded80G = inputs.sec80G_Donations || 0;
@@ -585,7 +602,7 @@ export function computeOldTaxRegime(inputs: SalaryTaxInputs): RegimeTaxResult {
 
   // Section 87A Rebate (Old Regime threshold: ₹5,00,000)
   let sec87aRebate = 0;
-  if (slabTaxableIncome <= 500000) {
+  if (netTaxableIncome <= 500000) {
     sec87aRebate = Math.min(totalBaseTax, 12500);
   }
 

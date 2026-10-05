@@ -135,29 +135,43 @@ export const CapitalGainsCalculatorApp: React.FC = () => {
   // Allow rawCapitalGain to be negative (losses)
   const rawCapitalGain = netSaleConsideration - effectiveCoa;
 
-  // Apply Loss Set-Offs
-  let taxableStcg = shortTerm ? rawCapitalGain : 0;
-  let taxableLtcg = !shortTerm ? rawCapitalGain : 0;
+  // Current year capital gain/loss
+  const currentStcg = shortTerm ? rawCapitalGain : 0;
+  const currentLtcg = !shortTerm ? rawCapitalGain : 0;
+
+  // Taxable capital gains before brought forward loss set-offs (never negative)
+  let taxableStcg = Math.max(0, currentStcg);
+  let taxableLtcg = Math.max(0, currentLtcg);
 
   // STCL can offset both STCG and LTCG
   // LTCL can only offset LTCG
   let remainingStcl = input.broughtForwardStcl;
   let remainingLtcl = input.broughtForwardLtcl;
 
-  // Offset STCG with STCL first
-  const stcgOffset = Math.min(taxableStcg, remainingStcl);
-  taxableStcg -= stcgOffset;
-  remainingStcl -= stcgOffset;
+  let stcgOffset = 0;
+  let stcgOffsetLtcg = 0;
+  let ltclOffsetLtcg = 0;
+
+  // Offset STCG with STCL first (only if taxableStcg is positive)
+  if (taxableStcg > 0 && remainingStcl > 0) {
+    stcgOffset = Math.min(taxableStcg, remainingStcl);
+    taxableStcg -= stcgOffset;
+    remainingStcl -= stcgOffset;
+  }
 
   // Remaining STCL can offset LTCG
-  const stcgOffsetLtcg = Math.min(taxableLtcg, remainingStcl);
-  taxableLtcg -= stcgOffsetLtcg;
-  remainingStcl -= stcgOffsetLtcg;
+  if (taxableLtcg > 0 && remainingStcl > 0) {
+    stcgOffsetLtcg = Math.min(taxableLtcg, remainingStcl);
+    taxableLtcg -= stcgOffsetLtcg;
+    remainingStcl -= stcgOffsetLtcg;
+  }
 
   // LTCL offsets LTCG
-  const ltclOffsetLtcg = Math.min(taxableLtcg, remainingLtcl);
-  taxableLtcg -= ltclOffsetLtcg;
-  remainingLtcl -= ltclOffsetLtcg;
+  if (taxableLtcg > 0 && remainingLtcl > 0) {
+    ltclOffsetLtcg = Math.min(taxableLtcg, remainingLtcl);
+    taxableLtcg -= ltclOffsetLtcg;
+    remainingLtcl -= ltclOffsetLtcg;
+  }
 
   // Apply Reinvestment Exemptions (Sec 54 / 54F / 54EC)
   // Sec 54 (House): Exemption = min(Capital Gain, Investment) - Cap 10Cr
@@ -271,9 +285,10 @@ export const CapitalGainsCalculatorApp: React.FC = () => {
   const totalTaxLiability = Math.round((baseTax + surcharge + cess) / 10) * 10;
 
   // Unabsorbed Losses Carried Forward
-  // Clamping remaining losses at 0 if they were used up, else tracking negative values
-  const unabsorbedStcl = remainingStcl > 0 ? remainingStcl : (taxableStcg < 0 ? Math.abs(taxableStcg) : 0);
-  const unabsorbedLtcl = remainingLtcl > 0 ? remainingLtcl : (taxableLtcg < 0 ? Math.abs(taxableLtcg) : 0);
+  const currentYearStcl = currentStcg < 0 ? Math.abs(currentStcg) : 0;
+  const currentYearLtcl = currentLtcg < 0 ? Math.abs(currentLtcg) : 0;
+  const unabsorbedStcl = remainingStcl + currentYearStcl;
+  const unabsorbedLtcl = remainingLtcl + currentYearLtcl;
 
   const handleExportJson = () => {
     const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify({ input, summary: { netSaleConsideration, effectiveCoa, rawCapitalGain, taxableStcg, taxableLtcg, totalTaxLiability, unabsorbedStcl, unabsorbedLtcl } }, null, 2));

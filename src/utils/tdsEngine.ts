@@ -67,6 +67,19 @@ export const TDS_SECTIONS: Record<string, TdsSectionDefinition> = {
     supportsForm15GH: false,
     supportsForm13: true,
   },
+  '194IA_PROPERTY': {
+    code: '194-IA',
+    name: 'TDS on Sale of Immovable Property',
+    category: 'Property',
+    standardRate: 1,
+    thresholdAmount: 5000000,
+    thresholdType: 'single',
+    thresholdDescription: '₹50,00,000 single transaction value',
+    payeeTypes: ['Individual/HUF', 'Company/Firm', 'Any'],
+    description: '1% TDS on consideration paid for transfer of immovable property (other than agricultural land) exceeding ₹50 Lakhs.',
+    supportsForm15GH: false,
+    supportsForm13: false,
+  },
   '194C_CONTRACTOR': {
     code: '194C',
     name: 'Payments to Contractors & Sub-Contractors',
@@ -182,6 +195,7 @@ export interface TdsInputState {
   aggregatePaidTillDate: number;
   isPanFurnished: boolean;
   isSeniorCitizen: boolean; // Relevant for 194A
+  isSpecifiedPerson?: boolean; // Relevant for 194S (below turnover threshold)
   isForm15Submitted: boolean; // 15G or 15H
   hasForm13Certificate: boolean; // Lower deduction certificate
   form13Rate: number; // percentage
@@ -242,6 +256,13 @@ export function calculateTds(inputs: TdsInputState): TdsCalculationResult {
     if (inputs.isSeniorCitizen && inputs.sectionKey === '194A_INTEREST') {
       thresholdLimit = 100000; 
       notes.push('Senior Citizen threshold of ₹1,00,000 applied (applicable for Banks/Post Office).');
+    }
+  }
+
+  if (section.code === '194S') {
+    if (inputs.isSpecifiedPerson) {
+      thresholdLimit = 50000;
+      notes.push('Specified Person threshold of ₹50,000 applied (Individual/HUF below audit limits).');
     }
   }
 

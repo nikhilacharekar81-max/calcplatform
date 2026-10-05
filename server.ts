@@ -1601,6 +1601,12 @@ function getArticleFromFiles(slug: string) {
       }
     }
 
+    // Blog Index & Published Posts
+    xml += `  <url>\n    <loc>${baseUrl}/blog</loc>\n    <changefreq>daily</changefreq>\n    <priority>0.8</priority>\n  </url>\n`;
+    for (const post of (db.posts || []).filter((p) => p.status === 'published')) {
+      xml += `  <url>\n    <loc>${baseUrl}/blog/${post.slug}</loc>\n    <lastmod>${post.updatedAt || post.publishedAt || new Date().toISOString()}</lastmod>\n    <changefreq>weekly</changefreq>\n    <priority>0.7</priority>\n  </url>\n`;
+    }
+
     xml += `</urlset>`;
 
     res.header('Content-Type', 'application/xml');
@@ -2780,7 +2786,7 @@ Available dataKeys: "amortization", "regimeComparison", "compounding", "slabs".
 
 Return a structured JSON schema ordering the most impactful charts for this user's question, along with an executive summary, verdict, action points, and key metrics.`;
 
-          const modelsToTry = ['gemini-3.1-flash-lite', 'gemini-3.8-flash'];
+          const modelsToTry = ['gemini-2.5-flash', 'gemini-2.5-pro'];
           let aiResponseText: string | null = null;
 
           for (const modelName of modelsToTry) {
@@ -3263,38 +3269,6 @@ Return a structured JSON schema ordering the most impactful charts for this user
     return res.json({ success: true, message: 'Database restored successfully' });
   });
 
-  app.get('/sitemap.xml', (req: Request, res: Response) => {
-    const db = readDb();
-    const baseUrl = db.settings.canonicalBaseUrl || 'https://calcplatform.org';
-    
-    const urls = [
-      { loc: `${baseUrl}/`, changefreq: 'daily', priority: '1.0' },
-      { loc: `${baseUrl}/blog`, changefreq: 'daily', priority: '0.8' },
-    ];
-
-    // Add blog posts
-    (db.posts || []).filter(p => p.status === 'published').forEach(p => {
-      urls.push({ loc: `${baseUrl}/blog/${p.slug}`, changefreq: 'weekly', priority: '0.7' });
-    });
-
-    // Add calculators
-    (db.calculators || []).filter(c => c.isActive).forEach(c => {
-      urls.push({ loc: `${baseUrl}/${c.slug}`, changefreq: 'weekly', priority: '0.9' });
-    });
-
-    const xml = `<?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  ${urls.map(u => `
-  <url>
-    <loc>${u.loc}</loc>
-    <changefreq>${u.changefreq}</changefreq>
-    <priority>${u.priority}</priority>
-  </url>`).join('')}
-</urlset>`;
-
-    res.header('Content-Type', 'application/xml');
-    res.send(xml);
-  });
 
   // ==========================================
   // VITE / STATIC SERVING WITH SSR INITIAL DATA
