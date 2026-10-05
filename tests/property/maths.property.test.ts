@@ -47,7 +47,7 @@ export function runPropertyBasedTests(): { name: string; passed: boolean; error?
         (annualRate: number, termYears: number, principal: number) => {
           const schedule = generateAmortizationSchedule({
             principal,
-            annualRate,
+            annualRatePercent: annualRate,
             term: termYears,
             termUnit: "YEARS",
             frequency: "MONTHLY",

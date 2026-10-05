@@ -49,6 +49,7 @@ export const HealthInsuranceCalculatorApp: React.FC<HealthInsuranceCalculatorApp
   const [gender, setGender] = useState<'Male' | 'Female'>('Male');
   const [policyType, setPolicyType] = useState<'Individual' | 'Family Floater'>('Family Floater');
   const [sumInsuredValue, setSumInsuredValue] = useState<number>(1000000); // 10 Lakhs default
+  const [voluntaryDeductible, setVoluntaryDeductible] = useState<number>(0); // Percentage
   const [preExistingCondition, setPreExistingCondition] = useState<'Yes' | 'No'>('No');
 
   const [showMethodology, setShowMethodology] = useState<boolean>(false);
@@ -180,8 +181,8 @@ export const HealthInsuranceCalculatorApp: React.FC<HealthInsuranceCalculatorApp
     // --- CORRECTION 3: Uniform Location Pricing for V1 (zoneMultiplier = 1.0) ---
     const zoneMultiplier = 1.0; 
 
-    // Calculate premium with zone multiplier
-    let calculatedPremium = basePremiumResult * zoneMultiplier;
+    // Calculate premium with zone multiplier and deductible
+    let calculatedPremium = basePremiumResult * zoneMultiplier * (1 - voluntaryDeductible / 100);
 
     // --- CORRECTION 1: Removed universal 5% female discount (multiplier remains 1.0) ---
     // --- CORRECTION 2: Removed universal +25% medical loading (multiplier remains 1.0) ---
@@ -274,6 +275,44 @@ export const HealthInsuranceCalculatorApp: React.FC<HealthInsuranceCalculatorApp
     if (activeChildren > 0) membersText.push(`${activeChildren} Child${activeChildren > 1 ? 'ren' : ''}`);
     if (activeParents > 0) membersText.push(`${activeParents} Parent${activeParents > 1 ? 's' : ''}`);
 
+    // Section 80D Tax Benefit Calculation
+    const isSelfSenior = (insureSelf && ageSelf >= 60) || (insureSpouse && ageSpouse >= 60);
+    const isParentSenior = activeParents > 0 && ageOldestParent >= 60;
+
+    const limitSelf = isSelfSenior ? 50000 : 25000;
+    const limitParents = isParentSenior ? 50000 : 25000;
+
+    // Logic for benefit: premium paid up to the limit
+    // If it's a floater, the premium is combined for Self+Spouse+Kids
+    // Parents are separate in the engine calculation
+    let premiumSelfFamily = 0;
+    let premiumParents = 0;
+
+    if (policyType === 'Individual') {
+      let selfPrem = insureSelf ? getBasePremiumForAge(ageSelf) : 0;
+      let spousePrem = insureSpouse ? getBasePremiumForAge(ageSpouse) : 0;
+      let childPrem = activeChildren * 3000;
+      premiumSelfFamily = (selfPrem + spousePrem + childPrem) * siMultiplier;
+      premiumParents = (activeParents * getBasePremiumForAge(ageOldestParent)) * siMultiplier;
+    } else {
+      let floaterAdultFactor = 1.0;
+      if (activeAdults === 2) floaterAdultFactor = 1.5;
+      let floaterChildFactor = activeChildren * 0.3;
+      const primaryOldestAge = insureSelf || insureSpouse ? Math.max(insureSelf ? ageSelf : 0, insureSpouse ? ageSpouse : 0) : ageOldestChild;
+      const primaryBase = getBasePremiumForAge(primaryOldestAge);
+      premiumSelfFamily = primaryBase * (floaterAdultFactor + floaterChildFactor) * siMultiplier;
+
+      if (activeParents > 0) {
+        const parentBase = getBasePremiumForAge(ageOldestParent);
+        const parentFloaterFactor = activeParents === 2 ? 1.6 : 1.0;
+        premiumParents = parentBase * parentFloaterFactor * siMultiplier * 1.1;
+      }
+    }
+
+    const deductionSelf = Math.min(premiumSelfFamily, limitSelf);
+    const deductionParents = Math.min(premiumParents, limitParents);
+    const total80DDeduction = deductionSelf + deductionParents;
+
     return {
       annualPremium,
       monthlyEquivalent,
@@ -281,7 +320,12 @@ export const HealthInsuranceCalculatorApp: React.FC<HealthInsuranceCalculatorApp
       peopleCoveredText: membersText.join(' + '),
       factors,
       chartDataSI,
-      chartDataAge
+      chartDataAge,
+      total80DDeduction,
+      deductionSelf,
+      deductionParents,
+      limitSelf,
+      limitParents
     };
   }, [
     insureSelf,
@@ -555,14 +599,11 @@ export const HealthInsuranceCalculatorApp: React.FC<HealthInsuranceCalculatorApp
             />
 
             <AccessibleSummaryCard
-              id="card-premium-range"
-              title="Estimated Premium Range"
-              value={
-                calculation.annualPremium > 0
-                  ? `${formatShort(Math.round(calculation.annualPremium * 0.9))} – ${formatShort(Math.round(calculation.annualPremium * 1.15))}`
-                  : '₹0'
-              }
-              formattedSubtitle="Varies by provider & riders"
+              id="card-80d-benefit"
+              title="Sec 80D Tax Benefit"
+              value={formatINR(calculation.total80DDeduction)}
+              formattedSubtitle={`Max Limit: ${formatINR(calculation.limitSelf + calculation.limitParents)}`}
+              statusType="success"
             />
           </div>
 

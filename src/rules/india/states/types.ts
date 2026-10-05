@@ -15,6 +15,8 @@ export interface StateTaxRuleParameters {
     monthlySalaryAbove: number;
     monthlyTax: number;
     specialMonthTax?: { month: number; tax: number };
+    femaleExemption?: boolean;
+    femaleExemptionThreshold?: number;
   }>;
   stampDutySchedule?: Array<{
     category: "male" | "female" | "joint" | "general";

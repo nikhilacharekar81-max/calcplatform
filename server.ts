@@ -1168,28 +1168,7 @@ function getArticleFromFiles(slug: string) {
 
         const subcategory = matchSubcategory(p1, category.id);
         if (subcategory) {
-          // If subcategory has a primary matching calculator with slug matching subcategory,
-          // but only short-circuit to it if there is only 1 active calculator under this subcategory.
-          const subCalcs = db.calculators.filter((c) => c.subcategoryId === subcategory.id && c.isActive);
-          const matchingCalc = subCalcs.length <= 1
-            ? subCalcs.find(
-                (c) =>
-                  cleanPathSlug(c.slug) === cleanPathSlug(p1) ||
-                  cleanPathSlug(c.slug) === `${cleanPathSlug(p1)}-calculator`
-              )
-            : null;
-          if (matchingCalc) {
-            matchingCalc.viewsCount = (matchingCalc.viewsCount || 0) + 1;
-            return {
-              type: 'calculator',
-              category,
-              subcategory,
-              calculator: matchingCalc,
-              relatedCalculators: db.calculators
-                .filter((c) => c.subcategoryId === subcategory.id && c.id !== matchingCalc.id && c.isActive)
-                .slice(0, 6),
-            };
-          }
+          // No calculator short-circuiting here; always show the subcategory listing.
 
           const calculators = db.calculators
             .filter((c) => c.subcategoryId === subcategory.id && c.isActive)

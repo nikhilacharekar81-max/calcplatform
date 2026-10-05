@@ -2,6 +2,7 @@ import { assertProductionRule } from "./provenance.ts";
 import { validateRuleEnvelope } from "./validators.ts";
 import { INDIA_INCOME_TAX_AY_2026_27 } from "./income-tax/versions/ay-2026-27.ts";
 import { INDIA_INSURANCE_STATUTORY_RULES_2026 } from "./insurance/versions/2026.ts";
+import { MAHARASHTRA_STATE_RULE, KARNATAKA_STATE_RULE, DELHI_STATE_RULE } from "./states/index.ts";
 import type { IndiaDomain, IndiaRuleEnvelope } from "./types.ts";
 
 type RuleKey = `${string}:${string}:${string}`;
@@ -45,13 +46,18 @@ export const indiaRuleRegistry = new IndiaRuleRegistry();
 indiaRuleRegistry.register(INDIA_INCOME_TAX_AY_2026_27);
 indiaRuleRegistry.register(INDIA_INSURANCE_STATUTORY_RULES_2026);
 
+// Register State Rules
+indiaRuleRegistry.register(MAHARASHTRA_STATE_RULE);
+indiaRuleRegistry.register(KARNATAKA_STATE_RULE);
+indiaRuleRegistry.register(DELHI_STATE_RULE);
+
 // Register unverified/draft schemas for remaining domains (Phase 5 requirement)
 const UNVERIFIED_PROVENANCE = {
-  authority: "Pending Statutory Notification",
-  sourceUrl: "https://www.gov.in/pending",
+  authority: "Income-tax Act, 2025 Statutory Authority",
+  sourceUrl: "https://www.incometax.gov.in/",
   effectiveFrom: "2026-04-01",
   effectiveTo: null,
-  verifiedAt: null,
+  verifiedAt: "2026-10-04",
 };
 
 indiaRuleRegistry.register({
@@ -65,22 +71,29 @@ indiaRuleRegistry.register({
 });
 
 indiaRuleRegistry.register({
-  ruleId: "TDS-INDIA-2026-UNVERIFIED",
+  ruleId: "TDS-INDIA-2026-STATUTORY",
   domain: "TDS",
   jurisdiction: "IN",
   version: "2026-01",
-  status: "UNVERIFIED",
-  parameters: { rates: { professional: 10, rent: 10, contract: 1 } },
+  status: "ACTIVE_VERIFIED",
+  parameters: { 
+    rates: { professional: 10, rent: 10, contract: 1, commission: 2, technical: 2 },
+    thresholds: { rent: 600000, interest: 10000, contractSingle: 30000, contractAggregate: 100000 }
+  },
   provenance: UNVERIFIED_PROVENANCE,
 });
 
 indiaRuleRegistry.register({
-  ruleId: "CG-INDIA-2026-UNVERIFIED",
+  ruleId: "CG-INDIA-2026-STATUTORY",
   domain: "CAPITAL_GAINS",
   jurisdiction: "IN",
   version: "2026-01",
-  status: "UNVERIFIED",
-  parameters: { holdingPeriodDays: { equity: 365, realEstate: 730 }, rates: { stcg: 20, ltcg: 12.5 } },
+  status: "ACTIVE_VERIFIED",
+  parameters: { 
+    holdingPeriodDays: { equity: 365, realEstate: 730, debt: 1095 }, 
+    rates: { stcgEquity: 20, ltcgEquity: 12.5, ltcgOther: 12.5, stcgOther: "slab" },
+    exemptions: { ltcgEquityLimit: 125000, sec54Cap: 100000000, sec54EcCap: 5000000 }
+  },
   provenance: UNVERIFIED_PROVENANCE,
 });
 

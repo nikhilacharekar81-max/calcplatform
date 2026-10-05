@@ -2244,7 +2244,7 @@ export function runUSRegressionSuite(): {
     check("2026 IRA limit", US_RETIREMENT_2026.iraContributionLimit === 7500);
     check("2026 SS wage base", US_PAYROLL_2026.socialSecurityWageBase === 184500);
     check("2026 RMD age 73 denominator", calculateUSRMD(73, 26500).distributionPeriod === 26.5);
-    check("Mortgage payment positive", calculateUSMortgageEnhanced({ homePrice: 400000, downPayment: 80000, annualRate: 6, termYears: 30 }).monthlyPrincipalAndInterest > 0);
+    check("Mortgage payment positive", calculateUSMortgageEnhanced({ homePrice: 400000, downPayment: 80000, annualRatePercent: 6, termYears: 30 }).monthlyPrincipalAndInterest > 0);
     check("Federal tax nonnegative", calculateUSFederalIncomeTax({ filingStatus: "SINGLE", grossIncome: 100000 }).federalIncomeTax >= 0);
     check("FICA wage cap", calculateUSPayrollTaxes({ wages: 1000000 }).socialSecurity === 184500 * 0.062);
     check("APR solver", Math.abs(calculateUSAPRFromCashFlows({ amountFinanced: 1000, cashFlows: [{ period: 1, amount: 1000 }], periodsPerYear: 12 }).root) < 1e-12);
@@ -2263,29 +2263,29 @@ export function runUSRegressionSuite(): {
     const pmi = calculateUSMortgageEnhanced({
       homePrice: 400000,
       downPayment: 40000,
-      annualRate: 6,
+      annualRatePercent: 6,
       termYears: 30,
       pmiAnnual: 4800
     });
     check("PMI termination uses original value", (pmi.pmiAutomaticTerminationPeriod ?? Infinity) < 360);
     check("PMI total is finite", Number.isFinite(pmi.totalPMIPaid));
     check("Money cents conversion", Money.from("123.456").toCents() === 12346n);
-    const zeroLoan = generateAmortizationSchedule({ principal: 1000, annualRate: 0, term: 12, termUnit: "PERIODS", frequency: "MONTHLY" });
+    const zeroLoan = generateAmortizationSchedule({ principal: 1000, annualRatePercent: 0, term: 12, termUnit: "PERIODS", frequency: "MONTHLY" });
     check("Zero-rate loan pays exact principal", Math.abs(zeroLoan.totalPrincipal - 1000) < 1e-10);
-    const negativeLoan = generateAmortizationSchedule({ principal: 1000, annualRate: -1, term: 12, termUnit: "PERIODS", frequency: "MONTHLY" });
+    const negativeLoan = generateAmortizationSchedule({ principal: 1000, annualRatePercent: -1, term: 12, termUnit: "PERIODS", frequency: "MONTHLY" });
     check("Negative-rate loan supported", negativeLoan.totalPrincipal > 999);
     const leapFraction = dayCountFraction("2024-02-29", "2025-02-28", "ACTUAL_ACTUAL");
     check("Leap-year day count is exact-year-aware", Math.abs(leapFraction - (307 / 366 + 58 / 365)) < 1e-12);
-    const fortyYear = generateAmortizationSchedule({ principal: 100000, annualRate: 6, term: 40, termUnit: "YEARS", frequency: "MONTHLY" });
+    const fortyYear = generateAmortizationSchedule({ principal: 100000, annualRatePercent: 6, term: 40, termUnit: "YEARS", frequency: "MONTHLY" });
     check("40-year mortgage has 480 periods", fortyYear.periods === 480);
-    const weekly = generateAmortizationSchedule({ principal: 1000, annualRate: 0, term: 52, termUnit: "PERIODS", frequency: "WEEKLY" });
+    const weekly = generateAmortizationSchedule({ principal: 1000, annualRatePercent: 0, term: 52, termUnit: "PERIODS", frequency: "WEEKLY" });
     check("Weekly zero-rate loan", Math.abs(weekly.totalPrincipal - 1000) < 1e-8);
-    const drift = generateAmortizationSchedule({ principal: 400000, annualRate: 6, term: 30, termUnit: "YEARS", frequency: "MONTHLY", settlementRounding: { mode: "HALF_UP", scale: 2 } });
+    const drift = generateAmortizationSchedule({ principal: 400000, annualRatePercent: 6, term: 30, termUnit: "YEARS", frequency: "MONTHLY", settlementRounding: { mode: "HALF_UP", scale: 2 } });
     check("360-period principal settles exactly", Math.abs(drift.totalPrincipal - 400000) < 1e-9);
     check("Rounded rows reconcile principal", Math.abs(drift.rows.reduce((sum, row) => sum + row.principal, 0) - 400000) < 1e-9);
     check("Rounded rows reconcile payments", Math.abs(drift.rows.reduce((sum, row) => sum + row.scheduledPayment + row.extraPayment, 0) - drift.totalPayments) < 1e-7);
-    const pmiExtra = calculateUSMortgageEnhanced({ homePrice: 400000, downPayment: 40000, annualRate: 6, termYears: 30, pmiAnnual: 4800, extraMonthlyPayment: 200 });
-    const pmiScheduled = calculateUSMortgageEnhanced({ homePrice: 400000, downPayment: 40000, annualRate: 6, termYears: 30, pmiAnnual: 4800 });
+    const pmiExtra = calculateUSMortgageEnhanced({ homePrice: 400000, downPayment: 40000, annualRatePercent: 6, termYears: 30, pmiAnnual: 4800, extraMonthlyPayment: 200 });
+    const pmiScheduled = calculateUSMortgageEnhanced({ homePrice: 400000, downPayment: 40000, annualRatePercent: 6, termYears: 30, pmiAnnual: 4800 });
     check("PMI automatic termination ignores extra payments", pmiExtra.pmiAutomaticTerminationPeriod === pmiScheduled.pmiAutomaticTerminationPeriod);
     check("Vehicle phaseout uses $200 per $1,000", calculateUS2026AdditionalDeductions({ filingStatus: "SINGLE", modifiedAGI: 101000, qualifiedPassengerVehicleInterest: 10000 }).vehicleInterestDeduction === 9800);
     check("Date parser rejects ambiguous locale strings", (() => { try { toDate("01/02/2026"); return false; } catch (e: any) { return e instanceof CalculationError && e.code === "AMBIGUOUS_DATE"; } })());

@@ -80,7 +80,7 @@ export const HraCalculatorApp: React.FC = () => {
         <div className="space-y-3 max-w-2xl">
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#1dbf73]/20 text-[#1dbf73] text-xs font-bold uppercase tracking-wider border border-[#1dbf73]/30">
             <Home className="w-4 h-4" />
-            <span>Section 10(13A) &bull; FY 2026-27</span>
+            <span>Section 10(13A) &bull; Income-tax Act, 2025</span>
           </div>
           <h1 className="text-2xl sm:text-4xl font-black tracking-tight">
             House Rent Allowance (HRA) Calculator
@@ -238,7 +238,7 @@ export const HraCalculatorApp: React.FC = () => {
                 </button>
               </div>
               <p className="text-[11px] text-slate-400 mt-1">
-                Metro cities include Mumbai, Delhi, Kolkata, and Chennai.
+                Metro cities include Mumbai, Delhi, Kolkata, Chennai, Bengaluru, Hyderabad, Pune, and Ahmedabad.
               </p>
             </div>
           </div>

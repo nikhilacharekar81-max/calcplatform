@@ -46,9 +46,9 @@ export const TDS_SECTIONS: Record<string, TdsSectionDefinition> = {
     name: 'Rent on Land, Building, or Furniture',
     category: 'Rent',
     standardRate: 10,
-    thresholdAmount: 240000, // or ₹50,000/month for non-audit individual (194IB)
+    thresholdAmount: 600000, // or ₹50,000/month for non-audit individual (194IB)
     thresholdType: 'annual',
-    thresholdDescription: '₹2,40,000 per financial year (or ₹50,000/month under 194-IB)',
+    thresholdDescription: '₹6,00,000 per financial year (or ₹50,000/month under 194-IB)',
     payeeTypes: ['Individual/HUF', 'Company/Firm', 'Any'],
     description: 'Rent paid for use of land, commercial or residential building, or factory building including furniture and fittings.',
     supportsForm15GH: false,
@@ -59,9 +59,9 @@ export const TDS_SECTIONS: Record<string, TdsSectionDefinition> = {
     name: 'Rent on Plant, Machinery, or Equipment',
     category: 'Rent',
     standardRate: 2,
-    thresholdAmount: 240000,
+    thresholdAmount: 600000,
     thresholdType: 'annual',
-    thresholdDescription: '₹2,40,000 per financial year',
+    thresholdDescription: '₹6,00,000 per financial year',
     payeeTypes: ['Individual/HUF', 'Company/Firm', 'Any'],
     description: 'Rent paid for the lease or hire of plant, machinery, heavy equipment, or commercial vehicles.',
     supportsForm15GH: false,
@@ -100,9 +100,9 @@ export const TDS_SECTIONS: Record<string, TdsSectionDefinition> = {
     name: 'Interest other than Interest on Securities (FD, NBFC, Loan)',
     category: 'Interest',
     standardRate: 10,
-    thresholdAmount: 50000, // ₹50,000 regular bank, ₹1,00,000 senior citizen, ₹5,000 non-banking
+    thresholdAmount: 10000, // ₹10,000 regular, ₹1,00,000 senior citizen
     thresholdType: 'annual',
-    thresholdDescription: '₹50,000 (regular) or ₹1,00,000 (Senior Citizen) for Banks/Co-op; ₹5,000 for others',
+    thresholdDescription: '₹10,000 (regular) or ₹1,00,000 (Senior Citizen) for Banks/Co-op',
     payeeTypes: ['Individual/HUF', 'Company/Firm', 'Any'],
     description: 'Interest paid by banks, co-operative societies, or private firms on fixed deposits, recurring deposits, or unsecured loans.',
     supportsForm15GH: true,
@@ -236,9 +236,12 @@ export function calculateTds(inputs: TdsInputState): TdsCalculationResult {
   // Determine Threshold Limit
   let thresholdLimit = section.thresholdAmount;
   if (section.code === '194A') {
-    if (inputs.isSeniorCitizen) {
-      thresholdLimit = 100000; // ₹1,00,000 for Senior Citizens in banks
-      notes.push('Senior Citizen threshold of ₹1,00,000 applied under Section 194A.');
+    // Note: ₹1,00,000 limit only applies to Banks, Co-operatives, and Post Offices.
+    // Private firms/NBFCs usually have lower limits (standard 10k/40k).
+    // Our section key '194A_INTEREST' covers bank-like payers.
+    if (inputs.isSeniorCitizen && inputs.sectionKey === '194A_INTEREST') {
+      thresholdLimit = 100000; 
+      notes.push('Senior Citizen threshold of ₹1,00,000 applied (applicable for Banks/Post Office).');
     }
   }
 
@@ -262,9 +265,22 @@ export function calculateTds(inputs: TdsInputState): TdsCalculationResult {
     }
   } else if (section.code === '194C') {
     // Single bill > ₹30,000 or Aggregate > ₹1,00,000
-    if (inputs.grossAmount > 30000 || totalCumulativeAmount > 100000) {
+    const singleThreshold = 30000;
+    const aggregateThreshold = 100000;
+
+    if (inputs.grossAmount > singleThreshold) {
       isThresholdCrossed = true;
       taxableBaseAmount = inputs.grossAmount;
+      notes.push(`Single invoice threshold of ₹30,000 exceeded.`);
+    } else if (totalCumulativeAmount > aggregateThreshold) {
+      isThresholdCrossed = true;
+      if ((inputs.aggregatePaidTillDate || 0) <= aggregateThreshold) {
+        // First time crossing aggregate limit: tax the whole year's payments
+        taxableBaseAmount = totalCumulativeAmount;
+        notes.push(`Aggregate annual threshold of ₹1,00,000 exceeded. Catch-up TDS applied on total payments of ₹${totalCumulativeAmount.toLocaleString('en-IN')}.`);
+      } else {
+        taxableBaseAmount = inputs.grossAmount;
+      }
     } else {
       isThresholdCrossed = false;
       taxableBaseAmount = 0;
@@ -273,7 +289,16 @@ export function calculateTds(inputs: TdsInputState): TdsCalculationResult {
     // Standard annual or single limit
     if (totalCumulativeAmount > thresholdLimit) {
       isThresholdCrossed = true;
-      taxableBaseAmount = inputs.grossAmount;
+      // If it's the first time crossing the threshold, the taxable base should be the 
+      // entire cumulative amount (catch-up), provided previous payments were below threshold.
+      // However, if previous payments were already above threshold (aggregatePaidTillDate > thresholdLimit),
+      // then we only tax the current gross amount.
+      if ((inputs.aggregatePaidTillDate || 0) <= thresholdLimit) {
+        taxableBaseAmount = totalCumulativeAmount;
+        notes.push(`Annual threshold of ₹${thresholdLimit.toLocaleString('en-IN')} crossed. TDS applied on total cumulative payment of ₹${totalCumulativeAmount.toLocaleString('en-IN')}.`);
+      } else {
+        taxableBaseAmount = inputs.grossAmount;
+      }
     } else {
       isThresholdCrossed = false;
       taxableBaseAmount = 0;

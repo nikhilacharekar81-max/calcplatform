@@ -21,7 +21,7 @@ export interface PersonalAccidentResult {
 export function calculatePersonalAccidentCover(input: PersonalAccidentInput): PersonalAccidentResult {
   const income = Math.max(0, input.annualEarnedIncome);
   const debts = Math.max(0, input.outstandingDebts || 0);
-  const multipleYears = input.incomeMultipleYears || 10;
+  const multipleYears = input.incomeMultipleYears !== undefined ? input.incomeMultipleYears : 10;
 
   // Accidental Death Sum Insured = (10x Annual Income) + Outstanding Debts
   const deathCoverNeeded = income * multipleYears + debts;
@@ -30,8 +30,9 @@ export function calculatePersonalAccidentCover(input: PersonalAccidentInput): Pe
   // Permanent Total Disability Cover = 125% of Death Sum Insured
   const disabilityCover = Math.ceil((deathCover * 1.25) / 500000) * 500000;
 
-  // Weekly Benefit for Temporary Total Disability = 1% of Sum Insured capped at ₹10,000/week
-  const weeklyBenefit = Math.min(10000, roundMoney(deathCover * 0.01));
+  // Weekly Benefit for Temporary Total Disability = 1% of Sum Insured capped at ₹10,000/week OR weekly income
+  const weeklyIncome = income / 52;
+  const weeklyBenefit = Math.min(10000, weeklyIncome, roundMoney(deathCover * 0.01));
 
   return {
     recommendedAccidentalDeathCover: deathCover,
@@ -62,14 +63,14 @@ export interface CriticalIllnessResult {
  */
 export function calculateCriticalIllnessCover(input: CriticalIllnessInput): CriticalIllnessResult {
   const expenses = Math.max(0, input.annualLivingExpenses);
-  const replacementYears = input.yearsOfIncomeReplacementNeeded || 3; // Standard 3-year recovery buffer
+  const replacementYears = input.yearsOfIncomeReplacementNeeded !== undefined ? input.yearsOfIncomeReplacementNeeded : 3;
 
-  const treatmentCost = input.expectedSpecializedTreatmentCost || 1500000; // Average cancer/cardiac specialized treatment cost
+  const treatmentCost = input.expectedSpecializedTreatmentCost !== undefined ? input.expectedSpecializedTreatmentCost : 1500000;
   const existingCover = Math.max(0, input.existingHealthInsuranceCover || 0);
 
   const incomeReplacementNeed = expenses * replacementYears;
-  const totalNeed = incomeReplacementNeed + treatmentCost;
-  const netGap = Math.max(0, totalNeed - existingCover);
+  const treatmentGap = Math.max(0, treatmentCost - existingCover);
+  const netGap = incomeReplacementNeed + treatmentGap;
 
   const recommendedLumpSum = Math.ceil(netGap / 500000) * 500000;
 

@@ -56,15 +56,16 @@ function ensureRuleRegistered(registry: IndiaRuleRegistry): void {
   }
 }
 
-function ageBand(age: number): IndiaTaxpayerAgeBand {
+function ageBand(age: number, resident: boolean): IndiaTaxpayerAgeBand {
   if (!Number.isFinite(age) || age < 0) throw new Error("age must be >= 0");
+  if (!resident) return "BELOW_60"; // Senior slabs only apply to residents
   if (age >= 80) return "80_PLUS";
   if (age >= 60) return "60_TO_79";
   return "BELOW_60";
 }
 
 function roundRupee(value: number): number {
-  return Math.round((value + Number.EPSILON) * 100) / 100;
+  return Math.round(value / 10) * 10;
 }
 
 function surchargeRate(income: number, thresholds: IndiaIncomeTaxAY2026_27Parameters["newRegime"]["surcharge"]): number {
@@ -97,12 +98,12 @@ function calculateSurchargeAndRelief(
   if (threshold === 0) return { surcharge: rawSurcharge, marginalRelief: 0 };
 
   const taxAtThreshold = taxAtIncome(threshold, slabs);
-  const maximumWithRelief = taxAtThreshold + (taxableIncome - threshold);
+  const rateAtThreshold = surchargeRate(threshold, regimeRules.surcharge);
+  const surchargeAtThreshold = taxAtThreshold * rateAtThreshold / 100;
+  
+  const maximumWithRelief = (taxAtThreshold + surchargeAtThreshold) + Math.max(0, taxableIncome - threshold);
   const taxPlusSurcharge = baseTax + rawSurcharge;
-  const marginalRelief = Math.min(
-    rawSurcharge,
-    Math.max(0, taxPlusSurcharge - maximumWithRelief),
-  );
+  const marginalRelief = Math.max(0, taxPlusSurcharge - maximumWithRelief);
 
   return {
     surcharge: Math.max(0, rawSurcharge - marginalRelief),
@@ -140,7 +141,7 @@ export function calculateIndiaIncomeTax(
   });
 
   const rules = input.regime === "NEW" ? rule.parameters.newRegime : rule.parameters.oldRegime;
-  const slabs = rules.slabs[ageBand(input.age ?? 30)];
+  const slabs = rules.slabs[ageBand(input.age ?? 30, input.resident ?? true)];
   const standardDeduction = Math.min(rules.standardDeduction, salaryIncome);
   const taxableIncome = Math.max(0, input.grossIncome - standardDeduction - (input.regime === "OLD" ? additionalDeductions : 0));
   const incomeTaxBeforeRebate = taxAtIncome(taxableIncome, slabs);
@@ -150,14 +151,28 @@ export function calculateIndiaIncomeTax(
     : 0;
 
   const taxAfterRebate = Math.max(0, incomeTaxBeforeRebate - rebate87A);
-  const { surcharge, marginalRelief } = calculateSurchargeAndRelief(
+
+  // New Regime Marginal Relief for Rebate Boundary (Sec 87A transition)
+  // If taxable income > 12L (per rules), tax cannot exceed (Taxable Income - 12L)
+  let taxAfterRebateRelief = taxAfterRebate;
+  if (input.regime === "NEW" && taxableIncome > rules.rebate87A.taxableIncomeLimit) {
+    const excessIncome = taxableIncome - rules.rebate87A.taxableIncomeLimit;
+    if (taxAfterRebate > excessIncome) {
+      taxAfterRebateRelief = excessIncome;
+    }
+  }
+
+  const { surcharge, marginalRelief: surchargeMarginalRelief } = calculateSurchargeAndRelief(
     taxableIncome,
-    taxAfterRebate,
+    taxAfterRebateRelief,
     rules,
     slabs,
   );
-  const healthAndEducationCess = (taxAfterRebate + surcharge) * rule.parameters.healthAndEducationCessRate / 100;
-  const totalTax = roundRupee(taxAfterRebate + surcharge + healthAndEducationCess);
+  const healthAndEducationCess = (taxAfterRebateRelief + surcharge) * rule.parameters.healthAndEducationCessRate / 100;
+  const totalTax = roundRupee(taxAfterRebateRelief + surcharge + healthAndEducationCess);
+
+  // Total marginal relief is sum of rebate-boundary relief and surcharge relief
+  const totalMarginalRelief = (taxAfterRebate - taxAfterRebateRelief) + surchargeMarginalRelief;
 
   return {
     assessmentYear: "AY-2026-27",
@@ -168,12 +183,12 @@ export function calculateIndiaIncomeTax(
     taxableIncome: roundRupee(taxableIncome),
     incomeTaxBeforeRebate: roundRupee(incomeTaxBeforeRebate),
     rebate87A: roundRupee(rebate87A),
-    taxAfterRebate: roundRupee(taxAfterRebate),
+    taxAfterRebate: roundRupee(taxAfterRebateRelief),
     surcharge: roundRupee(surcharge),
-    marginalRelief: roundRupee(marginalRelief),
+    marginalRelief: roundRupee(totalMarginalRelief),
     healthAndEducationCess: roundRupee(healthAndEducationCess),
     totalTax,
-    effectiveTaxRatePercent: input.grossIncome === 0 ? 0 : roundRupee(totalTax / input.grossIncome * 100),
+    effectiveTaxRatePercent: input.grossIncome === 0 ? 0 : Number((totalTax / input.grossIncome * 100).toFixed(2)),
     totalTaxFormatted: formatIndianCurrency(totalTax),
   };
 }

@@ -84,7 +84,8 @@ export const TermInsuranceCalculatorApp: React.FC<TermInsuranceCalculatorAppProp
     age,
     retirementAge,
     annualIncome,
-    annualPersonalExpenses: Math.max(0, annualIncome - (monthlyExpenses * 12)),
+    annualIncome,
+    personalExpensesPercent: 30, // Using standard 30% personal expense assumption for HLV
     expectedIncomeGrowth: 8.0,
     inflationRate,
     investmentReturn,

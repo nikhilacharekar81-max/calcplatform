@@ -1887,9 +1887,7 @@ export function generateAmortizationSchedule(
   assertNonNegative(input.principal, "principal");
   const rateDecimal = input.annualRatePercent !== undefined
     ? percentToDecimal(input.annualRatePercent)
-    : input.annualRate !== undefined
-    ? (input.annualRate > 1 ? percentToDecimal(input.annualRate) : input.annualRate)
-    : 0;
+    : (input.annualRate ?? 0);
   assertFinite(rateDecimal, "annualRate");
 
   const frequency = input.frequency ?? "MONTHLY";
@@ -2254,8 +2252,8 @@ export function calculateInvestment(
       cumulativeContributions: totalContributions
     });
 
-    if (growthRateDecimal !== undefined) {
-      contribution *= 1 + growthRateDecimal / periods;
+    if (growthRateDecimal !== undefined && period % periods === 0) {
+      contribution *= 1 + growthRateDecimal;
     }
   }
 
@@ -4073,7 +4071,7 @@ export function runRegressionSuite(): {
       run: () => {
         const result = generateAmortizationSchedule({
           principal: 100000,
-          annualRate: 6,
+          annualRatePercent: 6,
           term: 30,
           termUnit: "YEARS",
           frequency: "MONTHLY"

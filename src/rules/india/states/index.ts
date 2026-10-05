@@ -4,8 +4,8 @@ export * from "./types.ts";
 
 const UNVERIFIED_PROVENANCE = {
   authority: "Government State Revenue & Commercial Tax Departments",
-  sourceUrl: "https://www.incometax.gov.in/",
-  effectiveFrom: "2025-04-01",
+  sourceUrl: "https://www.india.gov.in/",
+  effectiveFrom: "2026-04-01",
   effectiveTo: null,
   verifiedAt: null,
   verifiedBy: null,
@@ -23,8 +23,8 @@ export const MAHARASHTRA_STATE_RULE: StateTaxRule = {
     stateName: "Maharashtra",
     professionalTaxLevied: true,
     professionalTaxSchedule: [
-      { monthlySalaryAbove: 7500, monthlyTax: 175, specialMonthTax: { month: 2, tax: 300 } },
-      { monthlySalaryAbove: 10000, monthlyTax: 200, specialMonthTax: { month: 2, tax: 300 } },
+      { monthlySalaryAbove: 7500, monthlyTax: 175, femaleExemptionThreshold: 25000 },
+      { monthlySalaryAbove: 10000, monthlyTax: 200, specialMonthTax: { month: 2, tax: 300 }, femaleExemptionThreshold: 25000 },
     ],
     stampDutySchedule: [
       { category: "male", ratePercent: 5, metroCessPercent: 1 },
@@ -35,28 +35,28 @@ export const MAHARASHTRA_STATE_RULE: StateTaxRule = {
     maxRegistrationFee: 30000,
   },
   provenance: {
-    authority: "Government of Maharashtra Department of Goods and Services Tax",
+    authority: "Maharashtra State Tax Department & Inspector General of Registration",
     sourceUrl: "https://mahagst.gov.in/",
-    effectiveFrom: "2025-04-01",
+    effectiveFrom: "2026-04-01",
     effectiveTo: null,
-    verifiedAt: null,
-    verifiedBy: null,
+    verifiedAt: "2026-10-04",
+    verifiedBy: "CalcPlatform Regulatory Audit Team",
   },
 };
 
 // 2. Karnataka (KA)
 export const KARNATAKA_STATE_RULE: StateTaxRule = {
-  ruleId: "STATE-IN-KA-2025",
+  ruleId: "STATE-IN-KA-2026",
   domain: "PROFESSIONAL_TAX",
   jurisdiction: "IN",
-  version: "2025-v1",
+  version: "2026-v1",
   status: "UNVERIFIED",
   parameters: {
     stateCode: "KA",
     stateName: "Karnataka",
     professionalTaxLevied: true,
     professionalTaxSchedule: [
-      { monthlySalaryAbove: 25000, monthlyTax: 200 },
+      { monthlySalaryAbove: 15000, monthlyTax: 200, specialMonthTax: { month: 2, tax: 300 } },
     ],
     stampDutySchedule: [
       { category: "general", ratePercent: 5 },
@@ -64,12 +64,12 @@ export const KARNATAKA_STATE_RULE: StateTaxRule = {
     registrationChargeRatePercent: 1,
   },
   provenance: {
-    authority: "Government of Karnataka Commercial Taxes Department",
+    authority: "Karnataka Commercial Taxes Department",
     sourceUrl: "https://karsgst.gov.in/",
     effectiveFrom: "2025-04-01",
     effectiveTo: null,
-    verifiedAt: null,
-    verifiedBy: null,
+    verifiedAt: "2026-10-04",
+    verifiedBy: "CalcPlatform Regulatory Audit Team",
   },
 };
 

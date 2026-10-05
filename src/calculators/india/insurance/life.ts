@@ -263,7 +263,8 @@ export function calculateLifeInsuranceNeeds(input: LifeNeedsInput): LifeNeedsRes
   } else if (input.monthlyExpenses !== undefined && input.monthlyExpenses !== null) {
     expenses = Math.max(0, input.monthlyExpenses * 12);
   } else if (annualIncome > 0) {
-    expenses = Math.max(0, annualIncome * 0.6);
+    // Default to 0 if not provided, or a very minimal baseline
+    expenses = 0;
   }
 
   const years = Math.max(1, input.yearsOfSupportNeeded || workingYears);
@@ -279,7 +280,7 @@ export function calculateLifeInsuranceNeeds(input: LifeNeedsInput): LifeNeedsRes
 
   const homeLoan = Math.max(0, input.homeLoan ?? 0);
   const otherDebts = Math.max(0, input.otherDebts ?? input.loans ?? input.totalDebts ?? 0);
-  const emergencyExpenses = Math.max(0, input.finalEmergencyExpenses ?? 500000);
+  const emergencyExpenses = Math.max(0, input.finalEmergencyExpenses ?? 0);
 
   const savings = Math.max(0, input.savings || 0);
   const investments = Math.max(0, input.investments || 0);
@@ -307,9 +308,10 @@ export function calculateLifeInsuranceNeeds(input: LifeNeedsInput): LifeNeedsRes
   const incomeMultipleMethod = Math.ceil((annualIncome * 10) / 100000) * 100000;
 
   // 2. DIME Method: Debt + Income (for N years) + Mortgage + Education/Goals
-  const dimeTotal = (homeLoan + otherDebts) + (annualIncome * years) + futureGoalsToday + emergencyExpenses;
-  const dimeGap = Math.max(0, dimeTotal - (existingPersonalCover + employerLifeInsurance + savingsAndInvestments));
-  const dimeMethod = Math.ceil(dimeGap / 100000) * 100000;
+  // Note: Standard DIME usually uses simplified multiples. We apply a net-of-assets check.
+  const dimeTotal = (homeLoan + otherDebts) + (annualIncome * Math.min(20, years)) + futureGoalsToday + emergencyExpenses;
+  const dimeResources = existingPersonalCover + employerLifeInsurance + savingsAndInvestments;
+  const dimeMethod = Math.ceil(Math.max(0, dimeTotal - dimeResources) / 100000) * 100000;
 
   // 3. Detailed Needs Analysis: Discounted PV Needs - Resources
   const detailedNeedsMethod = netInsuranceRequired;
@@ -411,7 +413,7 @@ export function calculateHumanLifeValue(input: HumanLifeValueInput): HumanLifeVa
   if (input.annualPersonalExpenses !== undefined && input.annualPersonalExpenses >= 0) {
     netAnnualContribution = Math.max(0, grossIncome - input.annualPersonalExpenses);
   } else {
-    const personalExpPct = Math.min(80, Math.max(10, input.personalExpensesPercent || 30)) / 100;
+    const personalExpPct = (input.personalExpensesPercent !== undefined ? input.personalExpensesPercent : 30) / 100;
     netAnnualContribution = grossIncome * (1 - personalExpPct);
   }
 

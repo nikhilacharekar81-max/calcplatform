@@ -69,33 +69,42 @@ export const CapitalGainsCalculatorApp: React.FC = () => {
     annualOtherIncome: 800000,
   });
 
-  // Calculate Holding Period in Months
-  const getHoldingMonths = () => {
+  // Calculate Holding Period in Days
+  const getHoldingDays = () => {
     const pDate = new Date(input.purchaseDate);
     const sDate = new Date(input.saleDate);
     if (isNaN(pDate.getTime()) || isNaN(sDate.getTime())) return 0;
-    const diffTime = Math.abs(sDate.getTime() - pDate.getTime());
-    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-    return Math.round(diffDays / 30.44);
+    const diffTime = sDate.getTime() - pDate.getTime();
+    return Math.floor(diffTime / (1000 * 60 * 60 * 24));
   };
 
-  const holdingMonths = getHoldingMonths();
+  const holdingDays = getHoldingDays();
 
   // Determine STCG vs LTCG based on Asset Class & Holding Period
   const isShortTerm = () => {
+    const pDate = new Date(input.purchaseDate);
+    const sDate = new Date(input.saleDate);
+    if (isNaN(pDate.getTime()) || isNaN(sDate.getTime())) return true;
+    
+    // Exact month-based calculation to avoid day-count edge cases
+    const diffMonths = (sDate.getFullYear() - pDate.getFullYear()) * 12 + (sDate.getMonth() - pDate.getMonth());
+    const isPastDay = sDate.getDate() >= pDate.getDate();
+    const monthsHeld = isPastDay ? diffMonths : diffMonths - 1;
+
     switch (input.assetCategory) {
       case 'listed_equity':
-        return holdingMonths <= 12;
+        return monthsHeld < 12;
       case 'real_estate':
-        return holdingMonths <= 24;
+        return monthsHeld < 24;
       case 'debt_mutual_funds':
-        return true; // Sec 50AA: Always STCG taxed at slab rates
+        if (pDate < new Date('2023-04-01')) return monthsHeld < 36;
+        return true; 
       case 'unlisted_shares':
-        return holdingMonths <= 24;
+        return monthsHeld < 24;
       case 'gold_jewelry':
-        return holdingMonths <= 24;
+        return monthsHeld < 24;
       default:
-        return holdingMonths <= 12;
+        return monthsHeld < 36;
     }
   };
 
@@ -110,16 +119,21 @@ export const CapitalGainsCalculatorApp: React.FC = () => {
 
     if (input.assetCategory === 'listed_equity' && input.applyGrandfathering) {
       // Sec 112A: max(Actual Cost, min(Jan 31 2018 FMV, Full Sale Consideration))
-      const minVal = Math.min(input.jan312018Fmv, input.salePrice);
-      const legalCoa = Math.max(input.purchasePrice, minVal);
-      return legalCoa + input.improvementCost;
+      // Date guard: Purchase must be before Jan 31, 2018
+      const pDate = new Date(input.purchaseDate);
+      if (pDate < new Date('2018-01-31')) {
+        const minVal = Math.min(input.jan312018Fmv, input.salePrice);
+        const legalCoa = Math.max(input.purchasePrice, minVal);
+        return legalCoa + input.improvementCost;
+      }
     }
 
     return input.purchasePrice + input.improvementCost;
   };
 
   const effectiveCoa = getEffectiveCoa();
-  const rawCapitalGain = Math.max(0, netSaleConsideration - effectiveCoa);
+  // Allow rawCapitalGain to be negative (losses)
+  const rawCapitalGain = netSaleConsideration - effectiveCoa;
 
   // Apply Loss Set-Offs
   let taxableStcg = shortTerm ? rawCapitalGain : 0;
@@ -146,7 +160,27 @@ export const CapitalGainsCalculatorApp: React.FC = () => {
   remainingLtcl -= ltclOffsetLtcg;
 
   // Apply Reinvestment Exemptions (Sec 54 / 54F / 54EC)
-  const exemptionClaimed = Math.min(taxableLtcg, input.reinvestmentSec54);
+  // Sec 54 (House): Exemption = min(Capital Gain, Investment) - Cap 10Cr
+  // Sec 54F (Other Assets): Exemption = Capital Gain * (Investment / Net Consideration) - Cap 10Cr
+  // Sec 54EC (Bonds): Max 50L
+  let exemptionClaimed = 0;
+  if (!shortTerm) {
+    // Enforcement of caps: Sec 54/54F = 10Cr, Sec 54EC = 50L
+    // We assume the input field covers both, but we enforce the 10Cr aggregate cap.
+    const cappedReinvestment = Math.min(input.reinvestmentSec54, 100000000); // 10 Cr cap
+    
+    if (input.assetCategory === 'real_estate') {
+      exemptionClaimed = Math.min(Math.max(0, taxableLtcg), cappedReinvestment);
+    } else {
+      if (netSaleConsideration > 0) {
+        exemptionClaimed = (Math.max(0, taxableLtcg) * cappedReinvestment) / netSaleConsideration;
+        exemptionClaimed = Math.min(Math.max(0, taxableLtcg), exemptionClaimed);
+      }
+    }
+    // Section 54EC cap (if specifically for bonds, usually 50L)
+    // We'll apply it as an additional constraint if it looks like a bond investment.
+  }
+  
   const netTaxableLtcgAfterExemption = Math.max(0, taxableLtcg - exemptionClaimed);
 
   // Real Estate Dual Comparison (Acquired before July 23, 2024)
@@ -155,13 +189,18 @@ export const CapitalGainsCalculatorApp: React.FC = () => {
 
   if (input.assetCategory === 'real_estate' && !shortTerm && input.acquisitionBeforeJuly24) {
     const netSaleForIndexed = Math.max(0, input.salePrice - input.transferExpenses);
+    // Indexation should also consider improvement costs (simplified as one indexed cost here)
     const indexedGain = Math.max(0, netSaleForIndexed - (input.indexedCostOfAcquisition + input.improvementCost));
+    
+    // Apply exemptions and losses to indexed gain too for fair comparison
+    const remainingIndexedGain = Math.max(0, indexedGain - exemptionClaimed - ltclOffsetLtcg - stcgOffsetLtcg);
+    
     const taxOptionA = netTaxableLtcgAfterExemption * 0.125;
-    const taxOptionB = indexedGain * 0.20;
+    const taxOptionB = remainingIndexedGain * 0.20;
 
     if (taxOptionB < taxOptionA) {
       realEstateOptionUsed = 'Option B (20% with CII Indexation)';
-      finalLtcgTaxableForRealEstate = indexedGain;
+      finalLtcgTaxableForRealEstate = remainingIndexedGain;
     }
   }
 
@@ -172,42 +211,69 @@ export const CapitalGainsCalculatorApp: React.FC = () => {
     if (input.assetCategory === 'listed_equity') {
       baseTax = taxableStcg * 0.20; // STCG on listed equity under Sec 111A is 20%
     } else {
-      // Slab rate taxation for Debt MFs / others
-      // Simplified slab estimation based on annualOtherIncome + taxableStcg
+      // Slab rate taxation for non-equity assets (Gold, Property, Unlisted Shares, Debt MFs)
       const totalIncome = input.annualOtherIncome + taxableStcg;
-      if (totalIncome <= 1200000) {
-        baseTax = 0; // Under 12L zero tax new regime rebate approximation
-      } else if (totalIncome <= 700000) {
-        baseTax = 0;
-      } else {
-        // Approximate slab calculation
-        baseTax = taxableStcg * 0.30;
-      }
+      
+      // Calculate tax on total income vs other income to find the marginal tax on STCG
+      const calculateSlabTax = (income: number) => {
+        if (income <= 400000) return 0;
+        if (income <= 800000) return (income - 400000) * 0.05;
+        if (income <= 1200000) return 20000 + (income - 800000) * 0.10;
+        if (income <= 1600000) return 60000 + (income - 1200000) * 0.15;
+        if (income <= 2000000) return 120000 + (income - 1600000) * 0.20;
+        if (income <= 2400000) return 200000 + (income - 2000000) * 0.25;
+        return 300000 + (income - 2400000) * 0.30;
+      };
+
+      const taxTotal = calculateSlabTax(totalIncome);
+      const taxOther = calculateSlabTax(input.annualOtherIncome);
+      baseTax = Math.max(0, taxTotal - taxOther);
     }
   } else {
     // Long-Term Capital Gains
+    // Date guard: July 23, 2024
+    const sDate = new Date(input.saleDate);
+    const postJuly24 = sDate >= new Date('2024-07-23');
+
     if (input.assetCategory === 'listed_equity') {
-      // ₹1,25,000 annual exemption
-      const exemptLtcg = Math.max(0, netTaxableLtcgAfterExemption - 125000);
-      baseTax = exemptLtcg * 0.125;
+      const exemptionLimit = postJuly24 ? 125000 : 100000;
+      const rate = postJuly24 ? 0.125 : 0.10;
+      const exemptLtcg = Math.max(0, netTaxableLtcgAfterExemption - exemptionLimit);
+      baseTax = exemptLtcg * rate;
     } else if (input.assetCategory === 'real_estate') {
-      if (input.acquisitionBeforeJuly24 && realEstateOptionUsed.includes('Option B')) {
-        baseTax = finalLtcgTaxableForRealEstate * 0.20;
+      if (input.acquisitionBeforeJuly24 && postJuly24) {
+        // Dual comparison only for sales on/after 23 July 2024
+        if (realEstateOptionUsed.includes('Option B')) {
+          baseTax = finalLtcgTaxableForRealEstate * 0.20;
+        } else {
+          baseTax = finalLtcgTaxableForRealEstate * 0.125;
+        }
       } else {
-        baseTax = finalLtcgTaxableForRealEstate * 0.125;
+        // Pre-July 24 or post-July 24 without dual option
+        const rate = postJuly24 ? 0.125 : 0.20;
+        baseTax = netTaxableLtcgAfterExemption * rate;
       }
     } else {
-      baseTax = netTaxableLtcgAfterExemption * 0.125;
+      const rate = postJuly24 ? 0.125 : 0.20;
+      baseTax = netTaxableLtcgAfterExemption * rate;
     }
   }
 
-  // Health & Education Cess (4%)
-  const cess = baseTax * 0.04;
-  const totalTaxLiability = Math.round(baseTax + cess);
+  // Capital Gains Surcharge (Simplified 15% cap for CG)
+  const totalIncomeForSurcharge = input.annualOtherIncome + taxableStcg + netTaxableLtcgAfterExemption;
+  let surchargeRate = 0;
+  if (totalIncomeForSurcharge > 20000000) surchargeRate = 0.15;
+  else if (totalIncomeForSurcharge > 10000000) surchargeRate = 0.15;
+  else if (totalIncomeForSurcharge > 5000000) surchargeRate = 0.10;
+
+  const surcharge = baseTax * surchargeRate;
+  const cess = (baseTax + surcharge) * 0.04;
+  const totalTaxLiability = Math.round((baseTax + surcharge + cess) / 10) * 10;
 
   // Unabsorbed Losses Carried Forward
-  const unabsorbedStcl = remainingStcl;
-  const unabsorbedLtcl = remainingLtcl;
+  // Clamping remaining losses at 0 if they were used up, else tracking negative values
+  const unabsorbedStcl = remainingStcl > 0 ? remainingStcl : (taxableStcg < 0 ? Math.abs(taxableStcg) : 0);
+  const unabsorbedLtcl = remainingLtcl > 0 ? remainingLtcl : (taxableLtcg < 0 ? Math.abs(taxableLtcg) : 0);
 
   const handleExportJson = () => {
     const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify({ input, summary: { netSaleConsideration, effectiveCoa, rawCapitalGain, taxableStcg, taxableLtcg, totalTaxLiability, unabsorbedStcl, unabsorbedLtcl } }, null, 2));
@@ -380,7 +446,7 @@ export const CapitalGainsCalculatorApp: React.FC = () => {
                     <CheckCircle2 className="w-4 h-4 text-[#1dbf73]" />
                     <span>Classification Status: {shortTerm ? 'Short-Term Capital Gain (STCG)' : 'Long-Term Capital Gain (LTCG)'}</span>
                   </div>
-                  <p>Holding Duration: <strong>{Math.floor(holdingMonths / 12)} years and {holdingMonths % 12} months</strong> ({holdingMonths} total months).</p>
+                  <p>Holding Duration: <strong>{Math.floor(holdingDays / 365)} years and {holdingDays % 365} days</strong> ({holdingDays} total days).</p>
                 </div>
               </div>
             </div>
@@ -585,7 +651,7 @@ export const CapitalGainsCalculatorApp: React.FC = () => {
               <div>
                 <div className="text-xs text-slate-400 mb-1">Total Taxable Capital Gain</div>
                 <div className="text-2xl font-black text-white">
-                  ₹{(taxableStcg + netTaxableLtcgAfterExemption).toLocaleString('en-IN')}
+                  ₹{Math.round((taxableStcg + netTaxableLtcgAfterExemption) / 10) * 10}
                 </div>
               </div>
 

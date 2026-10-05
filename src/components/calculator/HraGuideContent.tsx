@@ -28,7 +28,7 @@ export const HraGuideContent: React.FC = () => {
         <ul className="list-disc pl-5 space-y-2 text-sm text-[#62646a]">
           <li><strong>Actual HRA Received:</strong> The total house rent allowance component disbursed by your employer during the financial year.</li>
           <li><strong>Rent Paid Minus 10% of Salary:</strong> The total annual rent you pay to your landlord, minus 10% of your basic salary (inclusive of applicable dearness allowance).</li>
-          <li><strong>City Classification Limit:</strong> Either 50% of your salary if you reside in a metro city (Mumbai, Delhi, Kolkata, Chennai) or 40% of your salary if you live in a non-metro city.</li>
+          <li><strong>City Classification Limit:</strong> Either 50% of your salary if you reside in a metro city (Mumbai, Delhi, Kolkata, Chennai, Bengaluru, Hyderabad, Pune, Ahmedabad) or 40% of your salary if you live in a non-metro city.</li>
         </ul>
         <p className="text-sm text-[#62646a] mt-2">
           Your taxable HRA is simply the remainder after subtracting the exempt HRA from the total HRA received from your employer.
@@ -60,8 +60,8 @@ export const HraGuideContent: React.FC = () => {
           The distinction between metro and non-metro cities plays a vital role in determining your exemption cap.
         </p>
         <ul className="list-disc pl-5 space-y-2 text-sm text-[#62646a]">
-          <li><strong>Metro Cities:</strong> Only Mumbai, New Delhi, Kolkata, and Chennai qualify for the 50% salary exemption threshold.</li>
-          <li><strong>Non-Metro Cities:</strong> All other urban areas, tier-2, and tier-3 cities across India—including Bengaluru, Hyderabad, Pune, Ahmedabad, and Gurgaon—fall under the 40% exemption limit, regardless of their booming rental markets or metropolitan characteristics.</li>
+          <li><strong>Metro Cities:</strong> Mumbai, New Delhi, Kolkata, Chennai, Bengaluru, Hyderabad, Pune, and Ahmedabad qualify for the 50% salary exemption threshold.</li>
+          <li><strong>Non-Metro Cities:</strong> All other urban areas, tier-2, and tier-3 cities across India—including Gurgaon—fall under the 40% exemption limit, regardless of their booming rental markets or metropolitan characteristics.</li>
         </ul>
       </div>
 

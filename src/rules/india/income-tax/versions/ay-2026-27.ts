@@ -3,10 +3,9 @@ import type { IndiaIncomeTaxAY2026_27Parameters } from "../types.ts";
 const OPEN_ENDED = 1000000000000000;
 
 /**
- * AY 2026-27 individual/HUF normal-rate rules, sourced from official
- * Income Tax Department material. This rule set intentionally excludes
- * special-rate income, capital-gains schedules, AMT/MAT, and other advanced
- * provisions that require additional domain inputs.
+ * AY 2026-27 individual/HUF normal-rate rules, sourced from the Income-tax Act, 2025.
+ * This rule set intentionally excludes special-rate income, capital-gains schedules,
+ * AMT/MAT, and other advanced provisions that require additional domain inputs.
  */
 export const INDIA_INCOME_TAX_AY_2026_27: Readonly<{
   ruleId: "IT-INDIA-AY-2026-27-INDIVIDUAL";
@@ -33,9 +32,9 @@ export const INDIA_INCOME_TAX_AY_2026_27: Readonly<{
   assessmentYear: "AY-2026-27",
   status: "ACTIVE_VERIFIED",
   parameters: {
-    taxYear: "AY-2026-27",
-    assessmentYear: "AY-2026-27",
-    act: "Income Tax Act, 1961",
+    taxYear: "FY 2026-27",
+    assessmentYear: "AY 2027-28",
+    act: "Income-tax Act, 2025",
     healthAndEducationCessRate: 4,
     newRegime: {
       standardDeduction: 75000,

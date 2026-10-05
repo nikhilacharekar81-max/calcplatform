@@ -74,12 +74,13 @@ export const INDIA_INSURANCE_STATUTORY_RULES_2026: IndiaRuleEnvelope<IndiaInsura
     section10_10D: {
       maxPremiumRatioOfSumAssuredPercent: 10,
       annualAggregatePremiumThresholdNonUlip: 500000,
-      modelingDisclaimer: "Section 10(10D) modeling covers statutory sum-assured ratios and the ₹5L aggregate premium limit (Finance Act 2023). Complete legal tax-free status depends on individual policy terms and historical issuance dates.",
+      annualAggregatePremiumThresholdUlip: 250000,
+      modelingDisclaimer: "Section 10(10D) modeling covers statutory sum-assured ratios (10% cap for post-2012 policies), the ₹5L non-ULIP aggregate limit (Finance Act 2023), and the ₹2.5L ULIP aggregate limit (Finance Act 2021).",
     },
     motorIdvDepreciationPercent: [
-      { minAgeMonths: 0, maxAgeMonths: 6, depreciationPercent: 5 },
-      { minAgeMonths: 6, maxAgeMonths: 12, depreciationPercent: 15 },
-      { minAgeMonths: 12, maxAgeMonths: 24, depreciationPercent: 20 },
+      { minAgeMonths: 0, maxAgeMonths: 6, depreciationPercent: 5 }, // Not exceeding 6 months
+      { minAgeMonths: 6, maxAgeMonths: 12, depreciationPercent: 15 }, // Exceeding 6 months but not exceeding 1 year
+      { minAgeMonths: 12, maxAgeMonths: 24, depreciationPercent: 20 }, // Exceeding 1 year but not exceeding 2 years
       { minAgeMonths: 24, maxAgeMonths: 36, depreciationPercent: 30 },
       { minAgeMonths: 36, maxAgeMonths: 48, depreciationPercent: 40 },
       { minAgeMonths: 48, maxAgeMonths: 60, depreciationPercent: 50 },
@@ -120,7 +121,7 @@ export const INDIA_INSURANCE_STATUTORY_RULES_2026: IndiaRuleEnvelope<IndiaInsura
   },
   provenance: {
     authority: "GST Council 56th Meeting Decision (Eff. 22 Sept 2025), IRDAI & Income Tax Act, 1961",
-    sourceUrl: "https://cbic-gst.gov.in / https://irdai.gov.in",
+    sourceUrl: "https://cbic-gst.gov.in/",
     sourceDocument: "GST Council Exemption Notification for Individual Life & Health Insurance (Sept 2025), IRDAI Motor Tariff & Income Tax Sec 80D/80C/10(10D)",
     effectiveFrom: "2025-09-22",
     effectiveTo: null,

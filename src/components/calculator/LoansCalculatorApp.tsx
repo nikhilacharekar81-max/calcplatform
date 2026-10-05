@@ -18,6 +18,7 @@ import {
   AlertTriangle
 } from 'lucide-react';
 import { Calculator } from '../../types/schema.ts';
+import { generateAmortizationSchedule } from '../../engines/financial-maths/index.ts';
 import { pmt } from '../../engines/financial-maths/index.ts';
 import { StackedBarChartComponent, ComposedChartComponent } from '../charts/index.tsx';
 
@@ -62,7 +63,7 @@ export const LoansCalculatorApp: React.FC<LoansCalculatorAppProps> = ({ calculat
   // Gold Loan State
   const [goldGrams, setGoldGrams] = useState<number>(20);
   const [goldPurity, setGoldPurity] = useState<'24K' | '22K' | '18K'>('22K');
-  const [goldRatePerGram, setGoldRatePerGram] = useState<number>(7000);
+  const [goldRatePerGram, setGoldRatePerGram] = useState<number>(8500);
 
   // Property / LAP State
   const [propertyValue, setPropertyValue] = useState<number>(10000000); // ₹1 Cr
@@ -119,57 +120,63 @@ export const LoansCalculatorApp: React.FC<LoansCalculatorAppProps> = ({ calculat
   // Loan Eligibility Calculations
   const maxAllowableEmi = Math.max(0, (monthlyIncome * (foirPercent / 100)) - existingEmis);
   let maxEligibleLoan = 0;
-  if (monthlyRate > 0 && totalMonths > 0) {
-    maxEligibleLoan = (maxAllowableEmi * (Math.pow(1 + monthlyRate, totalMonths) - 1)) / (monthlyRate * Math.pow(1 + monthlyRate, totalMonths));
+  if (totalMonths > 0) {
+    if (monthlyRate > 0) {
+      maxEligibleLoan = (maxAllowableEmi * (Math.pow(1 + monthlyRate, totalMonths) - 1)) / (monthlyRate * Math.pow(1 + monthlyRate, totalMonths));
+    } else {
+      maxEligibleLoan = maxAllowableEmi * totalMonths;
+    }
   }
 
   // Loan Affordability Calculations
   let maxAffordableLoan = 0;
-  if (monthlyRate > 0 && totalMonths > 0) {
-    maxAffordableLoan = (desiredEmi * (Math.pow(1 + monthlyRate, totalMonths) - 1)) / (monthlyRate * Math.pow(1 + monthlyRate, totalMonths));
+  if (totalMonths > 0) {
+    if (monthlyRate > 0) {
+      maxAffordableLoan = (desiredEmi * (Math.pow(1 + monthlyRate, totalMonths) - 1)) / (monthlyRate * Math.pow(1 + monthlyRate, totalMonths));
+    } else {
+      maxAffordableLoan = desiredEmi * totalMonths;
+    }
   }
 
   // Loan Prepayment Calculations
   const origEmi = emi;
-  const newPrincipal = Math.max(0, loanAmount - prepaymentAmount);
+  // Use outstanding balance based on tenure elapsed. Simplified as loanAmount for now if tenure elapsed not tracked.
+  const newPrincipal = Math.max(0, effectivePrincipal - prepaymentAmount);
   let prepayNewEmi = origEmi;
   let prepayNewMonths = totalMonths;
 
-  if (prepaymentType === 'reduce_tenure' && monthlyRate > 0 && newPrincipal > 0) {
-    prepayNewMonths = Math.ceil(-Math.log(1 - (newPrincipal * monthlyRate) / origEmi) / Math.log(1 + monthlyRate));
-  } else if (prepaymentType === 'reduce_emi' && monthlyRate > 0 && newPrincipal > 0) {
-    prepayNewEmi = (newPrincipal * monthlyRate * Math.pow(1 + monthlyRate, totalMonths)) / (Math.pow(1 + monthlyRate, totalMonths) - 1);
+  if (prepaymentType === 'reduce_tenure' && newPrincipal > 0) {
+    if (monthlyRate > 0) {
+      prepayNewMonths = Math.ceil(-Math.log(1 - (newPrincipal * monthlyRate) / origEmi) / Math.log(1 + monthlyRate));
+    } else {
+      prepayNewMonths = Math.ceil(newPrincipal / origEmi);
+    }
+  } else if (prepaymentType === 'reduce_emi' && newPrincipal > 0) {
+    if (monthlyRate > 0) {
+      prepayNewEmi = (newPrincipal * monthlyRate * Math.pow(1 + monthlyRate, totalMonths)) / (Math.pow(1 + monthlyRate, totalMonths) - 1);
+    } else {
+      prepayNewEmi = newPrincipal / totalMonths;
+    }
   }
 
   const prepayNewTotalPayment = prepaymentType === 'reduce_tenure' ? (prepayNewEmi * prepayNewMonths) + prepaymentAmount : (prepayNewEmi * totalMonths) + prepaymentAmount;
   const interestSaved = Math.max(0, totalPayment - prepayNewTotalPayment);
 
   // Amortization Schedule Generation
-  const generateAmortizationSchedule = () => {
-    let balance = loanAmount;
-    const schedule = [];
-    for (let yr = 1; yr <= tenureYears; yr++) {
-      let yrInterest = 0;
-      let yrPrincipal = 0;
-      for (let m = 1; m <= 12; m++) {
-        const mInterest = balance * monthlyRate;
-        const mPrincipal = Math.min(balance, emi - mInterest);
-        yrInterest += mInterest;
-        yrPrincipal += mPrincipal;
-        balance = Math.max(0, balance - mPrincipal);
-      }
-      schedule.push({
-        year: yr,
-        principalPaid: yrPrincipal,
-        interestPaid: yrInterest,
-        totalPaid: yrPrincipal + yrInterest,
-        closingBalance: balance
-      });
-    }
-    return schedule;
-  };
+  const scheduleResult = generateAmortizationSchedule({
+    principal: effectivePrincipal, // Fix: Use effectivePrincipal (gold-based for gold loans)
+    annualRatePercent: interestRate,
+    term: tenureYears,
+    termUnit: "YEARS",
+    frequency: "MONTHLY",
+    timing: "END"
+  });
+  const schedule = scheduleResult.schedule;
 
-  const schedule = generateAmortizationSchedule();
+  // India Tax Benefits (Sec 24b & 80C) - Computing for Year 1
+  const firstYear = schedule.find(s => s.year === 1);
+  const taxBenefit24b = firstYear ? Math.min(200000, firstYear.interestPaid) : 0;
+  const taxBenefit80C = firstYear ? Math.min(150000, firstYear.principalPaid) : 0;
 
   const handleExportJson = () => {
     const report = {
@@ -619,12 +626,22 @@ export const LoansCalculatorApp: React.FC<LoansCalculatorAppProps> = ({ calculat
 
             {/* Tax Benefits Callout Cards for India */}
             {slug.includes('home') && (
-              <div className="p-3 bg-emerald-500/10 border border-emerald-500/20 rounded-xl text-[11px] text-emerald-300 space-y-1">
-                <div className="font-bold text-emerald-400 flex items-center gap-1">
-                  <CheckCircle2 className="w-3.5 h-3.5" />
-                  <span>Income Tax Benefit (Sec 24b & 80C)</span>
+              <div className="p-4 bg-emerald-500/10 border border-emerald-500/20 rounded-2xl text-xs text-emerald-300 space-y-2">
+                <div className="font-bold text-emerald-400 flex items-center gap-1.5 text-sm">
+                  <CheckCircle2 className="w-4 h-4" />
+                  <span>Annual Income Tax Benefits (Year 1)</span>
                 </div>
-                <p>Interest deduction up to ₹2 Lakhs under Sec 24(b) + Principal repayment deduction up to ₹1.5 Lakhs under Sec 80C (Old Tax Regime).</p>
+                <div className="flex justify-between border-b border-emerald-500/10 pb-1">
+                  <span>Sec 24(b) (Interest):</span>
+                  <span className="font-bold text-white">{formatINR(taxBenefit24b)}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span>Sec 80C (Principal):</span>
+                  <span className="font-bold text-white">{formatINR(taxBenefit80C)}</span>
+                </div>
+                <p className="text-[10px] text-slate-400 leading-tight pt-1">
+                  *Indicative for Self-Occupied property under Old Tax Regime. 24(b) capped at ₹2L, 80C at ₹1.5L.
+                </p>
               </div>
             )}
 

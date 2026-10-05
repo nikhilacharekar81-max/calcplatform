@@ -123,13 +123,15 @@ export function calculateBikeInsurance(input: BikeInsuranceInput): BikeInsurance
   const gstPercent = rule.parameters.gstRatesPercent.motorInsurance;
 
   let depPct = 50;
-  const matchedDep = depSchedule.find((item) => ageMonths >= item.minAgeMonths && ageMonths < item.maxAgeMonths);
+  const matchedDep = depSchedule.find((item) => ageMonths > item.minAgeMonths && ageMonths <= item.maxAgeMonths);
   if (matchedDep) depPct = matchedDep.depreciationPercent;
+  else if (ageMonths <= 0) depPct = 0; // Brand new
 
   const idv = roundMoney(exShowroom * (1 - depPct / 100));
 
-  const matchedNcb = ncbLadder.find((item) => item.claimFreeYears === ncbYears);
-  const ncbPct = matchedNcb ? matchedNcb.ncbPercent : 50;
+  const completedNcbYears = Math.floor(ncbYears);
+  const matchedNcb = ncbLadder.find((item) => item.claimFreeYears === completedNcbYears);
+  const ncbPct = matchedNcb ? matchedNcb.ncbPercent : 0;
 
   const grossOd = idv * 0.017;
   const netOd = Math.max(0, grossOd * (1 - ncbPct / 100));
@@ -138,6 +140,7 @@ export function calculateBikeInsurance(input: BikeInsuranceInput): BikeInsurance
   let tpTariff = 714;
   if (cc > 350) tpTariff = 2804;
   else if (cc > 150) tpTariff = 1366;
+  else if (cc <= 75) tpTariff = 538;
 
   const netBeforeGst = netOd + tpTariff;
   const gst = roundMoney(netBeforeGst * (gstPercent / 100));

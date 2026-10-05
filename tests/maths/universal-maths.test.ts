@@ -53,7 +53,7 @@ export function runUniversalMathsTests(): { name: string; passed: boolean; error
   runTest("Universal Maths - Amortization Principal Conservation", () => {
     const schedule = generateAmortizationSchedule({
       principal: 500000,
-      annualRate: 7.5,
+      annualRatePercent: 7.5,
       term: 10,
       termUnit: "YEARS",
       frequency: "MONTHLY",
