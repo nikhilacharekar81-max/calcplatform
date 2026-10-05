@@ -11,6 +11,7 @@ import {
   calculateCriticalIllnessCover,
   calculateHomeInsurance,
   calculateBusinessInsurance,
+  vehicleInsurerProfileRegistry,
 } from "../../../src/calculators/india/insurance/index.ts";
 import { indiaRuleRegistry } from "../../../src/rules/india/registry.ts";
 
@@ -209,22 +210,24 @@ export function runInsuranceTests(): { passed: number; failed: number } {
   );
 
   // 14. Car Insurance Voluntary Deductible Discount & Fractional NCB & EV Discount
+  vehicleInsurerProfileRegistry.registerProfile({
+    insurerId: 'TEST_INSURER',
+    insurerName: 'Test Insurer Ltd',
+    discountSchedule: [
+      { minDeductibleRupees: 2500, discountPercentOnOD: 20, maxDiscountRupees: 750 },
+      { minDeductibleRupees: 5000, discountPercentOnOD: 25, maxDiscountRupees: 1500 },
+      { minDeductibleRupees: 7500, discountPercentOnOD: 30, maxDiscountRupees: 2000 },
+      { minDeductibleRupees: 15000, discountPercentOnOD: 35, maxDiscountRupees: 2500 },
+    ],
+  });
+
   const carEvRes = calculateCarInsurance({
     manufacturerListedExShowroomPrice: 1500000,
     vehicleAgeMonths: 30, // 2 to 3 years = 30% dep
     claimFreeYearsNCB: 2.5, // 2 completed years = 25% NCB
     voluntaryDeductible: 5000, // 25% discount on OD up to ₹1,500
     isElectricVehicle: true, // 15% discount on TP
-    insurerProfile: {
-      insurerId: 'TEST_INSURER',
-      insurerName: 'Test Insurer Ltd',
-      discountSchedule: [
-        { minDeductibleRupees: 2500, discountPercentOnOD: 20, maxDiscountRupees: 750 },
-        { minDeductibleRupees: 5000, discountPercentOnOD: 25, maxDiscountRupees: 1500 },
-        { minDeductibleRupees: 7500, discountPercentOnOD: 30, maxDiscountRupees: 2000 },
-        { minDeductibleRupees: 15000, discountPercentOnOD: 35, maxDiscountRupees: 2500 },
-      ],
-    },
+    insurerId: 'TEST_INSURER',
   });
   assert(
     carEvRes.appliedDepreciationPercent === 30 &&

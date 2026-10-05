@@ -237,12 +237,12 @@ export function runIndiaCalculatorsTests(): { name: string; passed: boolean; err
   runTest("India Calculators - TDS Threshold Crossing & Cumulative Catch-up", async () => {
     const { calculateTds: calculateEngineTds } = await import("../../../src/utils/tdsEngine.ts");
 
-    // 194C Contractor: Single bill of ₹25,000 (below ₹30,000 single limit) with 0 prior aggregate -> ₹0 TDS
+    // 194C Contractor: Single bill of ₹25,000 (below ₹30,000 single limit) with no prior payments -> ₹0 TDS
     const firstBill = calculateEngineTds({
       sectionKey: "194C_CONTRACTOR",
       payeeType: "Individual/HUF",
       grossAmount: 25000,
-      aggregatePaidTillDate: 0,
+      historicalPayments: [],
       isPanFurnished: true,
       isSeniorCitizen: false,
       isForm15Submitted: false,
@@ -253,13 +253,16 @@ export function runIndiaCalculatorsTests(): { name: string; passed: boolean; err
     });
     assert(firstBill.totalTdsDeductible === 0, "194C bill below single threshold is exempt");
 
-    // 194C Contractor: 4th bill of ₹30,000 where prior aggregate was ₹80,000 (total = ₹1,10,000, crossing ₹1L aggregate threshold)
+    // 194C Contractor: 4th bill of ₹30,000 where prior ledger payments total ₹80,000 in same FY (total = ₹1,10,000, crossing ₹1L aggregate threshold)
     // Entire ₹1,10,000 is now subjected to 1% TDS catch-up = ₹1,100
     const crossingBill = calculateEngineTds({
       sectionKey: "194C_CONTRACTOR",
       payeeType: "Individual/HUF",
       grossAmount: 30000,
-      aggregatePaidTillDate: 80000,
+      currentTransactionDate: "2025-06-01",
+      historicalPayments: [
+        { amount: 80000, creditDate: "2025-05-10" }
+      ],
       isPanFurnished: true,
       isSeniorCitizen: false,
       isForm15Submitted: false,
@@ -275,7 +278,6 @@ export function runIndiaCalculatorsTests(): { name: string; passed: boolean; err
       sectionKey: "194J_PROF",
       payeeType: "Individual/HUF",
       grossAmount: 20000,
-      aggregatePaidTillDate: 0,
       isPanFurnished: true,
       isSeniorCitizen: false,
       isForm15Submitted: false,

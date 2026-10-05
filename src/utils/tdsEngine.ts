@@ -189,7 +189,6 @@ export interface TdsInputState {
   payeeType: 'Individual/HUF' | 'Company/Firm';
   payerType?: 'bank_post_office' | 'other_payer';
   grossAmount: number;
-  aggregatePaidTillDate?: number; // Optional legacy fallback if historicalPayments is not provided
   isPanFurnished: boolean;
   isSeniorCitizen: boolean;
   isForm15Submitted: boolean;
@@ -235,7 +234,6 @@ export const DEFAULT_TDS_INPUTS: TdsInputState = {
   payeeType: 'Individual/HUF',
   payerType: 'bank_post_office',
   grossAmount: 75000,
-  aggregatePaidTillDate: 0,
   isPanFurnished: true,
   isSeniorCitizen: false,
   isForm15Submitted: false,
@@ -309,10 +307,10 @@ export function calculateTds(inputs: TdsInputState): TdsCalculationResult {
   const currentTrigger = resolveStatutoryTriggerDate(inputs);
   const evaluatedFinancialYear = getFinancialYear(currentTrigger.dateStr);
 
-  // Determine prior cumulative aggregate paid in target FY
+  // Determine prior cumulative aggregate paid in target FY strictly from the transaction ledger
   let aggregatePaid = 0;
   if (inputs.historicalPayments && inputs.historicalPayments.length > 0) {
-    // Primary ledger model: chronologically sort historical payments by statutory trigger date
+    // Ledger model: chronologically sort historical payments by statutory trigger date
     const sortedTx = [...inputs.historicalPayments].sort((a, b) => {
       return resolveStatutoryTriggerDate(a).timestamp - resolveStatutoryTriggerDate(b).timestamp;
     });
@@ -327,11 +325,9 @@ export function calculateTds(inputs: TdsInputState): TdsCalculationResult {
     });
 
     aggregatePaid = fyMap.get(evaluatedFinancialYear) || 0;
-    notes.push(`Primary historical ledger evaluated for ${evaluatedFinancialYear} using statutory earlier of credit/payment date (Trigger: ${currentTrigger.dateStr}). Prior FY cumulative sum: ₹${aggregatePaid.toLocaleString('en-IN')}`);
+    notes.push(`Transaction ledger evaluated for ${evaluatedFinancialYear} using statutory trigger date (${currentTrigger.dateStr}). Prior FY cumulative sum: ₹${aggregatePaid.toLocaleString('en-IN')}`);
   } else {
-    // Fallback model if no historical ledger provided
-    aggregatePaid = inputs.aggregatePaidTillDate || 0;
-    notes.push(`Legacy aggregate override evaluated for ${evaluatedFinancialYear}. Prior FY cumulative sum: ₹${aggregatePaid.toLocaleString('en-IN')}`);
+    notes.push(`Transaction ledger evaluated for ${evaluatedFinancialYear} (Trigger: ${currentTrigger.dateStr}). Prior FY cumulative sum: ₹0`);
   }
 
   const totalCumulativeAmount = aggregatePaid + (inputs.grossAmount || 0);

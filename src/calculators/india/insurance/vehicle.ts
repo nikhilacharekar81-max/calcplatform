@@ -68,7 +68,6 @@ export interface CarInsuranceInput {
   isElectricVehicle?: boolean;
   isNewVehicle?: boolean;
   insurerId?: string;
-  insurerProfile?: VehicleDeductibleTariffProfile;
 }
 
 export interface CarInsuranceResult {
@@ -132,8 +131,8 @@ export function calculateCarInsurance(input: CarInsuranceInput): CarInsuranceRes
   const gstPercent = rule.parameters.gstRatesPercent.motorInsurance;
   const tpTariffs = rule.parameters.motorThirdPartyTariffs;
 
-  // Resolve profile from parameter or managed profile registry
-  const profile = input.insurerProfile ?? (input.insurerId ? vehicleInsurerProfileRegistry.getProfile(input.insurerId) : undefined);
+  // Resolve profile strictly from managed profile registry via insurerId
+  const profile = input.insurerId ? vehicleInsurerProfileRegistry.getProfile(input.insurerId) : undefined;
   const hasInsurerProfile = Boolean(profile && profile.discountSchedule);
   const activeSchedule = hasInsurerProfile ? profile!.discountSchedule : undefined;
   const insurerNameUsed = hasInsurerProfile ? profile!.insurerName : "No Insurer Profile Selected (Voluntary Deductible Unavailable)";
@@ -207,7 +206,6 @@ export interface BikeInsuranceInput {
   isNewVehicle?: boolean;
   voluntaryDeductible?: number;
   insurerId?: string;
-  insurerProfile?: VehicleDeductibleTariffProfile;
 }
 
 export interface BikeInsuranceResult {
@@ -240,7 +238,8 @@ export function calculateBikeInsurance(input: BikeInsuranceInput): BikeInsurance
   const gstPercent = rule.parameters.gstRatesPercent.motorInsurance;
   const tpTariffs = rule.parameters.motorThirdPartyTariffs;
 
-  const profile = input.insurerProfile ?? (input.insurerId ? vehicleInsurerProfileRegistry.getProfile(input.insurerId) : undefined);
+  // Resolve profile strictly from managed profile registry via insurerId
+  const profile = input.insurerId ? vehicleInsurerProfileRegistry.getProfile(input.insurerId) : undefined;
   const hasInsurerProfile = Boolean(profile && profile.discountSchedule);
   const activeSchedule = hasInsurerProfile ? profile!.discountSchedule : undefined;
   const insurerNameUsed = hasInsurerProfile ? profile!.insurerName : "No Insurer Profile Selected (Voluntary Deductible Unavailable)";

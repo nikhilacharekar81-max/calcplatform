@@ -14,6 +14,8 @@ import {
   progressiveTax,
   applySection288ARounding,
   applySection288BRounding,
+  isMonetaryExceeded,
+  isMonetaryLessOrEqual,
   type TaxBracket,
 } from "../../engines/financial-maths/index.ts";
 import { formatIndianCurrency } from "../../localization/india/index.ts";
@@ -102,7 +104,7 @@ function roundIncomeSection288A(value: number): number {
 function surchargeRate(income: number, thresholds: IndiaIncomeTaxAY2026_27Parameters["newRegime"]["surcharge"]): number {
   let rate = 0;
   for (const tier of thresholds) {
-    if (income > tier.incomeAbove) rate = tier.rate;
+    if (isMonetaryExceeded(income, tier.incomeAbove)) rate = tier.rate;
   }
   return rate;
 }
@@ -123,7 +125,7 @@ function calculateSurchargeAndRelief(
 
   let threshold = 0;
   for (const candidate of regimeRules.marginalReliefThresholds) {
-    if (taxableIncome > candidate) threshold = candidate;
+    if (isMonetaryExceeded(taxableIncome, candidate)) threshold = candidate;
   }
 
   if (threshold === 0) return { surcharge: rawSurcharge, marginalRelief: 0 };
@@ -187,7 +189,7 @@ export function calculateRawUnroundedIncomeTax(
   const rawIncomeTaxBeforeRebate = taxAtIncome(rawTaxableIncome, slabs);
 
   // Section 87A rebate
-  const rawRebate87A = input.resident !== false && rawTaxableIncome <= rules.rebate87A.taxableIncomeLimit
+  const rawRebate87A = input.resident !== false && isMonetaryLessOrEqual(rawTaxableIncome, rules.rebate87A.taxableIncomeLimit)
     ? Math.min(rawIncomeTaxBeforeRebate, rules.rebate87A.maxRebate)
     : 0;
 
@@ -195,9 +197,9 @@ export function calculateRawUnroundedIncomeTax(
 
   // New Regime Marginal Relief for Rebate Boundary
   let rawTaxAfterRebateRelief = rawTaxAfterRebate;
-  if (input.regime === "NEW" && rawTaxableIncome > rules.rebate87A.taxableIncomeLimit) {
+  if (input.regime === "NEW" && isMonetaryExceeded(rawTaxableIncome, rules.rebate87A.taxableIncomeLimit)) {
     const excessIncome = rawTaxableIncome - rules.rebate87A.taxableIncomeLimit;
-    if (rawTaxAfterRebate > excessIncome) {
+    if (isMonetaryExceeded(rawTaxAfterRebate, excessIncome)) {
       rawTaxAfterRebateRelief = excessIncome;
     }
   }

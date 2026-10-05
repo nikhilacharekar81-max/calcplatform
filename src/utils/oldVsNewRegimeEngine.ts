@@ -1,5 +1,5 @@
 import { INDIA_INCOME_TAX_AY_2026_27 } from '../rules/india/income-tax/versions/ay-2026-27.ts';
-import { progressiveTax } from '../engines/financial-maths/index.ts';
+import { progressiveTax, isMonetaryExceeded, isMonetaryLessOrEqual } from '../engines/financial-maths/index.ts';
 
 /**
  * FY 2026-27 (AY 2026-27 / AY 2027-28) Old vs. New Tax Regime Comparison Engine
@@ -260,13 +260,13 @@ export function calculateNewRegime2026(inputs: OldVsNewInputs): SingleRegimeResu
   let marginalReliefSec87A = 0;
   let taxAfterRebateAndRelief = totalBaseTax;
 
-  if (slabTaxableIncome <= 1200000) {
+  if (isMonetaryLessOrEqual(slabTaxableIncome, 1200000)) {
     sec87aRebate = Math.min(totalBaseTax, 60000);
     taxAfterRebateAndRelief = Math.max(0, totalBaseTax - sec87aRebate);
   } else {
     // Marginal Relief: Tax on income above ₹12L cannot exceed incremental income over ₹12L
     const excessOver12L = slabTaxableIncome - 1200000;
-    if (baseTaxOnSlabs > excessOver12L) {
+    if (isMonetaryExceeded(baseTaxOnSlabs, excessOver12L)) {
       marginalReliefSec87A = baseTaxOnSlabs - excessOver12L;
       taxAfterRebateAndRelief = excessOver12L + specialRateTax;
     }
@@ -277,30 +277,30 @@ export function calculateNewRegime2026(inputs: OldVsNewInputs): SingleRegimeResu
   let surchargeAmount = 0;
   let surchargeMarginalRelief = 0;
 
-  if (netTaxableIncome > 20000000) {
+  if (isMonetaryExceeded(netTaxableIncome, 20000000)) {
     surchargeRate = 0.25;
     surchargeAmount = taxAfterRebateAndRelief * 0.25;
     const taxAt2Cr = computeNewRegimeBaseTax(20000000);
     const maxPayable = taxAt2Cr + taxAt2Cr * 0.15 + (netTaxableIncome - 20000000);
-    if (taxAfterRebateAndRelief + surchargeAmount > maxPayable) {
+    if (isMonetaryExceeded(taxAfterRebateAndRelief + surchargeAmount, maxPayable)) {
       surchargeMarginalRelief = taxAfterRebateAndRelief + surchargeAmount - maxPayable;
       surchargeAmount = Math.max(0, surchargeAmount - surchargeMarginalRelief);
     }
-  } else if (netTaxableIncome > 10000000) {
+  } else if (isMonetaryExceeded(netTaxableIncome, 10000000)) {
     surchargeRate = 0.15;
     surchargeAmount = taxAfterRebateAndRelief * 0.15;
     const taxAt1Cr = computeNewRegimeBaseTax(10000000);
     const maxPayable = taxAt1Cr + taxAt1Cr * 0.10 + (netTaxableIncome - 10000000);
-    if (taxAfterRebateAndRelief + surchargeAmount > maxPayable) {
+    if (isMonetaryExceeded(taxAfterRebateAndRelief + surchargeAmount, maxPayable)) {
       surchargeMarginalRelief = taxAfterRebateAndRelief + surchargeAmount - maxPayable;
       surchargeAmount = Math.max(0, surchargeAmount - surchargeMarginalRelief);
     }
-  } else if (netTaxableIncome > 5000000) {
+  } else if (isMonetaryExceeded(netTaxableIncome, 5000000)) {
     surchargeRate = 0.10;
     surchargeAmount = taxAfterRebateAndRelief * 0.10;
     const taxAt50L = computeNewRegimeBaseTax(5000000);
     const maxPayable = taxAt50L + (netTaxableIncome - 5000000);
-    if (taxAfterRebateAndRelief + surchargeAmount > maxPayable) {
+    if (isMonetaryExceeded(taxAfterRebateAndRelief + surchargeAmount, maxPayable)) {
       surchargeMarginalRelief = taxAfterRebateAndRelief + surchargeAmount - maxPayable;
       surchargeAmount = Math.max(0, surchargeAmount - surchargeMarginalRelief);
     }
@@ -537,7 +537,7 @@ export function calculateOldRegime(inputs: OldVsNewInputs): SingleRegimeResult {
 
   // Section 87A Rebate (Old Regime threshold: ₹5,00,000)
   let sec87aRebate = 0;
-  if (slabTaxableIncome <= 500000) {
+  if (isMonetaryLessOrEqual(slabTaxableIncome, 500000)) {
     sec87aRebate = Math.min(totalBaseTax, 12500);
   }
 
@@ -548,16 +548,16 @@ export function calculateOldRegime(inputs: OldVsNewInputs): SingleRegimeResult {
   let surchargeAmount = 0;
   let surchargeMarginalRelief = 0;
 
-  if (netTaxableIncome > 50000000) {
+  if (isMonetaryExceeded(netTaxableIncome, 50000000)) {
     surchargeRate = 0.37;
     surchargeAmount = taxAfterRebateAndRelief * 0.37;
-  } else if (netTaxableIncome > 20000000) {
+  } else if (isMonetaryExceeded(netTaxableIncome, 20000000)) {
     surchargeRate = 0.25;
     surchargeAmount = taxAfterRebateAndRelief * 0.25;
-  } else if (netTaxableIncome > 10000000) {
+  } else if (isMonetaryExceeded(netTaxableIncome, 10000000)) {
     surchargeRate = 0.15;
     surchargeAmount = taxAfterRebateAndRelief * 0.15;
-  } else if (netTaxableIncome > 5000000) {
+  } else if (isMonetaryExceeded(netTaxableIncome, 5000000)) {
     surchargeRate = 0.10;
     surchargeAmount = taxAfterRebateAndRelief * 0.10;
   }

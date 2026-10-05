@@ -4,6 +4,7 @@ import {
   DEFAULT_TDS_INPUTS,
   calculateTds,
   TdsInputState,
+  TdsTransaction,
 } from '../../utils/tdsEngine';
 import {
   Calculator,
@@ -41,9 +42,6 @@ export const TdsCalculatorApp: React.FC<TdsCalculatorAppProps> = ({ initialState
       const isPanFurnished = params.has('pan')
         ? params.get('pan') === '1'
         : parsedSaved.isPanFurnished ?? DEFAULT_TDS_INPUTS.isPanFurnished;
-      const aggregatePaidTillDate = params.has('agg')
-        ? Number(params.get('agg'))
-        : parsedSaved.aggregatePaidTillDate ?? DEFAULT_TDS_INPUTS.aggregatePaidTillDate;
 
       return {
         ...DEFAULT_TDS_INPUTS,
@@ -52,7 +50,7 @@ export const TdsCalculatorApp: React.FC<TdsCalculatorAppProps> = ({ initialState
         grossAmount: isNaN(grossAmount) ? 75000 : grossAmount,
         payeeType: payeeType === 'Company/Firm' ? 'Company/Firm' : 'Individual/HUF',
         isPanFurnished,
-        aggregatePaidTillDate: isNaN(aggregatePaidTillDate) ? 0 : aggregatePaidTillDate,
+        historicalPayments: parsedSaved.historicalPayments || [],
         ...initialState,
       };
     } catch {
@@ -71,11 +69,7 @@ export const TdsCalculatorApp: React.FC<TdsCalculatorAppProps> = ({ initialState
       url.searchParams.set('amt', inputs.grossAmount.toString());
       url.searchParams.set('payee', inputs.payeeType);
       url.searchParams.set('pan', inputs.isPanFurnished ? '1' : '0');
-      if ((inputs.aggregatePaidTillDate ?? 0) > 0) {
-        url.searchParams.set('agg', (inputs.aggregatePaidTillDate ?? 0).toString());
-      } else {
-        url.searchParams.delete('agg');
-      }
+      url.searchParams.delete('agg');
       window.history.replaceState({}, '', url.toString());
     } catch {
       // ignore
@@ -95,7 +89,7 @@ export const TdsCalculatorApp: React.FC<TdsCalculatorAppProps> = ({ initialState
     amt: number,
     payee: 'Individual/HUF' | 'Company/Firm' = 'Individual/HUF',
     pan = true,
-    agg = 0
+    priorPayments: TdsTransaction[] = []
   ) => {
     setInputs((prev) => ({
       ...prev,
@@ -103,7 +97,7 @@ export const TdsCalculatorApp: React.FC<TdsCalculatorAppProps> = ({ initialState
       grossAmount: amt,
       payeeType: payee,
       isPanFurnished: pan,
-      aggregatePaidTillDate: agg,
+      historicalPayments: priorPayments,
       isForm15Submitted: false,
       hasForm13Certificate: false,
     }));
@@ -133,7 +127,7 @@ export const TdsCalculatorApp: React.FC<TdsCalculatorAppProps> = ({ initialState
       ['Payee Category', inputs.payeeType],
       ['PAN Furnished', inputs.isPanFurnished ? 'Yes' : 'No (Sec 206AA Penalty)'],
       ['Gross Payment / Invoice Amount', `INR ${result.grossAmount.toLocaleString('en-IN')}`],
-      ['Aggregate Paid Till Date', `INR ${(inputs.aggregatePaidTillDate ?? 0).toLocaleString('en-IN')}`],
+      ['Historical Ledger Entries Count', `${(inputs.historicalPayments || []).length}`],
       ['Statutory Threshold Limit', `INR ${result.thresholdLimitUsed.toLocaleString('en-IN')}`],
       ['Threshold Status', result.isThresholdCrossed ? 'Threshold Crossed (TDS Applicable)' : 'Below Threshold'],
       ['Base TDS Rate (%)', `${result.baseTdsRate}%`],
@@ -197,7 +191,7 @@ export const TdsCalculatorApp: React.FC<TdsCalculatorAppProps> = ({ initialState
           </button>
           <button
             type="button"
-            onClick={() => applyPreset('194Q_PURCHASE', 6500000, 'Company/Firm', true, 0)}
+            onClick={() => applyPreset('194Q_PURCHASE', 6500000, 'Company/Firm', true, [])}
             className="px-3 py-1.5 rounded-lg text-xs font-medium bg-slate-100 text-slate-700 hover:bg-[#1dbf73] hover:text-white transition-colors"
           >
             Goods Purchase (₹65L)
@@ -366,38 +360,93 @@ export const TdsCalculatorApp: React.FC<TdsCalculatorAppProps> = ({ initialState
                 />
               </div>
 
-              {/* Cumulative Paid Till Date */}
-              <div>
-                <div className="flex justify-between items-center mb-1">
+              {/* Historical Transaction Ledger Section */}
+              <div className="pt-2 border-t border-slate-100">
+                <div className="flex justify-between items-center mb-2">
                   <label className="text-xs font-bold text-[#222325] flex items-center gap-1.5">
-                    <span>Prior Cumulative Payments in FY 2026-27 (₹)</span>
+                    <span>Prior Transaction Ledger ({result.evaluatedFinancialYear})</span>
                     <span
                       className="text-slate-400 cursor-pointer"
-                      title="Total amounts already paid to this payee earlier in the current financial year to evaluate annual threshold limits"
+                      title="Prior transactions in the financial year used to evaluate statutory threshold limits"
                     >
                       <Info className="w-3.5 h-3.5" />
                     </span>
                   </label>
-                  <span className="text-xs font-bold text-slate-600">
-                    ₹{(inputs.aggregatePaidTillDate ?? 0).toLocaleString('en-IN')}
+                  <span className="text-xs font-bold text-[#1dbf73]">
+                    {(inputs.historicalPayments || []).length} Entry(s)
                   </span>
                 </div>
-                <div className="relative">
+
+                {/* List of existing ledger entries */}
+                {(inputs.historicalPayments && inputs.historicalPayments.length > 0) ? (
+                  <div className="space-y-2 mb-3">
+                    {inputs.historicalPayments.map((tx, idx) => (
+                      <div key={idx} className="flex items-center justify-between p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs">
+                        <div>
+                          <span className="font-bold text-[#222325]">₹{(tx.amount || 0).toLocaleString('en-IN')}</span>
+                          <span className="text-slate-400 ml-2">({tx.creditDate || tx.paymentDate || tx.transactionDate || 'Unspecified Date'})</span>
+                        </div>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setInputs(prev => ({
+                              ...prev,
+                              historicalPayments: (prev.historicalPayments || []).filter((_, i) => i !== idx)
+                            }));
+                          }}
+                          className="text-slate-400 hover:text-rose-600 font-bold px-1 transition-colors"
+                          title="Remove Entry"
+                        >
+                          ✕
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <p className="text-[11px] text-slate-400 mb-3 italic">No prior transactions added for this financial year.</p>
+                )}
+
+                {/* Add new ledger entry */}
+                <div className="flex items-center gap-2">
+                  <div className="relative flex-1">
+                    <input
+                      type="number"
+                      min="0"
+                      step="5000"
+                      id="newTxAmount"
+                      placeholder="Prior Payment Amount (₹)"
+                      className="w-full p-2.5 pl-7 bg-slate-50 border border-slate-300 rounded-xl text-xs font-medium text-[#222325] focus:outline-none focus:ring-2 focus:ring-[#1dbf73]"
+                    />
+                    <span className="absolute left-2.5 top-2.5 text-slate-400 font-bold text-xs">₹</span>
+                  </div>
                   <input
-                    type="number"
-                    min="0"
-                    step="5000"
-                    value={inputs.aggregatePaidTillDate || ''}
-                    onChange={(e) =>
-                      setInputs((prev) => ({
-                        ...prev,
-                        aggregatePaidTillDate: Math.max(0, Number(e.target.value) || 0),
-                      }))
-                    }
-                    placeholder="0"
-                    className="w-full p-3 pl-8 bg-slate-50 border border-slate-300 rounded-xl text-xs sm:text-sm font-bold text-[#222325] focus:outline-none focus:ring-2 focus:ring-[#1dbf73] focus:bg-white"
+                    type="date"
+                    id="newTxDate"
+                    defaultValue={new Date().toISOString().split('T')[0]}
+                    className="p-2.5 bg-slate-50 border border-slate-300 rounded-xl text-xs font-medium text-[#222325] focus:outline-none focus:ring-2 focus:ring-[#1dbf73]"
                   />
-                  <span className="absolute left-3 top-3 text-slate-400 font-bold">₹</span>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      const amountEl = document.getElementById('newTxAmount') as HTMLInputElement;
+                      const dateEl = document.getElementById('newTxDate') as HTMLInputElement;
+                      const amt = Number(amountEl?.value || 0);
+                      const dt = dateEl?.value || new Date().toISOString().split('T')[0];
+                      if (amt > 0) {
+                        setInputs(prev => ({
+                          ...prev,
+                          historicalPayments: [
+                            ...(prev.historicalPayments || []),
+                            { amount: amt, creditDate: dt }
+                          ]
+                        }));
+                        if (amountEl) amountEl.value = '';
+                      }
+                    }}
+                    className="px-3 py-2.5 bg-[#1dbf73] text-white rounded-xl text-xs font-bold hover:bg-[#19a463] transition-colors whitespace-nowrap"
+                  >
+                    + Add Entry
+                  </button>
                 </div>
               </div>
             </div>
