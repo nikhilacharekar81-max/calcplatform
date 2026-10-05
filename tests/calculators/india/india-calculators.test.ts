@@ -379,6 +379,39 @@ export function runIndiaCalculatorsTests(): { name: string; passed: boolean; err
     assert(extendTenureRes.effectiveTenureMonths === 86, `Expected tenure extended to 86 months, got ${extendTenureRes.effectiveTenureMonths}`);
   });
 
+  runTest("India Calculators - Professional Tax Boundary Tests (Exact, 1 Paisa Above, 1 Paisa Below)", async () => {
+    const { calculateStateProfessionalTax } = await import("../../../src/calculators/india/state/professionalTax.ts");
+
+    // Maharashtra female exemption threshold is ₹25,000/month
+    // Exact Threshold
+    const exactMHReg = calculateStateProfessionalTax({ stateCode: "MH", monthlySalary: 25000, gender: "female", month: 4 });
+    assert(exactMHReg.monthlyTax === 0, `Exact ₹25,000 threshold for female in MH should be exempt (tax = 0), got ${exactMHReg.monthlyTax}`);
+    assert(exactMHReg.isFemaleExempt === true, "isFemaleExempt should be true at exact threshold");
+
+    // 1 Paisa Below
+    const belowMHReg = calculateStateProfessionalTax({ stateCode: "MH", monthlySalary: 24999.99, gender: "female", month: 4 });
+    assert(belowMHReg.monthlyTax === 0, `₹24,999.99 (1 paisa below) threshold for female in MH should be exempt, got ${belowMHReg.monthlyTax}`);
+    assert(belowMHReg.isFemaleExempt === true, "isFemaleExempt should be true at 1 paisa below threshold");
+
+    // 1 Paisa Above
+    const aboveMHReg = calculateStateProfessionalTax({ stateCode: "MH", monthlySalary: 25000.01, gender: "female", month: 4 });
+    assert(aboveMHReg.monthlyTax === 200, `₹25,000.01 (1 paisa above) threshold for female in MH should NOT be exempt (monthlyTax = 200), got ${aboveMHReg.monthlyTax}`);
+    assert(aboveMHReg.isFemaleExempt === false, "isFemaleExempt should be false at 1 paisa above threshold");
+
+    // Karnataka Professional Tax threshold is ₹15,000/month
+    // Exact Threshold
+    const exactKAReg = calculateStateProfessionalTax({ stateCode: "KA", monthlySalary: 15000, month: 4 });
+    assert(exactKAReg.monthlyTax === 200, `Exact ₹15,000 threshold in KA should trigger ₹200 tax, got ${exactKAReg.monthlyTax}`);
+
+    // 1 Paisa Below
+    const belowKAReg = calculateStateProfessionalTax({ stateCode: "KA", monthlySalary: 14999.99, month: 4 });
+    assert(belowKAReg.monthlyTax === 0, `₹14,999.99 (1 paisa below) in KA should be exempt (tax = 0), got ${belowKAReg.monthlyTax}`);
+
+    // 1 Paisa Above
+    const aboveKAReg = calculateStateProfessionalTax({ stateCode: "KA", monthlySalary: 15000.01, month: 4 });
+    assert(aboveKAReg.monthlyTax === 200, `₹15,000.01 (1 paisa above) in KA should trigger ₹200 tax, got ${aboveKAReg.monthlyTax}`);
+  });
+
   runTest("India Calculators - Universal Statutory Date Abstraction Suite", async () => {
     const { 
       getUSTaxYearDetails, 

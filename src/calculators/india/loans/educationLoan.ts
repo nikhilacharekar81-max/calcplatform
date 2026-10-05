@@ -2,7 +2,7 @@
  * Education Loan Moratorium & Restructuring Engine (IBA Guidelines & Statutory Standards)
  */
 
-import { roundMoney, roundNumber, CalculationError } from "../../../engines/financial-maths/index.ts";
+import { roundMoney, roundNumber, CalculationError, isMonetaryExceeded } from "../../../engines/financial-maths/index.ts";
 
 export interface EducationLoanInput {
   principal: number;
@@ -63,7 +63,7 @@ export function calculateEducationLoanMoratorium(input: EducationLoanInput): Edu
     const targetEmi = baseUncapitalizedEmi;
     const monthlyInterestAmount = repaymentStartPrincipal * monthlyRate;
 
-    if (monthlyRate > 0 && targetEmi > monthlyInterestAmount) {
+    if (monthlyRate > 0 && isMonetaryExceeded(targetEmi, monthlyInterestAmount)) {
       // Amortization formula solving for required tenure n:
       // P_emi = P_principal * r * (1+r)^n / ((1+r)^n - 1)
       // (1+r)^n = P_emi / (P_emi - P_principal * r)
