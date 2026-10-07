@@ -22,6 +22,7 @@ export interface EducationLoanResult {
   effectiveTenureMonths: number;
   effectiveTenureYears: number;
   totalInterestPayable: number;
+  totalInterestIncludingMoratorium: number;
   totalRepaymentAmount: number;
   restructuringApplied: 'FIX_TENURE_INCREASE_EMI' | 'FIX_EMI_EXTEND_TENURE';
   capitalizationAssertionVerified: boolean;
@@ -97,6 +98,7 @@ export function calculateEducationLoanMoratorium(input: EducationLoanInput): Edu
     effectiveTenureMonths,
     effectiveTenureYears,
     totalInterestPayable,
+    totalInterestIncludingMoratorium: roundMoney(totalInterestPayable + accumulatedMoratoriumInterest),
     totalRepaymentAmount,
     restructuringApplied: restructuringOption,
     capitalizationAssertionVerified,

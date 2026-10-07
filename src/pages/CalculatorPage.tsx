@@ -38,6 +38,9 @@ import { HumanLifeValueCalculatorApp } from '../components/calculator/HumanLifeV
 import { HumanLifeValueGuideContent } from '../components/calculator/HumanLifeValueGuideContent.tsx';
 import { HealthInsuranceCalculatorApp } from '../components/calculator/HealthInsuranceCalculatorApp.tsx';
 import { HealthInsuranceCoverageCalculatorApp } from '../components/calculator/HealthInsuranceCoverageCalculatorApp.tsx';
+import { CarInsuranceCalculatorApp } from '../components/calculator/CarInsuranceCalculatorApp.tsx';
+import { BikeInsuranceCalculatorApp } from '../components/calculator/BikeInsuranceCalculatorApp.tsx';
+import { TravelInsuranceCalculatorApp } from '../components/calculator/TravelInsuranceCalculatorApp.tsx';
 import { getAdminToken } from '../services/api.ts';
 
 interface CalculatorPageProps {
@@ -240,6 +243,12 @@ export const CalculatorPage: React.FC<CalculatorPageProps> = ({
         <HealthInsuranceCalculatorApp calculator={calculator} />
       ) : calculator.slug === 'health-insurance-coverage-calculator' ? (
         <HealthInsuranceCoverageCalculatorApp calculator={calculator} />
+      ) : calculator.slug === 'car-insurance-calculator' ? (
+        <CarInsuranceCalculatorApp />
+      ) : calculator.slug === 'bike-insurance-calculator' ? (
+        <BikeInsuranceCalculatorApp />
+      ) : calculator.slug === 'travel-insurance-calculator' || calculator.slug === 'travel-insurance' ? (
+        <TravelInsuranceCalculatorApp />
       ) : calculator.slug === 'income-tax-calculator' ? (
         <EnterpriseTaxCalculatorApp calculator={calculator} />
       ) : calculator.slug === 'capital-gains-tax' ? (

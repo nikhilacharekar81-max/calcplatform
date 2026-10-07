@@ -455,7 +455,7 @@ export const AdminBlogManager: React.FC<AdminBlogManagerProps> = ({ onEditPost }
                       {/* Article Info Cell */}
                       <td className="p-4 flex items-center gap-3">
                         <img
-                          src={post.featuredImage}
+                          src={post.featuredImage || undefined}
                           alt=""
                           className="w-12 h-12 rounded-xl object-cover border border-slate-200 shrink-0"
                         />
@@ -476,7 +476,7 @@ export const AdminBlogManager: React.FC<AdminBlogManagerProps> = ({ onEditPost }
                       <td className="p-4 text-slate-600">
                         <div className="flex items-center gap-2">
                           <img
-                            src={post.author?.avatar}
+                            src={post.author?.avatar || undefined}
                             alt=""
                             className="w-6 h-6 rounded-full object-cover"
                           />

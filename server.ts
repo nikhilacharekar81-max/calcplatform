@@ -2854,7 +2854,7 @@ Available dataKeys: "amortization", "regimeComparison", "compounding", "slabs".
 
 Return a structured JSON schema ordering the most impactful charts for this user's question, along with an executive summary, verdict, action points, and key metrics.`;
 
-          const modelsToTry = ['gemini-2.5-flash', 'gemini-2.5-pro'];
+          const modelsToTry = ['gemini-3.8-flash', 'gemini-3.1-pro-preview'];
           let aiResponseText: string | null = null;
 
           for (const modelName of modelsToTry) {

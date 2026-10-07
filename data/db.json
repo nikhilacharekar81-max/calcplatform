@@ -379,6 +379,34 @@
       "isActive": true,
       "createdAt": "2026-10-05T04:19:33.396Z",
       "updatedAt": "2026-10-05T04:19:33.396Z"
+    },
+    {
+      "id": "sub_1791216621428_n26sv",
+      "categoryId": "cat_1791101453693_sszmv",
+      "name": "Vehicle Insurance",
+      "slug": "vehicle-insurance",
+      "description": "",
+      "seoTitle": "Vehicle Insurance",
+      "seoDescription": "",
+      "seoKeywords": "",
+      "order": 25,
+      "isActive": true,
+      "createdAt": "2026-10-05T16:10:21.429Z",
+      "updatedAt": "2026-10-05T16:10:21.429Z"
+    },
+    {
+      "id": "sub_1791257127047_p7q0v",
+      "categoryId": "cat_1791101453693_sszmv",
+      "name": "Travel Insurance",
+      "slug": "travel-insurance",
+      "description": "",
+      "seoTitle": "Travel Insurance",
+      "seoDescription": "",
+      "seoKeywords": "",
+      "order": 1,
+      "isActive": true,
+      "createdAt": "2026-10-06T03:25:27.047Z",
+      "updatedAt": "2026-10-06T03:25:27.047Z"
     }
   ],
   "calculators": [
@@ -2695,6 +2723,207 @@
       "createdAt": "2026-10-05T04:46:44.000Z",
       "updatedAt": "2026-10-05T04:46:44.000Z",
       "viewsCount": 0
+    },
+    {
+      "id": "calc_car_insurance",
+      "name": "Car Insurance Calculator",
+      "slug": "car-insurance-calculator",
+      "shortDescription": "Estimate car insurance premium including IDV, Third Party, and Own Damage components based on age, engine capacity, and claims history.",
+      "categoryId": "cat_1791101453693_sszmv",
+      "subcategoryId": "sub_1791216621428_n26sv",
+      "engineType": "car_insurance",
+      "fields": [],
+      "seoTitle": "Car Insurance Premium & IDV Calculator",
+      "seoDescription": "Calculate your car insurance premium with custom IDV, voluntary deductibles, NCB discounts, and add-on coverage estimates.",
+      "seoKeywords": "car insurance calculator, motor insurance premium, vehicle IDV calculator",
+      "isActive": true,
+      "isFeatured": true,
+      "isPopular": true,
+      "createdAt": "2026-10-05T09:30:00.000Z",
+      "updatedAt": "2026-10-05T09:30:00.000Z",
+      "viewsCount": 1
+    },
+    {
+      "id": "calc_bike_insurance",
+      "name": "Bike Insurance Calculator",
+      "slug": "bike-insurance-calculator",
+      "shortDescription": "Determine bike insurance premium, statutory third party rates, and own damage covers based on registration age and engine CC.",
+      "categoryId": "cat_1791101453693_sszmv",
+      "subcategoryId": "sub_1791216621428_n26sv",
+      "engineType": "bike_insurance",
+      "fields": [],
+      "seoTitle": "Two-Wheeler Bike Insurance Premium Calculator",
+      "seoDescription": "Calculate two-wheeler bike insurance premium featuring NCB, engine capacity brackets, third-party and OD structures.",
+      "seoKeywords": "bike insurance calculator, two wheeler insurance premium, bike IDV, two wheeler NCB",
+      "isActive": true,
+      "isFeatured": true,
+      "isPopular": true,
+      "createdAt": "2026-10-05T09:30:00.000Z",
+      "updatedAt": "2026-10-05T09:30:00.000Z",
+      "viewsCount": 0
+    },
+    {
+      "id": "calc_travel_insurance",
+      "name": "Travel Insurance Calculator",
+      "slug": "travel-insurance-calculator",
+      "shortDescription": "Calculate estimated travel insurance premium with customizable destination region, age, medical coverage limits, and optional sickness and luggage add-ons.",
+      "categoryId": "cat_1791101453693_sszmv",
+      "subcategoryId": "sub_1791257127047_p7q0v",
+      "icon": "Plane",
+      "engineType": "custom_formula",
+      "engineKey": "calculateTravelInsurance",
+      "rendererKey": "TravelInsuranceCalculator",
+      "calculationVersion": "2026-01",
+      "jurisdiction": "IN",
+      "isActive": true,
+      "isFeatured": true,
+      "isPopular": true,
+      "createdAt": "2026-10-06T04:04:45.559Z",
+      "updatedAt": "2026-10-06T04:04:45.559Z",
+      "viewsCount": 15,
+      "fields": [
+        {
+          "id": "destinationRegion",
+          "label": "Destination Region",
+          "type": "select",
+          "defaultValue": "ASIA_EXCLUDING_JAPAN",
+          "options": [
+            {
+              "label": "Asia (Excluding Japan & Korea)",
+              "value": "ASIA_EXCLUDING_JAPAN"
+            },
+            {
+              "label": "Schengen Europe Zone",
+              "value": "SCHENGEN_EUROPE"
+            },
+            {
+              "label": "USA & Canada",
+              "value": "USA_CANADA"
+            },
+            {
+              "label": "Worldwide Coverage",
+              "value": "WORLDWIDE"
+            }
+          ],
+          "required": true
+        },
+        {
+          "id": "travelerAge",
+          "label": "Traveller Age",
+          "type": "number",
+          "defaultValue": 30,
+          "min": 1,
+          "max": 99,
+          "required": true
+        },
+        {
+          "id": "numTravelers",
+          "label": "Number of Travellers",
+          "type": "number",
+          "defaultValue": 1,
+          "min": 1,
+          "max": 25,
+          "required": true
+        },
+        {
+          "id": "sumInsuredUsd",
+          "label": "Medical Sum Insured",
+          "type": "select",
+          "defaultValue": 100000,
+          "options": [
+            {
+              "label": "$50,000 USD",
+              "value": 50000
+            },
+            {
+              "label": "$100,000 USD",
+              "value": 100000
+            },
+            {
+              "label": "$250,000 USD",
+              "value": 250000
+            },
+            {
+              "label": "$500,000 USD",
+              "value": 500000
+            }
+          ],
+          "required": true
+        },
+        {
+          "id": "tripType",
+          "label": "Trip Type",
+          "type": "radio",
+          "defaultValue": "Single",
+          "options": [
+            {
+              "label": "Single Trip",
+              "value": "Single"
+            },
+            {
+              "label": "Annual Multi-Trip",
+              "value": "Annual"
+            }
+          ],
+          "required": true
+        },
+        {
+          "id": "preExistingCondition",
+          "label": "Pre-existing Medical Condition",
+          "type": "radio",
+          "defaultValue": "No",
+          "options": [
+            {
+              "label": "No",
+              "value": "No"
+            },
+            {
+              "label": "Yes",
+              "value": "Yes"
+            }
+          ],
+          "required": true
+        }
+      ],
+      "outputs": [
+        {
+          "id": "estimatedPremium",
+          "label": "Estimated Premium",
+          "formula": "",
+          "format": "currency_inr",
+          "highlight": true
+        },
+        {
+          "id": "finalPayablePremium",
+          "label": "Final Payable Premium",
+          "formula": "",
+          "format": "currency_inr",
+          "highlight": true
+        }
+      ],
+      "chartConfig": {
+        "enabled": true,
+        "chartType": "bar",
+        "title": "Premium Breakdown"
+      },
+      "seoTitle": "Travel Insurance Calculator",
+      "seoDescription": "Easily estimate your travel insurance premiums for single trips or annual plans with our online calculator.",
+      "seoKeywords": "travel insurance, travel insurance calculator, premium calculator, travel medical insurance",
+      "content": {
+        "usageInstructions": "<p>1. Select your destination region to match health system pricing.<br/>2. Enter traveller age and count.<br/>3. Toggle pre-existing conditions or add optional sickness covers.</p>",
+        "formulaExplanation": "<p>Base Rate is multiplied by Destination Surcharge, Age Loading, Coverage Limits and Pre-existing medical risk, plus 18% general GST.</p>",
+        "faqs": [
+          {
+            "question": "Is travel insurance mandatory for Schengen Visas?",
+            "answer": "Yes. General Schengen rules mandate a minimum medical coverage of €30,000 (roughly $50,000 USD) with $0 deductible, which is fully supported by our basic plans."
+          },
+          {
+            "question": "Does this plan cover pre-existing medical conditions?",
+            "answer": "Yes, declaring pre-existing medical history applies an underwritten loading factor of 1.60x to cover acute emergency medical escalations."
+          }
+        ]
+      },
+      "description": "Calculate your travel insurance premium based on trip details, medical coverage, and add-ons."
     }
   ],
   "posts": [

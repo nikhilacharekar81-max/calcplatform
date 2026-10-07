@@ -287,10 +287,15 @@ export function calculateTds(inputs: TdsInputState): TdsCalculationResult {
   let thresholdLimit = section.thresholdAmount;
   if (section.code === '194A') {
     const isBankOrPostOffice = inputs.payerType === undefined || inputs.payerType === 'bank_post_office';
-    if (inputs.isSeniorCitizen && isBankOrPostOffice && inputs.sectionKey === '194A_INTEREST') {
-      thresholdLimit = 100000;
-      notes.push('Senior Citizen threshold of ₹1,00,000 applied (Banks/Post Office).');
-    } else if (inputs.isSeniorCitizen && !isBankOrPostOffice) {
+    if (isBankOrPostOffice) {
+      if (inputs.isSeniorCitizen) {
+        thresholdLimit = 100000;
+        notes.push('Senior Citizen threshold of ₹1,00,000 applied (Banks/Post Office).');
+      } else {
+        thresholdLimit = 50000;
+        notes.push('Standard threshold of ₹50,000 applied (Banks/Post Office).');
+      }
+    } else {
       thresholdLimit = 10000;
       notes.push('Standard non-bank threshold of ₹10,000 applied for other payers.');
     }

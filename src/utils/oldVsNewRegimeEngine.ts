@@ -374,6 +374,29 @@ function computeNewRegimeBaseTax(taxable: number): number {
   return tax;
 }
 
+function computeBaseTaxOldRegime(taxableIncome: number, inputs: OldVsNewInputs): number {
+  let basicExemptionLimit = 250000;
+  if (inputs.ageCategory === 'senior') basicExemptionLimit = 300000;
+  if (inputs.ageCategory === 'superSenior') basicExemptionLimit = 500000;
+
+  let remaining = taxableIncome;
+  let tax = 0;
+  if (remaining > basicExemptionLimit) {
+      if (basicExemptionLimit < 500000) {
+        const band2 = 500000 - basicExemptionLimit;
+        const s2 = Math.min(remaining - basicExemptionLimit, band2);
+        tax += s2 * 0.05;
+      }
+  }
+  if (remaining > 500000) {
+    tax += Math.min(remaining - 500000, 500000) * 0.20;
+  }
+  if (remaining > 1000000) {
+    tax += (remaining - 1000000) * 0.30;
+  }
+  return tax;
+}
+
 /**
  * Calculates Old Tax Regime for FY 2026-27 (AY 2027-28)
  */
@@ -554,12 +577,31 @@ export function calculateOldRegime(inputs: OldVsNewInputs): SingleRegimeResult {
   } else if (isMonetaryExceeded(netTaxableIncome, 20000000)) {
     surchargeRate = 0.25;
     surchargeAmount = taxAfterRebateAndRelief * 0.25;
+    const taxAt2Cr = computeBaseTaxOldRegime(20000000, inputs);
+    const maxPayable = taxAt2Cr + (taxAt2Cr * 0.15) + (netTaxableIncome - 20000000);
+    if (isMonetaryExceeded(taxAfterRebateAndRelief + surchargeAmount, maxPayable)) {
+      surchargeMarginalRelief = (taxAfterRebateAndRelief + surchargeAmount) - maxPayable;
+      surchargeAmount = Math.max(0, surchargeAmount - surchargeMarginalRelief);
+    }
   } else if (isMonetaryExceeded(netTaxableIncome, 10000000)) {
     surchargeRate = 0.15;
     surchargeAmount = taxAfterRebateAndRelief * 0.15;
+    const taxAt1Cr = computeBaseTaxOldRegime(10000000, inputs);
+    const maxPayable = taxAt1Cr + (taxAt1Cr * 0.10) + (netTaxableIncome - 10000000);
+    if (isMonetaryExceeded(taxAfterRebateAndRelief + surchargeAmount, maxPayable)) {
+      surchargeMarginalRelief = (taxAfterRebateAndRelief + surchargeAmount) - maxPayable;
+      surchargeAmount = Math.max(0, surchargeAmount - surchargeMarginalRelief);
+    }
   } else if (isMonetaryExceeded(netTaxableIncome, 5000000)) {
     surchargeRate = 0.10;
     surchargeAmount = taxAfterRebateAndRelief * 0.10;
+    const taxAt50L = computeBaseTaxOldRegime(5000000, inputs);
+    const surchargeAt50L = taxAt50L * 0.10;
+    const maxPayable = (taxAt50L + surchargeAt50L) + (netTaxableIncome - 5000000);
+    if (isMonetaryExceeded(taxAfterRebateAndRelief + surchargeAmount, maxPayable)) {
+      surchargeMarginalRelief = (taxAfterRebateAndRelief + surchargeAmount) - maxPayable;
+      surchargeAmount = Math.max(0, surchargeAmount - surchargeMarginalRelief);
+    }
   }
 
   const taxAfterSurcharge = taxAfterRebateAndRelief + surchargeAmount;

@@ -132,7 +132,7 @@ export function calculateStatutoryCapitalGains(
 
   let effectiveCoa = input.purchasePrice + improvementCost;
   if (!shortTerm && input.assetCategory === 'listed_equity' && input.applyGrandfathering) {
-    if (pDate < new Date('2018-01-31')) {
+    if (pDate <= new Date('2018-01-31')) {
       const fmv = input.jan312018Fmv ?? 0;
       const minVal = Math.min(fmv, input.salePrice);
       const legalCoa = Math.max(input.purchasePrice, minVal);
@@ -219,7 +219,8 @@ export function calculateStatutoryCapitalGains(
 
   const exemptionSec54 = Math.min(input.assetCategory === 'real_estate' && !shortTerm ? taxableLtcg : 0, Math.min(input.reinvestmentSec54 ?? 0, sec54Cap));
   const exemptionSec54F = Math.min(input.assetCategory !== 'real_estate' && !shortTerm ? taxableLtcg : 0, Math.min(input.reinvestmentSec54F ?? 0, sec54Cap));
-  const exemptionSec54EC = Math.min(taxableLtcg, Math.min(input.reinvestmentSec54EC ?? 0, sec54EcCap));
+  // Section 54EC bonds: only long-term gains on land / building (not equity, gold, unlisted shares, ...)
+  const exemptionSec54EC = Math.min(input.assetCategory === 'real_estate' && !shortTerm ? taxableLtcg : 0, Math.min(input.reinvestmentSec54EC ?? 0, sec54EcCap));
 
   const totalExemptionClaimed = Math.min(taxableLtcg, exemptionSec54 + exemptionSec54F + exemptionSec54EC);
   const netTaxableLtcgAfterExemption = Math.max(0, taxableLtcg - totalExemptionClaimed);
@@ -247,8 +248,16 @@ export function calculateStatutoryCapitalGains(
         if (isMonetaryLessOrEqual(income, 2400000)) return 200000 + (income - 2000000) * 0.25;
         return 300000 + (income - 2400000) * 0.30;
       };
-      const taxTotal = calculateSlabTax(totalIncome);
-      const taxOther = calculateSlabTax(Math.max(0, effectiveOtherIncome));
+      // Gains taxed at slab rates are ordinary income, so the Sec 87A rebate (resident, new regime:
+      // ₹60,000 up to ₹12L taxable income, with marginal relief just above) applies to them.
+      const slabTaxAfterRebate = (income: number) => {
+        const t = calculateSlabTax(income);
+        const limit = 1200000;
+        if (income <= limit) return Math.max(0, t - Math.min(t, 60000));
+        return Math.min(t, income - limit);
+      };
+      const taxTotal = slabTaxAfterRebate(totalIncome);
+      const taxOther = slabTaxAfterRebate(Math.max(0, effectiveOtherIncome));
       baseTax = Math.max(0, taxTotal - taxOther);
     }
   } else {

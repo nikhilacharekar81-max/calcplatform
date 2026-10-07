@@ -93,7 +93,7 @@ export function addCalendarMonthsClamped(date: Date, months: number): Date {
 export function isShortTermHolding(purchaseDate: Date, saleDate: Date, thresholdMonths: number): boolean {
   if (isNaN(purchaseDate.getTime()) || isNaN(saleDate.getTime())) return true;
   const longTermBoundaryDate = addCalendarMonthsClamped(purchaseDate, thresholdMonths);
-  return saleDate.getTime() < longTermBoundaryDate.getTime();
+  return saleDate.getTime() <= longTermBoundaryDate.getTime();
 }
 
 /**

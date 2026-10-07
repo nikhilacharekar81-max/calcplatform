@@ -166,7 +166,7 @@ export const BlogPostPage: React.FC<BlogPostPageProps> = ({ slug }) => {
           <div className="pt-4 flex flex-col sm:flex-row items-center justify-between gap-4">
             <div className="flex items-center gap-3">
               <img
-                src={post.author?.avatar}
+                src={post.author?.avatar || undefined}
                 alt={post.author?.name}
                 className="w-12 h-12 rounded-full object-cover border-2 border-white shadow-xs"
               />
@@ -191,7 +191,7 @@ export const BlogPostPage: React.FC<BlogPostPageProps> = ({ slug }) => {
         {post.showFeaturedImage !== false && post.featuredImage && (
           <div className="rounded-3xl overflow-hidden border border-slate-200 shadow-md">
             <img
-              src={post.featuredImage}
+              src={post.featuredImage || undefined}
               alt={post.title}
               className="w-full h-auto max-h-[480px] object-cover"
             />
